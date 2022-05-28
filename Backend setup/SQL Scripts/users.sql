@@ -49,7 +49,10 @@ INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `ro
 (2, 'Ranjan Gupta', 'rg29111987@gmail.com', NULL, '$2y$10$BJ8GpQke0OYaP/zawYEfEukU.Vo5xhKH8WqZR5k4nCnGt6ArtyhHG', 'Staff', NULL, '2022-02-28 04:05:23', '2022-02-28 04:05:23'),
 (3, 'Test User', 'test@gmail.com', NULL, '$2y$10$r6I.081bkfwSzyLqmSMsJOILaYw4zyeUe3LgG4CniGQvc21zqoDne', 'Admin', NULL, NULL, NULL),
 (4, 'Staff', 'staff@gmail.com', NULL, '$2y$10$r6I.081bkfwSzyLqmSMsJOILaYw4zyeUe3LgG4CniGQvc21zqoDne', 'Staff', NULL, NULL, NULL),
-(5, 'Employer', 'emp@gmail.com', NULL, '$2y$10$r6I.081bkfwSzyLqmSMsJOILaYw4zyeUe3LgG4CniGQvc21zqoDne', 'emp', NULL, NULL, NULL);
+(5, 'Employer', 'emp@gmail.com', NULL, '$2y$10$r6I.081bkfwSzyLqmSMsJOILaYw4zyeUe3LgG4CniGQvc21zqoDne', 'emp', NULL, NULL, NULL),
+(6, 'Intervention', 'intervention@gmail.com', NULL, '$2y$10$r6I.081bkfwSzyLqmSMsJOILaYw4zyeUe3LgG4CniGQvc21zqoDne', 'Intervention', NULL, NULL, NULL),
+(7, 'Von', 'von@gmail.com', NULL, '$2y$10$r6I.081bkfwSzyLqmSMsJOILaYw4zyeUe3LgG4CniGQvc21zqoDne', 'von', NULL, NULL, NULL),
+(8, 'Patient', 'patient@gmail.com', NULL, '$2y$10$r6I.081bkfwSzyLqmSMsJOILaYw4zyeUe3LgG4CniGQvc21zqoDne', 'patient', NULL, NULL, NULL);
 
 --
 -- Indexes for dumped tables
