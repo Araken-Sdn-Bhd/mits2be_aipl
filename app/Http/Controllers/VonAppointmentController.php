@@ -65,9 +65,10 @@ class VonAppointmentController extends Controller
                 'appointment_type' => $request->appointment_type,
                 'interviewer_id' => $request->interviewer_id,
                 'area_of_involvement' => $request->area_of_involvement,
-                'services_type' => $request->services_type
+                'services_type' => $request->services_type,
+                'status' => '0'
             ];
-            VonAppointment::firstOrCreate($service);
+            VonAppointment::create($service);
             return response()->json(["message" => "Von Appointment Created Successfully!", "code" => 200]);
         } else {
             return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
@@ -77,7 +78,7 @@ class VonAppointmentController extends Controller
 
     public function geyVonAppointmentById(Request $request)
     {
-        return VonAppointment::select('*', DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as start_date"))->where('added_by', $request->added_by)->where('parent_section_id', $request->parent_section_id)->get();
+        return VonAppointment::select('*', DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as start_date"))->where('added_by', $request->added_by)->where('id', $request->id)->get();
     }
 
     public function update(Request $request)
@@ -158,6 +159,19 @@ class VonAppointmentController extends Controller
             }
         }
         return response()->json(["message" => "Von Updated Successfully!", "list" => $list, "code" => 200]);
-        dd($list);
+        // dd($list);
+    }
+
+    public function setStatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+            'status' => 'required|string'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+        VonAppointment::where('id', $request->id)->update(['status' => $request->status]);
+        return response()->json(["message" => "Appointment status updated!", "code" => 200]);
     }
 }

@@ -486,9 +486,10 @@ Route::group(['prefix' => 'report'], function () {
 });
 Route::group(['prefix' => 'von-appointment'], function () {
     Route::post('/add', [VonAppointmentController::class, 'store']);
-    Route::post('/geyVonAppointmentById', [VonAppointmentController::class, 'geyVonAppointmentById']);
+    Route::post('/getVonAppointmentById', [VonAppointmentController::class, 'geyVonAppointmentById']);
     Route::post('/update', [VonAppointmentController::class, 'update']);
     Route::post('/list', [VonAppointmentController::class, 'listAppointment']);
+    Route::post('/set-status', [VonAppointmentController::class, 'setStatus']);
 });
 
 Route::group(['prefix' => 'assigned-interviwer'], function () {
