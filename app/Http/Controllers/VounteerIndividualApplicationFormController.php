@@ -34,7 +34,7 @@ class VounteerIndividualApplicationFormController extends Controller
             'areas_involvement' => 'required|string',
             'agree_trem_condition' => 'required|boolean'
         ];
-        if ($request->areas_involvement == 'volunteerism') {
+        if ($request->areas_involvement == 'Volunteerism') {
             $validation['volunteering_experience'] = 'required|string';
             $validation['health_professional'] = 'required|string';
             $validation['relevant_mentari_service'] = 'required|string';
@@ -83,7 +83,7 @@ class VounteerIndividualApplicationFormController extends Controller
             $HOD = VolunteerIndividualApplicationForm::create($volunteerindividual);
             $getVolunteerid = $HOD->id();
 
-            if ($request->areas_involvement == 'volunteerism') {
+            if ($request->areas_involvement == 'Volunteerism') {
                 $validateVolunteerForm = [];
 
                 $volunteerismForm = [
@@ -130,7 +130,7 @@ class VounteerIndividualApplicationFormController extends Controller
             'org_email' => 'required|string',
             'org_phone' => 'required|string',
             'name' => 'required|string',
-            'dob' => 'string',
+            // 'dob' => 'string',
             'position_in_org' => 'string',
             'email' => 'required|string',
             'phone_number' => 'required',
@@ -180,7 +180,7 @@ class VounteerIndividualApplicationFormController extends Controller
             'created_at' => date('Y-m-d H:i:s')
         ];
         $vorbId = VonOrgRepresentativeBackground::create($orgRepBackground);
-        if ($request->area_of_involvement == 'volunteerism') {
+        if ($request->area_of_involvement == 'Volunteerism') {
             $volunteerism = [
                 'added_by' => $request->added_by,
                 'parent_section_id' => $vorbId->id,
@@ -196,11 +196,11 @@ class VounteerIndividualApplicationFormController extends Controller
             // dd($request->all());
             $volunteerism['resume'] = 'NA';
             if ($request->is_mental_health_professional == '1') {
-                $validator = Validator::make($volunteerism, ['resume' => 'required||mimes:pdf|max:10240']);
+                $validator = Validator::make($request->all(), ['health_professional_resume' => 'required|max:10240']);
                 if ($validator->fails()) {
                     return response()->json(["message" => $validator->errors(), "code" => 422]);
                 } else {
-                    $files = $request->file('resume');
+                    $files = $request->file('health_professional_resume');
                     $isUploaded = upload_file($files, 'HealthProfessionalResume');
                     $volunteerism['resume'] =  $isUploaded->getData()->path;
                 }
@@ -213,7 +213,7 @@ class VounteerIndividualApplicationFormController extends Controller
             }
         }
 
-        if ($request->area_of_involvement == 'out-reach-project') {
+        if ($request->area_of_involvement == 'Outreach Project Collaboration') {
             $outreachprojects = [
                 'added_by' => $request->added_by,
                 'parent_section_id' => $vorbId->id,
@@ -240,7 +240,7 @@ class VounteerIndividualApplicationFormController extends Controller
                 return response()->json(["message" => $e->getMessage(), 'Volunteer' => $outreachprojects, "code" => 500]);
             }
         }
-        if ($request->area_of_involvement == 'networking-contribution') {
+        if ($request->area_of_involvement == 'Networking Make a Contribution') {
             $NetworkingContribution = [
                 'added_by' => $request->added_by,
                 'parent_section_id' => $vorbId->id,
@@ -305,7 +305,7 @@ class VounteerIndividualApplicationFormController extends Controller
             'created_at' => date('Y-m-d H:i:s')
         ];
         $vorbId = VonOrgRepresentativeBackground::create($orgRepBackground);
-        if ($request->area_of_involvement == 'volunteerism') {
+        if ($request->area_of_involvement == 'Volunteerism') {
             $volunteerism = [
                 'added_by' => $request->added_by,
                 'parent_section_id' => $vorbId->id,
@@ -318,14 +318,14 @@ class VounteerIndividualApplicationFormController extends Controller
                 'available_time' => $request->available_time,
                 'created_at' => date('Y-m-d H:i:s')
             ];
-            // dd($request->all());
+            // dd($request->file('resume'));
             $volunteerism['resume'] = 'NA';
             if ($request->is_mental_health_professional == '1') {
-                $validator = Validator::make($volunteerism, ['resume' => 'required||mimes:pdf|max:10240']);
+                $validator = Validator::make($request->all(), ['health_professional_resume' => 'required|max:10240']);
                 if ($validator->fails()) {
                     return response()->json(["message" => $validator->errors(), "code" => 422]);
                 } else {
-                    $files = $request->file('resume');
+                    $files = $request->file('health_professional_resume');
                     $isUploaded = upload_file($files, 'HealthProfessionalResume');
                     $volunteerism['resume'] =  $isUploaded->getData()->path;
                 }
@@ -338,7 +338,7 @@ class VounteerIndividualApplicationFormController extends Controller
             }
         }
 
-        if ($request->area_of_involvement == 'out-reach-project') {
+        if ($request->area_of_involvement == 'Outreach Project Collaboration') {
             $outreachprojects = [
                 'added_by' => $request->added_by,
                 'parent_section_id' => $vorbId->id,
@@ -365,7 +365,7 @@ class VounteerIndividualApplicationFormController extends Controller
                 return response()->json(["message" => $e->getMessage(), 'Volunteer' => $volunteerism, "code" => 500]);
             }
         }
-        if ($request->area_of_involvement == 'networking-contribution') {
+        if ($request->area_of_involvement == 'Networking Make a Contribution') {
             $NetworkingContribution = [
                 'added_by' => $request->added_by,
                 'parent_section_id' => $vorbId->id,
@@ -433,8 +433,8 @@ class VounteerIndividualApplicationFormController extends Controller
                 'created_at' => date('Y-m-d H:i:s')
             ];
             $vorbId = VonOrgRepresentativeBackground::create($orgRepBackground);
-            // $this->areaOfInvolvement($request, $vorbId);
-            if ($request->area_of_involvement == 'volunteerism') {
+            // $this->areaOfInvolvement($request, $vorbId);Volunteerism
+            if ($request->area_of_involvement == 'Volunteerism') {
                 $volunteerism = [
                     'added_by' => $request->added_by,
                     'parent_section_id' => $vorbId->id,
@@ -450,11 +450,11 @@ class VounteerIndividualApplicationFormController extends Controller
                 // dd($request->all());
                 $volunteerism['resume'] = 'NA';
                 if ($request->is_mental_health_professional == '1') {
-                    $validator = Validator::make($volunteerism, ['resume' => 'required||mimes:pdf|max:10240']);
+                    $validator = Validator::make($request->all(), ['health_professional_resume' => 'required|max:10240']);
                     if ($validator->fails()) {
                         return response()->json(["message" => $validator->errors(), "code" => 422]);
                     } else {
-                        $files = $request->file('resume');
+                        $files = $request->file('health_professional_resume');
                         $isUploaded = upload_file($files, 'HealthProfessionalResume');
                         $volunteerism['resume'] =  $isUploaded->getData()->path;
                     }
@@ -467,7 +467,7 @@ class VounteerIndividualApplicationFormController extends Controller
                 }
             }
 
-            if ($request->area_of_involvement == 'out-reach-project') {
+            if ($request->area_of_involvement == 'Outreach Project Collaboration') {
                 $outreachprojects = [
                     'added_by' => $request->added_by,
                     'parent_section_id' => $vorbId->id,
@@ -494,7 +494,7 @@ class VounteerIndividualApplicationFormController extends Controller
                     return response()->json(["message" => $e->getMessage(), 'Volunteer' => $outreachprojects, "code" => 500]);
                 }
             }
-            if ($request->area_of_involvement == 'networking-contribution') {
+            if ($request->area_of_involvement == 'Networking Make a Contribution') {
                 $NetworkingContribution = [
                     'added_by' => $request->added_by,
                     'parent_section_id' => $vorbId->id,
@@ -519,7 +519,7 @@ class VounteerIndividualApplicationFormController extends Controller
 
     public function areaOfInvolvement($request, $vorbId)
     {
-        if ($request->area_of_involvement == 'volunteerism') {
+        if ($request->area_of_involvement == 'Volunteerism') {
             $volunteerism = [
                 'added_by' => $request->added_by,
                 'parent_section_id' => $vorbId->id,
@@ -533,14 +533,14 @@ class VounteerIndividualApplicationFormController extends Controller
                 'created_at' => date('Y-m-d H:i:s')
             ];
             // dd($request->all());
-
+            $volunteerism['resume'] = 'NA';
             if ($request->is_mental_health_professional == '1') {
-                $validator = Validator::make($volunteerism, ['resume' => 'required||mimes:pdf|max:10240']);
+                $validator = Validator::make($request->all(), ['health_professional_resume' => 'required|max:10240']);
 
                 if ($validator->fails()) {
                     return response()->json(["message" => $validator->errors(), "code" => 422]);
                 } else {
-                    $files = $request->file('resume');
+                    $files = $request->file('health_professional_resume');
                     $isUploaded = upload_file($files, 'HealthProfessionalResume');
                     $volunteerism['resume'] =  $isUploaded->getData()->path;
                 }
@@ -552,7 +552,7 @@ class VounteerIndividualApplicationFormController extends Controller
             }
         }
 
-        if ($request->area_of_involvement == 'out-reach-project') {
+        if ($request->area_of_involvement == 'Outreach Project Collaboration') {
             $outreachprojects = [
                 'added_by' => $request->added_by,
                 'parent_section_id' => $vorbId->id,
@@ -574,7 +574,7 @@ class VounteerIndividualApplicationFormController extends Controller
 
             OutReachProjects::insert($outreachprojects);
         }
-        if ($request->area_of_involvement == 'networking-contribution') {
+        if ($request->area_of_involvement == 'Networking Make a Contribution') {
             $NetworkingContribution = [
                 'added_by' => $request->added_by,
                 'parent_section_id' => $vorbId->id,
@@ -606,15 +606,15 @@ class VounteerIndividualApplicationFormController extends Controller
                 $result[$k]['phone_number'] = $val['phone_number'];
                 $result[$k]['email'] = $val['email'];
                 $result[$k]['screening'] = ($val['screening_mode'] == '1') ? 'Yes' : 'No';
-                if ($val['area_of_involvement'] == 'volunteerism') {
+                if ($val['area_of_involvement'] == 'Volunteerism') {
                     $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'out-reach-project') {
+                if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
                     $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'networking-contribution') {
+                if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
                     $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
@@ -635,11 +635,11 @@ class VounteerIndividualApplicationFormController extends Controller
                     $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'out-reach-project') {
+                if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
                     $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'networking-contribution') {
+                if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
                     $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
@@ -648,7 +648,7 @@ class VounteerIndividualApplicationFormController extends Controller
         }
         $org = VonOrgRepresentativeBackground::where('section', 'org')->where('status', '0')->get();
         if ($org) {
-            foreach ($group as $key => $val) {
+            foreach ($org as $key => $val) {
                 $result[$k]['id'] = $val['id'];
                 $name = VonOrgBackground::where('id', $val['org_background_id'])->get()->pluck('org_name')->toArray();
                 // dd($name[0]);
@@ -658,15 +658,15 @@ class VounteerIndividualApplicationFormController extends Controller
                 $result[$k]['phone_number'] = $val['phone_number'];
                 $result[$k]['email'] = $val['email'];
                 $result[$k]['screening'] = 'No';
-                if ($val['area_of_involvement'] == 'volunteerism') {
+                if ($val['area_of_involvement'] == 'Volunteerism') {
                     $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'out-reach-project') {
+                if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
                     $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'networking-contribution') {
+                if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
                     $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
@@ -715,17 +715,17 @@ class VounteerIndividualApplicationFormController extends Controller
             $result['branch_id'] = $response[0]['branch_id'];
             $result['area_of_involvement'] = $response[0]['area_of_involvement'];
             // if ($section == 'individual') {
-            if ($response[0]['area_of_involvement'] == 'volunteerism') {
+            if ($response[0]['area_of_involvement'] == 'Volunteerism') {
                 $services = Volunteerism::where('parent_section_id', $response[0]['id'])->get();
                 $result['is_voluneering_exp'] = $services[0]['is_voluneering_exp'];
                 $result['exp_details'] = $services[0]['exp_details'];
                 $result['is_mental_health_professional'] = $services[0]['is_mental_health_professional'];
-                $result['resume'] = $services[0]['resume'];
+                $result['resume'] = $services[0]['health_professional_resume'];
                 $result['mentari_services'] = $services[0]['mentari_services'];
                 $result['available_date'] = $services[0]['available_date'];
                 $result['available_time'] = $services[0]['available_time'];
             }
-            if ($response[0]['area_of_involvement'] == 'out-reach-project') {
+            if ($response[0]['area_of_involvement'] == 'Outreach Project Collaboration') {
                 $services = OutReachProjects::where('parent_section_id', $response[0]['id'])->get();
                 $result['project_name'] = $services[0]['project_name'];
                 $result['project_background'] = $services[0]['project_background'];
@@ -741,7 +741,7 @@ class VounteerIndividualApplicationFormController extends Controller
                 $result['followup_projects'] = $services[0]['followup_projects'];
                 $result['mentari_services'] = $services[0]['mentari_services'];
             }
-            if ($response[0]['area_of_involvement'] == 'networking-contribution') {
+            if ($response[0]['area_of_involvement'] == 'Networking Make a Contribution') {
                 $services = NetworkingContribution::where('parent_section_id', $response[0]['id'])->get();
                 $result['contribution'] = $services[0]['contribution'];
                 $result['budget'] = $services[0]['budget'];
@@ -833,7 +833,7 @@ class VounteerIndividualApplicationFormController extends Controller
             'created_at' => date('Y-m-d H:i:s')
         ];
         VonOrgRepresentativeBackground::where('id', $request->id)->update($orgRepBackground);
-        if ($request->area_of_involvement == 'volunteerism') {
+        if ($request->area_of_involvement == 'Volunteerism') {
             $volunteerism = [
                 'added_by' => $request->added_by,
                 'is_voluneering_exp' => $request->is_voluneering_exp,
@@ -847,7 +847,7 @@ class VounteerIndividualApplicationFormController extends Controller
             // dd($request->all());
             $volunteerism['resume'] = 'NA';
             if ($request->is_mental_health_professional == '1') {
-                $validator = Validator::make($volunteerism, ['resume' => 'required||mimes:pdf|max:10240']);
+                $validator = Validator::make($request->all(), ['health_professional_resume' => 'required|max:10240']);
                 if ($validator->fails()) {
                     return response()->json(["message" => $validator->errors(), "code" => 422]);
                 } else {
@@ -864,7 +864,7 @@ class VounteerIndividualApplicationFormController extends Controller
             }
         }
 
-        if ($request->area_of_involvement == 'out-reach-project') {
+        if ($request->area_of_involvement == 'Outreach Project Collaboration') {
             $outreachprojects = [
                 'added_by' => $request->added_by,
                 'project_name' => $request->project_name,
@@ -889,7 +889,7 @@ class VounteerIndividualApplicationFormController extends Controller
                 return response()->json(["message" => $e->getMessage(), 'Volunteer' => $outreachprojects, "code" => 500]);
             }
         }
-        if ($request->area_of_involvement == 'networking-contribution') {
+        if ($request->area_of_involvement == 'Networking Make a Contribution') {
             $NetworkingContribution = [
                 'added_by' => $request->added_by,
                 'contribution' => $request->contribution,
@@ -954,7 +954,7 @@ class VounteerIndividualApplicationFormController extends Controller
             'created_at' => date('Y-m-d H:i:s')
         ];
         VonOrgRepresentativeBackground::where('id', $request->id)->update($orgRepBackground);
-        if ($request->area_of_involvement == 'volunteerism') {
+        if ($request->area_of_involvement == 'Volunteerism') {
             $volunteerism = [
                 'added_by' => $request->added_by,
                 'is_voluneering_exp' => $request->is_voluneering_exp,
@@ -968,7 +968,7 @@ class VounteerIndividualApplicationFormController extends Controller
             // dd($request->all());
             $volunteerism['resume'] = 'NA';
             if ($request->is_mental_health_professional == '1') {
-                $validator = Validator::make($volunteerism, ['resume' => 'required||mimes:pdf|max:10240']);
+                $validator = Validator::make($request->all(), ['health_professional_resume' => 'required|max:10240']);
                 if ($validator->fails()) {
                     return response()->json(["message" => $validator->errors(), "code" => 422]);
                 } else {
@@ -985,7 +985,7 @@ class VounteerIndividualApplicationFormController extends Controller
             }
         }
 
-        if ($request->area_of_involvement == 'out-reach-project') {
+        if ($request->area_of_involvement == 'Outreach Project Collaboration') {
             $outreachprojects = [
                 'added_by' => $request->added_by,
                 'project_name' => $request->project_name,
@@ -1010,7 +1010,7 @@ class VounteerIndividualApplicationFormController extends Controller
                 return response()->json(["message" => $e->getMessage(), 'Volunteer' => $outreachprojects, "code" => 500]);
             }
         }
-        if ($request->area_of_involvement == 'networking-contribution') {
+        if ($request->area_of_involvement == 'Networking Make a Contribution') {
             $NetworkingContribution = [
                 'added_by' => $request->added_by,
                 'contribution' => $request->contribution,
@@ -1079,7 +1079,7 @@ class VounteerIndividualApplicationFormController extends Controller
                 'created_at' => date('Y-m-d H:i:s')
             ];
             VonOrgRepresentativeBackground::where('id', $request->id)->update($orgRepBackground);
-            if ($request->area_of_involvement == 'volunteerism') {
+            if ($request->area_of_involvement == 'Volunteerism') {
                 $volunteerism = [
                     'added_by' => $request->added_by,
                     'is_voluneering_exp' => $request->is_voluneering_exp,
@@ -1093,11 +1093,11 @@ class VounteerIndividualApplicationFormController extends Controller
                 // dd($request->all());
                 $volunteerism['resume'] = 'NA';
                 if ($request->is_mental_health_professional == '1') {
-                    $validator = Validator::make($volunteerism, ['resume' => 'required||mimes:pdf|max:10240']);
+                    $validator = Validator::make($request->all(), ['health_professional_resume' => 'required|max:10240']);
                     if ($validator->fails()) {
                         return response()->json(["message" => $validator->errors(), "code" => 422]);
                     } else {
-                        $files = $request->file('resume');
+                        $files = $request->file('health_professional_resume');
                         $isUploaded = upload_file($files, 'HealthProfessionalResume');
                         $volunteerism['resume'] =  $isUploaded->getData()->path;
                     }
@@ -1110,7 +1110,7 @@ class VounteerIndividualApplicationFormController extends Controller
                 }
             }
 
-            if ($request->area_of_involvement == 'out-reach-project') {
+            if ($request->area_of_involvement == 'Outreach Project Collaboration') {
                 $outreachprojects = [
                     'added_by' => $request->added_by,
                     'project_name' => $request->project_name,
@@ -1135,7 +1135,7 @@ class VounteerIndividualApplicationFormController extends Controller
                     return response()->json(["message" => $e->getMessage(), 'Volunteer' => $outreachprojects, "code" => 500]);
                 }
             }
-            if ($request->area_of_involvement == 'networking-contribution') {
+            if ($request->area_of_involvement == 'Networking Make a Contribution') {
                 $NetworkingContribution = [
                     'added_by' => $request->added_by,
                     'contribution' => $request->contribution,
@@ -1185,15 +1185,15 @@ class VounteerIndividualApplicationFormController extends Controller
                 $result[$k]['phone_number'] = $val['phone_number'];
                 $result[$k]['email'] = $val['email'];
                 $result[$k]['screening'] = ($val['screening_mode'] == '1') ? 'Yes' : 'No';
-                if ($val['area_of_involvement'] == 'volunteerism') {
+                if ($val['area_of_involvement'] == 'Volunteerism') {
                     $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'out-reach-project') {
+                if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
                     $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'networking-contribution') {
+                if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
                     $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
@@ -1210,15 +1210,15 @@ class VounteerIndividualApplicationFormController extends Controller
                 $result[$k]['phone_number'] = $val['phone_number'];
                 $result[$k]['email'] = $val['email'];
                 $result[$k]['screening'] = 'No';
-                if ($val['area_of_involvement'] == 'volunteerism') {
+                if ($val['area_of_involvement'] == 'Volunteerism') {
                     $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'out-reach-project') {
+                if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
                     $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'networking-contribution') {
+                if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
                     $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
@@ -1237,15 +1237,15 @@ class VounteerIndividualApplicationFormController extends Controller
                 $result[$k]['phone_number'] = $val['phone_number'];
                 $result[$k]['email'] = $val['email'];
                 $result[$k]['screening'] = 'No';
-                if ($val['area_of_involvement'] == 'volunteerism') {
+                if ($val['area_of_involvement'] == 'Volunteerism') {
                     $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'out-reach-project') {
+                if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
                     $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'networking-contribution') {
+                if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
                     $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
@@ -1284,15 +1284,15 @@ class VounteerIndividualApplicationFormController extends Controller
                 $result[$k]['phone_number'] = $val['phone_number'];
                 $result[$k]['email'] = $val['email'];
                 $result[$k]['screening'] = ($val['screening_mode'] == '1') ? 'Yes' : 'No';
-                if ($val['area_of_involvement'] == 'volunteerism') {
+                if ($val['area_of_involvement'] == 'Volunteerism') {
                     $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'out-reach-project') {
+                if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
                     $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'networking-contribution') {
+                if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
                     $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
@@ -1309,15 +1309,15 @@ class VounteerIndividualApplicationFormController extends Controller
                 $result[$k]['phone_number'] = $val['phone_number'];
                 $result[$k]['email'] = $val['email'];
                 $result[$k]['screening'] = 'No';
-                if ($val['area_of_involvement'] == 'volunteerism') {
+                if ($val['area_of_involvement'] == 'Volunteerism') {
                     $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'out-reach-project') {
+                if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
                     $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'networking-contribution') {
+                if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
                     $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
@@ -1336,15 +1336,15 @@ class VounteerIndividualApplicationFormController extends Controller
                 $result[$k]['phone_number'] = $val['phone_number'];
                 $result[$k]['email'] = $val['email'];
                 $result[$k]['screening'] = 'No';
-                if ($val['area_of_involvement'] == 'volunteerism') {
+                if ($val['area_of_involvement'] == 'Volunteerism') {
                     $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'out-reach-project') {
+                if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
                     $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
-                if ($val['area_of_involvement'] == 'networking-contribution') {
+                if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
                     $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }

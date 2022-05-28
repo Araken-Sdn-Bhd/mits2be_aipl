@@ -6,6 +6,12 @@ use Illuminate\Http\Request;
 use App\Models\JobOffers;
 use App\Models\JobCompanies;
 use App\Models\HospitalBranchManagement;
+use App\Models\PatientRegistration;
+use App\Models\SEConsentForm;
+use App\Models\CPSReferralForm;
+use App\Models\LASERAssesmenForm;
+use App\Models\PatientCarePaln;
+use App\Models\User;
 use Validator;
 use DB;
 
@@ -28,8 +34,8 @@ class JobOfferController extends Controller
             'work_requirement' => 'required|json',
             'branch_id' => 'required|integer',
             'job_availability' => 'required|integer',
-            'position_location_2'=>'',
-            'position_location_3'=>''
+            'position_location_2' => '',
+            'position_location_3' => ''
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -75,33 +81,33 @@ class JobOfferController extends Controller
 
     public function jobList(Request $request)
     {
-        return JobOffers::select(DB::raw("count('id') as job_posted"), 'id','position_offered')->where('added_by', $request->added_by)->groupBy('position_offered','id')->get();
+        return JobOffers::select(DB::raw("count('id') as job_posted"), 'id', 'position_offered')->where('added_by', $request->added_by)->groupBy('position_offered', 'id')->get();
     }
 
     public function jobListById(Request $request)
     {
-        return JobOffers::select( '*','position_offered')->where('added_by', $request->added_by)->where('id', $request->id)->get();
+        return JobOffers::select('*', 'position_offered')->where('added_by', $request->added_by)->where('id', $request->id)->get();
     }
 
     public function jobApproveOrReject(Request $request)
     {
-         $validator = Validator::make($request->all(), [
-             'added_by' => 'required|integer',
-             'id' => 'required|integer',
-             'status' => 'required'
-         ]);
-         if ($validator->fails()) {
-             return response()->json(["message" => $validator->errors(), "code" => 422]);
-         }
- 
-         JobOffers::where(
-             ['id' => $request->id]
-         )->update([
-             'status' =>  $request->status,
-             'added_by' => $request->added_by
-         ]);
- 
-         return response()->json(["message" => "Job Updated Successfully", "code" => 200]);
+        $validator = Validator::make($request->all(), [
+            'added_by' => 'required|integer',
+            'id' => 'required|integer',
+            'status' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+
+        JobOffers::where(
+            ['id' => $request->id]
+        )->update([
+            'status' =>  $request->status,
+            'added_by' => $request->added_by
+        ]);
+
+        return response()->json(["message" => "Job Updated Successfully", "code" => 200]);
     }
 
 
@@ -124,19 +130,19 @@ class JobOfferController extends Controller
     public function getListByTitle(Request $request)
     {
         $users = DB::table('job_offers')
-        ->join('hospital_branch__details', 'job_offers.branch_id', '=', 'hospital_branch__details.id')
-        ->select('*', DB::raw("DATE_FORMAT(job_offers.created_at, '%d-%M-%y') as posted_at"))->where(['job_offers.added_by' => $request->added_by, 'job_offers.position_offered' => $request->title])->get();
+            ->join('hospital_branch__details', 'job_offers.branch_id', '=', 'hospital_branch__details.id')
+            ->select('*', DB::raw("DATE_FORMAT(job_offers.created_at, '%d-%M-%y') as posted_at"))->where(['job_offers.added_by' => $request->added_by, 'job_offers.position_offered' => $request->title])->get();
         return response()->json(["message" => "Job List", 'list' => $users, "code" => 200]);
     }
 
     public function getCompanyJobApprovalList(Request $request)
     {
         $users = DB::table('job_offers')
-        ->join('hospital_branch__details', 'job_offers.branch_id', '=', 'hospital_branch__details.id')
-        ->join('job_companies', 'job_offers.company_id', '=', 'job_companies.id')
-        ->select('*','hospital_branch__details.id as idbranch','job_offers.id as id','job_offers.status as status', DB::raw("DATE_FORMAT(job_offers.created_at, '%d-%M-%y') as posted_at"))->where(['job_offers.added_by' => $request->added_by, 'job_offers.company_id' => $request->company_id])->get();
-        $company=DB::table('job_companies')->select('company_name')->where('id',$request->company_id)->first();
-        return response()->json(["message" => "Job List", 'list' => $users,"companyname"=>$company, "code" => 200]);
+            ->join('hospital_branch__details', 'job_offers.branch_id', '=', 'hospital_branch__details.id')
+            ->join('job_companies', 'job_offers.company_id', '=', 'job_companies.id')
+            ->select('*', 'hospital_branch__details.id as idbranch', 'job_offers.id as id', 'job_offers.status as status', DB::raw("DATE_FORMAT(job_offers.created_at, '%d-%M-%y') as posted_at"))->where(['job_offers.added_by' => $request->added_by, 'job_offers.company_id' => $request->company_id])->get();
+        $company = DB::table('job_companies')->select('company_name')->where('id', $request->company_id)->first();
+        return response()->json(["message" => "Job List", 'list' => $users, "companyname" => $company, "code" => 200]);
     }
 
     public function setStatus(Request $request)
@@ -210,7 +216,7 @@ class JobOfferController extends Controller
     public function jobRecordList()
     {
         $result = [];
-        $list = JobOffers::select('id','position_offered', 'duration_of_employment', 'position_location_1', 'salary_offered', 'work_schedule', 'company_id', 'job_availability')
+        $list = JobOffers::select('id', 'position_offered', 'duration_of_employment', 'position_location_1', 'salary_offered', 'work_schedule', 'company_id', 'job_availability')
             ->get()->toArray();
         if (count($list) > 0) {
             foreach ($list as $k => $v) {
@@ -285,5 +291,112 @@ class JobOfferController extends Controller
             }
         }
         return response()->json(["message" => "Job Request Search List!", "list" => $result,  "code" => 200]);
+    }
+
+    public function getSEForm(Request $request)
+    {
+        $patient_id = $request->patient_id;
+        $patient = PatientRegistration::select('name_asin_nric', 'nric_no', 'passport_no')->where('id', $patient_id)->get();
+        $user = User::select('name', 'role')->where('id', $request->added_by)->get();
+        $response = [
+            'patient_name' => $patient[0]['name_asin_nric'],
+            'nric_no' => ($patient[0]['nric_no']) ? $patient[0]['nric_no'] : $patient[0]['passport_no'],
+            'date' => date('d/m/Y'),
+            'user_name' => $user[0]['name'],
+            'designation' => $user[0]['role']
+        ];
+        return response()->json(["message" => "SE Consent Form", "list" => $response,  "code" => 200]);
+    }
+
+    public function setSEConsentForm(Request $request)
+    {
+        SEConsentForm::create([
+            'patient_id' => $request->patient_id,
+            'added_by' => $request->added_by,
+            'consent_for_participation' => $request->consent_for_participation,
+            'consent_for_disclosure' => $request->consent_for_disclosure,
+            'created_at' => date('Y-m-d')
+        ]);
+        return response()->json(["message" => "Created", "code" => 200]);
+    }
+
+    public function setCPSReferralForm(Request $request)
+    {
+        CPSReferralForm::create([
+            'patient_id' => $request->patient_id,
+            'added_by' => $request->added_by,
+            'treatment_needs_individual' => $request->treatment_needs_individual,
+            'treatment_needs_medication' => $request->treatment_needs_medication,
+            'treatment_needs_support' => $request->treatment_needs_support,
+            'location_of_service' => $request->location_of_service,
+            'type_of_diagnosis' => $request->type_of_diagnosis,
+            'category_of_services' => $request->category_of_services,
+            'services' => $request->services,
+            'complexity_of_services' => $request->complexity_of_services,
+            'outcome' => $request->outcome,
+            'icd_9_code' => $request->icd_9_code,
+            'icd_9_subcode' => $request->icd_9_subcode,
+            'medication_referrer_name' => $request->medication_referrer_name,
+            'medication_referrer_designation' => $request->medication_referrer_designation,
+            'created_at' => date('Y-m-d')
+        ]);
+        return response()->json(["message" => "Created", "code" => 200]);
+    }
+
+    public function setLASERReferralForm(Request $request)
+    {
+        LASERAssesmenForm::create([
+            'patient_id' => $request->patient_id,
+            'added_by' => $request->added_by,
+            'pre_contemplation' => $request->pre_contemplation,
+            'contemplation' => $request->contemplation,
+            'action' => $request->action,
+            'location_of_service' => $request->location_of_service,
+            'type_of_diagnosis' => $request->type_of_diagnosis,
+            'category_of_services' => $request->category_of_services,
+            'services' => $request->services,
+            'complexity_of_services' => $request->complexity_of_services,
+            'outcome' => $request->outcome,
+            'icd_9_code' => $request->icd_9_code,
+            'icd_9_subcode' => $request->icd_9_subcode,
+            'medication_prescription' => $request->medication_prescription,
+            'created_at' => date('Y-m-d')
+        ]);
+        return response()->json(["message" => "Created", "code" => 200]);
+    }
+
+    public function setPatientCarePlan(Request $request)
+    {
+        PatientCarePaln::create([
+            'patient_id' => $request->patient_id,
+            'added_by' => $request->added_by,
+            'plan_date' => $request->plan_date,
+            'reason_of_review' => $request->reason_of_review,
+            'diagnosis' => $request->diagnosis,
+            'medication_oral' => $request->medication_oral,
+            'medication_depot' => $request->medication_depot,
+            'medication_im' => $request->medication_im,
+            'background_history' => $request->background_history,
+            'staff_incharge_dr' => $request->staff_incharge_dr,
+            'treatment_plan' => $request->treatment_plan,
+            'next_review_date' => $request->next_review_date,
+            'case_manager_date' => $request->case_manager_date,
+            'case_manager_name' => $request->case_manager_name,
+            'case_manager_designation' => $request->case_manager_designation,
+            'specialist_incharge_date' => $request->specialist_incharge_date,
+            'specialist_incharge_name' => $request->specialist_incharge_name,
+            'specialist_incharge_designation' => $request->specialist_incharge_designation,
+            'location_of_service' => $request->location_of_service,
+            'type_of_diagnosis' => $request->type_of_diagnosis,
+            'category_of_services' => $request->category_of_services,
+            'services' => $request->services,
+            'complexity_of_services' => $request->complexity_of_services,
+            'outcome' => $request->outcome,
+            'icd_9_code' => $request->icd_9_code,
+            'icd_9_subcode' => $request->icd_9_subcode,
+            'medication_prescription' => $request->medication_prescription,
+            'created_at' => date('Y-m-d')
+        ]);
+        return response()->json(["message" => "Created", "code" => 200]);
     }
 }

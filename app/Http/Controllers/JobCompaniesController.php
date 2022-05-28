@@ -90,4 +90,9 @@ class JobCompaniesController extends Controller
             return response()->json(["message" => $e->getMessage(), "code" => 200]);
         }
     }
+
+    public function getInterviewerList()
+    {
+        return JobCompanies::select('id','contact_name','contact_name','contact_number')->get();
+    }
 }

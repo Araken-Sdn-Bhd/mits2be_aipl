@@ -57,7 +57,11 @@ class AttemptTestController extends Controller
                                 'result' => $this->prepareCBIResult($vv)
                             ];
                         if ($request->test_name != 'bdi' && $request->test_name != 'bai' && $request->test_name != 'atq' && $request->test_name != 'psp' && $request->test_name != 'si') {
-                            $level[$kk] = ($request->test_name == 'cbi' || $request->test_name == 'whodas') ? $this->prepareCBIResult($vv) : $this->preparePHQ9Result($vv);
+                            if ($request->test_name == 'cbi' || $request->test_name == 'whodas') {
+                                $level[$kk] =  ['score' => $this->prepareCBIResult($vv), 'level' => $this->prepareCBILevel($this->prepareCBIResult($vv), $request->test_name)];
+                            } else {
+                                $level[$kk] = $this->preparePHQ9Result($vv);
+                            }
                         }
                         if ($request->test_name == 'phq9') {
                             $level['PHQ9Score'] = $this->getPHQ9ResultValue($vv);
@@ -110,6 +114,30 @@ class AttemptTestController extends Controller
             $result += $v;
         }
         return $result;
+    }
+    public function prepareCBILevel($value, $test)
+    {
+        if ($test == 'cbi') {
+            if ($value >= 0 && $value <= 5) {
+                return 'Normal';
+            } else if ($value >= 6 && $value <= 12) {
+                return 'Moderate';
+            } else if ($value >= 13 && $value <= 18) {
+                return 'High Depression';
+            } else if ($value >= 19 && $value <= 30) {
+                return 'Severe';
+            }
+        } else {
+            if ($value >= 0 && $value <= 14) {
+                return 'Normal';
+            } else if ($value >= 15 && $value <= 29) {
+                return 'Moderate';
+            } else if ($value >= 30 && $value <= 45) {
+                return 'High Depression';
+            } else if ($value >= 46 && $value <= 63) {
+                return 'Severe';
+            }
+        }
     }
     public function preparePHQ9Result($resultSet)
     {
@@ -236,16 +264,17 @@ class AttemptTestController extends Controller
         return $result;
     }
 
-    public function testHistory(Request $request){
+    public function testHistory(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'patient_id' => 'required|integer',
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        $list = TestResult::select(DB::raw('SUM(result) AS result'),'test_name',DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as date")) 
-        ->where('patient_id',$request->patient_id)->groupBy('created_at','test_name')->get();  
-    return response()->json(["message" => "Test List.", 'list' => $list, "code" => 200]);
+        $list = TestResult::select(DB::raw('SUM(result) AS result'), 'test_name', DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as date"))
+            ->where('patient_id', $request->patient_id)->groupBy('created_at', 'test_name')->get();
+        return response()->json(["message" => "Test List.", 'list' => $list, "code" => 200]);
     }
 
     public function getBDINBAIResultValue($value, $testName)

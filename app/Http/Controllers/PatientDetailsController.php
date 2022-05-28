@@ -118,4 +118,30 @@ class PatientDetailsController extends Controller
         }
         return response()->json(["message" => "Patients List", 'list' => $result, "code" => 200]);
     }
+
+    public function patientDetails(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'patient_id' => 'required|integer'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+
+        $details = PatientRegistration::select('id', 'patient_mrn', 'sex', 'birth_date', 'mobile_no', 'nric_no', 'citizenship', 'name_asin_nric', 'marital_id')->where('id', $request->patient_id)->get();
+        $result = [];
+        $result['id'] = $details[0]->id;
+        $result['patient_name'] = $details[0]->name_asin_nric;
+        $result['patient_mrn'] = $details[0]->patient_mrn;
+        $result['nric'] = $details[0]->nric_no;
+        $result['birth_date'] = date('d/m/Y', strtotime($details[0]->birth_date));
+        $result['age'] = date_diff(date_create($details[0]->birth_date), date_create('today'))->y;
+        $result['gender'] = $this->getGeneralSettingValue($details[0]->sex);
+        $result['gender_id'] = $details[0]->sex;
+        $result['marital_status'] = $this->getGeneralSettingValue($details[0]->marital_id);
+        $result['contact_no'] = $details[0]->mobile_no;
+        $result['nationality'] = ($details[0]->citizenship == 0) ? 'Malaysian' : (($details[0]->citizenship == 1) ? 'Permanent Resident' : 'Foreigner');
+
+        return response()->json(["message" => "Patient Details", 'details' => $result, "code" => 200]);
+    }
 }

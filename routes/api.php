@@ -56,6 +56,9 @@ use App\Http\Controllers\ConsultationDischargeNoteController;
 use App\Http\Controllers\PsychologyReferralController;
 use App\Http\Controllers\PatientRiskProtectiveAnswerController;
 use App\Http\Controllers\JobCompaniesController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\VonAppointmentController;
+use App\Http\Controllers\AreasOfInvolvementController;
 use GuzzleHttp\Middleware;
 
 /*
@@ -441,6 +444,7 @@ Route::group(['prefix' => 'patient'], function () {
     Route::get('/list', [PatientDetailsController::class, 'getPatientClinicalList']);
     Route::post('/search', [PatientDetailsController::class, 'serachPatient']);
     Route::post('/remove', [PatientDetailsController::class, 'remove']);
+    Route::post('/detail', [PatientDetailsController::class, 'patientDetails']);
 });
 Route::group(['prefix' => 'test-result-suicidal-risk'], function () {
     Route::post('/add', [TestResultSuicidalRiskController::class, 'store']);
@@ -470,4 +474,27 @@ Route::group(['prefix' => 'intervention-company'], function () {
 Route::group(['prefix' => 'intervention'], function () {
     Route::get('/job-record', [JobOfferController::class, 'jobRecordList']);
     Route::post('/job-record-search', [JobOfferController::class, 'jobRecordSearchList']);
+    Route::post('/get-se-form', [JobOfferController::class, 'getSEForm']);
+    Route::post('/se-form', [JobOfferController::class, 'setSEConsentForm']);
+    Route::post('/cps-form', [JobOfferController::class, 'setCPSReferralForm']);
+    Route::Post('/laser-form', [JobOfferController::class, 'setLASERReferralForm']);
+    Route::Post('/patient-care-plan', [JobOfferController::class, 'setPatientCarePlan']);
+});
+Route::group(['prefix' => 'report'], function () {
+    Route::post('/shharp', [ReportController::class, 'getSharpReport']);
+    //Route::post('/job-record-search', [JobOfferController::class, 'jobRecordSearchList']);
+});
+Route::group(['prefix' => 'von-appointment'], function () {
+    Route::post('/add', [VonAppointmentController::class, 'store']);
+    Route::post('/geyVonAppointmentById', [VonAppointmentController::class, 'geyVonAppointmentById']);
+    Route::post('/update', [VonAppointmentController::class, 'update']);
+    Route::post('/list', [VonAppointmentController::class, 'listAppointment']);
+});
+
+Route::group(['prefix' => 'assigned-interviwer'], function () {
+    Route::get('/list', [JobCompaniesController::class, 'getInterviewerList']);
+});
+Route::group(['prefix' => 'areas-of-involvement'], function () {
+    Route::post('/add', [AreasOfInvolvementController::class, 'add']);
+    Route::get('/list', [AreasOfInvolvementController::class, 'getAreasOfInvolvementList']);
 });
