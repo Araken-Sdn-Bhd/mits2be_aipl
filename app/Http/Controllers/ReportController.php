@@ -9,6 +9,10 @@ use App\Models\PatientRiskProtectiveAnswer;
 use App\Models\SharpRegistrationSelfHarmResult;
 use App\Models\SharpRegistrationFinalStep;
 use App\Models\PatientRegistration;
+use App\Models\Postcode;
+use App\Models\State;
+use App\Models\PatientShharpRegistrationRiskProtective;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
@@ -16,58 +20,171 @@ class ReportController extends Controller
     {
         // $response = PatientShharpRegistrationHospitalManagement::where(['main_psychiatric_diagnosis' => $request->diagnosis])
         //     ->whereBetween('created_at', [$request->fromDate, $request->toDate]);
-        $response = SharpRegistrationFinalStep::whereBetween('created_at', [$request->fromDate, $request->toDate]);
+
+        $response = SharpRegistrationFinalStep::whereBetween('harm_date', [$request->fromDate, $request->toDate])->where('status', '1')->get()->toArray();
+        //dd(($response));
+        $rftxt = '';
+        $ptxt = '';
         $patient = [];
+        if ($response && $request->diagnosis) {
+            $unset = [];
+            foreach ($response as $key => $val) {
+                if ($val['hospital_mgmt']) {
+                    $rf = $val['hospital_mgmt'];
+                    $rsk = PatientShharpRegistrationHospitalManagement::where(['main_psychiatric_diagnosis' => $request->diagnosis])->where('id', $rf)->get()->pluck('patient_mrn_no')->toArray();
+                    if ($rsk) {
+                        $patient[] = $rsk[0];
+                    } else {
+                        $unset[] = $key;
+                    }
+                } else {
+                    $unset[] = $key;
+                }
+            }
 
-        if ($response->count() > 0 && $request->diagnosis) {
-            foreach ($response->get() as $key => $val) {
-                $rf = explode('^', $val['risk']);
-                $rsk = PatientShharpRegistrationHospitalManagement::where(['main_psychiatric_diagnosis' => $request->diagnosis])->whereIn('id', $rf)->get()->pluck('patient_mrn_no')->toArray();
-                if (count($rsk) > 0) {
-                    $patient[] = $rsk[0];
+            if ($unset) {
+                foreach ($unset as $u) {
+                    unset($response[$u]);
+                }
+            }
+        }
+        //dd($response);
+        if ($response && $request->risk_factor) {
+            $unset = [];
+            foreach ($response as $key => $val) {
+                if ($val['risk']) {
+                    $rf = explode('^', $val['risk']);
+                    $rsk = PatientRiskProtectiveAnswer::where(['factor_type' => 'risk', 'QuestionId' => $request->risk_factor, 'Answer' => 'Yes'])->whereIn('id', $rf)->get()->pluck('patient_mrn_no')->toArray();
+                    if ($rsk) {
+                        $patient[] = $rsk[0];
+                    } else {
+                        $unset[] = $key;
+                    }
+                } else {
+                    $unset[] = $key;
+                }
+            }
+            if ($unset) {
+                foreach ($unset as $u) {
+                    unset($response[$u]);
+                }
+            }
+            $rftext = PatientShharpRegistrationRiskProtective::where('id', $request->risk_factor)->get()->pluck('Question')->toArray();
+            $rftxt = $rftext[0];
+        }
+        if ($response && $request->protective_factor) {
+            $unset = [];
+            foreach ($response as $key => $val) {
+                if ($val['protective']) {
+                    $rf = explode('^', $val['protective']);
+                    $rsk = PatientRiskProtectiveAnswer::where(['factor_type' => 'protective', 'QuestionId' => $request->protective_factor, 'Answer' => 'Yes'])->whereIn('id', $rf)->get()->pluck('patient_mrn_no')->toArray();
+                    if ($rsk) {
+                        $patient[] = $rsk[0];
+                    } else {
+                        $unset[] = $key;
+                    }
+                } else {
+                    $unset[] = $key;
+                }
+            }
+            if ($unset) {
+                foreach ($unset as $u) {
+                    unset($response[$u]);
+                }
+            }
+            $ptxtt = PatientShharpRegistrationRiskProtective::where('id', $request->protective_factor)->get()->pluck('Question')->toArray();
+            $ptxt = $ptxtt[0];
+        }
+        //dd($response);
+        if ($response && $request->self_harm) {
+            $unset = [];
+            foreach ($response as $key => $val) {
+                if ($val['protective']) {
+                    $rf = explode('^', $val['self_harm']);
+                    $sh = SharpRegistrationSelfHarmResult::whereIn('id', $rf);
+                    if ($request->self_harm) {
+                        $sh->where(['section' => 'Method of Self-Harm'])->Where('section_value', 'like', '%' . $request->self_harm . '%');
+                    }
+
+                    $ssh = $sh->get()->pluck('patient_id')->toArray();
+                    if (count($ssh) > 0) {
+                        $patient[] = $ssh[0];
+                    } else {
+                        $unset[] = $key;
+                    }
+                } else {
+                    $unset[] = $key;
+                }
+            }
+
+            if ($unset) {
+                foreach ($unset as $u) {
+                    unset($response[$u]);
+                }
+            }
+        }
+        if ($response && $request->suicidal_intent) {
+            $unset = [];
+            foreach ($response as $key => $val) {
+                if ($val['protective']) {
+                    $rf = explode('^', $val['self_harm']);
+                    $sh = SharpRegistrationSelfHarmResult::whereIn(
+                        'id',
+                        $rf
+                    );
+
+                    if ($request->suicidal_intent) {
+                        $sh->where(['section' => 'Suicidal Intent'])->Where('section_value', 'like', '%' . $request->suicidal_intent . '"%');
+                    }
+                    $ssh = $sh->get()->pluck('patient_id')->toArray();
+                    if (count($ssh) > 0) {
+                        $patient[] = $ssh[0];
+                    } else {
+                        $unset[] = $key;
+                    }
+                } else {
+                    $unset[] = $key;
+                }
+            }
+
+            if ($unset) {
+                foreach ($unset as $u) {
+                    unset($response[$u]);
+                }
+            }
+        }
+        if ($response && $request->idea_about_method) {
+            $unset = [];
+            foreach ($response as $key => $val) {
+                if ($val['protective']) {
+                    $rf = explode('^', $val['self_harm']);
+                    $sh = SharpRegistrationSelfHarmResult::whereIn(
+                        'id',
+                        $rf
+                    );
+
+                    if ($request->idea_about_method) {
+                        $sh->where(['section' => 'How did Patient Get Idea about Method'])->Where('section_value', 'like', '%' . $request->idea_about_method . '%');
+                    }
+                    $ssh = $sh->get()->pluck('patient_id')->toArray();
+                    if (count($ssh) > 0) {
+                        $patient[] = $ssh[0];
+                    } else {
+                        $unset[] = $key;
+                    }
+                } else {
+                    $unset[] = $key;
+                }
+            }
+
+            if ($unset) {
+                foreach ($unset as $u) {
+                    unset($response[$u]);
                 }
             }
         }
 
-        if ($response->count() > 0 && $request->risk_factor) {
-            foreach ($response->get() as $key => $val) {
-                $rf = explode('^', $val['risk']);
-                $rsk = PatientRiskProtectiveAnswer::where(['factor_type' => 'risk', 'QuestionId' => $request->risk_factor, 'Answer' => 'Yes'])->whereIn('id', $rf)->get()->pluck('patient_mrn_id')->toArray();
-                if (count($rsk) > 0) {
-                    $patient[] = $rsk[0];
-                }
-            }
-        }
-
-        if ($response->count() > 0 && $request->protective_factor) {
-            foreach ($response->get() as $key => $val) {
-                $rf = explode('^', $val['protective']);
-                $rsk = PatientRiskProtectiveAnswer::where(['factor_type' => 'protective', 'QuestionId' => $request->protective_factor, 'Answer' => 'Yes'])->whereIn('id', $rf)->get()->pluck('patient_mrn_id')->toArray();
-                if (count($rsk) > 0) {
-                    $patient[] = $rsk[0];
-                }
-            }
-        }
-
-        if ($response->count() > 0 && ($request->self_harm || $request->suicidal_intent || $request->idea_about_method)) {
-            foreach ($response->get() as $key => $val) {
-                $rf = explode('^', $val['self_harm']);
-                $sh = SharpRegistrationSelfHarmResult::whereIn('id', $rf);
-                if ($request->self_harm) {
-                    $sh->where(['section' => 'Method of Self-Harm'])->Where('section_value', 'like', '%' . $request->self_harm . '%');
-                }
-                if ($request->suicidal_intent) {
-                    $sh->where(['section' => 'Suicidal Intent'])->Where('section_value', 'like', '%' . $request->suicidal_intent . '%');
-                }
-                if ($request->idea_about_method) {
-                    $sh->where(['section' => 'How did Patient Get Idea about Method'])->Where('section_value', 'like', '%' . $request->idea_about_method . '%');
-                }
-                $ssh = $sh->get()->pluck('patient_id')->toArray();
-                if (count($ssh) > 0) {
-                    $patient[] = $ssh[0];
-                }
-            }
-        }
+        // dd($response);
 
         $patientArray = array_unique($patient);
 
@@ -107,42 +224,57 @@ class ReportController extends Controller
         }
 
 
-        $patientDetails =  PatientRegistration::whereIn('id', $patientArray)->where($demo)->get();
+        $patientDetails =  PatientRegistration::whereIn('id', $patientArray)->where($demo)->get()->toArray();
         $result = [];
-        $result[0] = [
-            'DATE' => '1/5/22',
-            'TIME' => '9:00:00 AM',
-            'NRIC_NO/PASSPORT_NO' => '911121-22-2232',
-            'Name' => 'AMIR BIN FALAH',
-            'ADDRESS' => 'No 42 ',
-            'CITY' => 'kuala lumpur',
-            'STATE' => 'kuala lumpur',
-            'POSTCODE' => '40432',
-            'PHONE NUMBER' => '0123456789',
-            'DATE OF BIRTH' => '22/11/1978',
-            'RISK FACTOR' => 'Psychiatric Disorder',
-            'PROTECTIVE FACTOR' => 'Realistic life goals or future plans',
-            'METHOD OF SELF HARM' => 'Drowning',
-            'IDEA OF METHOD' => 'Printed media',
-            'SUCIDAL INTENT' => 'Handwritten'
-        ];
-        $result[1] = [
-            'DATE' => '5/5/22',
-            'TIME' => '11:00:00 AM',
-            'NRIC_NO/PASSPORT_NO' => '900021-22-2232',
-            'Name' => 'Tan Jing Hui',
-            'ADDRESS' => 'No 499 ',
-            'CITY' => 'kuala lumpur',
-            'STATE' => 'kuala lumpur',
-            'POSTCODE' => '40432',
-            'PHONE NUMBER' => '0866656789',
-            'DATE OF BIRTH' => '22/11/1991',
-            'RISK FACTOR' => 'Psychiatric Disorder',
-            'PROTECTIVE FACTOR' => 'Realistic life goals or future plans',
-            'METHOD OF SELF HARM' => 'Drowning',
-            'IDEA OF METHOD' => 'Printed media',
-            'SUCIDAL INTENT' => 'Handwritten'
-        ];
+        if ($patientDetails) {
+            // dd($patientDetails);
+            $patientInfo = [];
+            foreach ($patientDetails as $key => $val) {
+                $patientInfo[$val['id']]['Name'] = $val['name_asin_nric'];
+                $patientInfo[$val['id']]['NRIC_NO_PASSPORT_NO'] = ($val['nric_no']) ? $val['nric_no'] : $val['passport_no'];
+                $patientInfo[$val['id']]['ADDRESS'] = $val['address1'] . ' ' . $val['address2'] . ' ' . $val['address3'];
+                $patientInfo[$val['id']]['PHONE_NUMBER'] = $val['mobile_no'];
+                $patientInfo[$val['id']]['DATE_OF_BIRTH'] = date('d/m/Y', strtotime($val['birth_date']));
+                $pc = Postcode::where(['postcode' => $val['postcode']])->get()->toArray();
+                $st = State::where(['id' => $val['state_id']])->get()->toArray();;
+                $patientInfo[$val['id']]['CITY'] = ($pc) ? $pc[0]['city_name'] : 'NA';
+                $patientInfo[$val['id']]['STATE'] = ($st) ? $st[0]['state_name'] : 'NA';
+                $patientInfo[$val['id']]['POSTCODE'] = ($pc) ? $pc[0]['postcode'] : 'NA';
+            }
+            // dd($response);
+
+            $index = 0;
+            foreach ($response as $k => $v) {
+                $result[$index]['DATE'] = date('d/m/y', strtotime($v['harm_date']));
+                $result[$index]['Time'] = date('h:i A', strtotime($v['harm_time']));
+                $result[$index]['NRIC_NO_PASSPORT_NO'] = $patientInfo[$v['patient_id']]['NRIC_NO_PASSPORT_NO'];
+                $result[$index]['Name'] = $patientInfo[$v['patient_id']]['Name'];
+                $result[$index]['ADDRESS'] = $patientInfo[$v['patient_id']]['ADDRESS'];
+                $result[$index]['CITY'] = $patientInfo[$v['patient_id']]['CITY'];
+                $result[$index]['STATE'] = $patientInfo[$v['patient_id']]['STATE'];
+                $result[$index]['POSTCODE'] = $patientInfo[$v['patient_id']]['POSTCODE'];
+                $result[$index]['PHONE_NUMBER'] = $patientInfo[$v['patient_id']]['PHONE_NUMBER'];
+                $result[$index]['DATE_OF_BIRTH'] = $patientInfo[$v['patient_id']]['DATE_OF_BIRTH'];
+                $result[$index]['RISK_FACTOR'] = $rftxt;
+                $result[$index]['PROTECTIVE_FACTOR'] = $ptxt;
+                $result[$index]['METHOD_OF_SELF_HARM'] = $request->self_harm;
+                $result[$index]['SUCIDAL_INTENT'] = $request->suicidal_intent;
+                $result[$index]['IDEA_OF_METHOD'] = $request->idea_about_method;
+
+                $index++;
+            }
+        }
+
+        // Excel::download('report', 'xx', function ($excel) use ($result) {
+
+        //     $excel->sheet('SHHARP', function ($sheet) use ($result) {
+
+        //         $sheet->fromArray(array(
+        //             $result
+        //         ));
+        //     });
+        // });
+
         return response()->json(["message" => "Patient Details", 'result' => $result, "code" => 200]);
     }
 }

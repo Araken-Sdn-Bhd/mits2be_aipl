@@ -23,6 +23,7 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'role'
     ];
 
     /**
@@ -52,11 +53,13 @@ class User extends Authenticatable implements JWTSubject
     {
         return [];
     }
-    public function roles(){
+    public function roles()
+    {
         return $this->belongsToMany(Roles::class, 'role_user', 'user_id', 'role_id');
     }
 
-    public function modules(){
-        return $this->hasMany(UserModules::class,'user_id','id');
+    public function modules()
+    {
+        return $this->hasMany(UserModules::class, 'user_id', 'id');
     }
 }

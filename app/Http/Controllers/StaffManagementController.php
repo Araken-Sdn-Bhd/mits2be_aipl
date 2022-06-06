@@ -8,6 +8,9 @@ use App\Models\Mentari_Staff_Transfer;
 use Exception;
 use Validator;
 use Illuminate\Support\Facades\DB;
+use App\Models\User;
+use App\Models\Roles;
+use App\Models\Designation;
 
 class StaffManagementController extends Controller
 {
@@ -27,7 +30,7 @@ class StaffManagementController extends Controller
             'is_incharge' => 'required|string',
             'designation_period_start_date' => 'required',
             'designation_period_end_date' => 'required',
-            //'mentari_location' => 'required|integer',
+            // 'mentari_location' => 'required|integer',
             'start_date' => 'required',
             'end_date' => 'required',
             'document' => 'mimes:png,jpg,jpeg,pdf|max:10240',
@@ -53,7 +56,7 @@ class StaffManagementController extends Controller
                 'is_incharge' =>  $request->is_incharge,
                 'designation_period_start_date' =>  $request->designation_period_start_date,
                 'designation_period_end_date' =>  $request->designation_period_end_date,
-                //'mentari_location' =>  $request->mentari_location,
+               // 'mentari_location' =>  $request->branch_id,
                 'start_date' =>  $request->start_date,
                 'end_date' =>  $request->end_date,
                 'document' =>  $request->document,
@@ -76,20 +79,30 @@ class StaffManagementController extends Controller
                 'is_incharge' =>  $request->is_incharge,
                 'designation_period_start_date' =>  $request->designation_period_start_date,
                 'designation_period_end_date' =>  $request->designation_period_end_date,
-                //'mentari_location' =>  $request->mentari_location,
+                //'mentari_location' => $request->branch_id,
                 'start_date' =>  $request->start_date,
                 'end_date' =>  $request->end_date,
                 'document' =>  $isUploaded->getData()->path,
                 'status' => "1"
             ];
         }
-
+//dd($staffadd);
         try {
-            $HOD = StaffManagement::firstOrCreate($staffadd);
+            $check = StaffManagement::where('email', $request->email)->count();
+
+            if ($check == 0) {
+                StaffManagement::create($staffadd);
+                $role = Designation::select('designation_name')->where('id', $request->designation_id)->get();
+                //dd($role[0]['role_name']);
+                User::create(
+                    ['name' => $request->name, 'email' => $request->email, 'role' => $role[0]['designation_name'], 'password' => bcrypt('password@123')]
+                );
+                return response()->json(["message" => "Record Created Successfully!", "code" => 200]);
+            }
         } catch (Exception $e) {
             return response()->json(["message" => $e->getMessage(), 'Staff' => $staffadd, "code" => 200]);
         }
-        return response()->json(["message" => "Record Created Successfully!", "code" => 200]);
+        return response()->json(["message" => "Staff already exists!", "code" => 200]);
     }
 
     public function getStaffManagementList()

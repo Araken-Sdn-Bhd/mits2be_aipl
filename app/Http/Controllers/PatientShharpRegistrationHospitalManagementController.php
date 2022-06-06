@@ -47,7 +47,7 @@ class PatientShharpRegistrationHospitalManagementController extends Controller
         }
         //dd($riskArray);
         $module = [];
-        if ($riskArray == '') {
+        if ($riskArray == 0) {
             $module = [
                 'added_by' => $request->added_by,
                 'patient_mrn_no' => $request->patient_id,
@@ -97,7 +97,7 @@ class PatientShharpRegistrationHospitalManagementController extends Controller
         }
 
         try {
-            if ($riskArray == '') {
+            if ($riskArray == 0) {
                 DB::beginTransaction();
                 $suicideRiskId = PatientShharpRegistrationHospitalManagement::create($module);
                 DB::commit();

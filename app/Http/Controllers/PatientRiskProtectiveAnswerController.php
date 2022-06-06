@@ -10,6 +10,7 @@ use App\Models\SharpRegistrationFinalStep;
 use App\Models\SharpRegistrationSuicideRiskResult;
 use App\Models\PatientShharpRegistrationHospitalManagement;
 use App\Models\PatientShharpRegistrationDataProducer;
+use App\Models\PatientShharpRegistrationRiskProtective;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -222,9 +223,14 @@ class PatientRiskProtectiveAnswerController extends Controller
             if ($self_harm[0] != '')
                 $riskArray = explode('^', $self_harm[0]);
         }
-        //dd($riskArray);
+        $harmTime = '';
+        $harmDate = '';
         $insertArray = [];
         foreach ($result as $key => $val) {
+            if (array_keys($val)[0] === 'CURRENT SELF HARM ACT') {
+                $harmTime = $val['CURRENT SELF HARM ACT']['Time'];
+                $harmDate = $val['CURRENT SELF HARM ACT']['Date'];
+            }
             if (count($riskArray) == 0) {
                 $insertArray[] = [
                     'added_by' => $request->added_by,
@@ -235,7 +241,6 @@ class PatientRiskProtectiveAnswerController extends Controller
                     'updated_at' => date('Y-m-d H:i:s')
                 ];
             } else {
-                //      dd('dd');
                 SharpRegistrationSelfHarmResult::where(['id' => $riskArray[$key]])->update([
                     'added_by' => $request->added_by,
                     'patient_id' => $request->patient_id,
@@ -245,7 +250,6 @@ class PatientRiskProtectiveAnswerController extends Controller
                 ]);
             }
         }
-        //dd($insertArray);
         try {
             if (count($riskArray) == 0) {
                 DB::beginTransaction();
@@ -263,6 +267,8 @@ class PatientRiskProtectiveAnswerController extends Controller
                         'risk' => '',
                         'protective' => '',
                         'self_harm' => implode('^', $insertedIds),
+                        'harm_time' => $harmTime,
+                        'harm_date' => $harmDate,
                         'suicide_risk' => '',
                         'hospital_mgmt' => '',
                         'status' => '0',
@@ -271,10 +277,12 @@ class PatientRiskProtectiveAnswerController extends Controller
                     $insertID = $id->id;
                     return response()->json(["message" => "Data Inserted Successfully!", 'id' => $insertID, "code" => 201]);
                 } else {
-                    SharpRegistrationFinalStep::where('id', $sri)->update(['self_harm' => implode('^', $insertedIds)]);
+                    //dd($harmDate);
+                    SharpRegistrationFinalStep::where('id', $sri)->update(['self_harm' => implode('^', $insertedIds), 'harm_time' => $harmTime, 'harm_date' => $harmDate]);
                     return response()->json(["message" => "Data Updated Successfully!", 'id' => $sri, "code" => 201]);
                 }
             } else {
+                SharpRegistrationFinalStep::where('id', $sri)->update(['self_harm' => implode('^', $riskArray), 'harm_time' => $harmTime, 'harm_date' => $harmDate]);
                 return response()->json(["message" => "Data Updated Successfully!", 'id' => $sri, "code" => 201]);
             }
         } catch (Exception $e) {
@@ -306,7 +314,7 @@ class PatientRiskProtectiveAnswerController extends Controller
         $insertArray = [];
 
 
-        if ($riskArray == '') {
+        if ($riskArray == 0) {
             $insertArray = [
                 'added_by' => $request->added_by,
                 'patient_id' => $request->patient_id,
@@ -323,9 +331,9 @@ class PatientRiskProtectiveAnswerController extends Controller
             ]);
         }
 
-        //dd($insertArray);
+        // dd($insertArray);
         try {
-            if ($riskArray == '') {
+            if ($riskArray == 0) {
                 DB::beginTransaction();
                 $suicideRiskId = SharpRegistrationSuicideRiskResult::create($insertArray);
                 DB::commit();
@@ -394,22 +402,38 @@ class PatientRiskProtectiveAnswerController extends Controller
             $riskData = PatientRiskProtectiveAnswer::select('QuestionId', 'Answer', 'Answer_text')->whereIn('id', $risk)->get()->toArray();
             if ($riskData) {
                 foreach ($riskData as $k => $v) {
-                    $riskArray[$k] = ['questionId' => $v['QuestionId'], 'answer' => $v['Answer'], 'text' => $v['Answer_text']];
+                    $ques = PatientShharpRegistrationRiskProtective::where('id', $v['QuestionId'])->get();
+                    $riskArray[$k] = ['questionId' => $v['QuestionId'], 'Question_detail' => $ques, 'answer' => $v['Answer'], 'text' => $v['Answer_text']];
                 }
             }
             $protective = !empty($shharp[0]['protective']) ? explode('^', $shharp[0]['protective']) : [];
             $protectiveData = PatientRiskProtectiveAnswer::select('QuestionId', 'Answer', 'Answer_text')->whereIn('id', $protective)->get()->toArray();
             if ($protectiveData) {
                 foreach ($protectiveData as $k => $v) {
-                    $protectiveArray[$k] = ['questionId' => $v['QuestionId'], 'answer' => $v['Answer'], 'text' => $v['Answer_text']];
+                    $ques = PatientShharpRegistrationRiskProtective::where('id', $v['QuestionId'])->get();
+                    $protectiveArray[$k] = ['questionId' => $v['QuestionId'], 'Question_detail' => $ques, 'answer' => $v['Answer'], 'text' => $v['Answer_text']];
                 }
             }
             $selfharm = !empty($shharp[0]['self_harm']) ? explode('^', $shharp[0]['self_harm']) : [];
             $selfharmData = SharpRegistrationSelfHarmResult::select('section', 'section_value')->whereIn('id', $selfharm)->get()->toArray();
             if ($selfharmData) {
                 foreach ($selfharmData as $k => $v) {
+
                     $jsonDecode = json_decode($v['section_value'], true);
-                    //dd($jsonDecode);
+                    // dd($jsonDecode);
+                    if (array_key_exists('CURRENT SELF HARM ACT', $jsonDecode)) {
+                        $jsonDecode['CURRENT SELF HARM ACT']['Place_of_Occurance'] = $jsonDecode['CURRENT SELF HARM ACT']['Place of Occurance'];
+                    }
+                    if (array_key_exists('Method of Self-Harm', $jsonDecode)) {
+                        $jsonDecode['Method of Self-Harm']['Firearms_or_explosives'] = $jsonDecode['Method of Self-Harm']['Firearms or explosives'];
+                        $jsonDecode['Method of Self-Harm']['Cutting_or_Piercing'] = $jsonDecode['Method of Self-Harm']['Cutting or Piercing'];
+                        $jsonDecode['Method of Self-Harm']['Jumping_from_height'] = $jsonDecode['Method of Self-Harm']['Jumping from height'];
+                        $jsonDecode['Method of Self-Harm']['Overdose_Poisoning'] = $jsonDecode['Method of Self-Harm']['Overdose/Poisoning'];
+                        $jsonDecode['Method of Self-Harm']['Hanging_Suffocation'] = $jsonDecode['Method of Self-Harm']['Hanging/Suffocation'];
+                        $jsonDecode['Method of Self-Harm']['Fire_flames'] = $jsonDecode['Method of Self-Harm']['Fire/flames'];
+                    }
+
+
                     $selfharmArray[$k] = ['section' => $v['section'], 'section_value' => $jsonDecode[$v['section']]];
                 }
             }

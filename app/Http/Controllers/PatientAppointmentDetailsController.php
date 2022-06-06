@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\PatientAppointmentDetails;
 use App\Models\PatientRegistration;
 use App\Models\HospitalBranchTeamManagement;
+use App\Models\PsychiatryClerkingNote;
+use App\Models\PatientCounsellorClerkingNotes;
 use Exception;
 use Validator;
 use Illuminate\Support\Facades\DB;
@@ -339,5 +341,93 @@ class PatientAppointmentDetailsController extends Controller
 
         $result = ['next' => ((empty($next))  ? 'NA' : date('d/m/Y', strtotime($next[0]))), 'prev' => ((empty($prev)) ? 'NA' : date('d/m/Y', strtotime($prev[0])))];
         return response()->json(["message" => "Appointment List!", 'result' => $result, "code" => 200]);
+    }
+
+    public function updateTeamDoctor(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'added_by' => 'required|integer',
+            'appointment_id' => 'required|integer',
+            'assign_team' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+
+        PatientAppointmentDetails::where(
+            ['id' => $request->appointment_id]
+        )->update([
+            'appointment_status' => '1',
+            'added_by' => $request->added_by,
+            'assign_team' => $request->assign_team
+        ]);
+
+        return response()->json(["message" => "Assigned Team has been update Successfully!", "code" => 200]);
+    }
+    public function fetchViewHistoryList(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'patient_id' => 'required|integer'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+        $list=[];
+        $Psychiatry_Clerking_Note=[];
+        $Counsellor_Clerking_Note=[];
+        $Psychiatry_Clerking_Note = DB::table('psychiatry_clerking_note')
+            ->join('staff_management', 'psychiatry_clerking_note.added_by', '=', 'staff_management.id')
+            ->select(DB::raw("(CASE WHEN TIME(psychiatry_clerking_note.created_at) BETWEEN '00:00:00' AND '11:59:59' THEN DATE_FORMAT(psychiatry_clerking_note.created_at, '%h:%i AM')
+            ELSE DATE_FORMAT(psychiatry_clerking_note.created_at, '%h:%i PM')
+       END) as time"),DB::raw("DATE_FORMAT(psychiatry_clerking_note.created_at, '%d-%m-%Y') as date"),'psychiatry_clerking_note.status','psychiatry_clerking_note.id','staff_management.name',DB::raw("'PsychiatryClerkingNote' as type"),DB::raw("'Psychiatry Clerking Note' as section_name"))
+            ->where('psychiatry_clerking_note.patient_mrn_id', $request->patient_id)
+             ->orderBy('psychiatry_clerking_note.created_at', 'asc')
+            ->get();
+
+            $Counsellor_Clerking_Note = DB::table('patient_counsellor_clerking_notes')
+            ->join('staff_management', 'patient_counsellor_clerking_notes.added_by', '=', 'staff_management.id')
+            
+            ->select(DB::raw("(CASE WHEN TIME(patient_counsellor_clerking_notes.created_at) BETWEEN '00:00:00' AND '11:59:59' THEN DATE_FORMAT(patient_counsellor_clerking_notes.created_at, '%h:%i AM')
+            ELSE DATE_FORMAT(patient_counsellor_clerking_notes.created_at, '%h:%i PM')
+       END)  as time"),DB::raw("DATE_FORMAT(patient_counsellor_clerking_notes.created_at, '%d-%m-%Y') as date"),'patient_counsellor_clerking_notes.status','patient_counsellor_clerking_notes.id','staff_management.name',DB::raw("'CounsellorClerkingNote' as type"),DB::raw("'Counsellor Clerking Note' as section_name"))
+            ->where('patient_counsellor_clerking_notes.patient_mrn_id', $request->patient_id)
+             ->orderBy('patient_counsellor_clerking_notes.created_at', 'asc')
+            ->get();
+
+            foreach($Psychiatry_Clerking_Note as $key =>$val){
+                $list[] = $val;
+            }
+            foreach($Counsellor_Clerking_Note as $key =>$val){
+                $list[] = $val;
+            }
+          // $list["Psychiatry_Clerking_Note"]=$Psychiatry_Clerking_Note;
+          // $list["Counsellor_Clerking_Note"]=$Counsellor_Clerking_Note;
+
+       
+        return response()->json(["message" => "List", 'Data' => $list, "code" => 200]);
+    }
+
+    public function fetchViewHistoryListDetails(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+            'type' => 'required|string'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+        if($request->type=="PsychiatryClerkingNote"){
+        $list = PsychiatryClerkingNote::select('*')
+            ->where('id', '=', $request->id)
+            // ->where('status', '1')
+            ->get();
+    }
+            if($request->type=="CounsellorClerkingNote"){
+            $list = PatientCounsellorClerkingNotes::select('*')
+            ->where('id', '=', $request->id)
+            // ->where('status', '1')
+            ->get();
+    }
+        return response()->json(["message" => "List", 'Data' => $list, "code" => 200]);
     }
 }

@@ -27,7 +27,7 @@ class AreasOfInvolvementController extends Controller
                return response()->json(["message" => $e->getMessage(), 'Areas_Of_Involvement' => $areas_of_involvement, "code" => 200]);
            }
            return response()->json(["message" => "Areas Of Involvement Created", "code" => 200]);
-       }
+    }
 
        public function getAreasOfInvolvementList()
     {

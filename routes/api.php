@@ -59,6 +59,10 @@ use App\Http\Controllers\JobCompaniesController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\VonAppointmentController;
 use App\Http\Controllers\AreasOfInvolvementController;
+use App\Http\Controllers\SelfHarmController;
+use App\Http\Controllers\SuicidalIntentController;
+use App\Http\Controllers\PatientGetIdeaAboutMethodController;
+use App\Http\Controllers\LocationServicesController;
 use GuzzleHttp\Middleware;
 
 /*
@@ -333,6 +337,9 @@ Route::group(['prefix' => 'patient-appointment-details'], function () {
     Route::post('/updateappointmentstatus', [PatientAppointmentDetailsController::class, 'updateappointmentstatus']);
     Route::post('/getPatientAppointmentDetailsOfPatient', [PatientAppointmentDetailsController::class, 'getPatientAppointmentDetailsOfPatient']);
     Route::post('/get-next-prev', [PatientAppointmentDetailsController::class, 'getNextPrev']);
+    Route::post('/updateTeam', [PatientAppointmentDetailsController::class, 'updateTeamDoctor']);
+    Route::post('/fetchViewHistoryList', [PatientAppointmentDetailsController::class, 'fetchViewHistoryList']);
+    Route::post('/fetchViewHistoryListDetails', [PatientAppointmentDetailsController::class, 'fetchViewHistoryListDetails']);
 });
 
 Route::group(['prefix' => 'patient-psychiatry-clerkingnote'], function () {
@@ -479,6 +486,8 @@ Route::group(['prefix' => 'intervention'], function () {
     Route::post('/cps-form', [JobOfferController::class, 'setCPSReferralForm']);
     Route::Post('/laser-form', [JobOfferController::class, 'setLASERReferralForm']);
     Route::Post('/patient-care-plan', [JobOfferController::class, 'setPatientCarePlan']);
+    Route::Get('/category-discharge', [JobOfferController::class, 'dischareCategory']);
+    Route::Get('/screening-types', [JobOfferController::class, 'screeningTypes']);
 });
 Route::group(['prefix' => 'report'], function () {
     Route::post('/shharp', [ReportController::class, 'getSharpReport']);
@@ -497,5 +506,26 @@ Route::group(['prefix' => 'assigned-interviwer'], function () {
 });
 Route::group(['prefix' => 'areas-of-involvement'], function () {
     Route::post('/add', [AreasOfInvolvementController::class, 'add']);
-    Route::get('/list', [AreasOfInvolvementController::class, 'getAreasOfInvolvementList']);
+    Route::get('/list', [AreasOfInvolvementController::class, 'getAreasOfInvolvementList']); //
+});
+Route::group(['prefix' => 'self-harm'], function () {
+    Route::post('/add', [SelfHarmController::class, 'add']);
+    Route::get('/list', [SelfHarmController::class, 'getSelfHarmList']);
+});
+Route::group(['prefix' => 'suicidal-intent'], function () {
+    Route::post('/add', [SuicidalIntentController::class, 'add']);
+    Route::get('/list', [SuicidalIntentController::class, 'getSuicidalList']);
+});
+Route::group(['prefix' => 'patient-get-idea'], function () {
+    Route::post('/add', [PatientGetIdeaAboutMethodController::class, 'add']);
+    Route::get('/list', [PatientGetIdeaAboutMethodController::class, 'getPatientGetIdeaAboutMethodList']);
+});
+Route::group(['prefix' => 'diagnosis'], function () {
+    Route::get('/getIcd10codeList', [IcdSettingManagementController::class, 'getIcd10codeList']);
+    Route::get('/getIcd9codeList', [IcdSettingManagementController::class, 'getIcd9codeList']);
+    Route::post('/getIcd9subcodeList', [IcdSettingManagementController::class, 'getIcd9subcodeList']);
+});
+Route::group(['prefix' => 'location-services'], function () {
+    Route::post('/add', [LocationServicesController::class, 'add']);
+    Route::get('/list', [LocationServicesController::class, 'getLocationServicesList']);
 });

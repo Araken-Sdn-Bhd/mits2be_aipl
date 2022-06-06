@@ -15,6 +15,8 @@ class SharpRegistrationFinalStep extends Model
         'risk',
         'protective',
         'self_harm',
+        'harm_time',
+        'harm_date',
         'suicide_risk',
         'hospital_mgmt',
         'status',
