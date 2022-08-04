@@ -10,7 +10,7 @@ class Designation extends Model
 {
     use HasFactory;
     protected $table = 'designation';
-    protected $fillable = ['designation_name'];
+    protected $fillable = ['designation_name','designation_order'];
 
     public function hods()
     {

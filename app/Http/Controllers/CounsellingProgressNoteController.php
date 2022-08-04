@@ -49,7 +49,8 @@ class CounsellingProgressNoteController extends Controller
             'category_services' => 'required|string',
             'complexity_services_id' => '',
             'outcome_id' => '',
-            'medication_des' => ''
+            'medication_des' => '',
+            'id' => ''
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -118,12 +119,23 @@ class CounsellingProgressNoteController extends Controller
         // } else {
         //     $patientregistration['referral_letter'] = '';
         // }
-
-        try {
-            $Patient = CounsellingProgressNote::firstOrCreate($counsellingprogess);
-        } catch (Exception $e) {
-            return response()->json(["message" => $e->getMessage(), 'Counselling Progress Note' => $counsellingprogess, "code" => 200]);
+        if ($request->id) {
+            try {
+                CounsellingProgressNote::where(
+                    ['id' => $request->id]
+                )->update($counsellingprogess);
+                // $Patient = CounsellingProgressNote::firstOrCreate($counsellingprogess);
+            } catch (Exception $e) {
+                return response()->json(["message" => $e->getMessage(), 'Counselling Progress Note' => $counsellingprogess, "code" => 200]);
+            }
+            return response()->json(["message" => "Counselling Progress Note done successfully!", "code" => 200]);
+        } else {
+            try {
+                $Patient = CounsellingProgressNote::firstOrCreate($counsellingprogess);
+            } catch (Exception $e) {
+                return response()->json(["message" => $e->getMessage(), 'Counselling Progress Note' => $counsellingprogess, "code" => 200]);
+            }
+            return response()->json(["message" => "Counselling Progress Note done successfully!", "code" => 200]);
         }
-        return response()->json(["message" => "Counselling Progress Note done successfully!", "code" => 200]);
     }
 }

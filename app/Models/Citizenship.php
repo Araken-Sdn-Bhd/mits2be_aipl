@@ -9,5 +9,5 @@ class Citizenship extends Model
 {
     use HasFactory;
     protected $table = 'citizenship';
-    protected $fillable = ['citizenship_name'];
+    protected $fillable = ['citizenship_name','citizenship_order'];
 }

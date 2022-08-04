@@ -24,9 +24,9 @@ class CreatePsychologyReferralTable extends Migration
             $table->string('reason_referral_intervention');
             $table->string('reason_referral_intervention_other')->nullable();
             $table->string('case_formulation',2500);
-            $table->string('referring_doctor');
-            $table->string('designation');
-            $table->date('date');
+            $table->string('referring_doctor')->nullable();
+            $table->string('designation')->nullable();
+            $table->date('date')->nullable();
            
             $table->string('location_services');
             $table->integer('type_diagnosis_id');

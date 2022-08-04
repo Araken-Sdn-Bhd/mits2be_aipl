@@ -9,5 +9,5 @@ class CalendarException extends Model
 {
     use HasFactory;
     protected $table = 'calendar_exception';
-    protected $fillable = ['added_by', 'name', 'start_date', 'end_date', 'description', 'state'];
+    protected $fillable = ['added_by', 'name', 'start_date', 'end_date', 'description', 'state','branch_id'];
 }

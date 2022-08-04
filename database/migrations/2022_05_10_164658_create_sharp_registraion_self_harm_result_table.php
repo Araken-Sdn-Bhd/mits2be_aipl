@@ -17,7 +17,7 @@ class CreateSharpRegistraionSelfHarmResultTable extends Migration
             $table->id();
             $table->bigInteger('added_by')->index('added_by');
             $table->bigInteger('patient_id')->index('patient_id');
-            $table->string('section')->index('section');
+            $table->string('section')->index('section')->nullable();
             $table->string('section_value', 2048)->nullable();
             $table->timestamps();
         });

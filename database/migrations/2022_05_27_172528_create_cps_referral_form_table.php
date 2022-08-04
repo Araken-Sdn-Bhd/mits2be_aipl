@@ -28,6 +28,7 @@ class CreateCpsReferralFormTable extends Migration
             $table->integer('outcome');
             $table->integer('icd_9_code');
             $table->integer('icd_9_subcode');
+            $table->string('medication_des',1024)->nullable();
             $table->string('medication_referrer_name');
             $table->string('medication_referrer_designation');
             $table->timestamps();

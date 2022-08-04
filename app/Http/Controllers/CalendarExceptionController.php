@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CalendarException;
+use Carbon\Exceptions\Exception;
 use Validator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -21,7 +22,8 @@ class CalendarExceptionController extends Controller
             'end_date' => 'required',
             'description' => 'required|string',
             'state' => 'required|string',
-            'type' => 'required|string'
+            'type' => 'required|string',
+            'branch_id' => 'required|integer'
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -38,6 +40,7 @@ class CalendarExceptionController extends Controller
                     'start_date' =>  $request->start_date,
                     'end_date' =>  $request->end_date,
                     'description' =>  $request->description,
+                    'branch_id' =>  $request->branch_id,
                     'state' =>  $val
                 ];
             }
@@ -60,7 +63,8 @@ class CalendarExceptionController extends Controller
             'start_date' => 'required',
             'end_date' => 'required',
             'description' => 'required|string',
-            'state' => 'required|string'
+            'state' => 'required|string',
+            'branch_id' => 'required|integer'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -75,6 +79,7 @@ class CalendarExceptionController extends Controller
             'end_date' =>  $request->end_date,
             'description' =>  $request->description,
             'state' =>  $request->state,
+            'branch_id' =>  $request->branch_id,
             'status' => "1"
         ]);
         return response()->json(["message" => "Exception has updated successfully", "code" => 200]);
@@ -113,7 +118,7 @@ class CalendarExceptionController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        $list = CalendarException::select('id', 'name', 'start_date', 'end_date')
+        $list = CalendarException::select('id', 'name', 'start_date', 'end_date','description','branch_id','state')
             ->where('id', '=', $request->id)
             ->get();
         return response()->json(["message" => "Announcement List", 'list' => $list, "code" => 200]);
@@ -132,11 +137,11 @@ class CalendarExceptionController extends Controller
                     if ($key != 0) {
                         $addexception[] = [
                             'added_by' =>  $request->added_by,
-                            'name' =>  $val[2],
-                            'start_date' =>  Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[0])),
-                            'end_date' =>   Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[1])),
-                            'description' =>  $val[4],
-                            'state' =>  $val[3]
+                            'name' =>  $val[3],
+                            'start_date' =>  Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[1])),
+                            'end_date' =>   Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[2])),
+                            'description' =>  $val[5],
+                            'state' =>  $val[4]
                         ];
                     }
                 }

@@ -41,7 +41,7 @@ class CreatePatientCarePalnTable extends Migration
             $table->integer('outcome');
             $table->integer('icd_9_code');
             $table->integer('icd_9_subcode');
-            $table->string('medication_prescription', 1024);
+            $table->string('medication_prescription', 1024)->nullable();
             $table->timestamps();
         });
     }

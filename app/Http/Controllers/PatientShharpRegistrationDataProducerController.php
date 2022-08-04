@@ -14,11 +14,11 @@ class PatientShharpRegistrationDataProducerController extends Controller
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
             'patient_id' => 'required|integer', //patient_mrn_id is treated as patient_id
-            'name_registering_officer' => 'required|string',
-            'hospital_name' => 'required|string',
-            'designation' => 'required|string',
-            'psychiatrist_name' => 'required|string',
-            'reporting_date' => 'required',
+            'name_registering_officer' => '',
+            'hospital_name' => '',
+            'designation' => '',
+            'psychiatrist_name' => '',
+            'reporting_date' => '',
             'sharp_register_id' => 'required|integer'
         ]);
         if ($validator->fails()) {
@@ -33,7 +33,7 @@ class PatientShharpRegistrationDataProducerController extends Controller
             'designation' => $request->designation,
             'psychiatrist_name' => $request->psychiatrist_name,
             'reporting_date' => $request->reporting_date,
-            'status' => "1"
+            'status' => $request->status
         ];
         $sri = $request->sharp_register_id;
         //dd($module);
@@ -47,7 +47,7 @@ class PatientShharpRegistrationDataProducerController extends Controller
             } else {
                 PatientShharpRegistrationDataProducer::where('shharp_register_id', $sri)->update($module);
             }
-            SharpRegistrationFinalStep::where('id', $sri)->update(['status' => '1']);
+            SharpRegistrationFinalStep::where('id', $sri)->update(['status' => $request->status]);
             return response()->json(["message" => "Data Updated Successfully!", 'id' => $sri, "code" => 201]);
         }
     }

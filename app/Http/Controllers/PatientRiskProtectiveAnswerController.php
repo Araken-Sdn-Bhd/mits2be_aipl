@@ -11,6 +11,8 @@ use App\Models\SharpRegistrationSuicideRiskResult;
 use App\Models\PatientShharpRegistrationHospitalManagement;
 use App\Models\PatientShharpRegistrationDataProducer;
 use App\Models\PatientShharpRegistrationRiskProtective;
+use DateTime;
+use DateTimeZone;
 use Exception;
 use Illuminate\Support\Facades\DB;
 
@@ -21,8 +23,9 @@ class PatientRiskProtectiveAnswerController extends Controller
         $validator = Validator::make($request->all(), [
             'patient_id' => 'required|integer',
             'added_by' => 'required|integer',
-            'result' => 'required|json',
-            'sharp_register_id' => 'required|integer'
+            'result' => '',
+            'sharp_register_id' => 'required|integer',
+            'risk_factor_yes_value' => ''
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -32,45 +35,50 @@ class PatientRiskProtectiveAnswerController extends Controller
         $result = json_decode($request->result, true);
         $riskArray = [];
         if ($sri != 0) {
-            $risk = SharpRegistrationFinalStep::where('id', $sri)->get()->pluck($request->factor_type)->toArray();
-            if ($risk[0] != '')
+            $risk = SharpRegistrationFinalStep::where('id', $sri)->get()->pluck('risk')->toArray();
+            // dd($risk);
+            if(count($risk)>0 && $risk[0] != '')
                 $riskArray = explode('^', $risk[0]);
         }
         $insertArray = [];
-        foreach ($result[0] as $key => $val) {
-            $txt = '';
-            $answer = 'No';
-            if (in_array($key, [1, 3, 4, 6, 7, 8, 10])) {
-                if ($val != '0') {
-                    if ($request->factor_type == 'risk') {
-                        $txt = $val;
+        if ($result) {
+            foreach ($result[0] as $key => $val) {
+                $txt = '';
+                $answer = 'No';
+                if (in_array($key, [1, 3, 4, 6, 7, 8, 10])) {
+                    if ($val != '0') {
+                        if ($request->factor_type == 'risk') {
+                            $txt = $val;
+                        }
+                        $answer = 'Yes';
                     }
-                    $answer = 'Yes';
                 }
-            }
-            if (count($riskArray) == 0) {
-                $insertArray[] = [
-                    'added_by' => $request->added_by,
-                    'patient_mrn_id' => $request->patient_id,
-                    'factor_type' => $request->factor_type,
-                    'QuestionId' => $key,
-                    'Answer' => $answer,
-                    'Answer_text' => $txt,
-                    'status' => '1',
-                    'created_at' => date('Y-m-d H:i:s'),
-                    'updated_at' => date('Y-m-d H:i:s')
-                ];
-            } else {
-                PatientRiskProtectiveAnswer::where(['id' => $riskArray[$key - 1]])->update([
-                    'added_by' => $request->added_by,
-                    'patient_mrn_id' => $request->patient_id,
-                    'factor_type' => $request->factor_type,
-                    'QuestionId' => $key,
-                    'Answer' => $answer,
-                    'Answer_text' => $txt,
-                    'status' => '1',
-                    'updated_at' => date('Y-m-d H:i:s')
-                ]);
+                if (count($riskArray) == 0) {
+                    $insertArray[] = [
+                        'added_by' => $request->added_by,
+                        'patient_mrn_id' => $request->patient_id,
+                        'factor_type' => 'risk',
+                        'QuestionId' => $key,
+                        'Answer' => $answer,
+                        'Answer_text' => $txt,
+                        'status' => $request->status,
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s'),
+                        'risk_factor_yes_value' => $request->risk_factor_yes_value
+                    ];
+                } else {
+                    PatientRiskProtectiveAnswer::where(['id' => $riskArray[$key - 1]])->update([
+                        'added_by' => $request->added_by,
+                        'patient_mrn_id' => $request->patient_id,
+                        'factor_type' => 'risk',
+                        'QuestionId' => $key,
+                        'Answer' => $answer,
+                        'Answer_text' => $txt,
+                        'status' =>  $request->status,
+                        'updated_at' => date('Y-m-d H:i:s'),
+                        'risk_factor_yes_value' => $request->risk_factor_yes_value
+                    ]);
+                }
             }
         }
         try {
@@ -85,6 +93,7 @@ class PatientRiskProtectiveAnswerController extends Controller
                 DB::commit();
                 $insertID = 0;
                 if ($sri == 0) {
+                    $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
                     $id = SharpRegistrationFinalStep::create([
                         'added_by' => $request->added_by, 'patient_id' => $request->patient_id,
                         'risk' => implode('^', $insertedIds),
@@ -92,8 +101,9 @@ class PatientRiskProtectiveAnswerController extends Controller
                         'self_harm' => '',
                         'suicide_risk' => '',
                         'hospital_mgmt' => '',
-                        'status' => '0',
-                        'created_at' => date('Y-m-d H:i:s')
+                        'status' =>  $request->status,
+                        'created_at' => $date->format('Y-m-d H:i:s'),
+                        // 'risk_factor_yes_value' => $request->risk_factor_yes_value
                     ]);
                     $insertID = $id->id;
                     return response()->json(["message" => "Data Inserted Successfully!", 'id' => $insertID, "code" => 201]);
@@ -115,7 +125,7 @@ class PatientRiskProtectiveAnswerController extends Controller
         $validator = Validator::make($request->all(), [
             'patient_id' => 'required|integer',
             'added_by' => 'required|integer',
-            'result' => 'required|json',
+            'result' => '',
             'sharp_register_id' => 'required|integer'
         ]);
         if ($validator->fails()) {
@@ -130,40 +140,42 @@ class PatientRiskProtectiveAnswerController extends Controller
                 $preIds = explode('^', $risk[0]);
         }
         $insertArray = [];
-        foreach ($result[0] as $key => $val) {
-            $txt = '';
-            $answer = 'No';
-            if (in_array($key, [1, 3, 4, 6, 7, 8, 10])) {
-                if ($val != '0') {
-                    if ($request->factor_type == 'risk') {
-                        $txt = $val;
+        if ($result) {
+            foreach ($result[0] as $key => $val) {
+                $txt = '';
+                $answer = 'No';
+                if (in_array($key, [1, 3, 4, 6, 7, 8, 10])) {
+                    if ($val != '0') {
+                        if ($request->factor_type == 'risk') {
+                            $txt = $val;
+                        }
+                        $answer = 'Yes';
                     }
-                    $answer = 'Yes';
                 }
-            }
-            if (count($preIds) == 0) {
-                $insertArray[] = [
-                    'added_by' => $request->added_by,
-                    'patient_mrn_id' => $request->patient_id,
-                    'factor_type' => 'protective',
-                    'QuestionId' => $key,
-                    'Answer' => $answer,
-                    'Answer_text' => $txt,
-                    'status' => '1',
-                    'created_at' => date('Y-m-d H:i:s'),
-                    'updated_at' => date('Y-m-d H:i:s')
-                ];
-            } else {
-                PatientRiskProtectiveAnswer::where(['id' => $preIds[$key - 1]])->update([
-                    'added_by' => $request->added_by,
-                    'patient_mrn_id' => $request->patient_id,
-                    'factor_type' => 'protective',
-                    'QuestionId' => $key,
-                    'Answer' => $answer,
-                    'Answer_text' => $txt,
-                    'status' => '1',
-                    'updated_at' => date('Y-m-d H:i:s')
-                ]);
+                if (count($preIds) == 0) {
+                    $insertArray[] = [
+                        'added_by' => $request->added_by,
+                        'patient_mrn_id' => $request->patient_id,
+                        'factor_type' => 'protective',
+                        'QuestionId' => $key,
+                        'Answer' => $answer,
+                        'Answer_text' => $txt,
+                        'status' =>  $request->status,
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ];
+                } else {
+                    PatientRiskProtectiveAnswer::where(['id' => $preIds[$key - 1]])->update([
+                        'added_by' => $request->added_by,
+                        'patient_mrn_id' => $request->patient_id,
+                        'factor_type' => 'protective',
+                        'QuestionId' => $key,
+                        'Answer' => $answer,
+                        'Answer_text' => $txt,
+                        'status' =>  $request->status,
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ]);
+                }
             }
         }
         try {
@@ -178,6 +190,7 @@ class PatientRiskProtectiveAnswerController extends Controller
                 DB::commit();
                 $insertID = 0;
                 if ($sri == 0) {
+                    $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
                     $id = SharpRegistrationFinalStep::create([
                         'added_by' => $request->added_by, 'patient_id' => $request->patient_id,
                         'risk' =>  '',
@@ -185,8 +198,8 @@ class PatientRiskProtectiveAnswerController extends Controller
                         'self_harm' => '',
                         'suicide_risk' => '',
                         'hospital_mgmt' => '',
-                        'status' => '0',
-                        'created_at' => date('Y-m-d H:i:s')
+                        'status' =>  $request->status,
+                        'created_at' => $date->format('Y-m-d H:i:s')
                     ]);
                     $insertID = $id->id;
                     return response()->json(["message" => "Data Inserted Successfully!", 'id' => $insertID, "code" => 201]);
@@ -226,28 +239,31 @@ class PatientRiskProtectiveAnswerController extends Controller
         $harmTime = '';
         $harmDate = '';
         $insertArray = [];
-        foreach ($result as $key => $val) {
-            if (array_keys($val)[0] === 'CURRENT SELF HARM ACT') {
-                $harmTime = $val['CURRENT SELF HARM ACT']['Time'];
-                $harmDate = $val['CURRENT SELF HARM ACT']['Date'];
-            }
-            if (count($riskArray) == 0) {
-                $insertArray[] = [
-                    'added_by' => $request->added_by,
-                    'patient_id' => $request->patient_id,
-                    'section' => array_keys($val)[0],
-                    'section_value' => json_encode($val),
-                    'created_at' => date('Y-m-d H:i:s'),
-                    'updated_at' => date('Y-m-d H:i:s')
-                ];
-            } else {
-                SharpRegistrationSelfHarmResult::where(['id' => $riskArray[$key]])->update([
-                    'added_by' => $request->added_by,
-                    'patient_id' => $request->patient_id,
-                    'section' => array_keys($val)[0],
-                    'section_value' => json_encode($val),
-                    'updated_at' => date('Y-m-d H:i:s')
-                ]);
+
+        if ($result) {
+            foreach ($result as $key => $val) {
+                if (array_keys($val)[0] === 'CURRENT SELF HARM ACT') {
+                    $harmTime = $val['CURRENT SELF HARM ACT']['Time'];
+                    $harmDate = $val['CURRENT SELF HARM ACT']['Date'];
+                }
+                if (count($riskArray) == 0) {
+                    $insertArray[] = [
+                        'added_by' => $request->added_by,
+                        'patient_id' => $request->patient_id,
+                        'section' => array_keys($val)[0],
+                        'section_value' => json_encode($val),
+                        'created_at' => date('Y-m-d H:i:s'),
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ];
+                } else {
+                    SharpRegistrationSelfHarmResult::where(['id' => $riskArray[$key]])->update([
+                        'added_by' => $request->added_by,
+                        'patient_id' => $request->patient_id,
+                        'section' => array_keys($val)[0],
+                        'section_value' => json_encode($val),
+                        'updated_at' => date('Y-m-d H:i:s')
+                    ]);
+                }
             }
         }
         try {
@@ -262,6 +278,7 @@ class PatientRiskProtectiveAnswerController extends Controller
                 DB::commit();
                 $insertID = 0;
                 if ($sri == 0) {
+                    $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
                     $id = SharpRegistrationFinalStep::create([
                         'added_by' => $request->added_by, 'patient_id' => $request->patient_id,
                         'risk' => '',
@@ -271,8 +288,8 @@ class PatientRiskProtectiveAnswerController extends Controller
                         'harm_date' => $harmDate,
                         'suicide_risk' => '',
                         'hospital_mgmt' => '',
-                        'status' => '0',
-                        'created_at' => date('Y-m-d H:i:s')
+                        'status' =>  $request->status,
+                        'created_at' => $date->format('Y-m-d H:i:s')
                     ]);
                     $insertID = $id->id;
                     return response()->json(["message" => "Data Inserted Successfully!", 'id' => $insertID, "code" => 201]);
@@ -339,6 +356,7 @@ class PatientRiskProtectiveAnswerController extends Controller
                 DB::commit();
                 $insertID = 0;
                 if ($sri == 0) {
+                    $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
                     $id = SharpRegistrationFinalStep::create([
                         'added_by' => $request->added_by, 'patient_id' => $request->patient_id,
                         'risk' => '',
@@ -346,8 +364,8 @@ class PatientRiskProtectiveAnswerController extends Controller
                         'self_harm' => '',
                         'suicide_risk' => $suicideRiskId->id,
                         'hospital_mgmt' => '',
-                        'status' => '0',
-                        'created_at' => date('Y-m-d H:i:s')
+                        'status' =>  $request->status,
+                        'created_at' => $date->format('Y-m-d H:i:s')
                     ]);
                     $insertID = $id->id;
                     return response()->json(["message" => "Data Inserted Successfully!", 'id' => $insertID, "code" => 201]);
@@ -374,7 +392,16 @@ class PatientRiskProtectiveAnswerController extends Controller
         }
         $records = DB::table('sharp_registraion_final_step')
             ->join('patient_shharp_registration_data_producer', 'sharp_registraion_final_step.id', '=', 'patient_shharp_registration_data_producer.shharp_register_id')
-            ->select('sharp_registraion_final_step.id',  DB::raw("DATE_FORMAT(sharp_registraion_final_step.created_at, '%d/%m/%Y') as Date"), DB::raw("DATE_FORMAT(sharp_registraion_final_step.created_at, '%H:%i') as Time"), 'sharp_registraion_final_step.status', 'patient_shharp_registration_data_producer.hospital_name', 'patient_shharp_registration_data_producer.name_registering_officer')
+            
+            ->join('patient_risk_protective_answers', 'sharp_registraion_final_step.id', '=', 'patient_shharp_registration_data_producer.shharp_register_id')
+            ->select(
+                'sharp_registraion_final_step.id',
+                DB::raw("DATE_FORMAT(sharp_registraion_final_step.created_at, '%d/%m/%Y') as Date"),
+                DB::raw("DATE_FORMAT(sharp_registraion_final_step.created_at, '%H:%i') as Time"),
+                'sharp_registraion_final_step.status',
+                'patient_shharp_registration_data_producer.hospital_name',
+                'patient_shharp_registration_data_producer.name_registering_officer'
+            )
             ->where('sharp_registraion_final_step.patient_id', $request->patient_id)
             ->orderBy('sharp_registraion_final_step.id', 'asc')
             ->get();
@@ -399,11 +426,12 @@ class PatientRiskProtectiveAnswerController extends Controller
         $dataSourceArray = [];
         if (count($shharp) > 0) {
             $risk = !empty($shharp[0]['risk']) ? explode('^', $shharp[0]['risk']) : [];
-            $riskData = PatientRiskProtectiveAnswer::select('QuestionId', 'Answer', 'Answer_text')->whereIn('id', $risk)->get()->toArray();
+            $riskData = PatientRiskProtectiveAnswer::select('QuestionId', 'Answer', 'Answer_text', 'risk_factor_yes_value')->whereIn('id', $risk)->get()->toArray();
+            // dd($riskData);
             if ($riskData) {
                 foreach ($riskData as $k => $v) {
                     $ques = PatientShharpRegistrationRiskProtective::where('id', $v['QuestionId'])->get();
-                    $riskArray[$k] = ['questionId' => $v['QuestionId'], 'Question_detail' => $ques, 'answer' => $v['Answer'], 'text' => $v['Answer_text']];
+                    $riskArray[$k] = ['questionId' => $v['QuestionId'], 'Question_detail' => $ques, 'answer' => $v['Answer'], 'text' => $v['Answer_text'], 'risk_factor_yes_value' => $v['risk_factor_yes_value']];
                 }
             }
             $protective = !empty($shharp[0]['protective']) ? explode('^', $shharp[0]['protective']) : [];
@@ -432,7 +460,13 @@ class PatientRiskProtectiveAnswerController extends Controller
                         $jsonDecode['Method of Self-Harm']['Hanging_Suffocation'] = $jsonDecode['Method of Self-Harm']['Hanging/Suffocation'];
                         $jsonDecode['Method of Self-Harm']['Fire_flames'] = $jsonDecode['Method of Self-Harm']['Fire/flames'];
                     }
-
+                    if (array_key_exists('How did Patient Get Idea about Method', $jsonDecode)) {
+                        $jsonDecode['How did Patient Get Idea about Method']['Family_friends_peer_group'] = $jsonDecode['How did Patient Get Idea about Method']['Family, friends, peer group'];
+                        $jsonDecode['How did Patient Get Idea about Method']['Internet_website_social_media_platform_app_blogs_forum_video_photosharing'] = $jsonDecode['How did Patient Get Idea about Method']['Internet (website, social media platform, app, blogs, forum, video/photosharing)'];
+                        $jsonDecode['How did Patient Get Idea about Method']['Printed_media_newspaper_books_magazine_etc'] = $jsonDecode['How did Patient Get Idea about Method']['Printed media (newspaper, books, magazine, etc)'];
+                        $jsonDecode['How did Patient Get Idea about Method']['Broadcast_media_television_radio'] = $jsonDecode['How did Patient Get Idea about Method']['Broadcast media (television, radio)'];
+                        $jsonDecode['How did Patient Get Idea about Method']['Specify_patient_actual_words'] = $jsonDecode['How did Patient Get Idea about Method']['Specify patient actual words'];
+                    }
 
                     $selfharmArray[$k] = ['section' => $v['section'], 'section_value' => $jsonDecode[$v['section']]];
                 }

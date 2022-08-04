@@ -17,10 +17,10 @@ class CreateTriageFormTable extends Migration
             $table->increments('id');
             $table->bigInteger('added_by');
             $table->integer('patient_mrn_id');
-            $table->string('risk_history_assressive');
-            $table->string('risk_history_criminal');
-            $table->string('risk_history_detereotation');
-            $table->string('risk_history_neglect');
+            $table->string('risk_history_assressive')->nullable();
+            $table->string('risk_history_criminal')->nullable();
+            $table->string('risk_history_detereotation')->nullable();
+            $table->string('risk_history_neglect')->nullable();
             $table->string('risk_history_suicidal_idea')->nullable();
             $table->string('risk_history_suicidal_attempt')->nullable();
             $table->string('risk_history_homicidal_idea')->nullable();

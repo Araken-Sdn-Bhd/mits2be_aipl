@@ -16,6 +16,7 @@ class CreateDesignationTable extends Migration
         Schema::create('designation', function (Blueprint $table) {
             $table->increments('id');
             $table->string('designation_name');
+            $table->string('designation_order');
             $table->enum('designation_status', [0, 1])->default(1);
             $table->timestamps();
         });

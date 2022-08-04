@@ -24,7 +24,7 @@ class OcctReferralFormController extends Controller
              'referral_name' => 'required|string',
              'referral_designation' => '',
  
-             'location_services' => 'required|string',
+             'location_services' => 'required',
              'services_id' => '',
              'code_id' => '',
              'sub_code_id' => '',

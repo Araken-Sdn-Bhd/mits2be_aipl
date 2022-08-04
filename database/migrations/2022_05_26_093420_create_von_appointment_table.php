@@ -21,10 +21,10 @@ class CreateVonAppointmentTable extends Migration
             $table->date('booking_date');
             $table->time('booking_time');
             $table->string('duration');
-            $table->integer('appointment_type');
+            // $table->integer('appointment_type');
             $table->integer('interviewer_id');
             $table->integer('area_of_involvement');
-            $table->integer('services_type');
+            $table->string('services_type');
             $table->enum('status', [0, 1])->default(1);
             $table->timestamps();
         });

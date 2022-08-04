@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PatientAlert;
+use Exception;
 use Validator;
 use Illuminate\Support\Facades\DB;
 
@@ -21,11 +22,12 @@ class PatientAlertController extends Controller
                return response()->json(["message" => $validator->errors(), "code" => 422]);
            }
         $patient_id = $request->patient_id;
+        $alert_id = $request->alert_id;
         $checkpatientid = PatientAlert::select('id')
             ->where('patient_id', $patient_id)
             ->pluck('id');
-
-            if (count($checkpatientid) == 0) {
+            // count($checkpatientid) == 0
+            if ($request->alert_id==0) {
                 
                    $alert = [
                        'added_by' =>  $request->added_by,
@@ -46,7 +48,7 @@ class PatientAlertController extends Controller
                     'message' => $request->message
                 ];
         
-                $sd = PatientAlert::where('patient_id', $request->patient_id)->update($alertupdate);
+                $sd = PatientAlert::where('id', $request->alert_id)->where('patient_id', $request->patient_id)->update($alertupdate);
                 if ($sd)
                     return response()->json(["message" => "Patient Alert Updated Successfully!", "code" => 200]);
             }
@@ -55,7 +57,36 @@ class PatientAlertController extends Controller
 
     public function alertListbyPatientId(Request $request)
     {
-        return PatientAlert::select( '*')->where('patient_id', $request->patient_id)->get();
+        $users = DB::table('patient_alert')
+            ->join('users', 'patient_alert.added_by', '=', 'users.id')
+            ->select('patient_alert.id','patient_alert.message',DB::raw("DATE_FORMAT(patient_alert.created_at, '%d-%m-%Y') as created"),DB::raw("DATE_FORMAT(patient_alert.updated_at, '%d-%m-%Y') as updated"),'users.name')
+            ->where('patient_alert.patient_id', $request->patient_id)
+            ->get();
+        // $ab= PatientAlert::select('id','message',DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as created"),DB::raw("DATE_FORMAT(updated_at, '%d-%m-%Y') as updated"))->where('patient_id', $request->patient_id)->get();
+        return response()->json(["message" => "Alert List", "list" => $users,  "code" => 200]);
+    }
+
+    public function alertListbyAlertId(Request $request)
+    {
+        return PatientAlert::select( 'message',DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as created"))->where('id', $request->alert_id)->get();
+        // return response()->json(["message" => "Alert List", "list" => $ab,  "code" => 200]);
+    }
+    public function resolved(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'alert_id' => 'required|integer',
+           
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+        PatientAlert::where(
+            ['id' => $request->alert_id]
+        )->update([
+            'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+        return response()->json(["message" => "Resolved Successfully.", "code" => 200]);
+       
     }
 
 }

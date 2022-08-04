@@ -22,12 +22,12 @@ class InternalReferralFormController extends Controller
              'designation' => 'required|string',
              'hospital' => '',
  
-             'location_services' => 'required|string',
+             'location_services' => 'required',
              'services_id' => '',
              'code_id' => '',
              'sub_code_id' => '',
              'type_diagnosis_id' => 'required|integer',
-             'category_services' => 'required|string',
+             'category_services' => 'required',
              'complexity_services' => '',
              'outcome' => '',
              'medication_des' => ''

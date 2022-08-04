@@ -24,10 +24,10 @@ class VonAppointmentController extends Controller
             'booking_date' => 'required',
             'booking_time' => 'required',
             'duration' => 'required|integer',
-            'appointment_type' => 'required|integer',
+            // 'appointment_type' => '',
             'interviewer_id' => 'required|integer',
             'area_of_involvement' => 'required|integer',
-            'services_type' => 'required|integer'
+            'services_type' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -62,7 +62,7 @@ class VonAppointmentController extends Controller
                 'booking_time' => $request->booking_time,
                 // 'patient_mrn_id' => $getmnr_id[0],
                 'duration' => $request->duration,
-                'appointment_type' => $request->appointment_type,
+                // 'appointment_type' => $request->appointment_type,
                 'interviewer_id' => $request->interviewer_id,
                 'area_of_involvement' => $request->area_of_involvement,
                 'services_type' => $request->services_type,
@@ -90,10 +90,10 @@ class VonAppointmentController extends Controller
             'booking_date' => 'required',
             'booking_time' => 'required',
             'duration' => 'required|integer',
-            'appointment_type' => 'required|integer',
+            // 'appointment_type' => 'required|integer',
             'interviewer_id' => 'required|integer',
             'area_of_involvement' => 'required|integer',
-            'services_type' => 'required|integer',
+            'services_type' => 'required',
             'id' => 'required|integer'
         ]);
         if ($validator->fails()) {
@@ -115,7 +115,7 @@ class VonAppointmentController extends Controller
                 'booking_date' => $request->booking_date,
                 'booking_time' => $request->booking_time,
                 'duration' => $request->duration,
-                'appointment_type' => $request->appointment_type,
+                // 'appointment_type' => $request->appointment_type,
                 'interviewer_id' => $request->interviewer_id,
                 'area_of_involvement' => $request->area_of_involvement,
                 'services_type' => $request->services_type
@@ -142,7 +142,7 @@ class VonAppointmentController extends Controller
         if ($search) {
             $records = VonAppointment::where($search)->get();
         } else {
-            $records = VonAppointment::all();
+            $records = VonAppointment::all()->where('status','0');
         }
         if ($records) {
             foreach ($records as $key => $val) {
@@ -154,8 +154,9 @@ class VonAppointmentController extends Controller
                 $list[$key]['dr_name'] = $dr[0];
                 $aoi = AreasOfInvolvement::where('id', $val['area_of_involvement'])->get()->pluck('name')->toArray();
                 $list[$key]['aoi'] = $aoi[0];
-                $service = EtpRegister::where('id', $val['services_type'])->get()->pluck('etp_name')->toArray();
-                $list[$key]['service'] = $service[0];
+                // $service = EtpRegister::where('id', $val['services_type'])->get()->pluck('etp_name')->toArray();
+                // $list[$key]['service'] = $service[0];
+                $list[$key]['service'] = $val['services_type'];
             }
         }
         return response()->json(["message" => "Von Updated Successfully!", "list" => $list, "code" => 200]);

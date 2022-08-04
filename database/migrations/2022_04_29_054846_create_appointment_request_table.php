@@ -21,7 +21,7 @@ class CreateAppointmentRequestTable extends Migration
             $table->string('name');
             $table->string('nric_or_passportno')->nullable();
             $table->string('contact_no');
-            $table->string('address');
+            $table->string('address')->nullable();
             $table->string('address1')->nullable();
             $table->string('email');
             $table->string('ip_address')->nullable();

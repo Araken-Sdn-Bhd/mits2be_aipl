@@ -16,9 +16,12 @@ class CreateCalendarExceptionTable extends Migration
         Schema::create('calendar_exception', function (Blueprint $table) {
             $table->increments('id');
             $table->bigInteger('added_by');
+            $table->integer('branch_id');
             $table->string('name');
             $table->date('start_date');
             $table->date('end_date');
+            // $table->string('start_date');
+            // $table->string('end_date');
             $table->string('description', 1024);
             $table->string('state');
             $table->enum('status', [0, 1, 2])->default(1);

@@ -24,6 +24,7 @@ class CPSReferralForm extends Model
         'outcome',
         'icd_9_code',
         'icd_9_subcode',
+        'medication_des',
         'medication_referrer_name',
         'medication_referrer_designation',
         'created_at'

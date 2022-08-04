@@ -20,8 +20,10 @@ class CreateScreensTable extends Migration
             $table->string('module_name');
             $table->integer('sub_module_id');
             $table->string('sub_module_name');
-            $table->string('screen_name')->unique();
-            $table->string('screen_route')->unique();
+            $table->string('screen_name');
+            $table->string('screen_route');
+            $table->string('icon');
+            $table->integer('index_val');
             $table->string('screen_description', 1024);
             $table->enum('screen_status', [0, 1])->default(1);
             $table->timestamps();

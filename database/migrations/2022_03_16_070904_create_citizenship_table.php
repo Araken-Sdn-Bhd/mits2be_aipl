@@ -17,6 +17,7 @@ class CreateCitizenshipTable extends Migration
             $table->increments('id');
             $table->string('citizenship_name')->unique();
             $table->string('citizenship_code')->nullable();
+            $table->integer('citizenship_order');
             $table->enum('citizenship_status', [0, 1])->default(1);
             $table->timestamps();
         });

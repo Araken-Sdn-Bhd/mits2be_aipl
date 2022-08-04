@@ -42,6 +42,7 @@ class IcdSettingManagementController extends Controller
     {
         $list = IcdType::select('id', 'icd_type_name', 'icd_type_code', 'icd_type_description', 'icd_type_order')
             ->where('icd_type_status', '=', '1')
+            ->orderBy('icd_type_order', 'asc')
             ->get();
         return response()->json(["message" => "Icd Type List", 'list' => $list, "code" => 200]);
     }
@@ -123,6 +124,7 @@ class IcdSettingManagementController extends Controller
             ->join('icd_category', 'icd_type.id', '=', 'icd_category.icd_type_id')
             ->select('icd_type.icd_type_code', 'icd_category.icd_category_code', 'icd_category.icd_category_name', 'icd_category.icd_category_description', 'icd_category.icd_category_order', 'icd_category.id')
             ->where('icd_category.icd_category_status', '=', '1')
+            ->orderBy('icd_category.icd_category_order', 'asc')
             ->get();
         return response()->json(["message" => "Icd Category List", 'list' => $users, "code" => 200]);
     }
@@ -134,6 +136,7 @@ class IcdSettingManagementController extends Controller
             ->join('icd_category', 'icd_code.icd_category_id', '=', 'icd_category.id')
             ->select('icd_type.icd_type_code', 'icd_category.icd_category_code', 'icd_code.id', 'icd_code.icd_code', 'icd_code.icd_name', 'icd_code.icd_description', 'icd_code.icd_order')
             ->where('icd_status', '=', '1')
+            ->orderBy('icd_code.icd_order', 'asc')
             ->get();
         return response()->json(["message" => "Icd Code List", 'list' => $users, "code" => 200]);
     }
@@ -147,7 +150,7 @@ class IcdSettingManagementController extends Controller
             $users = DB::table('icd_type')
             // ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
             ->join('icd_category', 'icd_type.id', '=', 'icd_category.icd_type_id')
-            ->select('icd_category.icd_category_code', 'icd_category.id')
+            ->select('icd_category.icd_category_code', 'icd_category.id','icd_category.icd_category_name')
             ->where('icd_category_status', '=', '1')
             ->where('icd_category.icd_type_id', '=', $checkicdtype10id[0])
             ->get();
@@ -162,7 +165,7 @@ class IcdSettingManagementController extends Controller
         $users = DB::table('icd_type')
             // ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
             ->join('icd_category', 'icd_type.id', '=', 'icd_category.icd_type_id')
-            ->select('icd_category.icd_category_code','icd_category.id' )
+            ->select('icd_category.icd_category_code','icd_category.id','icd_category.icd_category_name')
             ->where('icd_category_status', '=', '1')
             ->where('icd_category.icd_type_id', '=', $checkicdtype9id[0])
             ->get();
@@ -171,7 +174,7 @@ class IcdSettingManagementController extends Controller
     public function getIcd9subcodeList(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'icd_category_code' => 'required|string',
+            'icd_category_code' => 'required',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -179,7 +182,7 @@ class IcdSettingManagementController extends Controller
         $users = DB::table('icd_code')
             ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
             ->join('icd_category', 'icd_code.icd_category_id', '=', 'icd_category.id')
-            ->select('icd_type.icd_type_code', 'icd_category.icd_category_code', 'icd_code.id', 'icd_code.icd_code', 'icd_code.icd_name', 'icd_code.icd_description', 'icd_code.icd_order')
+            ->select('icd_type.icd_type_code', 'icd_category.icd_category_code', 'icd_code.id', 'icd_code.icd_code', 'icd_code.icd_name', 'icd_code.icd_description', 'icd_code.icd_order','icd_code.icd_name')
             ->where('icd_status', '=', '1')
             ->where('icd_code.icd_category_id', '=', $request->icd_category_code)
             // ->where('icd_code.icd_type_id', '=', $request->icd_category_code)

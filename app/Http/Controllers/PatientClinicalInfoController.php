@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\PatientClinicalInfo;
+use DateTime;
+use DateTimeZone;
 use Exception;
 use Validator;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +29,7 @@ class PatientClinicalInfoController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
+        $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
         $module = [
             'added_by' => $request->added_by,
             'patient_id' => $request->patient_id,
@@ -38,7 +41,8 @@ class PatientClinicalInfoController extends Controller
             'height' => $request->height,
             'bmi' => $request->bmi,
             'waist_circumference' => $request->waist_circumference,
-            'status' => "1"
+            'status' => "1",
+            'created_at' => $date->format('Y-m-d H:i:s'),
         ];
         PatientClinicalInfo::create($module);
         return response()->json(["message" => "Patient Clinical Information Created Successfully!", "code" => 200]);

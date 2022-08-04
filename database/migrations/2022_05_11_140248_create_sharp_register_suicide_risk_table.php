@@ -17,7 +17,7 @@ class CreateSharpRegisterSuicideRiskTable extends Migration
             $table->id();
             $table->bigInteger('added_by');
             $table->bigInteger('patient_id')->index('patient_id');
-            $table->string('result');
+            $table->string('result')->nullable();
             $table->timestamps();
         });
     }

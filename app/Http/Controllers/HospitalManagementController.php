@@ -85,7 +85,81 @@ class HospitalManagementController extends Controller
         }
         return response()->json(["message" => "Record Created Successfully!", "code" => 200]);
     }
-
+    public function updatehospital(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'added_by' => 'required|integer',
+            'salutation' => 'required|integer',
+            'name' => 'required|string',
+            'gender' => 'required|integer',
+            'citizenship' => 'required|integer',
+            'passport_nric_no' => 'required|string',
+            'religion' => 'required|integer',
+            'designation' => 'required|integer',
+            'email' => 'required|email',
+            'contact_mobile' => 'required|string',
+            'contact_office' => 'required|string',
+            'hospital_code' => 'required|string',
+            'hospital_prefix' => 'required|string',
+            'hospital_name' => 'required|string',
+            'hospital_adrress_1' => 'required|string',
+            'hospital_state' => 'required|integer',
+            'hospital_city' => 'required|integer',
+            'hospital_postcode' => 'required|integer',
+            'hospital_contact_number' => 'required|string',
+            'hospital_email' => 'required|email',
+            'hospital_fax_no' => 'required|string'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+        try {
+            HospitalHODManagement::where(
+                ['id' => $request->id]
+            )->update([
+                'added_by' =>  $request->added_by,
+                'salutation' =>  $request->salutation,
+                'name' =>  $request->name,
+                'gender' =>  $request->gender,
+                'citizenship' =>  $request->citizenship,
+                'passport_nric_no' =>  $request->passport_nric_no,
+                'religion' =>  $request->religion,
+                'designation' =>  $request->designation,
+                'email' =>  $request->email,
+                'contact_mobile' =>  $request->contact_mobile,
+                'contact_office' =>  $request->contact_office,
+                'status' => "1"
+            ]);
+    
+            HospitalManagement::where(
+                ['hod_psychiatrist_id' => $request->id]
+            )->update([
+                'hod_psychiatrist_name' => $request->name,
+                // 'hod_psychiatrist_id' => $HOD->hod_psychiatrist_id,
+                'added_by' =>  $request->added_by,
+                'hospital_code' =>  $request->hospital_code,
+                'hospital_prefix' =>  $request->hospital_prefix,
+                'hospital_name' =>  $request->hospital_name,
+                'hospital_adrress_1' =>  $request->hospital_adrress_1,
+                'hospital_adrress_2' =>  $request->hospital_adrress_2,
+                'hospital_adrress_3' =>  $request->hospital_adrress_3,
+                'hospital_state' =>  $request->hospital_state,
+                'hospital_city' =>  $request->hospital_city,
+                'hospital_postcode' =>  $request->hospital_postcode,
+                'hospital_contact_number' =>  $request->hospital_contact_number,
+                'hospital_email' => $request->hospital_email,
+                'hospital_fax_no' => $request->hospital_fax_no,
+                'hospital_status' => "1"
+            ]);
+            return response()->json(["message" => "Updated Successfully.", "code" => 200]);
+ 
+        } catch (\Throwable $th) {
+            //throw $th;
+            return response()->json(["message" => "Something Went Wrong", "code" => 501]);
+        }
+      
+       
+    }
     public function storeBranch(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -216,16 +290,24 @@ class HospitalManagementController extends Controller
     public function getHospitalListById($id)
     {
         $hm = HospitalManagement::find($id);
+        $hospital['hospital_id'] = $hm['id'];
         $hospital['name'] = $hm['hospital_name'];
         $hospital['code'] = $hm['hospital_code'];
         $hospital['prefix'] = $hm['hospital_prefix'];
-        $hospital['address'] = $hm['hospital_adrress_1'] . '<br />' . $hm['hospital_adrress_2'] . '<br />' . $hm['hospital_adrress_3'];
+        // $hospital['address'] = $hm['hospital_adrress_1'] . '<br />' . $hm['hospital_adrress_2'] . '<br />' . $hm['hospital_adrress_3'];
+        $hospital['address1'] = $hm['hospital_adrress_1'];
+        $hospital['address2']=$hm['hospital_adrress_2'];
+        $hospital['address3']= $hm['hospital_adrress_3'];
         $hospital['state'] = $hm->states->state_name;
+        $hospital['state_id'] = $hm->states->id;
         $hospital['city'] = $hm->cities->city_name;
+        $hospital['city_id'] = $hm->cities->id;
+        $hospital['postcode_id'] = $hm->cities->id;
         $hospital['postcode'] = $hm->cities->postcode;
         $hospital['email'] = $hm['hospital_email'];
         $hospital['contact'] = $hm['hospital_contact_number'];
         $hospital['status'] = $hm['hospital_status'];
+        $hospital['fax'] = $hm['hospital_fax_no'];
         // dd($hm);
         $hbm = HospitalHODManagement::find($hm['hod_psychiatrist_id']);
         //dd($hbm);
@@ -235,10 +317,15 @@ class HospitalManagementController extends Controller
         $hod['contact_mobile'] = $hbm['contact_mobile'];
         $hod['contact_office'] = $hbm['contact_office'];
         $hod['salutation'] = $hbm->salutations->section_value;
+        $hod['salutation_id'] = $hbm->salutations->id;
         $hod['religion'] = $hbm->religions->section_value;
+        $hod['religion_id'] = $hbm->religions->id;
         $hod['gender'] = $hbm->genders->section_value;
+        $hod['gender_id'] = $hbm->genders->id;
         $hod['citizenship'] =  $hbm['citizenship'];
+        $hod['citizenship_name'] =  $hbm->citizenships->citizenship_name;
         $hod['designation'] =  $hbm['designation'];
+        $hod['designation_name'] =  $hbm->designations->designation_name;
         return response()->json(["message" => "Hospital & HOD Psychiatrist", 'list' => ['hospital' => $hospital, 'psychiatrist' => $hod], "code" => 200]);
     }
 
@@ -391,7 +478,7 @@ class HospitalManagementController extends Controller
         ]);
         return response()->json(["message" => "Deleted Successfully.", "code" => 200]);
        
-        }
+    }
 
      public function removeBranchTeam(Request $request)
     {

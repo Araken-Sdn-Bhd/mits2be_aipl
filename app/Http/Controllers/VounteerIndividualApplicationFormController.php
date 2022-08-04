@@ -10,6 +10,7 @@ use App\Models\VonOrgRepresentativeBackground;
 use App\Models\Volunteerism;
 use App\Models\OutReachProjects;
 use App\Models\NetworkingContribution;
+use App\Models\VonAppointment;
 use App\Models\VonGroupApplication;
 use Exception;
 use Validator;
@@ -631,7 +632,7 @@ class VounteerIndividualApplicationFormController extends Controller
                 $result[$k]['phone_number'] = $val['phone_number'];
                 $result[$k]['email'] = $val['email'];
                 $result[$k]['screening'] = 'No';
-                if ($val['area_of_involvement'] == 'volunteerism') {
+                if ($val['area_of_involvement'] == 'Volunteerism') {
                     $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
@@ -1277,6 +1278,8 @@ class VounteerIndividualApplicationFormController extends Controller
 
         if ($indi) {
             foreach ($indi as $key => $val) {
+                $statuscheck=VonAppointment::where('parent_section_id',$val['id'])->where('status','1')->count();
+                if($statuscheck>0){
                 $result[$k]['id'] = $val['id'];
                 $result[$k]['name'] = $val['name'];
                 $result[$k]['app_type'] = 'Individual';
@@ -1297,6 +1300,7 @@ class VounteerIndividualApplicationFormController extends Controller
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                 }
                 $k++;
+            }
             }
         }
         $group = VonOrgRepresentativeBackground::where('section', 'group')->where($search)->where('status', '0')->get();

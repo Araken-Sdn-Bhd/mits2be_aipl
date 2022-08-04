@@ -385,4 +385,17 @@ class AddressManagementController extends Controller
             ->get();
         return response()->json(["message" => "stateWisePostcode List", 'list' => $users, "code" => 200]);
     }
+    public function getStateCityByPostcode(Request $request)
+    {
+        $list = Postcode::select('id', 'state_id', 'country_id', 'state_name', 'city_name')
+            ->where('postcode', '=', $request->postcode)
+            ->get();
+            // dd($list);
+            if(count($list)>0){
+                return response()->json(["message" => "Postcode List", 'list' => $list, "code" => 200]);
+            }else{
+                return response()->json(["message" => "No Data Found", "code" => 400]);
+            }
+        
+    }
 }

@@ -1,0 +1,102 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Exception;
+use Validator;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use App\Models\RehabDischargeNote;
+
+
+class RehabDischargeNoteController extends Controller
+{
+    //
+    public function store(Request $request)
+    {
+         $validator = Validator::make($request->all(), [
+             'added_by' => 'required|integer',
+             'patient_mrn_id' => 'required|integer',
+             'name' => 'required|string',
+             'mrn' => 'required|string',
+             'date' => 'required|date',
+             'time' => '',
+             'staff_name' => 'required|string',
+             'diagnosis_id' => 'required',
+             'intervention' => 'required|string',
+             'discharge_category' => '',
+             'comment' => '',
+             'location_services' => '',
+             'diagnosis_type' => '',
+             'service_category' => 'required',
+             'services_id' => '',
+             'code_id' => '',
+             'sub_code_id' => '',
+             'diagnosis_type' => 'required|integer',
+             'complexity_services' => '',
+             'outcome' => '',
+             'medication' => '',
+             'specialist_name' => '',
+             'case_manager' => '',
+             'verification_date_1' => '',
+             'verification_date_2' => '',
+             'id' => ''
+         ]);
+         if ($validator->fails()) {
+             return response()->json(["message" => $validator->errors(), "code" => 422]);
+         }
+ 
+        
+            $rehabdischarge = [
+            'added_by' => $request->added_by,
+            'patient_mrn_id' => $request->patient_mrn_id,
+            'name' =>  $request->name,
+            'mrn' =>  $request->mrn,
+            'date' =>  $request->date,
+            'time' =>  $request->time,
+            'staff_name' =>  $request->staff_name,
+            'diagnosis_id' => $request->diagnosis_id,
+            'intervention' => $request->intervention,
+            'discharge_category' => $request->discharge_category,
+            'comment' => $request->comment,
+            'location_services' => $request->location_services,
+            'diagnosis_type' => $request->diagnosis_type,
+            'service_category' => $request->service_category,
+            'services_id' => $request->services_id,
+            'code_id' => $request->code_id,
+            'sub_code_id' => $request->sub_code_id,
+            'complexity_services' => $request->complexity_services,
+            'outcome' => $request->outcome,
+            'medication' => $request->medication,
+            'specialist_name' => $request->specialist_name,
+            'case_manager' => $request->case_manager,
+            'verification_date_1' => $request->verification_date_1,
+            'verification_date_2' => $request->verification_date_2,
+            'status' => "1"
+            ];
+ 
+            $validateRehabDischarge = [];
+ 
+         if ($request->service_category == 'assisstance' || $request->service_category == 'external') {
+             $validateRehabDischarge['services_id'] = 'required';
+             $Rehabdischarge['services_id'] =  $request->services_id;
+         } else if ($request->service_category == 'clinical-work') {
+             $validateRehabDischarge['code_id'] = 'required';
+             $Rehabdischarge['code_id'] =  $request->code_id;
+             $validateRehabDischarge['sub_code_id'] = 'required';
+             $Rehabdischarge['sub_code_id'] =  $request->sub_code_id;
+         }
+         $validator = Validator::make($request->all(), $validateRehabDischarge);
+         if ($validator->fails()) {
+             return response()->json(["message" => $validator->errors(), "code" => 422]);
+         }
+         if($request->id){
+            RehabDischargeNote::where(['id' => $request->id])->update($rehabdischarge);
+            // RehabDischargeNote::firstOrCreate($rehabdischarge);  
+            return response()->json(["message" => "Rehab Discharge Note Created Successfully!", "code" => 200]);
+         }else{
+         RehabDischargeNote::firstOrCreate($rehabdischarge);  
+         return response()->json(["message" => "Rehab Discharge Note Created Successfully!", "code" => 200]);
+         }
+    }
+}

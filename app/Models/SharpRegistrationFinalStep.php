@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use App\Models\PatientRegistration;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +22,11 @@ class SharpRegistrationFinalStep extends Model
         'hospital_mgmt',
         'status',
         'created_at',
-        'updated_at'
+        'updated_at',
+        'risk_factor_yes_value'
     ];
+    public function patient()
+    {
+        return $this->hasMany(PatientRegistration::class, "id", "patient_id");
+    }
 }

@@ -18,8 +18,8 @@ class CreateScreenSubModulesTable extends Migration
             $table->bigInteger('added_by');
             $table->integer('module_id');
             $table->string('module_name');
-            $table->string('sub_module_code')->unique();
-            $table->string('sub_module_name')->unique();
+            $table->string('sub_module_code');
+            $table->string('sub_module_name');
             $table->enum('sub_module_status', [0, 1])->default(1);
             $table->timestamps();
         });

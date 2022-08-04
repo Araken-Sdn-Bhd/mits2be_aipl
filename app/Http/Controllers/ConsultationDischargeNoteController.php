@@ -13,13 +13,13 @@ class ConsultationDischargeNoteController extends Controller
          $validator = Validator::make($request->all(), [
              'added_by' => 'required|integer',
              'patient_id' => 'required|integer',
-             'diagnosis_id' => 'required|string',
+             'diagnosis_id' => 'required',
              'category_discharge' => '',
              'comment' => '',
              'specialist_name_id' => '',
              'date' => '',
 
-             'location_services' => 'required|string',
+             'location_services' => 'required',
              'services_id' => '',
              'code_id' => '',
              'sub_code_id' => '',
@@ -27,7 +27,8 @@ class ConsultationDischargeNoteController extends Controller
              'category_services' => 'required|string',
              'complexity_services' => '',
              'outcome' => '',
-             'medication_des' => ''
+             'medication_des' => '',
+             'id' => ''
          ]);
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -71,9 +72,15 @@ class ConsultationDischargeNoteController extends Controller
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
- 
+         if($request->id){
+            ConsultationDischargeNote::where(
+                ['id' => $request->id]
+            )->update($consultationdischarge);
+            // ConsultationDischargeNote::firstOrCreate($consultationdischarge);  
+         return response()->json(["message" => "Consultation Discharge Note Updated Successfully!", "code" => 200]);
+         }else{
          ConsultationDischargeNote::firstOrCreate($consultationdischarge);  
          return response()->json(["message" => "Consultation Discharge Note Created Successfully!", "code" => 200]);
-        
+         }
     }
 }

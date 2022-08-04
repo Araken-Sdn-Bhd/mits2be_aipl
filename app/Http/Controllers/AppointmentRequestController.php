@@ -15,7 +15,7 @@ class AppointmentRequestController extends Controller
             'branch_id' => 'required|integer',
             'name' => 'required|string', 
             'contact_no' => 'required|string',
-            'address' => 'required|string',
+            'address' => '',
             'email' => 'required|string',
             'patient_mrn_id' => '',
             'nric_or_passportno' => '',
@@ -46,7 +46,7 @@ class AppointmentRequestController extends Controller
 
     public function getRequestList()
     {
-       $list =AppointmentRequest::select('id', 'added_by','branch_id','name','nric_or_passportno', 'contact_no', 'address', 'address1', 'email','ip_address','created_at')
+       $list =AppointmentRequest::select('id', 'added_by','branch_id','name','nric_or_passportno', 'contact_no', 'address', 'address1', 'email','ip_address',DB::raw("DATE_FORMAT(created_at, '%d-%M-%y') as created"))
        ->get();
     //    foreach ($list as $item) {
     //     if ($item->created_at != null) {

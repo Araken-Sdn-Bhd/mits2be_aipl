@@ -17,11 +17,11 @@ class CreatePatientShharpRegistrationDataProducerTable extends Migration
             $table->increments('id');
             $table->bigInteger('added_by');
             $table->integer('patient_mrn_id');
-	        $table->string('name_registering_officer');
-	        $table->string('hospital_name');
-	        $table->string('designation');
-	        $table->string('psychiatrist_name');
-            $table->date('reporting_date');
+	        $table->string('name_registering_officer')->nullable();
+	        $table->string('hospital_name')->nullable();
+	        $table->string('designation')->nullable();
+	        $table->string('psychiatrist_name')->nullable();
+            $table->date('reporting_date')->nullable();
             $table->enum('status', [0, 1, 2])->default(1);
             $table->timestamps();
         });

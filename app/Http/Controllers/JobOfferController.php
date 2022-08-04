@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AttemptTest;
 use Illuminate\Http\Request;
 use App\Models\JobOffers;
 use App\Models\JobCompanies;
@@ -12,8 +13,21 @@ use App\Models\CPSReferralForm;
 use App\Models\LASERAssesmenForm;
 use App\Models\PatientCarePaln;
 use App\Models\User;
+use App\Models\CpsHomevisitConsentForm;
+use App\Models\PhotographyConsentForm;
+use App\Models\EtpConsentForm;
+use App\Models\JobClubConsentForm;
+use App\Models\CpsHomevisitWithdrawalForm;
+use App\Models\HospitalBranchTeamManagement;
+use App\Models\JobStartForm;
+use App\Models\JobEndReport;
+use App\Models\JobTransitionReport;
+use App\Models\HospitalManagement;
+use App\Models\JobStartFormList;
+use App\Models\TestResult;
 use Validator;
 use DB;
+use Exception;
 
 class JobOfferController extends Controller
 {
@@ -68,7 +82,7 @@ class JobOfferController extends Controller
             }
         } else if ($request->type == 'update') {
             try {
-                $job['status'] = $request->status;
+                // $job['status'] = $request->status;
                 JobOffers::where('id', $request->job_id)->update($job);
                 return response()->json(["message" => "Job updated", "result" => $job, "code" => 200]);
             } catch (Exception $e) {
@@ -297,19 +311,69 @@ class JobOfferController extends Controller
     {
         $patient_id = $request->patient_id;
         $patient = PatientRegistration::select('name_asin_nric', 'nric_no', 'passport_no')->where('id', $patient_id)->get();
+        $hospital = HospitalManagement::select('hospital_name')->where('added_by', $request->added_by)->get();
+        $hospitalbranch = HospitalBranchTeamManagement::select('hospital_branch_name')->where('added_by', $request->added_by)->get();
         $user = User::select('name', 'role')->where('id', $request->added_by)->get();
-        $response = [
-            'patient_name' => $patient[0]['name_asin_nric'],
-            'nric_no' => ($patient[0]['nric_no']) ? $patient[0]['nric_no'] : $patient[0]['passport_no'],
-            'date' => date('d/m/Y'),
-            'user_name' => $user[0]['name'],
-            'designation' => $user[0]['role']
-        ];
-        return response()->json(["message" => "SE Consent Form", "list" => $response,  "code" => 200]);
+         if(!empty($hospital[0])){
+            $response = [
+                'patient_name' => $patient[0]['name_asin_nric'],
+                'nric_no' => ($patient[0]['nric_no']) ? $patient[0]['nric_no'] : $patient[0]['passport_no'],
+                'date' => date('d/m/Y'),
+                'user_name' => $user[0]['name'],
+                'designation' => $user[0]['role'],
+                'hospital_name' => $hospital[0]['hospital_name'],
+                'hospital_branch_name' => "NA"
+            ];
+            return response()->json(["message" => "SE Consent Form", "list" => $response,  "code" => 200]);
+        }else if(!empty($hospitalbranch[0])){
+            $response = [
+                'patient_name' => $patient[0]['name_asin_nric'],
+                'nric_no' => ($patient[0]['nric_no']) ? $patient[0]['nric_no'] : $patient[0]['passport_no'],
+                'date' => date('d/m/Y'),
+                'user_name' => $user[0]['name'],
+                'designation' => $user[0]['role'],
+                'hospital_name' => "NA",
+                'hospital_branch_name' => $hospitalbranch[0]['hospital_branch_name']
+            ];
+            return response()->json(["message" => "SE Consent Form", "list" => $response,  "code" => 200]);
+        }else if(!empty($hospital[0]) && !empty($hospitalbranch[0])){
+            $response = [
+                'patient_name' => $patient[0]['name_asin_nric'],
+                'nric_no' => ($patient[0]['nric_no']) ? $patient[0]['nric_no'] : $patient[0]['passport_no'],
+                'date' => date('d/m/Y'),
+                'user_name' => $user[0]['name'],
+                'designation' => $user[0]['role'],
+                'hospital_name' => $hospital[0]['hospital_name'],
+                'hospital_branch_name' => $hospitalbranch[0]['hospital_branch_name']
+            ];
+            return response()->json(["message" => "SE Consent Form", "list" => $response,  "code" => 200]);
+        }else{
+            $response = [
+                'patient_name' => $patient[0]['name_asin_nric'],
+                'nric_no' => ($patient[0]['nric_no']) ? $patient[0]['nric_no'] : $patient[0]['passport_no'],
+                'date' => date('d/m/Y'),
+                'user_name' => $user[0]['name'],
+                'designation' => $user[0]['role'],
+                'hospital_name' => "NA",
+                'hospital_branch_name' => "NA"
+            ];
+            return response()->json(["message" => "SE Consent Form", "list" => $response,  "code" => 200]);
+        }
+       
     }
 
     public function setSEConsentForm(Request $request)
     {
+        if($request->id){
+            SEConsentForm::where(['id' => $request->id])->update([
+                'patient_id' => $request->patient_id,
+                'added_by' => $request->added_by,
+                'consent_for_participation' => $request->consent_for_participation,
+                'consent_for_disclosure' => (string) $request->consent_for_disclosure,
+                'created_at' => date('Y-m-d')
+            ]);
+            return response()->json(["message" => "Updated", "code" => 200]);
+        }else{
         SEConsentForm::create([
             'patient_id' => $request->patient_id,
             'added_by' => $request->added_by,
@@ -318,6 +382,7 @@ class JobOfferController extends Controller
             'created_at' => date('Y-m-d')
         ]);
         return response()->json(["message" => "Created", "code" => 200]);
+    }
     }
 
     public function setCPSReferralForm(Request $request)
@@ -336,6 +401,7 @@ class JobOfferController extends Controller
             'outcome' => $request->outcome,
             'icd_9_code' => $request->icd_9_code,
             'icd_9_subcode' => $request->icd_9_subcode,
+            'medication_des' => $request->medication,
             'medication_referrer_name' => $request->medication_referrer_name,
             'medication_referrer_designation' => $request->medication_referrer_designation,
             'created_at' => date('Y-m-d')
@@ -345,7 +411,73 @@ class JobOfferController extends Controller
 
     public function setLASERReferralForm(Request $request)
     {
-        LASERAssesmenForm::create([
+        
+        $result = json_decode($request->result, true);
+        // dd($result);
+        $addTestResult = [];
+        $level = [];
+        if (count($result) > 0) {
+            $i = 0;
+            $whoDasTotal = 0;
+            foreach ($result as $key => $val) {
+                foreach ($val as $kk => $vv) {
+                    //  $TestResult[$request->test_name][$kk] =  $this->prepareResult($vv, $request->test_name);
+                    if (
+                        $request->test_name == 'laser'
+                    ) {
+                        $testResult[$i] =
+                            [
+                                'added_by' =>  $request->added_by,
+                                'patient_id' =>  $request->patient_id,
+                                'test_name' =>  $request->test_name,
+                                'ip_address' => $request->user_ip_address,
+                                'created_at' =>  date('Y-m-d H:i:s'),
+                                'updated_at' =>  date('Y-m-d H:i:s'),
+                                'test_section_name' => $kk,
+                                'result' => $this->prepareLaserResult($vv)
+                            ];
+                        // if ($request->test_name != 'bdi' && $request->test_name != 'bai' && $request->test_name != 'atq' && $request->test_name != 'psp' && $request->test_name != 'si') {
+                            if ($request->test_name == 'laser') {
+                                $level[$kk] =  ['score' => $this->prepareLaserResult($vv)];
+                            }else if($request->test_name == 'contemplation'){
+                                $level[$kk] =  ['score' => $this->prepareLaserResult($vv)];
+                            } else {
+                                $level[$kk] = $this->prepareLaserResult($vv);
+                            }
+                        // }
+                        
+                    } 
+                    // else if ($request->test_name == 'dass') {
+                    //     $testResult = $this->prepareDASSResult($vv, $request);
+                    //     $level = $this->getDassLevel($testResult);
+                    // }
+
+                    foreach ($vv as $k => $v) {
+                        $addTestResult[$i] = [
+                            'added_by' =>  $request->added_by,
+                            'patient_mrn_id' =>  $request->patient_id,
+                            'test_name' =>  $request->test_name,
+                            'test_section_name' => $kk,
+                            'question_id' =>  $k,
+                            'answer_id' => $v,
+                            'user_ip_address' => $request->user_ip_address,
+                            'created_at' =>  date('Y-m-d H:i:s'),
+                            'updated_at' =>  date('Y-m-d H:i:s')
+                        ];
+                        $i++;
+                    }
+                }
+            }
+            //  dd($testResult);
+            // try {
+            //     AttemptTest::insert($addTestResult);
+            //     TestResult::insert($testResult);
+            //     return response()->json(["message" => "Answer submitted", "result" => $level, "code" => 200]);
+            // } catch (Exception $e) {
+            //     return response()->json(["message" => $e->getMessage(), 'Exception' => $addTestResult, "code" => 200]);
+            // }
+        }
+        $laserreferral=[
             'patient_id' => $request->patient_id,
             'added_by' => $request->added_by,
             'pre_contemplation' => $request->pre_contemplation,
@@ -361,13 +493,44 @@ class JobOfferController extends Controller
             'icd_9_subcode' => $request->icd_9_subcode,
             'medication_prescription' => $request->medication_prescription,
             'created_at' => date('Y-m-d')
-        ]);
-        return response()->json(["message" => "Created", "code" => 200]);
+        ];
+        if($request->id){
+            LASERAssesmenForm::where(['id' => $request->id])->update($laserreferral);
+            // RehabDischargeNote::firstOrCreate($rehabdischarge);  
+            return response()->json(["message" => "Updated", "code" => 200]);
+         }else{
+            LASERAssesmenForm::create($laserreferral); 
+            try {
+                AttemptTest::insert($addTestResult);
+                TestResult::insert($testResult);
+                return response()->json(["message" => "Answer submitted", "result" => $level, "code" => 200]);
+            } catch (Exception $e) {
+                return response()->json(["message" => $e->getMessage(), 'Exception' => $addTestResult, "code" => 200]);
+            } 
+        //  return response()->json(["message" => "Created", "code" => 200]);
+         }
+    }
+
+    public function prepareLaserResult($resultSet)
+    {
+        $result = 0;
+        $values = ['1' => 1, '2' => 2, '3'=>3,'4'=>4,'5'=>5];
+        $revValues = ['5' => 100, '4' => 75, '3'=>35,'2'=>25,'1'=>0];
+        $i = 1;
+        foreach ($resultSet as $k => $v) {
+            if($i<7)
+            $result += $values[$v];
+            else
+            $result += $revValues[$v];
+
+            $i++;
+        }
+        return $result;
     }
 
     public function setPatientCarePlan(Request $request)
     {
-        PatientCarePaln::create([
+        $patientcarepln=[
             'patient_id' => $request->patient_id,
             'added_by' => $request->added_by,
             'plan_date' => $request->plan_date,
@@ -396,18 +559,413 @@ class JobOfferController extends Controller
             'icd_9_subcode' => $request->icd_9_subcode,
             'medication_prescription' => $request->medication_prescription,
             'created_at' => date('Y-m-d')
-        ]);
-        return response()->json(["message" => "Created", "code" => 200]);
+        ];
+        // PatientCarePaln::create()
+        if($request->id){
+            PatientCarePaln::where(['id' => $request->id])->update($patientcarepln);
+            // RehabDischargeNote::firstOrCreate($rehabdischarge);  
+            return response()->json(["message" => "Updated", "code" => 200]);
+         }else{
+            PatientCarePaln::create($patientcarepln);  
+         return response()->json(["message" => "Created", "code" => 200]);
+         }
+       
     }
 
     public function dischareCategory()
     {
-        $arr = ['1' => 'At Own Risk', '2' => 'Death', '3' => 'Discharged Well', '4' => 'Technical Discharge', '5' => 'Transfer'];
+        // $arr = ['1' => 'At Own Risk', '2' => 'Death', '3' => 'Discharged Well', '4' => 'Technical Discharge', '5' => 'Transfer'];
+        // $arr = ['1' => 'At Own Risk', '2' => 'Death', '3' => 'Discharged Well', '4' => 'Technical Discharge', '5' => 'Transfer'];
+        $arr = array(
+            array('id' => '1','name' => 'At Own Risk'),
+            array('id' => '2','name' => 'Death'),
+            array('id' => '3','name' => 'Discharged Well'),
+            array('id' => '4','name' => 'Technical Discharge'),
+            array('id' => '5','name' => 'Transfer'));
         return response()->json(["message" => "List", 'list' => $arr, "code" => 200]);
     }
     public function screeningTypes()
     {
-        $arr = ['1' => 'CBI', '2' => 'DASS', '3' => 'PHQ9', '4' => 'WHODAS'];
+        // $arr = ['1' => 'CBI', '2' => 'DASS', '3' => 'PHQ9', '4' => 'WHODAS'];
+        $arr = array(
+            array('id' => '1','name' => 'CBI'),
+            array('id' => '2','name' => 'DASS'),
+            array('id' => '3','name' => 'PHQ9'),
+            array('id' => '4','name' => 'WHODAS'));
         return response()->json(["message" => "List", 'list' => $arr, "code" => 200]);
+    }
+    public function setCpsHomevisitConsentForm(Request $request)
+    {
+        if($request->id){
+            CpsHomevisitConsentForm::where(['id' => $request->id])->update([
+                'patient_id' => $request->patient_id,
+                'added_by' => $request->added_by,
+                'consent_for_homevisit' => $request->consent_for_homevisit,
+                'consent_for_hereby_already_give_explanation' =>(string) $request->consent_for_hereby_already_give_explanation,
+                'created_at' => date('Y-m-d')
+            ]);
+            return response()->json(["message" => "Created", "code" => 200]);
+        }else{
+        CpsHomevisitConsentForm::create([
+            'patient_id' => $request->patient_id,
+            'added_by' => $request->added_by,
+            'consent_for_homevisit' => $request->consent_for_homevisit,
+            'consent_for_hereby_already_give_explanation' =>(string) $request->consent_for_hereby_already_give_explanation,
+            'created_at' => date('Y-m-d')
+        ]);
+        return response()->json(["message" => "Created", "code" => 200]);
+    }
+    }
+
+    public function getCpsHomevisitForm(Request $request)
+    {
+        $patient_id = $request->patient_id;
+        $patient = PatientRegistration::select('name_asin_nric', 'nric_no', 'passport_no','kin_name_asin_nric','kin_nric_no')->where('id', $patient_id)->get();
+        $hospital = HospitalManagement::select('hospital_name')->where('added_by', $request->added_by)->get();
+        $user = User::select('name', 'role')->where('id', $request->added_by)->get();
+        if(!empty($hospital[0])){
+            $response = [
+                'patient_name' => $patient[0]['name_asin_nric'],
+                'nric_no' => ($patient[0]['nric_no']) ? $patient[0]['nric_no'] : $patient[0]['passport_no'],
+                'date' => date('d/m/Y'),
+                'user_name1' => $user[0]['name'],
+                'user_name' => $patient[0]['kin_name_asin_nric'] ?? 'NA',
+                'guardian_nric' =>  $patient[0]['kin_nric_no'] ?? 'NA',
+                'designation' => $user[0]['name'],
+                'hospital_name' => $hospital[0]['hospital_name']
+            ];
+            return response()->json(["message" => "CPS HomeVisit Consent Form", "list" => $response,  "code" => 200]);
+        }
+        else{
+            $response = [
+                'patient_name' => $patient[0]['name_asin_nric'],
+                'nric_no' => ($patient[0]['nric_no']) ? $patient[0]['nric_no'] : $patient[0]['passport_no'],
+                'date' => date('d/m/Y'),
+                'user_name1' => $user[0]['name'],
+                'designation' => $user[0]['name'],
+                'hospital_name' => "HOSPITAL [NA]",
+                'user_name' => $patient[0]['kin_name_asin_nric']  ?? 'NA',
+                'guardian_nric' =>  $patient[0]['kin_nric_no'] ?? 'NA',
+            ];
+            return response()->json(["message" => "CPS HomeVisit Consent Form", "list" => $response,  "code" => 200]);
+        }
+       
+    }
+
+    public function getJobClubForm(Request $request)
+    {
+        $patient_id = $request->patient_id;
+        $patient = PatientRegistration::select('name_asin_nric', 'nric_no', 'passport_no')->where('id', $patient_id)->get();
+        $user = User::select('name', 'role')->where('id', $request->added_by)->get();
+        $response = [
+            'patient_name' => $patient[0]['name_asin_nric'],
+            'nric_no' => ($patient[0]['nric_no']) ? $patient[0]['nric_no'] : $patient[0]['passport_no'],
+            'date' => date('d/m/Y'),
+            'user_name' => $user[0]['name'],
+            'designation' => $user[0]['role']
+        ];
+        return response()->json(["message" => "Job Club Consent Form", "list" => $response,  "code" => 200]);
+    }
+
+    public function setJobClubConsentForm(Request $request)
+    {
+        if($request->id){
+            JobClubConsentForm::where(['id' =>$request->id])->update([
+                'patient_id' => $request->patient_id,
+                'added_by' => $request->added_by,
+                'consent_for_participation' => $request->consent_for_participation,
+                'created_at' => date('Y-m-d')
+            ]);
+            return response()->json(["message" => "Update", "code" => 200]);
+        }else{
+        JobClubConsentForm::create([
+            'patient_id' => $request->patient_id,
+            'added_by' => $request->added_by,
+            'consent_for_participation' => $request->consent_for_participation,
+            'created_at' => date('Y-m-d')
+        ]);
+        return response()->json(["message" => "Created", "code" => 200]);
+    }
+    }
+
+    public function getEtpForm(Request $request)
+    {
+        $patient_id = $request->patient_id;
+        $patient = PatientRegistration::select('name_asin_nric', 'nric_no', 'passport_no')->where('id', $patient_id)->get();
+        $user = User::select('name', 'role')->where('id', $request->added_by)->get();
+        $response = [
+            'patient_name' => $patient[0]['name_asin_nric'],
+            'nric_no' => ($patient[0]['nric_no']) ? $patient[0]['nric_no'] : $patient[0]['passport_no'],
+            'date' => date('d/m/Y'),
+            'user_name' => $user[0]['name'],
+            'designation' => $user[0]['role']
+        ];
+        return response()->json(["message" => "ETP Consent Form", "list" => $response,  "code" => 200]);
+    }
+
+    public function setEtpConsentForm(Request $request)
+    {
+        if($request->id){
+            EtpConsentForm::where(['id' =>$request->id])->update([
+                'patient_id' => $request->patient_id,
+                'added_by' => $request->added_by,
+                'consent_for_participation' => $request->consent_for_participation,
+                'consent_for_disclosure' =>(string) $request->consent_for_disclosure,
+                'created_at' => date('Y-m-d')
+            ]);
+            return response()->json(["message" => "Updated", "code" => 200]);
+        }else{
+        EtpConsentForm::create([
+            'patient_id' => $request->patient_id,
+            'added_by' => $request->added_by,
+            'consent_for_participation' => $request->consent_for_participation,
+            'consent_for_disclosure' =>(string) $request->consent_for_disclosure,
+            'created_at' => date('Y-m-d')
+        ]);
+        return response()->json(["message" => "Created", "code" => 200]);
+    }
+    }
+
+    public function setCpsHomevisitWithdrawalForm(Request $request)
+    {
+        if($request->id){
+            CpsHomevisitWithdrawalForm::where(['id' => $request->id])->update([
+                'patient_id' => $request->patient_id,
+                'added_by' => $request->added_by,
+                'community_psychiatry_services' => $request->community_psychiatry_services,
+                'created_at' => date('Y-m-d')
+            ]);
+            return response()->json(["message" => "Updated", "code" => 200]);
+        }else{
+        CpsHomevisitWithdrawalForm::create([
+            'patient_id' => $request->patient_id,
+            'added_by' => $request->added_by,
+            'community_psychiatry_services' => $request->community_psychiatry_services,
+            'created_at' => date('Y-m-d')
+        ]);
+        return response()->json(["message" => "Created", "code" => 200]);
+    }
+    }
+
+    public function getCpsHomevisitWithdrawalForm(Request $request)
+    {
+        $patient_id = $request->patient_id;
+        $patient = PatientRegistration::select('name_asin_nric', 'nric_no', 'passport_no')->where('id', $patient_id)->get();
+        $user = User::select('name', 'role')->where('id', $request->added_by)->get();
+        $response = [
+            'patient_name' => $patient[0]['name_asin_nric'],
+            'nric_no' => ($patient[0]['nric_no']) ? $patient[0]['nric_no'] : $patient[0]['passport_no'],
+            'date' => date('d/m/Y'),
+            'user_name' => $user[0]['name'],
+            'designation' => $user[0]['role']
+        ];
+        return response()->json(["message" => "CPS HomeVisit Withdrawal Form", "list" => $response,  "code" => 200]);
+    }
+
+    public function getPhotographyForm(Request $request)
+    {
+        $patient_id = $request->patient_id;
+        $patient = PatientRegistration::select('name_asin_nric', 'nric_no', 'passport_no')->where('id', $patient_id)->get();
+        $hospital = HospitalManagement::select('hospital_name')->where('added_by', $request->added_by)->get();
+        $user = User::select('name', 'role')->where('id', $request->added_by)->get();
+        if(!empty($hospital[0])){
+            $response = [
+                'patient_name' => $patient[0]['name_asin_nric'],
+                'nric_no' => ($patient[0]['nric_no']) ? $patient[0]['nric_no'] : $patient[0]['passport_no'],
+                'date' => date('d/m/Y'),
+                'user_name' => $user[0]['name'],
+                'designation' => $user[0]['role'],
+                'hospital_name' => $hospital[0]['hospital_name'],
+                'guardian' => "NA",
+                'nric_guardian' => "NA",
+                'date_guardian' => "NA",
+                'witness_name' => "NA",
+                'designation_guardian' => "NA",
+            ];
+            return response()->json(["message" => "Photography Consent Form", "list" => $response,  "code" => 200]);
+        }else{
+            $response = [
+                'patient_name' => $patient[0]['name_asin_nric'],
+                'nric_no' => ($patient[0]['nric_no']) ? $patient[0]['nric_no'] : $patient[0]['passport_no'],
+                'date' => date('d/m/Y'),
+                'user_name' => $user[0]['name'],
+                'designation' => $user[0]['role'],
+                'hospital_name' => "NA",
+                'guardian' => "NA",
+                'nric_guardian' => "NA",
+                'date_guardian' => "NA",
+                'witness_name' => "NA",
+                'designation_guardian' => "NA",
+            ];
+            return response()->json(["message" => "Photography Consent Form", "list" => $response,  "code" => 200]);
+        }
+        
+    }
+
+    public function setPhotographyConsentForm(Request $request)
+    {
+        if($request->id){
+            PhotographyConsentForm::where(['id' => $request->id])->create([
+                'patient_id' => $request->patient_id,
+                'added_by' => $request->added_by,
+                'photography_consent_form_agree' => $request->photography_consent_form_agree,
+                'created_at' => date('Y-m-d')
+            ]);
+            return response()->json(["message" => "Created", "code" => 200]);
+        }else{
+        PhotographyConsentForm::create([
+            'patient_id' => $request->patient_id,
+            'added_by' => $request->added_by,
+            'photography_consent_form_agree' => $request->photography_consent_form_agree,
+            'created_at' => date('Y-m-d')
+        ]);
+        return response()->json(["message" => "Created", "code" => 200]);
+    }
+    }
+    public function setJobStartForm(Request $request)
+    {
+        $jobstart=[
+            'patient_id' => $request->patient_id,
+            'added_by' => $request->added_by,
+            'client' => $request->client,
+            'employment_specialist' => $request->employment_specialist,
+            'case_manager' => $request->case_manager,
+            'first_date_of_work' => $request->first_date_of_work,
+            'job_title' => $request->job_title,
+            'duties_field' => $request->duties_field,
+            'rate_of_pay' => $request->rate_of_pay,
+            'benefits_field' => $request->benefits_field,
+            'work_schedule' => $request->work_schedule,
+            'disclosure' => $request->disclosure,
+            'name_of_employer' => $request->name_of_employer,
+            'name_of_superviser' => $request->name_of_superviser,
+            'address' => $request->address,
+            'location_of_service' => $request->location_of_service,
+            'type_of_diagnosis' => $request->type_of_diagnosis,
+            'category_of_services' => $request->category_of_services,
+            'services' => $request->services,
+            'complexity_of_services' => $request->complexity_of_services,
+            'outcome' => $request->outcome,
+            'icd_9_code' => $request->icd_9_code,
+            'icd_9_subcode' => $request->icd_9_subcode,
+            'medication_prescription' => $request->medication_prescription,
+            'created_at' => date('Y-m-d')
+        ];
+        if($request->id){
+            JobStartForm::where(['id' => $request->id])->update($jobstart);
+            return response()->json(["message" => "Updated", "code" => 200]);
+        }else{
+        JobStartForm::create($jobstart);
+        return response()->json(["message" => "Created", "code" => 200]);
+        }
+    }
+
+    public function setJobEndReport(Request $request)
+    {
+        $jobend=[
+            'patient_id' => $request->patient_id,
+            'added_by' => $request->added_by,
+            'name' => $request->name,
+            'job_title' => $request->job_title,
+            'employer_name' => $request->employer_name,
+            'job_start_date' => $request->job_start_date,
+            'job_end_date' => $request->job_end_date,
+            'changes_in_job_duties' => $request->changes_in_job_duties,
+            'reason_for_job_end' => $request->reason_for_job_end,
+            'clients_perspective' => $request->clients_perspective,
+            'staff_comments_regarding_job' => $request->staff_comments_regarding_job,
+            'employer_comments' => $request->employer_comments,
+            'type_of_support' => $request->type_of_support,
+            'person_wish_for_another_job' => $request->person_wish_for_another_job,
+            'clients_preferences' => $request->clients_preferences,
+            'staff_name' => $request->staff_name,
+            'date' => $request->date,
+            'location_of_service' => $request->location_of_service,
+            'type_of_diagnosis' => $request->type_of_diagnosis,
+            'category_of_services' => $request->category_of_services,
+            'services' => $request->services,
+            'complexity_of_services' => $request->complexity_of_services,
+            'outcome' => $request->outcome,
+            'icd_9_code' => $request->icd_9_code,
+            'icd_9_subcode' => $request->icd_9_subcode,
+            'medication_prescription' => $request->medication_prescription,
+            'created_at' => date('Y-m-d')
+        ];
+        if($request->id){
+            JobEndReport::where(['id' => $request->id])->update($jobend);
+            return response()->json(["message" => "Updated", "code" => 200]);
+        }else{
+            JobEndReport::create($jobend);
+        return response()->json(["message" => "Created", "code" => 200]);
+        }
+    }
+
+    public function setJobTransitionReport(Request $request)
+    {
+        $jobtransition=[
+            'patient_id' => $request->patient_id,
+            'added_by' => $request->added_by,
+            'future_plan' => $request->future_plan,
+            'short_term_goal' => $request->short_term_goal,
+            'long_term_goal' => $request->long_term_goal,
+            'who_have_you_called_past' => $request->who_have_you_called_past,
+            'my_case_manager_yes_no' => $request->my_case_manager_yes_no,
+            'my_case_manager_name' => $request->my_case_manager_name,
+            'my_case_manager_contact' => $request->my_case_manager_contact,
+            'my_therapist_yes_no' => $request->my_therapist_yes_no,
+            'my_therapist_name' => $request->my_therapist_name,
+            'my_therapist_contact' => $request->my_therapist_contact,
+            'my_family_yes_no' => $request->my_family_yes_no,
+            'my_family_name' => $request->my_family_name,
+            'my_family_contact' => $request->my_family_contact,
+            'my_friend_yes_no' => $request->my_friend_yes_no,
+            'my_friend_name' => $request->my_friend_name,
+            'my_friend_contact' => $request->my_friend_contact,
+            'my_significant_other_yes_no' => $request->my_significant_other_yes_no,
+            'my_significant_other_name' => $request->my_significant_other_name,
+            'my_significant_other_contact' => $request->my_significant_other_contact,
+            'clergy_yes_no' => $request->clergy_yes_no,
+            'clergy_name' => $request->clergy_name,
+            'clergy_contact' => $request->clergy_contact,
+            'benefit_planner_yes_no' => $request->benefit_planner_yes_no,
+            'benefit_planner_name' => $request->benefit_planner_name,
+            'benefit_planner_contact' => $request->benefit_planner_contact,
+            'other_yes_no' => $request->other_yes_no,
+            'other_name' => $request->other_name,
+            'other_contact' => $request->other_contact,
+            'schedule_meeting_discuss_for_transition' => $request->schedule_meeting_discuss_for_transition,
+            'who_check_in_with_you' => $request->who_check_in_with_you,
+            'who_contact_you' => $request->who_contact_you,
+            'how_would_like_to_contacted' => $request->how_would_like_to_contacted,
+            'coping_strategies' => $request->coping_strategies,
+            'dissatisfied_with_your_job' => $request->dissatisfied_with_your_job,
+            'reasons_to_re_connect_to_ips' => $request->reasons_to_re_connect_to_ips,
+            'patient_name' => $request->patient_name,
+            'doctor_name' => $request->doctor_name,
+            'transition_report_date' => $request->transition_report_date,
+            'date' => $request->date,
+            'location_of_service' => $request->location_of_service,
+            'type_of_diagnosis' => $request->type_of_diagnosis,
+            'category_of_services' => $request->category_of_services,
+            'services' => $request->services,
+            'complexity_of_services' => $request->complexity_of_services,
+            'outcome' => $request->outcome,
+            'icd_9_code' => $request->icd_9_code,
+            'icd_9_subcode' => $request->icd_9_subcode,
+            'medication_prescription' => $request->medication_prescription,
+            'created_at' => date('Y-m-d')
+        ];
+        if($request->id){
+            JobTransitionReport::where(['id' => $request->id])->update($jobtransition);
+            return response()->json(["message" => "Updated", "code" => 200]);
+        }else{
+            JobTransitionReport::create($jobtransition);
+        return response()->json(["message" => "Created", "code" => 200]);
+        }
+    }
+    public function GetJobStartList()
+    {
+       $list =JobStartFormList::select('id', 'job_title')->get();
+       return response()->json(["message" => "Job Start Form List", 'list' => $list, "code" => 200]);
     }
 }

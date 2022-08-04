@@ -13,7 +13,7 @@ class PsychologyReferralController extends Controller
          $validator = Validator::make($request->all(), [
              'added_by' => 'required|integer',
              'patient_id' => 'required|integer',
-             'diagnosis_id' => 'required|string',
+             'diagnosis_id' => 'required',
              'patient_acknowledged' => '',
              'reason_referral_assessment' => '',
              'reason_referral_assessment_other' => '',
@@ -24,7 +24,7 @@ class PsychologyReferralController extends Controller
              'designation' => '',
              'date' => '',
 
-             'location_services' => 'required|string',
+             'location_services' => 'required',
              'services_id' => '',
              'code_id' => '',
              'sub_code_id' => '',

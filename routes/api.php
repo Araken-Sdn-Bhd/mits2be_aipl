@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityReportController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\GeneralSettingController;
@@ -37,6 +38,7 @@ use App\Http\Controllers\PatientSuicidalRiskAssessmentController;
 use App\Http\Controllers\AppointmentRequestController;
 use App\Http\Controllers\OcctReferralFormController;
 use App\Http\Controllers\InternalReferralFormController;
+use App\Http\Controllers\ExternalReferralFormController;
 use App\Http\Controllers\VounteerIndividualApplicationFormController;
 use App\Http\Controllers\PatientShharpRegistrationSelfHarmController;
 use App\Http\Controllers\PatientShharpRegistrationRiskProtectiveController;
@@ -63,7 +65,32 @@ use App\Http\Controllers\SelfHarmController;
 use App\Http\Controllers\SuicidalIntentController;
 use App\Http\Controllers\PatientGetIdeaAboutMethodController;
 use App\Http\Controllers\LocationServicesController;
+use App\Http\Controllers\PatientIndexFormController;
+use App\Http\Controllers\EtpProgressNoteController;
+use App\Http\Controllers\JobClubProgressNoteController;
+use App\Http\Controllers\SeProgressNoteController;
+use App\Http\Controllers\RehabDischargeNoteController;
+use App\Http\Controllers\RehabReferralAndClinicalFormController;
+use App\Http\Controllers\CpsProgressNoteController;
+use App\Http\Controllers\CpsDischargeNoteController;
+use App\Http\Controllers\CpsPoliceReferralFormController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\GeneralReportController;
+use App\Http\Controllers\JobInterestChecklistController;
+use App\Http\Controllers\ListJobClubController;
+use App\Http\Controllers\ListOfETPController;
+use App\Http\Controllers\LogMeetingWithEmployerController;
+use App\Http\Controllers\WorkAnalysisFormController;
+use App\Http\Controllers\ListOfJobSearchController;
+use App\Http\Controllers\ListPreviousCurrentJobController;
+use App\Http\Controllers\RequestAppointmentReportController;
+use App\Http\Controllers\PatientByAgeReportController;
+use App\Http\Controllers\ForgetpasswordController;
+use App\Http\Controllers\EmailSettingController;
+use App\Http\Controllers\MailController;
+use App\Http\Controllers\PasswordController;
 use GuzzleHttp\Middleware;
+use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
@@ -81,6 +108,12 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);
+});
+Route::group(['prefix' => 'pass'], function () {
+    Route::post('/forgetpass', [ForgetpasswordController::class, 'forgetpass']);
+});
+Route::group(['prefix' => 'email-setting'], function () {
+    Route::post('/add', [EmailSettingController::class, 'store']);
 });
 Route::group(['middleware' => ['jwt.verify']], function () {
     Route::get('/users/{from}/{to}', [UsersController::class, 'user_list']);
@@ -112,6 +145,7 @@ Route::group(['middleware' => ['jwt.verify'], 'prefix' => 'system-settings'], fu
 });
 Route::group(['prefix' => 'hospital'], function () {
     Route::post('/add', [HospitalManagementController::class, 'store']);
+    Route::post('/updatehospital', [HospitalManagementController::class, 'updatehospital']);
     Route::post('/add-branch', [HospitalManagementController::class, 'storeBranch']);
     Route::post('/add-branch-team', [HospitalManagementController::class, 'storeBranchTeam']);
     Route::post('/get-branch-by-hospital-code', [HospitalManagementController::class, 'getBranchByHospitalCode']);
@@ -150,6 +184,9 @@ Route::group(['prefix' => 'screen-module'], function () {
     Route::post('/removeScreenModule', [ScreenModuleController::class, 'removeScreenModule']);
     Route::post('/getScreenPageListByModuleIdAndSubModuleId', [ScreenModuleController::class, 'getScreenPageListByModuleIdAndSubModuleId']);
     Route::post('/getTeamListByHospitalIdAndBranchId', [ScreenModuleController::class, 'getTeamListByHospitalIdAndBranchId']);
+    Route::get('/getUserMatrixList', [ScreenModuleController::class, 'getUserMatrixList']);
+    Route::post('/getUserMatrixListById', [ScreenModuleController::class, 'getUserMatrixListById']);
+    Route::post('/updatescreenRole', [ScreenModuleController::class, 'UpdateScreenRole']);
 });
 Route::group(['prefix' => 'general-setting'], function () {
     Route::post('/add', [GeneralSettingController::class, 'add']);
@@ -177,6 +214,7 @@ Route::group(['prefix' => 'address'], function () {
     Route::post('/{id}/editPostcode', [AddressManagementController::class, 'editPostcode']);
     Route::post('/{id}/countryWiseStateList', [AddressManagementController::class, 'countryWiseStateList']);
     Route::post('/{id}/stateWisePostcodeList', [AddressManagementController::class, 'stateWisePostcodeList']);
+    Route::post('/getStateCityByPostcode', [AddressManagementController::class, 'getStateCityByPostcode']);
 });
 
 Route::group(['prefix' => 'service'], function () {
@@ -242,6 +280,7 @@ Route::group(['prefix' => 'announcement'], function () {
     Route::post('/getAnnouncementDetails', [AnnouncementManagementController::class, 'getAnnouncementDetails']);
     Route::post('/update', [AnnouncementManagementController::class, 'updateAnnouncementManagement']);
     Route::post('/remove', [AnnouncementManagementController::class, 'remove']);
+    Route::post('/getAnnouncementListById', [AnnouncementManagementController::class, 'getAnnouncementListById']);
 });
 
 Route::get('/storage/{folder}/{filename}', function ($folder, $filename) {
@@ -263,10 +302,16 @@ Route::get('/storage/{folder}/{filename}', function ($folder, $filename) {
 Route::group(['prefix' => 'designation'], function () {
     Route::post('/addDesignation', [DesignationController::class, 'addDesignation']);
     Route::get('/getDesignationList', [DesignationController::class, 'getDesignationList']);
+    Route::post('/getDesignationListById', [DesignationController::class, 'getDesignationListById']);
+    Route::post('/delete', [DesignationController::class, 'delete']);
+    Route::post('/update', [DesignationController::class, 'update']);
 });
 Route::group(['prefix' => 'citizenship'], function () {
     Route::post('/addCitizenship', [CitizenshipController::class, 'addCitizenship']);
     Route::get('/getCitizenshipList', [CitizenshipController::class, 'getCitizenshipList']);
+    Route::post('/getCitizenshipListById', [CitizenshipController::class, 'getCitizenshipListById']);
+    Route::post('/delete', [CitizenshipController::class, 'delete']);
+    Route::post('/update', [CitizenshipController::class, 'update']);
 });
 Route::group(['prefix' => 'staff-management'], function () {
     Route::post('/addstaff', [StaffManagementController::class, 'store']);
@@ -303,6 +348,8 @@ Route::group(['prefix' => 'patient-registration'], function () {
     Route::post('/getPatientRegistrationById', [PatientRegistrationController::class, 'getPatientRegistrationById']);
     Route::post('/update', [PatientRegistrationController::class, 'updatePatientRegistration']);
     Route::get('/getPatientRegistrationList', [PatientRegistrationController::class, 'getPatientRegistrationList']);
+    Route::get('/getPatientRegistrationListByScreening', [PatientRegistrationController::class, 'getPatientRegistrationListByScreening']);
+    Route::post('/getTransactionlog', [PatientRegistrationController::class, 'getTransactionlog']);
 });
 Route::group(['prefix' => 'patient-clinicalinfo'], function () {
     Route::post('/add', [PatientClinicalInfoController::class, 'store']);
@@ -329,6 +376,7 @@ Route::group(['prefix' => 'patient-appointment-category'], function () {
 Route::group(['prefix' => 'patient-appointment-details'], function () {
     Route::post('/add', [PatientAppointmentDetailsController::class, 'store']);
     Route::get('/list', [PatientAppointmentDetailsController::class, 'getPatientAppointmentDetailsList']);
+    Route::get('/todaylist', [PatientAppointmentDetailsController::class, 'getPatientAppointmentDetailsTodayList']);
     Route::post('/update', [PatientAppointmentDetailsController::class, 'update']);
     Route::post('/remove', [PatientAppointmentDetailsController::class, 'remove']);
     Route::post('/getPatientAppointmentDetailsListById', [PatientAppointmentDetailsController::class, 'getPatientAppointmentDetailsListById']);
@@ -358,6 +406,7 @@ Route::group(['prefix' => 'patient-online-self-test'], function () {
 Route::group(['prefix' => 'patient'], function () {
     Route::post('/online-test', [AttemptTestController::class, 'store']);
     Route::get('/test-history', [AttemptTestController::class, 'testHistory']);
+    Route::post('/resultdetail', [AttemptTestController::class, 'resultdetail']);
 });
 Route::group(['prefix' => 'patient-suicidal-risk-assessment'], function () {
     Route::post('/add', [PatientSuicidalRiskAssessmentController::class, 'store']);
@@ -373,6 +422,13 @@ Route::group(['prefix' => 'appointment-request'], function () {
 
 Route::group(['prefix' => 'occt-referral'], function () {
     Route::post('/add', [OcctReferralFormController::class, 'store']);
+});
+Route::group(['prefix' => 'external-referral'], function () {
+    Route::post('/add', [ExternalReferralFormController::class, 'store']);
+});
+
+Route::group(['prefix' => 'rehab-referral'], function () {
+    Route::post('/add', [RehabReferralAndClinicalFormController::class, 'store']);
 });
 Route::group(['prefix' => 'internal-referral'], function () {
     Route::post('/add', [InternalReferralFormController::class, 'store']);
@@ -438,7 +494,9 @@ Route::group(['prefix' => 'patient-attachment'], function () {
 });
 Route::group(['prefix' => 'patient-alert'], function () {
     Route::post('/add', [PatientAlertController::class, 'store']);
-    Route::post('/alertListbyPatientId', [PatientAlertController::class, 'alertListbyPatientId']);
+    Route::post('/alertListbyPatientId', [PatientAlertController::class, 'alertListbyPatientId']); 
+    Route::post('/getAlertbyAlertId', [PatientAlertController::class, 'alertListbyAlertId']); 
+    Route::post('/resolved', [PatientAlertController::class, 'resolved']);
 });
 
 Route::group(['prefix' => 'psychiatrist'], function () {
@@ -486,12 +544,32 @@ Route::group(['prefix' => 'intervention'], function () {
     Route::post('/cps-form', [JobOfferController::class, 'setCPSReferralForm']);
     Route::Post('/laser-form', [JobOfferController::class, 'setLASERReferralForm']);
     Route::Post('/patient-care-plan', [JobOfferController::class, 'setPatientCarePlan']);
-    Route::Get('/category-discharge', [JobOfferController::class, 'dischareCategory']);
-    Route::Get('/screening-types', [JobOfferController::class, 'screeningTypes']);
+    Route::get('/category-discharge', [JobOfferController::class, 'dischareCategory']);
+    Route::get('/screening-types', [JobOfferController::class, 'screeningTypes']);
+    //abdus//
+    Route::post('/get-homevisit-consent-form', [JobOfferController::class, 'getCpsHomevisitForm']);
+    Route::post('/homevisit-form', [JobOfferController::class, 'setCpsHomevisitConsentForm']);
+    Route::post('/get-photography-consent-form', [JobOfferController::class, 'getPhotographyForm']);
+    Route::post('/photography-form', [JobOfferController::class, 'setPhotographyConsentForm']);
+    Route::post('/get-homevisit-withdrawal-form', [JobOfferController::class, 'getCpsHomevisitWithdrawalForm']);
+    Route::post('/Etp-form', [JobOfferController::class, 'setEtpConsentForm']);
+    Route::post('/get-etp-consent-form', [JobOfferController::class, 'getEtpForm']);
+    Route::post('/Job-Club-form', [JobOfferController::class, 'setJobClubConsentForm']);
+    Route::post('/get-job-club-consent-form', [JobOfferController::class, 'getJobClubForm']);
+    Route::post('/homevisit-withdrawal-form', [JobOfferController::class, 'setCpsHomevisitWithdrawalForm']);
+    Route::Post('/job-start-form', [JobOfferController::class, 'setJobStartForm']);
+    Route::Post('/job-report-end', [JobOfferController::class, 'setJobEndReport']);
+    Route::Post('/job-transition-report', [JobOfferController::class, 'setJobTransitionReport']);
+    Route::get('/job-start-form-list', [JobOfferController::class, 'GetJobStartList']);
 });
 Route::group(['prefix' => 'report'], function () {
     Route::post('/shharp', [ReportController::class, 'getSharpReport']);
-    //Route::post('/job-record-search', [JobOfferController::class, 'jobRecordSearchList']);
+    Route::post('/total-patient-type-refferal', [ReportController::class, 'getTotalPatientTypeRefferalReport']);
+    Route::post('/activity/patient', [ReportController::class, 'getPatientActivityReport']);
+    Route::post('/activity/von', [ReportController::class, 'getVONActivityReport']);
+    Route::post('/general', [ReportController::class, 'getGeneralReport']);
+    Route::post('/getPatientByAgeReport', [PatientByAgeReportController::class, 'getPatientByAgeReport']);
+    Route::post('/kpi', [ReportController::class, 'getKPIReport']);
 });
 Route::group(['prefix' => 'von-appointment'], function () {
     Route::post('/add', [VonAppointmentController::class, 'store']);
@@ -528,4 +606,111 @@ Route::group(['prefix' => 'diagnosis'], function () {
 Route::group(['prefix' => 'location-services'], function () {
     Route::post('/add', [LocationServicesController::class, 'add']);
     Route::get('/list', [LocationServicesController::class, 'getLocationServicesList']);
+});
+Route::group(['prefix' => 'patient-index'], function () {
+    Route::post('/add', [PatientIndexFormController::class, 'store']);
+});
+Route::group(['prefix' => 'etp-progress'], function () {
+    Route::post('/add', [EtpProgressNoteController::class, 'store']);
+});
+
+Route::group(['prefix' => 'job-club-progress'], function () {
+    Route::post('/add', [JobClubProgressNoteController::class, 'store']);
+});
+Route::group(['prefix' => 'se-progress-note'], function () {
+    Route::post('/add', [SeProgressNoteController::class, 'store']);
+    Route::get('/activitylist', [SeProgressNoteController::class, 'GetActivityList']);
+});
+
+Route::group(['prefix' => 'rehab-discharge-note'], function () {
+    Route::post('/add', [RehabDischargeNoteController::class, 'store']);
+});
+
+Route::group(['prefix' => 'cps-progress-note'], function () {
+    Route::post('/add', [CpsProgressNoteController::class, 'store']);
+});
+
+Route::group(['prefix' => 'cps-discharge-note'], function () {
+    Route::post('/add', [CpsDischargeNoteController::class, 'store']);
+});
+
+Route::group(['prefix' => 'cps-police-referral-form'], function () {
+    Route::post('/add', [CpsPoliceReferralFormController::class, 'store']);
+});
+
+Route::group(['prefix' => 'job-interest-checklist'], function () {
+    Route::post('/add', [JobInterestChecklistController::class, 'store']);
+});
+
+Route::group(['prefix' => 'list-job-club'], function () {
+    Route::post('/add', [ListJobClubController::class, 'store']);
+});
+
+Route::group(['prefix' => 'list-of-etp'], function () {
+    Route::post('/add', [ListofETPController::class, 'store']);
+});
+
+Route::group(['prefix' => 'log-employer-meeting'], function () {
+    Route::post('/add', [LogMeetingWithEmployerController::class, 'store']);
+});
+Route::group(['prefix' => 'work-analysis'], function () {
+    Route::post('/add', [WorkAnalysisFormController::class, 'store']);
+});
+Route::group(['prefix' => 'job-search-list'], function () {
+    Route::post('/add', [ListOfJobSearchController::class, 'store']);
+});
+
+Route::group(['prefix' => 'previous-current-job'], function () {
+    Route::post('/add', [ListPreviousCurrentJobController::class, 'store']);
+});
+
+//report
+Route::group(['prefix' => 'activity-report'], function () {
+    Route::post('/activity', [ActivityReportController::class, 'getActivityReport']);
+});
+Route::group(['prefix' => 'request-appointment-report'], function () {
+    Route::post('/get', [RequestAppointmentReportController::class, 'getRequestAppointmentReport']);
+});
+
+Route::group(['prefix' => 'general-report'], function () {
+    Route::post('/general', [GeneralReportController::class, 'getGeneralReport']);
+});
+
+Route::group(['prefix' => 'mails'], function () {
+    Route::post('/forgot-password', [MailController::class, 'sendForgotPasswordEmail']);
+});
+Route::group(['prefix' => 'reset'], function () {
+    Route::post('/password', [PasswordController::class, 'resetPassword']);
+});
+Route::group(['prefix' => 'access'], function () {
+    Route::post('/sidebar', [ScreenModuleController::class, 'getAccessScreenByUserId']);
+});
+Route::group(['prefix' => 'shharp-patient-list'], function () {
+    Route::post('/list', [PatientDetailsController::class, 'getSharrpPatientList']);
+});
+//----------------------------------//////////////////////////////////////////////////-----------------
+Route::group(['prefix' => 'systemadmin'], function () {
+   
+    Route::get('/get', [DashboardController::class, 'getsystemadmin']);
+ 
+});
+
+Route::group(['prefix' => 'all-mentari-staff'], function () {
+   
+   Route::get('/get', [DashboardController::class, 'getallmentaristaff']);
+});
+
+Route::group(['prefix' => 'user-admin-clerk'], function () {
+   
+   Route::get('/get', [DashboardController::class, 'getuseradminclerk']);
+});
+
+Route::group(['prefix' => 'shharp'], function () {
+   
+   Route::get('/get', [DashboardController::class, 'getshharp']);
+});
+
+Route::group(['prefix' => 'high-level-mgt'], function () {
+   
+    Route::get('/get', [DashboardController::class, 'gethighlevelMgt']);
 });

@@ -17,6 +17,9 @@ class ScreenAccessRoles extends Model
         'hospital_id',
         'branch_id',
         'team_id',
-        'staff_id'
+        'staff_id',
+        'access_screen',
+        'read_writes',
+        'read_only'
     ];
 }
