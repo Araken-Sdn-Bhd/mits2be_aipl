@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserBlockTable extends Migration
+class CreateYearTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class CreateUserBlockTable extends Migration
      */
     public function up()
     {
-        Schema::dropIfExists('user_block');
-        Schema::create('user_block', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('user_id');
-            $table->string('no_of_attempts')->default(0);
-            $table->dateTime('block_untill');
+        Schema::create('year', function (Blueprint $table) {
+            $table->id();
+            $table->string('years');
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ class CreateUserBlockTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_block');
+        Schema::dropIfExists('year');
     }
 }

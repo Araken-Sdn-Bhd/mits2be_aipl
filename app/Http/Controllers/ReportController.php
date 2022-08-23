@@ -242,7 +242,7 @@ class ReportController extends Controller
                     $patientInfo[$val['id']]['PHONE_NUMBER'] = $val['mobile_no'];
                     $patientInfo[$val['id']]['DATE_OF_BIRTH'] = date('d/m/Y', strtotime($val['birth_date']));
                     $pc = Postcode::where(['postcode' => $val['postcode']])->get()->toArray();
-                    $st = State::where(['id' => $val['state_id']])->get()->toArray();;
+                    $st = State::where(['id' => $val['state_id']])->get()->toArray();
                     $patientInfo[$val['id']]['CITY'] = ($pc) ? $pc[0]['city_name'] : 'NA';
                     $patientInfo[$val['id']]['STATE'] = ($st) ? $st[0]['state_name'] : 'NA';
                     $patientInfo[$val['id']]['POSTCODE'] = ($pc) ? $pc[0]['postcode'] : 'NA';
@@ -272,7 +272,14 @@ class ReportController extends Controller
             // dd($result);
             if ($result) {
                 $totalReports =
-                    ShharpReportGenerateHistory::select(DB::raw('count( * ) as total'), DB::raw("CASE WHEN report_month=1 THEN 'January' WHEN report_month=2 THEN 'Febuary' WHEN report_month=3 THEN 'March'  WHEN report_month=4 THEN 'April'  WHEN report_month=5 THEN 'May'  WHEN report_month=6 THEN 'June'  WHEN report_month=7 THEN 'July'  WHEN report_month=8 THEN 'August'  WHEN report_month=9 THEN 'September'  WHEN report_month=10 THEN 'October'  WHEN report_month=11 THEN 'November' ELSE 'December' END as month"), 'report_month', 'report_year')->where('report_type', 'shharp_mgmt')->groupBy('report_month', 'report_year')->get()->toArray();
+                    ShharpReportGenerateHistory::select(DB::raw('count( * ) as total'),
+                     DB::raw("CASE WHEN report_month=1 THEN 'January' WHEN report_month=2 THEN 'Febuary' 
+                     WHEN report_month=3 THEN 'March'  WHEN report_month=4 THEN 'April'  WHEN report_month=5 
+                     THEN 'May'  WHEN report_month=6 THEN 'June'  WHEN report_month=7 THEN 'July'  
+                     WHEN report_month=8 THEN 'August'  WHEN report_month=9 THEN 'September'  
+                     WHEN report_month=10 THEN 'October'  WHEN report_month=11 THEN 'November' 
+                     ELSE 'December' END as month"), 'report_month', 'report_year')
+                     ->where('report_type', 'shharp_mgmt')->groupBy('report_month', 'report_year')->get()->toArray();
                 $filePath = '';
                 if (isset($request->report_type) && $request->report_type == 'excel') {
                     $filePath = 'downloads/report/report-' . time() . '.xlsx';
@@ -798,6 +805,7 @@ class ReportController extends Controller
         if ($request->job_status != 0)
             $ssh = $notes->where('employment_status', $request->job_status);
         $ssh = $notes->get()->toArray();
+        // dd($ssh);
         if ($ssh) {
             foreach ($ssh as $key => $val) {
                 $query = DB::table('staff_management')
@@ -852,6 +860,7 @@ class ReportController extends Controller
             sort($v);
             $yearArray[$k] = $v;
         }
+
         // $filePath = 'downloads/report/kpi-report' . '.xlsx';
         // Excel::store(new KPIReportExport($result, $yearArray), $filePath, 'public');
         // dd($yearArray);
@@ -859,8 +868,8 @@ class ReportController extends Controller
         if ($result) {
             $filePath = '';
             if (isset($request->report_type) && $request->report_type == 'excel') {
-                $filePath = 'downloads/report/kpi-report' . '.xlsx';
-                Excel::store(new KPIReportExport($result, $yearArray), $filePath, 'public');
+                $filePath = 'downloads/report/kpi-report-rg-'.time() . '.xlsx';
+                Excel::store(new KPIReportExport($result, $yearArray, $months), $filePath, 'public');
                 return response()->json(["message" => "KPI Report", 'result' => $result,  'filepath' => env('APP_URL') . '/storage/app/public/' . $filePath, "code" => 200]);
             } else {
                 return response()->json(["message" => "KPI Report", 'result' => $result,  'filepath' => null, "code" => 200]);

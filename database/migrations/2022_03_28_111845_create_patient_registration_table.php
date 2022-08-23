@@ -73,6 +73,7 @@ class CreatePatientRegistrationTable extends Migration
 			$table->string('ethnic_group')->nullable();
 			$table->string('patient_need_triage_screening')->nullable();
             $table->enum('status', [0, 1, 2])->default(1);
+			$table->string('sharp')->nullable();
             $table->timestamps();
         });
     }

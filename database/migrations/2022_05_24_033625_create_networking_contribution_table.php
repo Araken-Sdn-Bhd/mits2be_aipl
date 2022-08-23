@@ -15,7 +15,7 @@ class CreateNetworkingContributionTable extends Migration
     {
         Schema::create('networking_contribution', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('added_by');
+            $table->string('added_by');
             $table->bigInteger('parent_section_id');
             $table->string('parent_section');
             $table->string('contribution');

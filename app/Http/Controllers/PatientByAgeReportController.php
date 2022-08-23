@@ -252,7 +252,7 @@ $listKey=[];
 //                 dd($listKey);
         //  $totalReports = count($mainResult);
                 $filePath = 'downloads/report/patientbyage-' . time() . '.xlsx';
-                // Excel::store(new PatientByAgeReportExport($listKey, $totalReports, $request->fromDate, $request->toDate), $filePath, 'public');
+                Excel::store(new PatientByAgeReportExport($mainResult, $request->fromDate, $request->toDate), $filePath, 'public');
                
                 return response()->json(["message" => "Patient By Age Report", 'result' => $mainResult,'filepath' => env('APP_URL') . '/storage/app/public/' . $filePath, "code" => 200]);
             } else {

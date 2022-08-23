@@ -11,14 +11,14 @@ use Maatwebsite\Excel\Concerns\FromView;
 class PatientByAgeReportExport implements FromView
 {
     private $reportSet;
-    private $totalRecord;
+    // private $totalRecord;
     private $fromDate;
     private $toDate;
 
-    public function __construct($record, $totalRecords, $fromDate, $toDate)
+    public function __construct($record, $fromDate, $toDate)
     {
         $this->reportSet = $record;
-        $this->totalRecord = $totalRecords;
+        // $this->totalRecord = $totalRecords;
         $this->fromDate = $fromDate;
         $this->toDate = $toDate;
     }
@@ -27,7 +27,7 @@ class PatientByAgeReportExport implements FromView
     {
         return view('patient_by_age',  [
             'shharpRecords' => $this->reportSet,
-            'totalRecord' => $this->totalRecord,
+            // 'totalRecord' => $this->totalRecord,
             'fromDate' => $this->fromDate,
             'toDate' => $this->toDate
         ]);

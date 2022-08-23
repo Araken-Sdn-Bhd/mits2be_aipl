@@ -129,7 +129,6 @@ class AuthController extends Controller
                         ->where('screens.screen_route', 'like', '%Dash%')
                         ->where('screen_access_roles.staff_id', '=', $id)
                         ->get();
-
                     if (!empty($screenroute[0])) {
                         $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
                         return $this->createNewToken($token, $tmp);
@@ -162,10 +161,10 @@ class AuthController extends Controller
                 ->join('screens', function ($join) {
                     $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
                 })
-                ->where('screens.screen_route', 'like', '%Dash%')
+                ->where('screens.screen_route', 'like', '%Mod%')
                 ->where('screen_access_roles.staff_id', '=', $id)
                 ->get();
-
+                // dd($screenroute);
             if (!empty($screenroute[0])) {
                 $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
                 return $this->createNewToken($token, $tmp);

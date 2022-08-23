@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Notifications;
 use Exception;
 use Validator;
 use Illuminate\Http\Request;
@@ -375,6 +376,15 @@ class PatientIndexFormController extends Controller
                 } catch (Exception $e) {
                     return response()->json(["message" => $e->getMessage(), 'PatientIndex' => $PatientIndex, "code" => 200]);
                 }
+
+                    $notifi=[
+                        'added_by' => $HOD['added_by'],
+                        'patient_id' =>   $HOD['patient_mrn_id'],
+                        'created_at' =>  date("Y-m-d h:i:s"),
+                        'message' =>  'pending submission of Clinical Documents',
+                    ];
+                    $HOD1 = Notifications::insert($notifi);
+
                 return response()->json(["message" => "Patient Index Form Successfully11", "code" => 200]);
             } else if ($request->category_of_services == '0') {
                 $validator = Validator::make($request->all(), [
@@ -432,7 +442,14 @@ class PatientIndexFormController extends Controller
                 ];
 
                 try {
-                    $HOD = PatientIndexForm::firstOrCreate($PatientIndex);
+                    $HOD2 = PatientIndexForm::firstOrCreate($PatientIndex);
+                    $notifi=[
+                        'added_by' => $HOD2['added_by'],
+                        'patient_id' =>   $HOD2['patient_mrn_id'],
+                        'created_at' =>  date("Y-m-d h:i:s"),
+                        'message' =>  'pending submission of Clinical Documents',
+                    ];
+                    $HOD2 = Notifications::insert($notifi);
                 } catch (Exception $e) {
                     return response()->json(["message" => $e->getMessage(), 'PatientIndex' => $PatientIndex, "code" => 200]);
                 }

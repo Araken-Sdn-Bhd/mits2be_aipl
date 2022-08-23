@@ -239,7 +239,7 @@ class ScreenModuleController extends Controller
         //     dd('else');
         // }
         if($request->screen_ids){
-            dd('if1');
+            // dd('if1');
             $screen_ids = explode(',', $request->screen_ids);
             foreach ($screen_ids as $k => $v) {
                 $screen = [

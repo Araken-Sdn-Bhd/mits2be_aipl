@@ -14,6 +14,8 @@ use App\Models\State;
 use Validator;
 use Exception;
 use Illuminate\Support\Facades\DB;
+use mysqli;
+use mysqli_result;
 use PhpOffice\PhpSpreadsheet\Calculation\TextData\Replace;
 
 class PatientDetailsController extends Controller
@@ -87,7 +89,7 @@ class PatientDetailsController extends Controller
                         ->orWhere('name_asin_nric', 'LIKE', '%' . $searchWord . '%')
                         ->orWhere('passport_no', 'LIKE', '%' . $searchWord . '%')
                         ->orWhere('nric_no', 'LIKE', '%' . $searchWord . '%')
-                        ->orWhereRaw("REPLACE(nric_no, '-', '') LIKE ?",["%$searchWord%"]);
+                        ->orWhereRaw("REPLACE(nric_no, '-', '') LIKE ?", ["%$searchWord%"]);
                 });
             }
             $resultSet =
@@ -99,44 +101,45 @@ class PatientDetailsController extends Controller
         }
         //dd($resultSet);
         $result = [];
-        if($request->keyword=="no-keyword"){
+        if ($request->keyword == "no-keyword") {
             $list = PatientRegistration::where('status', '=', '1')
-            ->with('salutation:section_value,id')->with('service:service_name,id')
-            ->with('appointments', function ($query) {
-                $query->where('appointment_status', '=', '1');
-            })
-            ->get()->toArray();
-        //dd($list[0]['service']);
-        // $result = [];
-        foreach ($list as $key => $val) {
-            $result[$key]['patient_mrn'] = $val['patient_mrn'];
-            $result[$key]['name_asin_nric'] = $val['name_asin_nric'];
-            $result[$key]['id'] = $val['id'];
-            $result[$key]['age'] = date_diff(date_create($val['birth_date']), date_create('today'))->y;
-            $result[$key]['nric_no'] = $val['nric_no'];
-            $result[$key]['passport_no'] = $val['passport_no'];
-            if($val['salutation'] !=null){
-                $result[$key]['salutation'] = $val['salutation'][0]['section_value'];
-            }else{
-                $result[$key]['salutation'] ='NA';
-            }
-            
-            if ($val['appointments'] != null) {
-                if ($val['service'] != null) {
-                    $result[$key]['service'] = $val['service']['service_name'];
+                ->with('salutation:section_value,id')->with('service:service_name,id')
+                ->with('appointments', function ($query) {
+                    $query->where('appointment_status', '=', '1');
+                })
+                ->get()->toArray();
+            //dd($list[0]['service']);
+            // $result = [];
+            foreach ($list as $key => $val) {
+                $result[$key]['patient_mrn'] = $val['patient_mrn'];
+                $result[$key]['name_asin_nric'] = $val['name_asin_nric'];
+                $result[$key]['id'] = $val['id'];
+                $result[$key]['age'] = date_diff(date_create($val['birth_date']), date_create('today'))->y;
+                $result[$key]['nric_no'] = $val['nric_no'];
+                $result[$key]['passport_no'] = $val['passport_no'];
+                if ($val['salutation'] != null) {
+                    $result[$key]['salutation'] = $val['salutation'][0]['section_value'];
+                } else {
+                    $result[$key]['salutation'] = 'NA';
+                }
+
+                if ($val['appointments'] != null) {
+                    if ($val['service'] != null) {
+                        $result[$key]['service'] = $val['service']['service_name'];
+                    } else {
+                        $result[$key]['service'] = 'NA';
+                    }
+                    $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
+                    $team_id = $val['appointments'][0]['assign_team'];
+                    $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get();
+                    $result[$key]['team_name'] = $teamName[0]['team_name'];
                 } else {
                     $result[$key]['service'] = 'NA';
+                    $result[$key]['appointments'] = 'NA';
+                    $result[$key]['team_name'] = 'NA';
                 }
-                $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
-                $team_id = $val['appointments'][0]['assign_team'];
-                $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get();
-                $result[$key]['team_name'] = $teamName[0]['team_name'];
-        }else {
-            $result[$key]['service'] = 'NA';
-            $result[$key]['appointments'] = 'NA';
-            $result[$key]['team_name'] = 'NA';
+            }
         }
-    }}
         if (count($resultSet) > 0) {
             foreach ($resultSet as $key => $val) {
                 $result[$key]['patient_mrn'] = $val['patient_mrn'];
@@ -145,12 +148,12 @@ class PatientDetailsController extends Controller
                 $result[$key]['nric_no'] = $val['nric_no'];
                 $result[$key]['passport_no'] = $val['passport_no'];
 
-                if(!empty($val['salutation'][0])){
+                if (!empty($val['salutation'][0])) {
                     $result[$key]['salutation'] = $val['salutation'][0]['section_value'];
-                }else{
+                } else {
                     $result[$key]['salutation'] = 'NA';
                 }
-                
+
                 if ($val['appointments'] != null) {
                     if ($val['service'] != null) {
                         $result[$key]['service'] = $val['service']['service_name'];
@@ -198,15 +201,14 @@ class PatientDetailsController extends Controller
         return response()->json(["message" => "Patient Details", 'details' => $result, "code" => 200]);
     }
 
-    public function getSharrpPatientList(Request $request)
+    public function getSharrpPatientList1(Request $request)
     {
-        if($request->fromDate=="dd-mm-yyyy" && $request->toDate=="dd-mm-yyyy"){
-            $request->fromDate="01-06-2020";
-            $request->toDate=date("d-m-Y");
-        }else{
-            
+        if ($request->fromDate == "dd-mm-yyyy" && $request->toDate == "dd-mm-yyyy") {
+            $request->fromDate = "01-06-2020";
+            $request->toDate = date("d-m-Y");
+        } else {
         }
-       
+
         $validator = Validator::make($request->all(), [
             'fromDate' => 'required',
             // 'toDate' => 'required',
@@ -219,14 +221,14 @@ class PatientDetailsController extends Controller
         if ($request->keyword == 'no-keyword' && $request->fromDate == 'dd-mm-yyyy' && $request->toDate == 'dd-mm-yyyy') {
             $resultSet = SharpRegistrationFinalStep::select('patient_id', 'harm_date', 'harm_time')
                 ->with('patient:id,name_asin_nric,age,passport_no,nric_no')
-                
+
                 // ->where('status', '1')
                 ->get()->toArray();
         }
         $resultSet = [];
-        $sql = SharpRegistrationFinalStep::select('patient_id', 'harm_date', 'harm_time','status','added_by')
+        $sql = SharpRegistrationFinalStep::select('patient_id', 'harm_date', 'harm_time', 'status', 'added_by')
             ->with('patient:id,name_asin_nric,age,passport_no,nric_no');
-       
+
         if ($request->fromDate != 'dd-mm-yyyy' && $request->toDate != 'dd-mm-yyyy') {
             // $sql = $sql->where('booking_date', '=', $request->date);
             $sql = $sql->whereBetween('harm_date', [date('Y-m-d', strtotime($request->fromDate)), date('Y-m-d', strtotime($request->toDate))]);
@@ -234,12 +236,12 @@ class PatientDetailsController extends Controller
         if ($request->keyword != 'no-keyword') {
             $searchWord = $request->keyword;
             $ids =  PatientRegistration::select('id')->where(function ($query) use ($searchWord) {
-                $query->where('name_asin_nric', 'LIKE', '%' . $searchWord . '%');
-                    // ->orWhere('name_asin_nric', 'LIKE', '%' . $searchWord . '%');
+                $query->where('name_asin_nric', 'LIKE', '%' . $searchWord . '%')
+                    ->orWhere('nric_no', 'LIKE', '%' . $searchWord . '%');
             })->get();
             $resultSet = $sql->where(function ($query) use ($searchWord, $ids) {
                 // $query->where('name_asin_nric', 'LIKE', '%' . $searchWord . '%');
-                    $query->orWhereIn('patient_id',  $ids);
+                $query->orWhereIn('patient_id',  $ids);
             });
             // dd($ids);
         }
@@ -252,22 +254,22 @@ class PatientDetailsController extends Controller
                 //     ->with('sharpharm:harm_date,harm_time,id')
                 //     ->get();
 
-                    $users = DB::table('sharp_registraion_final_step')
+                $users = DB::table('sharp_registraion_final_step')
                     ->join('users', 'sharp_registraion_final_step.added_by', '=', 'users.id')
                     ->select('email')
                     ->where('sharp_registraion_final_step.added_by', '=', $val['added_by'])
                     ->get();
 
-                    // if($users){
-                        $tmp=json_decode(json_encode($users[0]),true)['email'];
-                        $branchid =  StaffManagement::select('branch_id')->where('email','=',$tmp)
-                        ->get();
-                        
-                        $pc = HospitalBranchTeamManagement::where(['id' => $branchid[0]['branch_id']])->get()->toArray();
-                        $result[$key]['hospital_branch_name'] = ($pc) ? $pc[0]['hospital_branch_name'] : 'NA';
-                    //     // dd($result[$key]['hospital_branch_name']);
-                    // }
-                   
+                // if($users){
+                $tmp = json_decode(json_encode($users[0]), true)['email'];
+                $branchid =  StaffManagement::select('branch_id')->where('email', '=', $tmp)
+                    ->get();
+
+                $pc = HospitalBranchTeamManagement::where(['id' => $branchid[0]['branch_id']])->get()->toArray();
+                $result[$key]['hospital_branch_name'] = ($pc) ? $pc[0]['hospital_branch_name'] : 'NA';
+                //     // dd($result[$key]['hospital_branch_name']);
+                // }
+
                 $result[$key]['harm_time'] = $val['harm_time'] ??  'NA';
                 $result[$key]['harm_date'] = $val['harm_date'] ??  'NA';
                 $result[$key]['patient_id'] = $val['patient'][0]['id'] ??  'NA';
@@ -275,17 +277,209 @@ class PatientDetailsController extends Controller
                 $result[$key]['age'] = $val['patient'][0]['age'] ??  'NA';
                 $result[$key]['name_asin_nric'] = $val['patient'][0]['name_asin_nric'] ??  'NA';
                 $result[$key]['nric_no'] = $val['patient'][0]['nric_no'] ??  'NA';
-                if($val['status']){
+                if ($val['status']) {
                     $result[$key]['status'] = "Completed" ??  'NA';
-                }else{
-                    $result[$key]['status'] = "Draft" ??  'NA';  
+                } else {
+                    $result[$key]['status'] = "Draft" ??  'NA';
                 }
                 // dd($result);
-            
+
             }
         }
 
         return response()->json(["message" => "Patient List.", 'list' => $result, "code" => 200]);
     }
-   
+
+    public function getSharrpPatientList2(Request $request)
+    {
+
+        $validator = Validator::make($request->all(), [
+            'fromDate' => 'required',
+            // 'toDate' => 'required',
+            'keyword' => 'required|string'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+
+        if ($request->keyword == 'no-keyword' && $request->fromDate == 'dd-mm-yyyy' && $request->toDate == 'dd-mm-yyyy') {
+
+            // $resultSet = DB::table('sharp_registraion_final_step')
+            // ->leftjoin('patient_registration', 'patient_registration.id', '=', 'sharp_registraion_final_step.patient_id')
+            // ->select('patient_registration.id', 'patient_registration.name_asin_nric','patient_registration.nric_no',
+            // 'patient_registration.patient_mrn', 
+            // 'sharp_registraion_final_step.patient_id', 'sharp_registraion_final_step.harm_date', 'sharp_registraion_final_step.harm_time','sharp_registraion_final_step.added_by')
+            // ->where('patient_registration.status', '=', '1')
+            // ->orderByDesc('patient_registration.patient_mrn')
+            // ->get()->toArray();
+
+            $resultSet = PatientRegistration::select('id', 'added_by', 'name_asin_nric', 'nric_no', 'age', 'patient_mrn')->where('status', '=', '1')
+                ->with('salutation:section_value,id')->with('service:service_name,id')
+                // ->with('appointments', function ($query) {
+                //     $query->where('appointment_status', '=', '1');
+                // })
+                ->get()->toArray();
+            // $resultSet = SharpRegistrationFinalStep::select('patient_id', 'harm_date', 'harm_time')
+            //     ->with('patient:id,name_asin_nric,age,passport_no,nric_no')
+
+            //     // ->where('status', '1')
+            //     ->get()->toArray();
+        }
+
+        $resultSet = [];
+        $sql = PatientRegistration::select('id', 'added_by', 'name_asin_nric', 'nric_no', 'age', 'patient_mrn')->where('status', '=', '1')
+            ->with('salutation:section_value,id')->with('service:service_name,id');
+        // ->with('appointments', function ($query) {
+            
+        //     $query->where('appointment_status', '=', '1');
+        // });
+        // ->get()->toArray();
+        if ($request->fromDate != 'dd-mm-yyyy' && $request->toDate != 'dd-mm-yyyy') {
+            // $sql = $sql->where('booking_date', '=', $request->date);
+            // $sql = $sql->whereBetween('harm_date', [date('Y-m-d', strtotime($request->fromDate)), date('Y-m-d', strtotime($request->toDate))]);
+        }
+        if ($request->keyword != 'no-keyword') {
+            $searchWord = $request->keyword;
+            $ids =  PatientRegistration::select('id')->where(function ($query) use ($searchWord) {
+                $query->where('name_asin_nric', 'LIKE', '%' . $searchWord . '%')
+                    ->orWhere('nric_no', 'LIKE', '%' . $searchWord . '%');
+            })->get();
+            $resultSet = $sql->where(function ($query) use ($searchWord, $ids) {
+                // $query->where('name_asin_nric', 'LIKE', '%' . $searchWord . '%');
+                $query->orWhereIn('patient_id',  $ids);
+            });
+            // dd($ids);
+        }
+        $resultSet = $sql->get()->toArray();
+        // dd($resultSet);
+        $result = [];
+        if (count($resultSet) > 0) {
+            foreach ($resultSet as $key => $val) {
+                $patient =  SharpRegistrationFinalStep::select('patient_id', 'harm_date', 'harm_time', 'status')->where('patient_id', $val['id'])
+                    // ->with('sharpharm:harm_date,harm_time,id')
+                    ->get();
+                // dd($patient[0]['harm_time']);
+                $users = DB::table('sharp_registraion_final_step')
+                    ->join('users', 'sharp_registraion_final_step.added_by', '=', 'users.id')
+                    ->select('email')
+                    ->where('sharp_registraion_final_step.added_by', '=', $val['added_by'])
+                    ->get();
+                // dd($users[0]);
+                // if($users){
+                $tmp = json_decode(json_encode($users[0]), true)['email'];
+                $branchid =  StaffManagement::select('branch_id')->where('email', '=', $tmp)
+                    ->get();
+
+                $pc = HospitalBranchTeamManagement::where(['id' => $branchid[0]['branch_id']])->get()->toArray();
+                $result[$key]['hospital_branch_name'] = ($pc) ? $pc[0]['hospital_branch_name'] : 'NA';
+                //     // }
+
+                if ($patient) {
+                    $result[$key]['harm_time'] = $patient[0]['harm_time'] ??  'NA';
+                    $result[$key]['harm_date'] = $patient[0]['harm_date'] ??  'NA';
+                } else {
+                    $result[$key]['harm_time'] =   '-';
+                    $result[$key]['harm_date'] = '-';
+                }
+                $result[$key]['patient_id'] = $val[0]['id'] ??  'NA';
+                $result[$key]['patient_mrn'] = $val[0]['patient_mrn'] ??  'NA';
+                $result[$key]['age'] = $val[0]['age'] ??  'NA';
+                $result[$key]['name_asin_nric'] = $val[0]['name_asin_nric'] ??  'NA';
+                $result[$key]['nric_no'] = $val[0]['nric_no'] ??  'NA';
+                // if($patient[0]['status']){
+                //     $result[$key]['status'] = "Completed" ??  'NA';
+                // }else{
+                //     $result[$key]['status'] = "Draft" ??  'NA';  
+                // }
+                // dd($result);
+
+            }
+        }
+
+        return response()->json(["message" => "Patient List.", 'list' => $result, "code" => 200]);
+    }
+
+    public function getSharrpPatientList(Request $request)
+    {
+        if ($request->keyword == 'no-keyword' && $request->fromDate == 'dd-mm-yyyy' && $request->toDate == 'dd-mm-yyyy') {
+        $query = DB::select("SELECT pr.*, d.*". "FROM patient_registration pr left join 
+        (select patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step 
+        where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
+         d on pr.id=d.patient_id order by patient_mrn;");
+         
+        }else{
+            if ($request->fromDate != 'dd-mm-yyyy' && $request->toDate != 'dd-mm-yyyy') {
+            $query = DB::select("SELECT pr.*, d.*". "FROM patient_registration pr left join 
+            (select patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step 
+            where id in (SELECT max(id) id FROM sharp_registraion_final_step
+            where harm_date between $request->fromDate and $request->toDate
+            group by patient_id))
+             d on pr.id=d.patient_id order by patient_mrn;");
+            }else{
+                $query = DB::select("SELECT pr.*, d.*". "FROM patient_registration pr left join 
+                (select id,patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step 
+                where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
+                 d on pr.id=d.patient_id order by patient_mrn;"); 
+            }
+
+        }
+        //  $data_get = mysqli_query($query);
+        // $dataset =$query->get();
+        //  dd($query);
+        // $ab=collect($query)->toArray();
+        // $row = mysqli_free_result($query);
+
+        $result = [];
+        foreach ($query as $key => $val) {
+            // dd($val->id);
+            if($request->keyword !='no-keyword'){
+                // dd('if');   $query->where('name_asin_nric', 'LIKE', '%' . $searchWord . '%')  $val->name_asin_nric==$request->keyword
+                if(stripos($val->name_asin_nric, $request->keyword) !== false || stripos($val->nric_no, $request->keyword) !== false ){
+                    // dd('if');
+                    $result[$key]['harm_time'] = $val->harm_time ??  '-';
+                    $result[$key]['harm_date'] = $val->harm_date ??  '-';
+                    $result[$key]['patient_id'] = $val->id ??  'NA';
+                    $result[$key]['patient_mrn'] = $val->patient_mrn ??  'NA';
+                    $result[$key]['age'] = $val->age ??  'NA';
+                    $result[$key]['name_asin_nric'] = $val->name_asin_nric ??  'NA';
+                    $result[$key]['nric_no'] = $val->nric_no ??  'NA';
+                    if($val->status){
+                        $result[$key]['status'] = "Completed" ??  '-';
+                    }else{
+                        $result[$key]['status'] = "Draft" ??  '-';
+                    }
+                }
+            }else{
+                 $result[$key]['harm_time'] = $val->harm_time ??  '-';
+            $result[$key]['harm_date'] = $val->harm_date ??  '-';
+            $result[$key]['patient_id'] = $val->id ??  'NA';
+            $result[$key]['patient_mrn'] = $val->patient_mrn ??  'NA';
+            $result[$key]['age'] = $val->age ??  'NA';
+            $result[$key]['name_asin_nric'] = $val->name_asin_nric ??  'NA';
+            $result[$key]['nric_no'] = $val->nric_no ??  'NA';
+            if($val->status){
+                $result[$key]['status'] = "Completed" ??  '-';
+            }else{
+                $result[$key]['status'] = "Draft" ??  '-';
+            }
+            if($val->added_by){
+            $users = DB::table('sharp_registraion_final_step')
+            ->join('users', 'sharp_registraion_final_step.added_by', '=', 'users.id')
+            ->select('email')
+            ->where('sharp_registraion_final_step.added_by', '=', $val->added_by)
+            ->get();
+        // dd($users[0]);
+        // if($users){
+        $tmp = json_decode(json_encode($users[0]), true)['email'];
+        $branchid =  StaffManagement::select('branch_id')->where('email', '=', $tmp)
+            ->get();
+
+        $pc = HospitalBranchTeamManagement::where(['id' => $branchid[0]['branch_id']])->get()->toArray();
+        $result[$key]['hospital_branch_name'] = ($pc) ? $pc[0]['hospital_branch_name'] : 'NA';
+            }
+        }
+            
+        }
+         return response()->json(["message" => "Patient List.", 'list' => $result, "code" => 200]);
+    }
 }

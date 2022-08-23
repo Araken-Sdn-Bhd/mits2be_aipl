@@ -363,7 +363,7 @@ class VounteerIndividualApplicationFormController extends Controller
                 OutReachProjects::create($outreachprojects);
                 return response()->json(["message" => "Application Submitted Successfully", "code" => 200]);
             } catch (Exception $e) {
-                return response()->json(["message" => $e->getMessage(), 'Volunteer' => $volunteerism, "code" => 500]);
+                return response()->json(["message" => $e->getMessage(), 'Volunteer' => $outreachprojects, "code" => 500]);
             }
         }
         if ($request->area_of_involvement == 'Networking Make a Contribution') {
@@ -383,7 +383,7 @@ class VounteerIndividualApplicationFormController extends Controller
                 NetworkingContribution::create($NetworkingContribution);
                 return response()->json(["message" => "Application Submitted Successfully", "code" => 200]);
             } catch (Exception $e) {
-                return response()->json(["message" => $e->getMessage(), 'Volunteer' => $volunteerism, "code" => 500]);
+                return response()->json(["message" => $e->getMessage(), 'Volunteer' => $NetworkingContribution, "code" => 500]);
             }
         }
     }

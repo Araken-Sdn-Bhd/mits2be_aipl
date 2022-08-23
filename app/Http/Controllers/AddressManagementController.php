@@ -106,7 +106,7 @@ class AddressManagementController extends Controller
             'country_id' => 'required|integer',
             'state_id' => 'required|integer',
             'city_name' => 'required|string',
-            'postcode' => 'required|integer',
+            'postcode' => 'required',
             'postcode_order' => 'required|integer'
         ]);
         if ($validator->fails()) {

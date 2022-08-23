@@ -15,7 +15,7 @@ class CreateVolunteerismTable extends Migration
     {
         Schema::create('volunteerism', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('added_by');
+            $table->string('added_by');
             $table->bigInteger('parent_section_id');
             $table->string('parent_section');
             $table->enum('is_voluneering_exp', [0, 1])->default('0');

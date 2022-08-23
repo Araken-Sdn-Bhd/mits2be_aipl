@@ -24,6 +24,7 @@ use App\Models\JobEndReport;
 use App\Models\JobTransitionReport;
 use App\Models\HospitalManagement;
 use App\Models\JobStartFormList;
+use App\Models\Notifications;
 use App\Models\TestResult;
 use Validator;
 use DB;
@@ -566,7 +567,14 @@ class JobOfferController extends Controller
             // RehabDischargeNote::firstOrCreate($rehabdischarge);  
             return response()->json(["message" => "Updated", "code" => 200]);
          }else{
-            PatientCarePaln::create($patientcarepln);  
+            $HOD=PatientCarePaln::create($patientcarepln);
+            $notifi=[
+                'added_by' => $HOD['added_by'],
+                'patient_id' =>   $HOD['patient_id'],
+                'created_at' =>  date("Y-m-d h:i:s"),
+                'message' =>  'upcoming review for Patient Care Plan',
+            ];
+            $HOD1 = Notifications::insert($notifi);  
          return response()->json(["message" => "Created", "code" => 200]);
          }
        

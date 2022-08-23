@@ -131,7 +131,22 @@ class AttemptTestController extends Controller
             $i++;
         }
         return round($result/count($resultSet));
-    }else{
+    }elseif($testName=='si'){
+        // dd($testName);
+        $result = 0;
+        $values = ['0' => 0, '1' => 1, '2'=>2];
+        $i = 1;
+        foreach ($resultSet as $k => $v) {
+            if($i<16){
+            $result += $values[$v];
+            }
+           
+            $i++;
+        }
+        // dd($result);
+        return $result; 
+    } 
+    else{
         // dd('if'.$testName);
         $result = 0;
         foreach ($resultSet as $k => $v) {
@@ -372,10 +387,10 @@ class AttemptTestController extends Controller
             }
         }
         if ($testName == 'si') {
-            if ($value >= 15 && $value <= 19) {
-                return ['Low Intent', '15-19'];
-            } else if ($value >= 20 && $value <= 28) {
-                return ['Medium Intent', '20-28'];
+            if ($value >= 0 && $value <= 10) {
+                return ['Low Intent', '0-10'];
+            } else if ($value > 10 && $value <= 20) {
+                return ['Medium Intent', '10-20'];
             } else {
                 return ['High Intent', '>28'];
             }

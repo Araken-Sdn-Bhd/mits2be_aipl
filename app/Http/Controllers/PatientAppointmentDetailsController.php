@@ -33,6 +33,7 @@ use App\Models\ListOfETP;
 use App\Models\ListOfJobSearch;
 use App\Models\ListPreviousCurrentJob;
 use App\Models\LogMeetingWithEmployer;
+use App\Models\Notifications;
 use App\Models\Occt_Referral_Form;
 use App\Models\PatientCarePaln;
 use App\Models\PsychiatryClerkingNote;
@@ -106,7 +107,14 @@ class PatientAppointmentDetailsController extends Controller
                     'patient_category' => $request->patient_category,
                     'assign_team' => $request->assign_team
                 ];
-                PatientAppointmentDetails::create($service);
+                $patient = PatientAppointmentDetails::create($service);
+                $notifi=[
+                    'patient_id' => $patient['nric_or_passportno'],
+                    'added_by' =>   $patient['added_by'],
+                    'created_at' =>  date("Y-m-d h:i:s"),
+                    'message' =>  'request for appointment(s)',
+                ];
+                $HOD = Notifications::insert($notifi);
                 return response()->json(["message" => "Patient Appointment Created Successfully!", "code" => 200]);
             } else {
                 return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
@@ -472,7 +480,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        $list = [];
+        
         $Psychiatry_Clerking_Note = [];
         $Counsellor_Clerking_Note = [];
         $Psychiatry_Clerking_Note = DB::table('psychiatry_clerking_note')
@@ -1214,7 +1222,7 @@ class PatientAppointmentDetailsController extends Controller
             ->where('rehab_referral_and_clinical_form.patient_mrn_id', $request->patient_id)
             ->orderBy('rehab_referral_and_clinical_form.created_at', 'asc')
             ->get();
-
+            $list = [];
         foreach ($Psychiatry_Clerking_Note as $key => $val) {
             $list[] = $val;
         }
@@ -1329,8 +1337,16 @@ class PatientAppointmentDetailsController extends Controller
         foreach ($rehab_referral_and_clinical_form as $key => $val) {
             $list[] = $val;
         }
+        $ab=[];
+        
+    //     if (count($list) > 0) {
+    //     foreach ($list as $key => $value) {
+    //         // $ab['id']=$value['date'];
+    //         dd($ab);
+    //     }
+    // }
 
-
+        // dd($ab);
 
         // $list["Psychiatry_Clerking_Note"]=$Psychiatry_Clerking_Note;
         // $list["Counsellor_Clerking_Note"]=$Counsellor_Clerking_Note;

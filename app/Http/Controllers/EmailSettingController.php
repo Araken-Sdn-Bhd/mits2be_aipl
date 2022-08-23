@@ -40,7 +40,7 @@ class EmailSettingController extends Controller
                        'security' =>  $request->security,
                    ];
                    try {
-                       $HOD = EmailSetting::create($alert);
+                       $HOD = EmailSetting::updateOrCreate($alert);
                    } catch (Exception $e) {
                        return response()->json(["message" => $e->getMessage(), 'Email Created' => $alert, "code" => 200]);
                    }
@@ -57,7 +57,7 @@ class EmailSettingController extends Controller
                     'security' =>  $request->security,
                 ];
         
-                $sd = EmailSetting::where('id', $request->id)->update($alertupdate);
+                $sd = EmailSetting::where('id', $request->id)->updateOrCreate($alertupdate);
                 if ($sd)
                     return response()->json(["message" => "Email Setting Updated Successfully!", "code" => 200]);
             }

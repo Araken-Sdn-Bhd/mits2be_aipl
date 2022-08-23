@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\StaffReceiveMail;
 use Illuminate\Http\Request;
 use App\Models\StaffManagement;
 use App\Models\Mentari_Staff_Transfer;
@@ -12,6 +13,9 @@ use App\Models\User;
 use App\Models\Roles;
 use App\Models\Designation;
 use App\Models\GeneralSetting;
+use App\Models\SystemSetting;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Mail;
 
 class StaffManagementController extends Controller
 {
@@ -34,14 +38,14 @@ class StaffManagementController extends Controller
             // 'mentari_location' => 'required|integer',
             'start_date' => 'required',
             'end_date' => 'required',
-            'document' => 'mimes:png,jpg,jpeg,pdf,xlsx|max:10240',
+            'document' => '',
 
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
         //dd($request->document);
-        if ($request->document == '') {
+        if ($request->document) {
 
             $staffadd = [
                 'added_by' =>  $request->added_by,
@@ -92,12 +96,39 @@ class StaffManagementController extends Controller
             $check = StaffManagement::where('email', $request->email)->count();
 
             if ($check == 0) {
-                StaffManagement::create($staffadd);
+                // StaffManagement::create($staffadd);
                 $role = GeneralSetting::select('section_value')->where('id', $request->designation_id)->get();
                 //dd($role[0]['section_value']);
-                User::create(
-                    ['name' => $request->name, 'email' => $request->email, 'role' => $role[0]['section_value'], 'password' => bcrypt('password@123')]
-                );
+                $default_pass = SystemSetting::select('variable_value')->where('section', "=", 'default-password')->get();
+                // dd($default_pass[1]['variable_value']);
+                if($default_pass[1]['variable_value']=="true"){
+                    User::create(
+                        ['name' => $request->name, 'email' => $request->email, 'role' => $role[0]['section_value'], 'password' => bcrypt('password@123')]
+                    );
+                    // $toEmail    =   $request->email;
+                    // $data       =   ['name' => $request->name,'user_id' => $toEmail, 'password' =>'password@123'];
+                    // try {
+                    //     Mail::to($toEmail)->send(new StaffReceiveMail($data));
+                    //     // return response()->json(["message" => 'Email Sent', "code" => 200]);
+                    //     return response()->json(["message" => "Record Created Successfully!", "code" => 200]);
+                    // } catch (Exception $e) {
+                    //     return response()->json(["message" => $e->getMessage(), "code" => 500]);
+                    // }
+                }else{
+                    User::create(
+                        ['name' => $request->name, 'email' => $request->email, 'role' => $role[0]['section_value'], 'password' => bcrypt($default_pass[0]['variable_value'])]
+                    ); 
+                    // $toEmail    =   $request->email;
+                    // $data       =   ['name' => $request->name,'user_id' => $toEmail, 'password' =>$default_pass[0]['variable_value']];
+                    // try {
+                    //     Mail::to($toEmail)->send(new StaffReceiveMail($data));
+                    //     // return response()->json(["message" => 'Email Sent', "code" => 200]);
+                    //     return response()->json(["message" => "Record Created Successfully!", "code" => 200]);
+                    // } catch (Exception $e) {
+                    //     return response()->json(["message" => $e->getMessage(), "code" => 500]);
+                    // } 
+                }
+                
                 return response()->json(["message" => "Record Created Successfully!", "code" => 200]);
             }
         } catch (Exception $e) {

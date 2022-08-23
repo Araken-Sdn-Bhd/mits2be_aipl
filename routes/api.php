@@ -678,9 +678,11 @@ Route::group(['prefix' => 'general-report'], function () {
 
 Route::group(['prefix' => 'mails'], function () {
     Route::post('/forgot-password', [MailController::class, 'sendForgotPasswordEmail']);
+    Route::post('/registerEmployee', [MailController::class, 'registerEmployee']);
 });
 Route::group(['prefix' => 'reset'], function () {
     Route::post('/password', [PasswordController::class, 'resetPassword']);
+    Route::post('/verifyAccount', [PasswordController::class, 'verifyAccount']);
 });
 Route::group(['prefix' => 'access'], function () {
     Route::post('/sidebar', [ScreenModuleController::class, 'getAccessScreenByUserId']);
@@ -712,5 +714,13 @@ Route::group(['prefix' => 'shharp'], function () {
 
 Route::group(['prefix' => 'high-level-mgt'], function () {
    
-    Route::get('/get', [DashboardController::class, 'gethighlevelMgt']);
+    Route::post('get', [DashboardController::class, 'gethighlevelMgt']);
+});
+Route::group(['prefix' => 'years'], function () {
+   
+    Route::get('get', [DashboardController::class, 'getYears']);
+});
+Route::group(['prefix' => 'Notification'], function () {
+   
+    Route::post('get', [DashboardController::class, 'getNotification']);
 });

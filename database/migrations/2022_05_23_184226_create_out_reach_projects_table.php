@@ -15,7 +15,7 @@ class CreateOutReachProjectsTable extends Migration
     {
         Schema::create('out_reach_projects', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('added_by');
+            $table->string('added_by');
             $table->bigInteger('parent_section_id');
             $table->string('parent_section');
             $table->string('project_name');

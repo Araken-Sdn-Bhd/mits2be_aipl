@@ -15,7 +15,7 @@ class CreateVonOrgRepresentativeBackgroundTable extends Migration
     {
         Schema::create('von_org_representative_background', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('added_by');
+            $table->string('added_by');
             $table->bigInteger('org_background_id');
             $table->string('section')->nullable();
             $table->string('name');
