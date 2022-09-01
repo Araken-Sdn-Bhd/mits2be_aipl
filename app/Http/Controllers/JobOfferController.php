@@ -26,9 +26,12 @@ use App\Models\HospitalManagement;
 use App\Models\JobStartFormList;
 use App\Models\Notifications;
 use App\Models\TestResult;
+use DateTime;
+use DateTimeZone;
 use Validator;
 use DB;
 use Exception;
+use Illuminate\Support\Facades\DB as FacadesDB;
 
 class JobOfferController extends Controller
 {
@@ -114,7 +117,7 @@ class JobOfferController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-
+ //1->pending  0->rejected 2->Approved
         JobOffers::where(
             ['id' => $request->id]
         )->update([
@@ -155,7 +158,9 @@ class JobOfferController extends Controller
         $users = DB::table('job_offers')
             ->join('hospital_branch__details', 'job_offers.branch_id', '=', 'hospital_branch__details.id')
             ->join('job_companies', 'job_offers.company_id', '=', 'job_companies.id')
-            ->select('*', 'hospital_branch__details.id as idbranch', 'job_offers.id as id', 'job_offers.status as status', DB::raw("DATE_FORMAT(job_offers.created_at, '%d-%M-%y') as posted_at"))->where(['job_offers.added_by' => $request->added_by, 'job_offers.company_id' => $request->company_id])->get();
+            ->select('*', 'hospital_branch__details.id as idbranch', 'job_offers.id as id', 'job_offers.status as status', DB::raw("DATE_FORMAT(job_offers.created_at, '%d-%M-%y') as posted_at"))->where(['job_offers.added_by' => $request->added_by, 'job_offers.company_id' => $request->company_id])
+            ->where('job_offers.status',"=",'1')
+            ->get();
         $company = DB::table('job_companies')->select('company_name')->where('id', $request->company_id)->first();
         return response()->json(["message" => "Job List", 'list' => $users, "companyname" => $company, "code" => 200]);
     }
@@ -232,7 +237,8 @@ class JobOfferController extends Controller
     {
         $result = [];
         $list = JobOffers::select('id', 'position_offered', 'duration_of_employment', 'position_location_1', 'salary_offered', 'work_schedule', 'company_id', 'job_availability')
-            ->get()->toArray();
+        ->where("status","!=","0")    
+        ->get()->toArray();
         if (count($list) > 0) {
             foreach ($list as $k => $v) {
 
@@ -313,7 +319,8 @@ class JobOfferController extends Controller
         $patient_id = $request->patient_id;
         $patient = PatientRegistration::select('name_asin_nric', 'nric_no', 'passport_no')->where('id', $patient_id)->get();
         $hospital = HospitalManagement::select('hospital_name')->where('added_by', $request->added_by)->get();
-        $hospitalbranch = HospitalBranchTeamManagement::select('hospital_branch_name')->where('added_by', $request->added_by)->get();
+        $hospitalbranch = HospitalBranchManagement::select('hospital_branch_name')->where('added_by', $request->added_by)->get();
+        // dd($hospitalbranch[0]['hospital_branch_name']);
         $user = User::select('name', 'role')->where('id', $request->added_by)->get();
          if(!empty($hospital[0])){
             $response = [
@@ -323,9 +330,9 @@ class JobOfferController extends Controller
                 'user_name' => $user[0]['name'],
                 'designation' => $user[0]['role'],
                 'hospital_name' => $hospital[0]['hospital_name'],
-                'hospital_branch_name' => "NA"
+                'hospital_branch_name' => $hospitalbranch[0]['hospital_branch_name'] ?? 'NA'
             ];
-            return response()->json(["message" => "SE Consent Form", "list" => $response,  "code" => 200]);
+            // return response()->json(["message" => "SE Consent Form", "list" => $response,  "code" => 200]);
         }else if(!empty($hospitalbranch[0])){
             $response = [
                 'patient_name' => $patient[0]['name_asin_nric'],
@@ -333,7 +340,7 @@ class JobOfferController extends Controller
                 'date' => date('d/m/Y'),
                 'user_name' => $user[0]['name'],
                 'designation' => $user[0]['role'],
-                'hospital_name' => "NA",
+                'hospital_name' => $hospital[0]['hospital_name'] ?? 'NA',
                 'hospital_branch_name' => $hospitalbranch[0]['hospital_branch_name']
             ];
             return response()->json(["message" => "SE Consent Form", "list" => $response,  "code" => 200]);
@@ -360,6 +367,7 @@ class JobOfferController extends Controller
             ];
             return response()->json(["message" => "SE Consent Form", "list" => $response,  "code" => 200]);
         }
+        return response()->json(["message" => "SE Consent Form", "list" => $response,  "code" => 200]);
        
     }
 
@@ -568,10 +576,11 @@ class JobOfferController extends Controller
             return response()->json(["message" => "Updated", "code" => 200]);
          }else{
             $HOD=PatientCarePaln::create($patientcarepln);
+            $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
             $notifi=[
                 'added_by' => $HOD['added_by'],
                 'patient_id' =>   $HOD['patient_id'],
-                'created_at' =>  date("Y-m-d h:i:s"),
+                'created_at' => $date->format('Y-m-d H:i:s'),
                 'message' =>  'upcoming review for Patient Care Plan',
             ];
             $HOD1 = Notifications::insert($notifi);  
@@ -773,7 +782,7 @@ class JobOfferController extends Controller
     public function getPhotographyForm(Request $request)
     {
         $patient_id = $request->patient_id;
-        $patient = PatientRegistration::select('name_asin_nric', 'nric_no', 'passport_no')->where('id', $patient_id)->get();
+        $patient = PatientRegistration::select('name_asin_nric', 'nric_no', 'passport_no','kin_name_asin_nric','kin_nric_no')->where('id', $patient_id)->get();
         $hospital = HospitalManagement::select('hospital_name')->where('added_by', $request->added_by)->get();
         $user = User::select('name', 'role')->where('id', $request->added_by)->get();
         if(!empty($hospital[0])){
@@ -783,12 +792,12 @@ class JobOfferController extends Controller
                 'date' => date('d/m/Y'),
                 'user_name' => $user[0]['name'],
                 'designation' => $user[0]['role'],
-                'hospital_name' => $hospital[0]['hospital_name'],
-                'guardian' => "NA",
-                'nric_guardian' => "NA",
-                'date_guardian' => "NA",
-                'witness_name' => "NA",
-                'designation_guardian' => "NA",
+                'hospital_name' => $hospital[0]['hospital_name'] ?? 'NA',
+                'guardian' => $patient[0]['kin_name_asin_nric'] ?? "NA",
+                'nric_guardian' => $patient[0]['kin_nric_no'] ?? "NA",
+                'date_guardian' => date('d/m/Y') ?? "NA",
+                'witness_name' =>  "NA",
+                'designation_guardian' =>  "NA",
             ];
             return response()->json(["message" => "Photography Consent Form", "list" => $response,  "code" => 200]);
         }else{
@@ -798,12 +807,12 @@ class JobOfferController extends Controller
                 'date' => date('d/m/Y'),
                 'user_name' => $user[0]['name'],
                 'designation' => $user[0]['role'],
-                'hospital_name' => "NA",
-                'guardian' => "NA",
-                'nric_guardian' => "NA",
-                'date_guardian' => "NA",
-                'witness_name' => "NA",
-                'designation_guardian' => "NA",
+                'hospital_name' => $hospital[0]['hospital_name'] ?? 'NA',
+                'guardian' => $patient[0]['kin_name_asin_nric'] ?? "NA",
+                'nric_guardian' => $patient[0]['kin_nric_no'] ?? "NA",
+                'date_guardian' => date('d/m/Y') ?? "NA",
+                'witness_name' =>  "NA",
+                'designation_guardian' =>  "NA",
             ];
             return response()->json(["message" => "Photography Consent Form", "list" => $response,  "code" => 200]);
         }

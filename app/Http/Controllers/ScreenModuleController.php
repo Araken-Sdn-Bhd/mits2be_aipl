@@ -9,6 +9,7 @@ use App\Models\ScreenSubModule;
 use App\Models\ScreenPageModule;
 use App\Models\ScreenAccessRoles;
 use App\Models\HospitalBranchTeamManagement;
+use App\Models\StaffManagement;
 use Illuminate\Support\Facades\DB;
 
 class ScreenModuleController extends Controller
@@ -219,8 +220,8 @@ class ScreenModuleController extends Controller
             'sub_module_id' => '',
             'screen_ids' => '',
             'hospital_id' => 'required|integer',
-            'branch_id' => 'required|integer',
-            'team_id' => 'required|integer',
+            'branch_id' => '',
+            'team_id' => '',
             'staff_id' => 'required|integer',
         ]);
         if ($validator->fails()) return  response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -495,11 +496,12 @@ class ScreenModuleController extends Controller
 
     public function getUserMatrixList()
     {
+        //staff_id refers to the user table usersid
         $list = DB::table('screen_access_roles')
             ->join('users', 'screen_access_roles.staff_id', '=', 'users.id')
             ->join('hospital_branch_team_details', 'screen_access_roles.team_id', '=', 'hospital_branch_team_details.id')
-            ->select('hospital_branch_team_details.team_name','users.name','screen_access_roles.hospital_id','screen_access_roles.team_id','screen_access_roles.branch_id',DB::raw("'Active' as status"),)
-            ->where('screen_access_roles.status','=', '1')->distinct('screen_access_roles.staff_id','screen_access_roles.team_id')
+            ->select('hospital_branch_team_details.team_name','users.name','screen_access_roles.hospital_id','screen_access_roles.team_id','screen_access_roles.branch_id',DB::raw("'Active' as status"),'users.id')
+            ->where('screen_access_roles.status','=', '1')->distinct('screen_access_roles.staff_id','screen_access_roles.team_id','users.name')
             ->get();
         return response()->json(["message" => "User Matrix List", 'list' => $list, "code" => 200]);
     }
@@ -513,6 +515,7 @@ class ScreenModuleController extends Controller
             DB::raw("'Active' as status"))
             ->where('screen_access_roles.status','=', '1')
             ->where('screen_access_roles.team_id','=', $request->team_id)
+            ->where('screen_access_roles.staff_id','=', $request->staff_id)
             ->first();
             // dd($list);
             $list1 = DB::table('screen_access_roles')
@@ -524,6 +527,7 @@ class ScreenModuleController extends Controller
             'screen_access_roles.access_screen','screen_access_roles.read_writes','screen_access_roles.read_only',)
             ->where('screen_access_roles.status','=', '1')
             ->where('screen_access_roles.team_id','=', $request->team_id)
+            ->where('screen_access_roles.staff_id','=', $request->staff_id) //staff_id refers to the user table usersid
             ->get();
             $result1 = (array) json_decode($list1,true);
             // dd($result1);
@@ -561,6 +565,7 @@ class ScreenModuleController extends Controller
         // 'screen_sub_modules.sub_module_name',
         'screen_modules.module_name')
         ->where('screen_access_roles.status','=', '1')
+        ->where('screens.screen_status','=', '1')
         ->where('screen_access_roles.staff_id','=', $request->staff_id)
         // ->distinct('screen_access_roles.module_id')
         ->groupBy('screen_modules.id','screen_access_roles.module_id','screen_access_roles.sub_module_id','screens.screen_name','screens.screen_route','screen_modules.module_name','screens.icon','screens.index_val','screen_access_roles.screen_id')

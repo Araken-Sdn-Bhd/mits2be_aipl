@@ -128,6 +128,7 @@ class AuthController extends Controller
                         })
                         ->where('screens.screen_route', 'like', '%Dash%')
                         ->where('screen_access_roles.staff_id', '=', $id)
+                        ->where('screen_access_roles.status', '=', '1')
                         ->get();
                     if (!empty($screenroute[0])) {
                         $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
@@ -137,8 +138,22 @@ class AuthController extends Controller
                         return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
                     }
                 }else{
+                    $screenroute = DB::table('screen_access_roles')
+                    ->select(DB::raw('screens.screen_route'))
+                    ->join('screens', function ($join) {
+                        $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
+                    })
+                    ->where('screens.screen_route', 'like', '%Mod%')
+                    ->where('screen_access_roles.staff_id', '=', $id)
+                    ->where('screen_access_roles.status', '=', '1')
+                    ->get();
+                if (!empty($screenroute[0])) {
+                    $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
+                    return $this->createNewToken($token, $tmp);
+                } else {
                     $tmp = "";
-            return $this->createNewToken($token, $tmp);
+                    return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
+                }
                 }
             } else {
                 return response()->json(['message' => '1Account has been blocked for next ' . $blocktime[0] . ' hour'], 401);
@@ -163,6 +178,7 @@ class AuthController extends Controller
                 })
                 ->where('screens.screen_route', 'like', '%Mod%')
                 ->where('screen_access_roles.staff_id', '=', $id)
+                ->where('screen_access_roles.status', '=', '1')
                 ->get();
                 // dd($screenroute);
             if (!empty($screenroute[0])) {
@@ -173,8 +189,22 @@ class AuthController extends Controller
                 return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
             }
         }else{
-            $tmp = "";
-            return $this->createNewToken($token, $tmp);
+            $screenroute = DB::table('screen_access_roles')
+                    ->select(DB::raw('screens.screen_route'))
+                    ->join('screens', function ($join) {
+                        $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
+                    })
+                    ->where('screens.screen_route', 'like', '%Mod%')
+                    ->where('screen_access_roles.staff_id', '=', $id)
+                    ->where('screen_access_roles.status', '=', '1')
+                    ->get();
+                if (!empty($screenroute[0])) {
+                    $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
+                    return $this->createNewToken($token, $tmp);
+                } else {
+                    $tmp = "";
+                    return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
+                }
         }
         }
     }

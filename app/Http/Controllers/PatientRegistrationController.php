@@ -8,6 +8,7 @@ use App\Models\HospitalBranchTeamManagement;
 use App\Models\Notifications;
 use App\Models\TransactionLog;
 use DateTime;
+use DateTimeZone;
 use Validator;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -155,12 +156,12 @@ class PatientRegistrationController extends Controller
                 'activity' => "Patient Registration",
             ];
             $HOD = TransactionLog::insert($tran);
-
+            $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
             if($Patient['patient_need_triage_screening']){
             $notifi=[
                 'added_by' => $Patient['added_by'],
                 'patient_id' =>   $Patient['id'],
-                'created_at' =>  date("Y-m-d h:i:s"),
+                'created_at' => $date->format('Y-m-d H:i:s'),
                 'message' =>  'request for patient screening',
             ];
             $HOD = Notifications::insert($notifi);
@@ -232,6 +233,61 @@ class PatientRegistrationController extends Controller
           
             //  dd($result);
         }
+        return response()->json(["message" => "Patients List", 'list' => $list, "code" => 200]);
+
+    }
+
+    public function getPatientRegistrationByIdShortDetails(Request $request)
+    {
+        $list = PatientRegistration::where('id', '=', $request->id)->with('salutation:section_value,id')
+            ->with('gender:section_value,id')->with('maritialstatus:section_value,id')
+            ->with('citizenships:citizenship_name,id')->get();
+            $result = [];
+        foreach ($list as $key => $val) {
+            // dd($list);
+            $result[$key]['patient_mrn'] = $val['patient_mrn'] ?? 'NA';
+            $result[$key]['name_asin_nric'] = $val['name_asin_nric'] ?? 'NA';
+            $result[$key]['id'] = $val['id'];
+            $result[$key]['age'] = date_diff(date_create($val['birth_date']), date_create('today'))->y ?? 'NA';
+            $result[$key]['nric_no'] = $val['nric_no'] ?? 'NA';
+            $result[$key]['passport_no'] = $val['passport_no'] ?? 'NA';
+            // dd( $val['citizenships'][0]['citizenship_name']);
+            if ($val['service'] != null) {
+                $result[$key]['salutation'] = $val['salutation'][0]['section_value'] ?? 'NA';
+            } else {
+                $result[$key]['salutation'] = 'NA';
+            }
+
+            if ($val['gender'] != null) {
+                $result[$key]['gender'] = $val['gender'][0]['section_value'] ?? 'NA';
+            } else {
+                $result[$key]['gender'] = 'NA';
+            }
+            if ($val['maritialstatus'] != null) {
+                $result[$key]['maritialstatus'] = $val['maritialstatus'][0]['section_value'] ?? 'NA';
+            } else {
+                $result[$key]['maritialstatus'] = 'NA';
+            }
+            if ($val['citizenships'] != null) {
+                $result[$key]['citizenships'] = $val['citizenships'][0]['citizenship_name'] ?? 'NA';
+            } else {
+                $result[$key]['citizenships'] = 'NA';
+            }
+           
+
+            if ($val['service'] != null) {
+                $result[$key]['service'] = $val['service']['service_name'];
+            } else {
+                $result[$key]['service'] = 'NA';
+            }
+            $result[$key]['mobile_no'] = $val['mobile_no'] ?? 'NA';
+            $result[$key]['birth_date'] = $val['birth_date'] ?? 'NA';
+            $result[$key]['drug_allergy_description'] = $val['drug_allergy_description'] ?? 'NA';
+
+           
+          
+            //  dd($result);
+        }
         return response()->json(["message" => "Patients List", 'list' => $result, "code" => 200]);
 
     }
@@ -249,6 +305,51 @@ class PatientRegistrationController extends Controller
         foreach ($list as $key => $val) {
             $result[$key]['patient_mrn'] = $val['patient_mrn'] ?? 'NA';
             $result[$key]['name_asin_nric'] = $val['name_asin_nric'] ?? 'NA';
+            $result[$key]['id'] = $val['id'];
+            $result[$key]['age'] = date_diff(date_create($val['birth_date']), date_create('today'))->y ?? 'NA';
+            $result[$key]['nric_no'] = $val['nric_no'] ?? 'NA';
+            $result[$key]['passport_no'] = $val['passport_no'] ?? 'NA';
+            // dd( $val['salutation'][0]['section_value']);
+            $result[$key]['salutation'] = $val['salutation'][0]['section_value'] ?? 'NA';
+
+            if ($val['service'] != null) {
+                $result[$key]['service'] = $val['service']['service_name'];
+            } else {
+                $result[$key]['service'] = 'NA';
+            }
+            if ($val['appointments'] != null) {
+                // if ($val['service'] != null) {
+                //     $result[$key]['service'] = $val['service']['service_name'];
+                // } else {
+                //     $result[$key]['service'] = 'NA';
+                // }
+                $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
+                $team_id = $val['appointments'][0]['assign_team'];
+                $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get();
+                $result[$key]['team_name'] = $teamName[0]['team_name'];
+            } else {
+                // $result[$key]['service'] = 'NA';
+                $result[$key]['appointments'] = 'NA';
+                $result[$key]['team_name'] = 'NA';
+            }
+            //  dd($result);
+        }
+        return response()->json(["message" => "Patients List", 'list' => $result, "code" => 200]);
+    }
+
+    public function getPatientRegistrationListMobile()
+    {
+        $list = PatientRegistration::where('status', '=', '1')->where('sharp', '=', '0')
+            ->with('salutation:section_value,id')->with('service:service_name,id')
+            ->with('appointments', function ($query) {
+                $query->where('appointment_status', '=', '1');
+            })
+            ->get()->toArray();
+        // dd($list[0]['service']);
+        $result = [];
+        foreach ($list as $key => $val) {
+            $result[$key]['patient_mrn'] = $val['patient_mrn'] ?? 'NA';
+            $result[$key]['section_value'] = $val['name_asin_nric'] ?? 'NA';
             $result[$key]['id'] = $val['id'];
             $result[$key]['age'] = date_diff(date_create($val['birth_date']), date_create('today'))->y ?? 'NA';
             $result[$key]['nric_no'] = $val['nric_no'] ?? 'NA';
@@ -401,7 +502,8 @@ class PatientRegistrationController extends Controller
             'traditional_description' => $request->traditional_description,
             'other_allergy' => $request->other_allergy,
             'other_description' => $request->other_description,
-            'status' => "1"
+            'status' => "1",
+            'updated_at' =>  date('Y-m-d h:i:s'),
         ];
 
         $validateCitizenship = [];

@@ -45,7 +45,7 @@ class MailController extends Controller
             
             try {
                 $check = User::where('email', $request->email)->count();
-                
+                // dd($check);
                 if ($check == 0) {
                     $id=User::create(
                         ['name' => $request->company_name, 'email' => $request->email, 'role' => "Von", 'password' => bcrypt($request->password)]

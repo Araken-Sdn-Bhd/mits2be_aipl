@@ -84,7 +84,7 @@ class CpsProgressNoteController extends Controller
             'service_category' => 'required|string',
             'complexity_services' => 'required|integer',
             'outcome' => 'required|integer',
-            'medication' => 'required|string',
+            'medication' => '',
             'staff_name' => 'required|string',
             'designation' => 'required|string',
             'id' => ''

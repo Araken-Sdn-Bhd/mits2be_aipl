@@ -45,7 +45,7 @@ class StaffManagementController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
         //dd($request->document);
-        if ($request->document) {
+        if (($request->document =="null") || empty($request->document)) {
 
             $staffadd = [
                 'added_by' =>  $request->added_by,
@@ -68,6 +68,7 @@ class StaffManagementController extends Controller
                 'status' => "1"
             ];
         } else {
+
             $files = $request->file('document');
             $isUploaded = upload_file($files, 'StaffManagement');
             $staffadd = [
@@ -96,37 +97,39 @@ class StaffManagementController extends Controller
             $check = StaffManagement::where('email', $request->email)->count();
 
             if ($check == 0) {
-                // StaffManagement::create($staffadd);
-                $role = GeneralSetting::select('section_value')->where('id', $request->designation_id)->get();
-                //dd($role[0]['section_value']);
+                StaffManagement::create($staffadd);
+                $role = Roles::select('role_name')->where('id', $request->role_id)->get();
+                // dd($role[0]['role_name']);
                 $default_pass = SystemSetting::select('variable_value')->where('section', "=", 'default-password')->get();
                 // dd($default_pass[1]['variable_value']);
                 if($default_pass[1]['variable_value']=="true"){
+                    // dd('if');
                     User::create(
-                        ['name' => $request->name, 'email' => $request->email, 'role' => $role[0]['section_value'], 'password' => bcrypt('password@123')]
+                        ['name' => $request->name, 'email' => $request->email, 'role' => $role[0]['role_name'], 'password' => bcrypt('password@123')]
                     );
-                    // $toEmail    =   $request->email;
-                    // $data       =   ['name' => $request->name,'user_id' => $toEmail, 'password' =>'password@123'];
-                    // try {
-                    //     Mail::to($toEmail)->send(new StaffReceiveMail($data));
-                    //     // return response()->json(["message" => 'Email Sent', "code" => 200]);
-                    //     return response()->json(["message" => "Record Created Successfully!", "code" => 200]);
-                    // } catch (Exception $e) {
-                    //     return response()->json(["message" => $e->getMessage(), "code" => 500]);
-                    // }
+                    $toEmail    =   $request->email;
+                    $data       =   ['name' => $request->name,'user_id' => $toEmail, 'password' =>'password@123'];
+                    try {
+                        Mail::to($toEmail)->send(new StaffReceiveMail($data));
+                        // return response()->json(["message" => 'Email Sent', "code" => 200]);
+                        return response()->json(["message" => "Record Created Successfully", "code" => 200]);
+                    } catch (Exception $e) {
+                        return response()->json(["message" => $e->getMessage(), "code" => 500]);
+                    }
                 }else{
+                    // dd('else');
                     User::create(
-                        ['name' => $request->name, 'email' => $request->email, 'role' => $role[0]['section_value'], 'password' => bcrypt($default_pass[0]['variable_value'])]
+                        ['name' => $request->name, 'email' => $request->email, 'role' => $role[0]['role_name'], 'password' => bcrypt($default_pass[0]['variable_value'])]
                     ); 
-                    // $toEmail    =   $request->email;
-                    // $data       =   ['name' => $request->name,'user_id' => $toEmail, 'password' =>$default_pass[0]['variable_value']];
-                    // try {
-                    //     Mail::to($toEmail)->send(new StaffReceiveMail($data));
-                    //     // return response()->json(["message" => 'Email Sent', "code" => 200]);
-                    //     return response()->json(["message" => "Record Created Successfully!", "code" => 200]);
-                    // } catch (Exception $e) {
-                    //     return response()->json(["message" => $e->getMessage(), "code" => 500]);
-                    // } 
+                    $toEmail    =   $request->email;
+                    $data       =   ['name' => $request->name,'user_id' => $toEmail, 'password' =>$default_pass[0]['variable_value']];
+                    try {
+                        Mail::to($toEmail)->send(new StaffReceiveMail($data));
+                        // return response()->json(["message" => 'Email Sent', "code" => 200]);
+                        return response()->json(["message" => "Record Created Successfully!", "code" => 200]);
+                    } catch (Exception $e) {
+                        return response()->json(["message" => $e->getMessage(), "code" => 500]);
+                    } 
                 }
                 
                 return response()->json(["message" => "Record Created Successfully!", "code" => 200]);
@@ -135,6 +138,18 @@ class StaffManagementController extends Controller
             return response()->json(["message" => $e->getMessage(), 'Staff' => $staffadd, "code" => 200]);
         }
         return response()->json(["message" => "Staff already exists!", "code" => 200]);
+    }
+
+    public function checknricno(Request $request)
+    {
+        $check = StaffManagement::where('nric_no', $request->nric_no)->count();
+        // dd($check);
+        if ($check == 0) {
+            return response()->json(["message" => "Staff Management List", 'list' => "Not Exist", "code" => 400]);
+        }else{
+            return response()->json(["message" => "Staff Management List", 'list' => "Exist", "code" => 200]);
+        }
+
     }
 
     public function getStaffManagementList()
@@ -158,22 +173,23 @@ class StaffManagementController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
         if ($request->name == '' && $request->branch_id == '0') {
+        
             $users = DB::table('staff_management')
                 ->leftjoin('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
-                ->join('users', 'staff_management.email', '=', 'users.email')
-                ->join('hospital_branch_team_details', 'staff_management.team_id', '=', 'hospital_branch_team_details.id')
-                ->select('staff_management.id','users.id as users_id', 'staff_management.name', 'general_setting.section_value as designation_name', 'hospital_branch_team_details.hospital_branch_name')
+                ->join('users', 'users.email', '=', 'staff_management.email')
+                ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
+                ->select('staff_management.id','users.id as users_id', 'staff_management.name', 'general_setting.section_value as designation_name', 'hospital_branch__details.hospital_branch_name')
                 ->where('staff_management.status', '=', '1')
                 //->where('staff_management.name','=', $request->name)
                 ->get();
-                // dd($users);
+
             return response()->json(["message" => "Staff Management List1", 'list' => $users, "code" => 200]);
-        } else if ($request->name == '') {
+        } else if ($request->name == ''&& $request->branch_id != '0') {
             $users = DB::table('staff_management')
                 ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
                 ->join('users', 'staff_management.email', '=', 'users.email')
-                ->join('hospital_branch_team_details', 'staff_management.team_id', '=', 'hospital_branch_team_details.id')
-                ->select('staff_management.id','users.id as users_id', 'staff_management.name', 'general_setting.section_value as designation_name', 'hospital_branch_team_details.hospital_branch_name')
+                ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
+                ->select('staff_management.id','users.id as users_id', 'staff_management.name', 'general_setting.section_value as designation_name', 'hospital_branch__details.hospital_branch_name')
                 ->where('staff_management.status', '=', '1')
                 ->where('staff_management.branch_id', '=', $request->branch_id)
                 ->get();
@@ -181,9 +197,9 @@ class StaffManagementController extends Controller
         } else if ($request->branch_id == '0') {
             $users = DB::table('staff_management')
                 ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
-                ->join('users', 'staff_management.email', '=', 'users.email')
-                ->join('hospital_branch_team_details', 'staff_management.team_id', '=', 'hospital_branch_team_details.id')
-                ->select('staff_management.id','users.id as users_id', 'staff_management.name', 'general_setting.section_value as designation_name', 'hospital_branch_team_details.hospital_branch_name')
+                ->leftjoin('users', 'staff_management.email', '=', 'users.email')
+                ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
+                ->select('staff_management.id','users.id as users_id', 'staff_management.name', 'general_setting.section_value as designation_name', 'hospital_branch__details.hospital_branch_name')
                 ->where('staff_management.status', '=', '1')
                 ->where('staff_management.name', 'LIKE', "%{$request->name}%", '=', $request->name)
                 ->orderBy('staff_management.name', 'asc')
@@ -194,8 +210,8 @@ class StaffManagementController extends Controller
             $users = DB::table('staff_management')
                 ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
                 ->join('users', 'staff_management.email', '=', 'users.email')
-                ->join('hospital_branch_team_details', 'staff_management.team_id', '=', 'hospital_branch_team_details.id')
-                ->select('staff_management.id','users.id as users_id', 'staff_management.name', 'general_setting.section_value as designation_name', 'hospital_branch_team_details.hospital_branch_name')
+                ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
+                ->select('staff_management.id','users.id as users_id', 'staff_management.name', 'general_setting.section_value as designation_name', 'hospital_branch__details.hospital_branch_name')
                 ->where('staff_management.branch_id', '=', $request->branch_id)
                 ->where('staff_management.name', 'LIKE', "%{$request->name}%", '=', $request->name)
                 ->orderBy('staff_management.name', 'asc')
@@ -204,13 +220,40 @@ class StaffManagementController extends Controller
         }
     }
 
+    public function getUserlist(Request $request){
+        $validator = Validator::make($request->all(), [
+            'branch_id' => 'required|integer'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+        if ( $request->branch_id == '0') {
+        
+        $users = DB::table('users')
+        ->leftjoin('staff_management', 'users.email', '=', 'staff_management.email')
+        ->select('staff_management.id','users.id as users_id', 'users.name')
+        //->where('staff_management.name','=', $request->name)
+        // ->where('staff_management.branch_id', '=', $request->branch_id)
+        ->get();
+        }else{
+            $users = DB::table('users')
+            ->leftjoin('staff_management', 'users.email', '=', 'staff_management.email')
+            ->select('staff_management.id','users.id as users_id', 'users.name')
+            //->where('staff_management.name','=', $request->name)
+            ->where('staff_management.branch_id', '=', $request->branch_id)
+            ->get();
+
+        }
+        return response()->json(["message" => "Users List", 'list' => $users, "code" => 200]);
+    }
+
     public function getStaffManagementListById(Request $request)
     {
         $users = DB::table('staff_management')
             ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
             ->join('hospital_branch_team_details', 'staff_management.team_id', '=', 'hospital_branch_team_details.id')
             ->select('staff_management.id', 'staff_management.name', 'general_setting.section_value as designation_name', 'hospital_branch_team_details.hospital_branch_name')
-            ->where('staff_management.name', '=', $request->name)
+            ->where('staff_management.id', '=', $request->name)
             ->orWhere('staff_management.branch_id', '=', $request->branch_id)
             ->get();
         return response()->json(["message" => "Staff Management List", 'list' => $users, "code" => 200]);
@@ -228,7 +271,8 @@ class StaffManagementController extends Controller
             ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
             ->join('hospital_branch_team_details', 'staff_management.team_id', '=', 'hospital_branch_team_details.id')
             ->join('roles', 'staff_management.role_id', '=', 'roles.id')
-            ->select('staff_management.id as Staff_managementId', 'staff_management.name', 'staff_management.nric_no', 'general_setting.section_value as designation_name', 'staff_management.designation_period_start_date', 'staff_management.designation_period_end_date', 'staff_management.registration_no', 'roles.role_name', 'hospital_branch_team_details.team_name', 'staff_management.branch_id', 'staff_management.is_incharge', 'staff_management.contact_no', 'staff_management.email', 'staff_management.status', 'staff_management.start_date', 'staff_management.end_date', 'hospital_branch_team_details.hospital_branch_name')
+            ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
+            ->select('staff_management.id as Staff_managementId', 'staff_management.name', 'staff_management.nric_no', 'general_setting.section_value as designation_name', 'staff_management.designation_period_start_date', 'staff_management.designation_period_end_date', 'staff_management.registration_no', 'roles.role_name', 'hospital_branch_team_details.team_name', 'staff_management.branch_id', 'staff_management.is_incharge', 'staff_management.contact_no', 'staff_management.email', 'staff_management.status', 'staff_management.start_date', 'staff_management.end_date', 'hospital_branch__details.hospital_branch_name')
             ->where('staff_management.id', '=', $request->id)
             ->get();
         return response()->json(["message" => "Staff Management Details", 'list' => $users, "code" => 200]);
@@ -384,14 +428,14 @@ class StaffManagementController extends Controller
             'staff_id' => 'required|integer',
             'start_date' => 'required',
             'end_date' => 'required',
-            'document' => 'mimes:png,jpg,jpeg,pdf|max:10240'
+            'document' => ''
 
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
 
-        if ($request->document == '') {
+        if (($request->document =="null") || empty($request->document)) {
             $staffadd = [
                 'added_by' =>  $request->added_by,
                 'old_branch_id' =>  $request->old_branch_id,
@@ -418,6 +462,12 @@ class StaffManagementController extends Controller
         }
 
         try {
+            StaffManagement::where(
+            ['id' => $request->staff_id]
+            )->update([
+            'added_by' =>  $request->added_by,
+            'branch_id' =>  $request->new_branch_id
+            ]);
             $HOD = Mentari_Staff_Transfer::firstOrCreate($staffadd);
         } catch (Exception $e) {
             return response()->json(["message" => $e->getMessage(), 'Staff' => $staffadd, "code" => 200]);

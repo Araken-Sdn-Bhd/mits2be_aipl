@@ -18,10 +18,10 @@ class JobInterestChecklistController extends Controller
          $validator = Validator::make($request->all(), [
              'added_by' => 'required|integer',
              'patient_id' => 'required|integer',
-             'interest_to_work' => 'required',
-             'agree_if_mentari_find_job_for_you' => 'required',
-             'clerk_job_interester' => 'required',
-             'clerk_job_notes' => 'string',
+             'interest_to_work' => '',
+             'agree_if_mentari_find_job_for_you' => '',
+             'clerk_job_interester' => '',
+             'clerk_job_notes' => '',
              'factory_worker_job_interested' => '',
              'factory_worker_notes' => '',
              'cleaner_job_interested' => '',
@@ -149,8 +149,10 @@ class JobInterestChecklistController extends Controller
          $jobintetestid=($ab->id);
          if(!empty($request->jobs)){
             foreach($request->jobs as $key) {
+                if($key['job']){
                 $data = array('type_of_job' => $key['job'],'patient_id' =>$request->patient_id,'duration'=>$key['duration'],'termination_reason'=>$key['reason'],'job_interest_checklist_id'=>$jobintetestid);
-                JobInterestList::insert($data);    
+                JobInterestList::insert($data);
+            }    
             }
          }
         

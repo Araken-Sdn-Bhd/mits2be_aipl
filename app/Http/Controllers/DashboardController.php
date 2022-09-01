@@ -103,27 +103,28 @@ class DashboardController extends Controller
             ->groupBy('booking_date')
             ->get();
 
-        $users = DB::table('patient_appointment_details')
+        $team_task = DB::table('patient_appointment_details')
             ->join('patient_index_form', 'patient_index_form.patient_mrn_id', '=', 'patient_appointment_details.patient_mrn_id')
-            ->select(DB::raw('count(appointment_status) as TeamTask'))
+            ->select(DB::raw('count(appointment_status) as team_task'))
             ->where('patient_appointment_details.appointment_status', '=', '0')
             ->groupBy('patient_appointment_details.appointment_status')
             ->get();
 
         $AMS = [];
-        foreach ($result as $key => $value) {
-            $AMS[] = $value;
-        }
-        $count = [];
-        foreach ($list as $key => $value) {
-            $count[] = $value;
-        }
+        // foreach ($result as $key => $value) {
+        //     $AMS[] = $value;
+        // }
+        // $count = [];
+        // foreach ($list as $key => $value) {
+        //     $count[] = $value;
+        // }
 
-        foreach ($users as $key => $value) {
-            $count[] = $value;
-        }
+        // foreach ($users as $key => $value) {
+        //     $count[] = $value;
+        // }
 
-        return response()->json(["message" => "All Mentari Staff", 'list' => $AMS, 'list1' => $count, "code" => 200]);
+        return response()->json(["message" => "All Mentari Staff", 'list' => $AMS, 'today_appointment' => $list,
+        'team_task' => $team_task, "code" => 200]);
     }
 
     public function getuseradminclerk(Request $request)

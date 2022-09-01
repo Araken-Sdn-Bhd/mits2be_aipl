@@ -16,24 +16,24 @@ class PatientShharpRegistrationHospitalManagementController extends Controller
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
             'patient_id' => 'required|integer',
-            'referral_or_contact' => 'required|integer',
+            'referral_or_contact' => '',
             'referral_or_contact_other' => '',
-            'arrival_mode' => 'required|integer',
+            'arrival_mode' => '',
             'arrival_mode_other' => '',
-            'date' => 'required',
-            'time' => 'required',
-            'physical_consequences' => 'required|string',
+            'date' => '',
+            'time' => '',
+            'physical_consequences' => '',
             'physical_consequences_des' => '',
-            'patient_admitted' => 'required|string',
+            'patient_admitted' => '',
             'patient_admitted_des' => '',
-            'discharge_status' => 'required',
-            'discharge_date' => 'required',
-            'discharge_number_days_in_ward' => 'required',
-            'main_psychiatric_diagnosis' => 'required|integer',
-            'external_cause_inquiry' => 'required|integer',
-            'discharge_psy_mx' => 'required|string',
+            'discharge_status' => '',
+            'discharge_date' => '',
+            'discharge_number_days_in_ward' => '',
+            'main_psychiatric_diagnosis' => '',
+            'external_cause_inquiry' => '',
+            'discharge_psy_mx' => '',
             'discharge_psy_mx_des' => '',
-            'sharp_register_id' => 'required|integer'
+            'sharp_register_id' => ''
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);

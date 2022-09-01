@@ -37,7 +37,7 @@ class SeProgressNoteController extends Controller
             'service_category' => 'required|string',
             'complexity_service' => 'required|integer',
             'outcome' => 'required|integer',
-            'medication' => 'required|string'
+            'medication' => ''
 
 
         ]);

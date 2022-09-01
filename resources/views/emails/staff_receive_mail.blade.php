@@ -14,9 +14,14 @@
                     <div class="max-w-md w-full space-y-8">
                         Hi {{ $data['name']}},
                         <br>
+                        Your account has been created successfully. 
+                        <br>
+                        <br>
                         Your Login UserId is- {{ $data['user_id']}}
                         <br>
+                        <br>
                         Your Login Password is- {{ $data['password']}}
+                        <br>
                         <br>
                         Thanks,
                         <br>

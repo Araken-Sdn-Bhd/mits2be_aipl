@@ -15,11 +15,11 @@ class CreateJobInterestList extends Migration
     {
         Schema::create('job_interest_list', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('job_interest_checklist_id');
-            $table->integer('patient_id');
-            $table->string('type_of_job');
-            $table->string('duration');
-            $table->string('termination_reason');
+            $table->integer('job_interest_checklist_id')->nullable();
+            $table->integer('patient_id')->nullable();
+            $table->string('type_of_job')->nullable();
+            $table->string('duration')->nullable();
+            $table->string('termination_reason')->nullable();
             $table->timestamps();
 
         });

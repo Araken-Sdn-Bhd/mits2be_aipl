@@ -115,9 +115,11 @@ class PatientIndexFormController extends Controller
                     'specialist' =>  $request->specialist,
                     'date' =>  $request->date,
                     'status' => "1",
-                    'created_at' => $date->format('Y-m-d H:i:s'),
-                    'updated_at' => $date->format('Y-m-d H:i:s'),
-                ];
+                    // 'created_at' => $date->format('Y-m-d H:i:s'),
+                    // 'updated_at' => $date->format('Y-m-d H:i:s'),
+                    'created_at' => date("Y-m-d h:i:s"),
+                    'updated_at' => date("Y-m-d h:i:s"),
+                ]; 
 
                 try {
                     PatientIndexForm::where(
@@ -307,7 +309,7 @@ class PatientIndexFormController extends Controller
                     'case_Manager' =>  $request->case_Manager,
                     'specialist' =>  $request->specialist,
                     'date' =>  $request->date,
-                    'status' => "1"
+                    'status' => $request->status
                 ];
 
                 try {
@@ -368,7 +370,7 @@ class PatientIndexFormController extends Controller
                     'case_Manager' =>  $request->case_Manager,
                     'specialist' =>  $request->specialist,
                     'date' =>  $request->date,
-                    'status' => "1"
+                    'status' => $request->status
                 ];
 
                 try {
@@ -376,11 +378,11 @@ class PatientIndexFormController extends Controller
                 } catch (Exception $e) {
                     return response()->json(["message" => $e->getMessage(), 'PatientIndex' => $PatientIndex, "code" => 200]);
                 }
-
+                $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
                     $notifi=[
                         'added_by' => $HOD['added_by'],
                         'patient_id' =>   $HOD['patient_mrn_id'],
-                        'created_at' =>  date("Y-m-d h:i:s"),
+                        'created_at' => $date->format('Y-m-d H:i:s'),
                         'message' =>  'pending submission of Clinical Documents',
                     ];
                     $HOD1 = Notifications::insert($notifi);
@@ -438,7 +440,7 @@ class PatientIndexFormController extends Controller
                     'case_Manager' =>  $request->case_Manager,
                     'specialist' =>  $request->specialist,
                     'date' =>  $request->date,
-                    'status' => "1"
+                    'status' => $request->status
                 ];
 
                 try {

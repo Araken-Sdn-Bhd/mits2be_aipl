@@ -25,11 +25,11 @@ class EmailSettingController extends Controller
            }
 
         $checkpatientid = EmailSetting::select('id')
-            ->where('id', $request->id)
+            // ->where('id', $request->id)
             ->pluck('id');
-
+        //    dd($checkpatientid);
             if (count($checkpatientid) == 0) {
-                
+                dd($checkpatientid);
                    $alert = [
                        'send_email_from' =>  $request->send_email_from,
                        'outgoing_smtp_server' =>  $request->outgoing_smtp_server,
@@ -46,7 +46,7 @@ class EmailSettingController extends Controller
                    }
                    return response()->json(["message" => "Email Created", "code" => 200]);
             } else {
-                
+                // dd($checkpatientid[0].'else');
                 $alertupdate = [
                     'send_email_from' =>  $request->send_email_from,
                     'outgoing_smtp_server' =>  $request->outgoing_smtp_server,
@@ -57,7 +57,7 @@ class EmailSettingController extends Controller
                     'security' =>  $request->security,
                 ];
         
-                $sd = EmailSetting::where('id', $request->id)->updateOrCreate($alertupdate);
+                $sd = EmailSetting::where('id', $checkpatientid[0])->update($alertupdate);
                 if ($sd)
                     return response()->json(["message" => "Email Setting Updated Successfully!", "code" => 200]);
             }

@@ -127,19 +127,19 @@ Route::group(['prefix' => 'roles'], function () {
     Route::post('/remove', [RolesController::class, 'delete']);
     Route::post('/assign', [RolesController::class, 'set_role']);
 });
-Route::group(['middleware' => ['jwt.verify'], 'prefix' => 'modules'], function () {
+Route::group([ 'prefix' => 'modules'], function () {
     Route::get('/list', [ModulesController::class, 'index']);
     Route::post('/add', [ModulesController::class, 'store']);
     Route::post('/update', [ModulesController::class, 'update']);
     Route::post('/remove', [ModulesController::class, 'delete']);
     Route::get('/get-child/{type}', [ModulesController::class, 'get_child_from_type']);
-});
-Route::group(['middleware' => ['jwt.verify'], 'prefix' => 'module-settings'], function () {
+}); //'middleware' => ['jwt.verify'],
+Route::group(['prefix' => 'module-settings'], function () {
     Route::get('/fetch', [ModuleSettingController::class, 'index']);
     Route::post('/update', [ModuleSettingController::class, 'update']);
 });
 
-Route::group(['middleware' => ['jwt.verify'], 'prefix' => 'system-settings'], function () {
+Route::group(['prefix' => 'system-settings'], function () {
     Route::post('/insertOrupdate', [SystemSettingController::class, 'store']);
     Route::post('/get-setting', [SystemSettingController::class, 'get_setting']);
 });
@@ -215,6 +215,7 @@ Route::group(['prefix' => 'address'], function () {
     Route::post('/{id}/countryWiseStateList', [AddressManagementController::class, 'countryWiseStateList']);
     Route::post('/{id}/stateWisePostcodeList', [AddressManagementController::class, 'stateWisePostcodeList']);
     Route::post('/getStateCityByPostcode', [AddressManagementController::class, 'getStateCityByPostcode']);
+    Route::get('/{id}/stateWisePostcodeList_', [AddressManagementController::class, 'stateWisePostcodeList']);
 });
 
 Route::group(['prefix' => 'service'], function () {
@@ -323,6 +324,9 @@ Route::group(['prefix' => 'staff-management'], function () {
     Route::post('/remove', [StaffManagementController::class, 'remove']);
     Route::post('/transferstaff', [StaffManagementController::class, 'transferstaff']);
     Route::post('/getStaffManagementListOrById', [StaffManagementController::class, 'getStaffManagementListOrById']);
+    Route::post('/checknricno', [StaffManagementController::class, 'checknricno']);
+    Route::post('/getUserlist', [StaffManagementController::class, 'getUserlist']);
+    Route::get('/getStaffManagementListOrById_', [StaffManagementController::class, 'getStaffManagementListOrById']);
 });
 
 Route::group(['prefix' => 'calendar-management'], function () {
@@ -350,6 +354,8 @@ Route::group(['prefix' => 'patient-registration'], function () {
     Route::get('/getPatientRegistrationList', [PatientRegistrationController::class, 'getPatientRegistrationList']);
     Route::get('/getPatientRegistrationListByScreening', [PatientRegistrationController::class, 'getPatientRegistrationListByScreening']);
     Route::post('/getTransactionlog', [PatientRegistrationController::class, 'getTransactionlog']);
+    Route::post('/getPatientRegistrationByIdShortDetails', [PatientRegistrationController::class, 'getPatientRegistrationByIdShortDetails']);
+    Route::get('/getPatientRegistrationListMobile', [PatientRegistrationController::class, 'getPatientRegistrationListMobile']);
 });
 Route::group(['prefix' => 'patient-clinicalinfo'], function () {
     Route::post('/add', [PatientClinicalInfoController::class, 'store']);
@@ -382,12 +388,17 @@ Route::group(['prefix' => 'patient-appointment-details'], function () {
     Route::post('/getPatientAppointmentDetailsListById', [PatientAppointmentDetailsController::class, 'getPatientAppointmentDetailsListById']);
     Route::post('/checkNricNoORPassport', [PatientAppointmentDetailsController::class, 'checkNricNoORPassport']);
     Route::post('/search', [PatientAppointmentDetailsController::class, 'searchPatientListByBranchIdOrServiceIdOrByName']);
+    Route::post('/searchbybranch', [PatientAppointmentDetailsController::class, 'searchPatientListByBranchIdOrByName']);
     Route::post('/updateappointmentstatus', [PatientAppointmentDetailsController::class, 'updateappointmentstatus']);
     Route::post('/getPatientAppointmentDetailsOfPatient', [PatientAppointmentDetailsController::class, 'getPatientAppointmentDetailsOfPatient']);
     Route::post('/get-next-prev', [PatientAppointmentDetailsController::class, 'getNextPrev']);
     Route::post('/updateTeam', [PatientAppointmentDetailsController::class, 'updateTeamDoctor']);
     Route::post('/fetchViewHistoryList', [PatientAppointmentDetailsController::class, 'fetchViewHistoryList']);
     Route::post('/fetchViewHistoryListDetails', [PatientAppointmentDetailsController::class, 'fetchViewHistoryListDetails']);
+    Route::post('/fetchPatientStaffById', [PatientAppointmentDetailsController::class, 'fetchPatientStaffById']);
+    Route::post('/endappointmentDate', [PatientAppointmentDetailsController::class, 'endappointmentDate']);
+    Route::post('/fetchPatientListByStaffId', [PatientAppointmentDetailsController::class, 'fetchPatientListByStaffId']);
+    Route::post('/updatePatientListByStaffId', [PatientAppointmentDetailsController::class, 'updatePatientListByStaffId']);
 });
 
 Route::group(['prefix' => 'patient-psychiatry-clerkingnote'], function () {
@@ -602,6 +613,8 @@ Route::group(['prefix' => 'diagnosis'], function () {
     Route::get('/getIcd10codeList', [IcdSettingManagementController::class, 'getIcd10codeList']);
     Route::get('/getIcd9codeList', [IcdSettingManagementController::class, 'getIcd9codeList']);
     Route::post('/getIcd9subcodeList', [IcdSettingManagementController::class, 'getIcd9subcodeList']);
+    Route::get('/getIcd10codeList2', [IcdSettingManagementController::class, 'getIcd10codeList2']);
+    Route::get('/getIcd9subcodeList_', [IcdSettingManagementController::class, 'getIcd9subcodeList_']);
 });
 Route::group(['prefix' => 'location-services'], function () {
     Route::post('/add', [LocationServicesController::class, 'add']);
@@ -724,3 +737,8 @@ Route::group(['prefix' => 'Notification'], function () {
    
     Route::post('get', [DashboardController::class, 'getNotification']);
 });
+Route::group(['prefix' => 'staffDesignatioDetail'], function () {
+    Route::post('/get', [PatientDetailsController::class, 'staffDesignatioDetail']);
+    Route::post('/staffInchargeDetail', [PatientDetailsController::class, 'staffInchargeDetail']);
+ });
+ 

@@ -61,7 +61,7 @@ class WorkAnalysisFormController extends Controller
              'outcome' => '',
              'medication_des' => '',
              'jobs' =>'required',
-             'job_specification' =>'required',
+             'job_specification' =>'',
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -155,14 +155,18 @@ class WorkAnalysisFormController extends Controller
 
         if(!empty($request->jobs)){
             foreach($request->jobs as $key) {
+            if($key['task_description']){
              $data = array('task_description' => $key['task_description'],'patient_id' =>$request->patient_id,'objectives'=>$key['objectives'],'procedure'=>$key['procedure'],'rate_of_time'=>$key['rate_of_time'],'work_analysis_form_id'=>$WorkAnalysisFormid);
                 JobDescription::insert($data); 
+            }
             }
          } 
          if(!empty($request->job_specification)){
             foreach($request->job_specification as $key) {
-             $data = array('question_name' => $key['question_name'],'patient_id' =>$request->patient_id,'answer'=>$key['answer'],'comment'=>$key['comment'],'work_analysis_form_id'=>$WorkAnalysisFormid);
+                if($key['questions']){
+             $data = array('question_name' => $key['questions'],'patient_id' =>$request->patient_id,'answer'=>$key['answer'],'comment'=>$key['comments'],'work_analysis_form_id'=>$WorkAnalysisFormid);
                 WorkAnalysisJobSpecification::insert($data); 
+                }
             }
          } 
 

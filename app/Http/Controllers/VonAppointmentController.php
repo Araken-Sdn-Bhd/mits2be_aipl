@@ -135,14 +135,22 @@ class VonAppointmentController extends Controller
         if ($request->service) {
             $search['services_type'] = $request->service;
         }
-        if ($request->name) {
-            $search['name'] = $request->name;
-        }
+        // if ($request->name) {
+        //     $search['name'] = $request->name;
+        // }
         $list = [];
         if ($search) {
-            $records = VonAppointment::where($search)->get();
-        } else {
-            $records = VonAppointment::all()->where('status','0');
+            $records = VonAppointment::where($search)
+            ->where('booking_date', date('Y-m-d'))
+            ->get();
+        } else if($request->name) {
+            $records = VonAppointment::where('name', 'LIKE', '%' . $request->name. '%')
+            ->where('booking_date', date('Y-m-d'))
+            ->get();
+        }else{
+            $records = VonAppointment::all()->where('status','0')
+            ->where('booking_date', date('Y-m-d'))
+            ;
         }
         if ($records) {
             foreach ($records as $key => $val) {
@@ -159,7 +167,7 @@ class VonAppointmentController extends Controller
                 $list[$key]['service'] = $val['services_type'];
             }
         }
-        return response()->json(["message" => "Von Updated Successfully!", "list" => $list, "code" => 200]);
+        return response()->json(["message" => "Von List", "list" => $list, "code" => 200]);
         // dd($list);
     }
 

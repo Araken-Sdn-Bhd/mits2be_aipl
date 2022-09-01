@@ -323,9 +323,17 @@ class HospitalManagementController extends Controller
         $hod['gender'] = $hbm->genders->section_value;
         $hod['gender_id'] = $hbm->genders->id;
         $hod['citizenship'] =  $hbm['citizenship'];
+        if($hbm->citizenships){
         $hod['citizenship_name'] =  $hbm->citizenships->citizenship_name;
+        }else{
+            $hod['citizenship_name'] =  'NA';
+        }
         $hod['designation'] =  $hbm['designation'];
-        $hod['designation_name'] =  $hbm->designations->designation_name;
+        if($hbm->designations){
+            $hod['designation_name'] =  $hbm->designations->designation_name;
+            }else{
+                $hod['designation_name'] =  'NA';
+            }
         return response()->json(["message" => "Hospital & HOD Psychiatrist", 'list' => ['hospital' => $hospital, 'psychiatrist' => $hod], "code" => 200]);
     }
 

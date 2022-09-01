@@ -313,7 +313,7 @@ class PatientRiskProtectiveAnswerController extends Controller
         $validator = Validator::make($request->all(), [
             'patient_id' => 'required|integer',
             'added_by' => 'required|integer',
-            'result' => 'required|string',
+            'result' => '',
             'sharp_register_id' => 'required|integer'
         ]);
         if ($validator->fails()) {

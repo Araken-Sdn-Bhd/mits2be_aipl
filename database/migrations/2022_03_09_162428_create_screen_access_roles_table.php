@@ -20,8 +20,8 @@ class CreateScreenAccessRolesTable extends Migration
             $table->integer('sub_module_id')->nullable();
             $table->integer('screen_id')->nullable();
             $table->integer('hospital_id');
-            $table->integer('branch_id');
-            $table->integer('team_id');
+            $table->integer('branch_id')->nullable();
+            $table->integer('team_id')->nullable();
             $table->integer('staff_id');
             $table->boolean('access_screen');
             $table->boolean('read_writes');

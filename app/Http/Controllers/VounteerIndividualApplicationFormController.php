@@ -631,7 +631,12 @@ class VounteerIndividualApplicationFormController extends Controller
                 $result[$k]['area_of_involvment'] = $val['area_of_involvement'];
                 $result[$k]['phone_number'] = $val['phone_number'];
                 $result[$k]['email'] = $val['email'];
-                $result[$k]['screening'] = 'No';
+                if($val['screening_mode']){
+                    $result[$k]['screening'] = 'Yes';
+                }else{
+                    $result[$k]['screening'] = 'No';
+                }
+               
                 if ($val['area_of_involvement'] == 'Volunteerism') {
                     $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
@@ -1269,16 +1274,21 @@ class VounteerIndividualApplicationFormController extends Controller
         }
         //dd($search);
 
-        if (count($search) == 0) {
-            $search['section'] = 'individual';
-        }
+        // if (count($search) == 0) {
+        //     $search['section'] = 'individual';
+        // }
         $result = [];
         $k = 0;
-        $indi = VonOrgRepresentativeBackground::where($search)->where('status', '0')->get();
-
+        if(count($search) == 0) {
+            // $indi = VonOrgRepresentativeBackground::where('name', 'LIKE', '%' . $request->name. '%')->where('status', '0')->get();
+            $indi = VonOrgRepresentativeBackground::where('section', 'individual')->get();
+        }else{
+        $indi = VonOrgRepresentativeBackground::where($search)->get();
+        }
         if ($indi) {
             foreach ($indi as $key => $val) {
-                $statuscheck=VonAppointment::where('parent_section_id',$val['id'])->where('status','1')->count();
+                $statuscheck=VonAppointment::where('parent_section_id',$val['id'])->count();
+                // dd($statuscheck);
                 if($statuscheck>0){
                 $result[$k]['id'] = $val['id'];
                 $result[$k]['name'] = $val['name'];
@@ -1303,7 +1313,12 @@ class VounteerIndividualApplicationFormController extends Controller
             }
             }
         }
-        $group = VonOrgRepresentativeBackground::where('section', 'group')->where($search)->where('status', '0')->get();
+        if(count($search) == 0) {
+            $group = VonOrgRepresentativeBackground::where('section', 'group')->get();
+        }else{
+            $group = VonOrgRepresentativeBackground::where('section', 'group')->where($search)->get();
+        }
+        
         if ($group) {
             foreach ($group as $key => $val) {
                 $result[$k]['id'] = $val['id'];
@@ -1328,7 +1343,12 @@ class VounteerIndividualApplicationFormController extends Controller
                 $k++;
             }
         }
-        $org = VonOrgRepresentativeBackground::where('section', 'org')->where($search)->where('status', '0')->get();
+        if(count($search) == 0) {
+            $org = VonOrgRepresentativeBackground::where('section', 'org')->get();
+        }else{
+            $org = VonOrgRepresentativeBackground::where('section', 'org')->where($search)->get();
+        }
+        // $org = VonOrgRepresentativeBackground::where('section', 'org')->where($search)->get();
         if ($org) {
             foreach ($group as $key => $val) {
                 $result[$k]['id'] = $val['id'];
