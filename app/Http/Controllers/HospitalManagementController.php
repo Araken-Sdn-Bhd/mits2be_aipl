@@ -7,7 +7,9 @@ use App\Models\HospitalManagement;
 use App\Models\HospitalHODManagement;
 use App\Models\HospitalBranchManagement;
 use App\Models\HospitalBranchTeamManagement;
+use App\Models\StaffManagement;
 use Exception;
+use Illuminate\Support\Facades\DB;
 use Validator;
 
 class HospitalManagementController extends Controller
@@ -268,6 +270,42 @@ class HospitalManagementController extends Controller
     public function getHospitalBranchTeamList()
     {
         $list = HospitalBranchTeamManagement::select('id', 'hospital_branch_name', 'team_name', 'hospital_code')->where('status','=', '1')->get();
+        return response()->json(["message" => "Hospital Branch Team List", 'list' => $list, "code" => 200]);
+    }
+    public function getHospitalBranchTeamListPatient(Request $request)
+    {
+        $users = DB::table('patient_registration')
+            ->join('users', 'patient_registration.added_by', '=', 'users.id')
+            ->select('users.email')
+            ->where('patient_registration.added_by', '=', $request->added_by)
+            ->get();
+        // dd($users[0]);
+        $result = [];
+        if ($users) {
+            $tmp = json_decode(json_encode($users[0]), true)['email'];
+            // $team =  StaffManagement::select('is_incharge')->where('email', '=', $tmp)
+            //     ->get();
+                $branch_id =  StaffManagement::select('branch_id')->where('email', '=', $tmp)
+                ->get();
+                // dd($branch_id[0]['branch_id']);
+            // if (!empty($branch_id[0]['branch_id'])) {
+                $pc = HospitalBranchTeamManagement::where(['hospital_branch_id' => $branch_id[0]['branch_id']])->where('status','=', '1')->get()->toArray();
+                foreach ($pc as $key => $value) {
+                    // dd($value);
+                    $result[$key]['team_name'] =  $value['team_name'] ?? 'NA';
+                    $result[$key]['id'] =  $value['id'] ?? 'NA';
+                }
+               
+            // } else {
+            //     $result[0]['team_name'] = 'NA';
+            // }
+        }
+        return response()->json(["message" => "Hospital Staff", 'details' => $result, "code" => 200]);
+    }
+
+    public function getServiceByTeamId(Request $request)
+    {
+        $list = HospitalBranchTeamManagement::select('id', 'hospital_branch_name', 'team_name', 'hospital_code')->where('id','=', $request->team_id)->get();
         return response()->json(["message" => "Hospital Branch Team List", 'list' => $list, "code" => 200]);
     }
 

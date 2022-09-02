@@ -161,6 +161,8 @@ Route::group(['prefix' => 'hospital'], function () {
     Route::get('/get_team_by_id/{team_id}', [HospitalManagementController::class, 'get_team_by_id']);
     Route::post('/updateHospitalBranchTeam', [HospitalManagementController::class, 'updateHospitalBranchTeam']);
     Route::post('/removeBranchTeam', [HospitalManagementController::class, 'removeBranchTeam']);
+    Route::get('/getServiceByBranchId', [HospitalManagementController::class, 'getHospitalBranchTeamListPatient']);
+    Route::get('/getServiceByTeamId', [HospitalManagementController::class, 'getServiceByTeamId']);
 });
 Route::group(['prefix' => 'screen-module'], function () {
     Route::post('/add', [ScreenModuleController::class, 'storeModule']);

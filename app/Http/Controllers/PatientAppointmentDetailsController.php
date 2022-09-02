@@ -112,7 +112,7 @@ class PatientAppointmentDetailsController extends Controller
                 ];
                 $patient = PatientAppointmentDetails::create($service);
                 $notifi = [
-                    'patient_id' => $patient['nric_or_passportno'],
+                    'patient_id' => $patient['patient_mrn_id'],
                     'added_by' =>   $patient['added_by'],
                     'created_at' =>  date("Y-m-d h:i:s"),
                     'message' =>  'request for appointment(s)',
@@ -176,7 +176,7 @@ class PatientAppointmentDetailsController extends Controller
                 'nric_or_passportno' => $request->nric_or_passportno,
                 'booking_date' => $request->booking_date,
                 'booking_time' => $request->booking_time,
-                'patient_mrn_id' => $request->patient_mrn_id,
+                // 'patient_mrn_id' => $request->patient_mrn_id,
                 'duration' => $request->duration,
                 'appointment_type' => $request->appointment_type,
                 'type_visit' => $request->type_visit,
@@ -265,7 +265,7 @@ class PatientAppointmentDetailsController extends Controller
 
     public function getPatientAppointmentDetailsTodayList()
     {
-        $resultSet = PatientAppointmentDetails::select('id', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'appointment_status')
+        $resultSet = PatientAppointmentDetails::select('id','added_by', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'appointment_status')
             ->with('service:service_name,id')
             ->where('status', '1')
             ->where('booking_date', date('Y-m-d'))
@@ -276,7 +276,7 @@ class PatientAppointmentDetailsController extends Controller
         if (count($resultSet) > 0) {
             foreach ($resultSet as $key => $val) {
                 $patient = [];
-                $patient =  PatientRegistration::select('id', 'patient_mrn', 'name_asin_nric', 'passport_no', 'nric_no', 'salutation_id')
+                $patient =  PatientRegistration::select('id','added_by', 'patient_mrn', 'name_asin_nric', 'passport_no', 'nric_no', 'salutation_id')
                     ->where('id', $val['patient_mrn_id'])
                     ->with('salutation:section_value,id')
                     ->get()
@@ -300,6 +300,7 @@ class PatientAppointmentDetailsController extends Controller
                     } else {
                         $resultChunk['service'] = 'NA';
                     }
+                    $resultChunk['added_by'] = $val['added_by'] ?: 'NA';
                     $resultChunk['appointment_id'] = $val['id'] ?: 'NA';
                     $resultChunk['appointment_date'] = $val['booking_date'] ?: 'NA';
                     $resultChunk['appointment_time'] = date('H:i', strtotime($val['booking_time'])) ?: 'NA';
@@ -308,6 +309,7 @@ class PatientAppointmentDetailsController extends Controller
                     $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get()->pluck('team_name');
                     //  print_r($teamName);
                     $resultChunk['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
+                    $resultChunk['team_id'] = $team_id ? : 'NA';
                     $result[] = $resultChunk;
                 }
             }

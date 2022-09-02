@@ -113,15 +113,15 @@ class PatientRegistrationController extends Controller
 
         $validateCitizenship = [];
 
-        if ($request->citizenship == '1') {
+        if ($request->citizenship == '430') {
             $validateCitizenship['nric_type'] = 'required';
             $validateCitizenship['nric_no'] = 'required|unique:patient_registration';
             $patientregistration['nric_type'] =  $request->nric_type;
             $patientregistration['nric_no'] =  $request->nric_no;
-        } else if ($request->citizenship == '2') {
+        } else if ($request->citizenship == '450') {
             $validateCitizenship['nric_no'] = 'required|unique:patient_registration';
             $patientregistration['nric_no'] =  $request->nric_no;
-        } else if ($request->citizenship == '3') {
+        } else if ($request->citizenship == '465') {
             $validateCitizenship['passport_no'] = 'required|string|unique:patient_registration';
             $validateCitizenship['expiry_date'] = 'required';
             $validateCitizenship['country_id'] = 'required|integer';
@@ -562,6 +562,7 @@ class PatientRegistrationController extends Controller
             'added_by' =>  $request->added_by,
             'date' =>  date("Y-m-d h:i:s"),
             'time' =>  date("Y-m-d h:i:s"),
+            'created_at' =>  date("Y-m-d h:i:s"),
             'activity' => "Update Patient Demographic",
         ];
         $HOD = TransactionLog::insert($tran);
@@ -577,10 +578,12 @@ class PatientRegistrationController extends Controller
     {
         $list = DB::table('transaction_log')
             ->leftjoin('users', 'transaction_log.added_by', '=', 'users.id')
-            ->select(DB::raw("DATE_FORMAT(transaction_log.date, '%d-%m-%Y') as date"),'transaction_log.activity','users.name',
-            DB::raw("(CASE WHEN TIME(transaction_log.time) BETWEEN '00:00:00' AND '11:59:59' THEN DATE_FORMAT(transaction_log.time, '%h:%i AM')
-            ELSE DATE_FORMAT(transaction_log.time, '%h:%i PM')
-       END) as time"),)
+    //         ->select(DB::raw("DATE_FORMAT(transaction_log.date, '%d-%m-%Y') as date"),'transaction_log.activity','users.name',
+    //         DB::raw("(CASE WHEN TIME(transaction_log.time) BETWEEN '00:00:00' AND '11:59:59' THEN DATE_FORMAT(transaction_log.time, '%h:%i AM')
+    //         ELSE DATE_FORMAT(transaction_log.time, '%h:%i PM')
+    //    END) as time"),)
+       ->select(DB::raw("DATE_FORMAT(transaction_log.date, '%d-%m-%Y') as date"),'transaction_log.activity','users.name',
+           'transaction_log.created_at as time')
         ->where('transaction_log.patient_id', '=', $request->patient_id)
             ->get();
             if(count($list)>0){

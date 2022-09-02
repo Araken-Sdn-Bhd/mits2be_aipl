@@ -403,14 +403,17 @@ class DashboardController extends Controller
         $qry = "";
         $id = IcdType::select('id')->where('icd_type_code', "=", 'ICD-10')->get();
         // dd($id[0]['id']);
-        foreach ($tabData as $key => $value) {
+
+        foreach ($tabData as $key => $value) { 
             if ($qry) {
                 $qry .= " union all ";
             }
             $qry .= "SELECT count(cpn.{$value['col']}) count_ , cpn.{$value['col']} id_
-    FROM {$value['tab']} cpn
-    WHERE cpn.{$value['col']} in (select ic.id  from icd_category ic where ic.icd_type_id={$id[0]['id']} ) group by cpn.{$value['col']}";
+            FROM {$value['tab']} cpn
+            WHERE cpn.{$value['col']} in (select ic.id  from icd_category ic where ic.icd_type_id={$id[0]['id']} ) group by cpn.{$value['col']}";
         }
+
+
         $diagnosis  = DB::select("SELECT sum(bb.count_) sum_, bb.id_ , icd.icd_category_code from ( $qry ) bb , icd_category icd where bb.id_=icd.id group by icd.id,bb.id_,icd.icd_category_code;");
         // dd($diagnosis);
         // dd("SELECT sum(bb.count_) sum_, bb.id_ , icd.icd_category_code from ( $qry ) bb , icd_category icd where bb.id_=icd.id group by icd.id;");
