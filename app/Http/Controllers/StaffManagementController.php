@@ -97,7 +97,7 @@ class StaffManagementController extends Controller
             $check = StaffManagement::where('email', $request->email)->count();
 
             if ($check == 0) {
-                //StaffManagement::create($staffadd);
+                StaffManagement::create($staffadd);
                 $role = Roles::select('role_name')->where('id', $request->role_id)->get();
 
                 $default_pass = SystemSetting::select('variable_value')
