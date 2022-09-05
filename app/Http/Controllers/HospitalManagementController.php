@@ -7,6 +7,7 @@ use App\Models\HospitalManagement;
 use App\Models\HospitalHODManagement;
 use App\Models\HospitalBranchManagement;
 use App\Models\HospitalBranchTeamManagement;
+use App\Models\PatientRegistration;
 use App\Models\StaffManagement;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -274,10 +275,13 @@ class HospitalManagementController extends Controller
     }
     public function getHospitalBranchTeamListPatient(Request $request)
     {
+        $added_by =  PatientRegistration::select('added_by')->where('id', '=', $request->patient_id)
+        ->get();
+        // dd($added_by[0]['added_by']);
         $users = DB::table('patient_registration')
             ->join('users', 'patient_registration.added_by', '=', 'users.id')
             ->select('users.email')
-            ->where('patient_registration.added_by', '=', $request->added_by)
+            ->where('patient_registration.added_by', '=', $added_by[0]['added_by'])
             ->get();
         // dd($users[0]);
         $result = [];
@@ -289,10 +293,11 @@ class HospitalManagementController extends Controller
                 ->get();
                 // dd($branch_id[0]['branch_id']);
             // if (!empty($branch_id[0]['branch_id'])) {
-                $pc = HospitalBranchTeamManagement::where(['hospital_branch_id' => $branch_id[0]['branch_id']])->where('status','=', '1')->get()->toArray();
+                // $pc = HospitalBranchTeamManagement::where(['hospital_branch_id' => $branch_id[0]['branch_id']])->where('status','=', '1')->get()->toArray();
+                $pc = StaffManagement::where(['branch_id' => $branch_id[0]['branch_id']])->where('team_id','=', $request->team_id)->get()->toArray();
                 foreach ($pc as $key => $value) {
                     // dd($value);
-                    $result[$key]['team_name'] =  $value['team_name'] ?? 'NA';
+                    $result[$key]['team_name'] =  $value['name'] ?? 'NA';
                     $result[$key]['id'] =  $value['id'] ?? 'NA';
                 }
                
@@ -305,8 +310,9 @@ class HospitalManagementController extends Controller
 
     public function getServiceByTeamId(Request $request)
     {
-        $list = HospitalBranchTeamManagement::select('id', 'hospital_branch_name', 'team_name', 'hospital_code')->where('id','=', $request->team_id)->get();
-        return response()->json(["message" => "Hospital Branch Team List", 'list' => $list, "code" => 200]);
+        // $list = HospitalBranchTeamManagement::select('id', 'hospital_branch_name', 'team_name', 'hospital_code')->where('id','=', $request->team_id)->get();
+        $list = StaffManagement::select('id', 'name as team_name', 'branch_id')->where('team_id','=', $request->team_id)->get();
+        return response()->json(["message" => "Staff Name", 'list' => $list, "code" => 200]);
     }
 
     public function getHospitalBranchListByHospital(Request $request)
@@ -403,7 +409,7 @@ class HospitalManagementController extends Controller
         $branchteam['hospital_code'] = $hm['hospital_code'];
         $branchteam['hospital_id'] = $hm['hospital_id'];
         $branchteam['hospital_branch_id'] = $hm['hospital_branch_id'];
-        $branchteam['hospital_branch_name'] = $hm['hospital_branch_name'];
+        $branchteam['hospital_branch_name '] = $hm['hospital_branch_name'];
         $branchteam['team_name'] = $hm['team_name'];
         // dd($hm);
        

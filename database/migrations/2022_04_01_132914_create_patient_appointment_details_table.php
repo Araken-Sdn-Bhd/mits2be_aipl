@@ -25,6 +25,7 @@ class CreatePatientAppointmentDetailsTable extends Migration
             $table->integer('type_visit');
             $table->integer('patient_category');
             $table->integer('assign_team');
+            $table->integer('staff_id')->nullable();
             $table->dateTime('end_appoitment_date')->nullable();
             $table->enum('status', [0, 1])->default(1);
             $table->timestamps();

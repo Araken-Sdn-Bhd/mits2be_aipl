@@ -50,6 +50,7 @@ use App\Models\RehabDischargeNote;
 use App\Models\RehabReferralAndClinicalForm;
 use App\Models\SEConsentForm;
 use App\Models\SeProgressNote;
+use App\Models\StaffManagement;
 use App\Models\TriageForm;
 use App\Models\WorkAnalysisForm;
 use App\Models\WorkAnalysisJobSpecification;
@@ -66,7 +67,7 @@ class PatientAppointmentDetailsController extends Controller
             'added_by' => 'required|integer',
             'nric_or_passportno' => 'required|string',
             'booking_date' => 'required',
-            // 'patient_mrn_id' => 'required',
+            // 'patient_mrn_id' => 'required', 
             'booking_time' => 'required',
             'duration' => 'required|integer',
             'appointment_type' => 'required|integer',
@@ -211,7 +212,7 @@ class PatientAppointmentDetailsController extends Controller
 
     public function getPatientAppointmentDetailsList()
     {
-        $resultSet = PatientAppointmentDetails::select('id', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'appointment_status')
+        $resultSet = PatientAppointmentDetails::select('id', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team','staff_id', 'appointment_status')
             ->with('service:service_name,id')
             ->where('status', '1')
             ->get()
@@ -252,9 +253,22 @@ class PatientAppointmentDetailsController extends Controller
                     $resultChunk['appointment_time'] = date('H:i', strtotime($val['booking_time'])) ?: 'NA';
                     $resultChunk['appointment_status'] = $val['appointment_status'] ?: 'NA';
                     $team_id = $val['assign_team'] ?: 'NA';
-                    $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get()->pluck('team_name');
-                    //  print_r($teamName);
-                    $resultChunk['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
+                    $staff_id = $val['staff_id'] ?: 'NA';
+                    // $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get()->pluck('team_name');
+                    // //  print_r($teamName);
+                    // $resultChunk['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
+                    if($val['staff_id']){
+                        // dd('if');
+                        $staffName = StaffManagement::where('id', $staff_id)->get()->pluck('name');
+                        //  print_r($staffName);
+                        $resultChunk['team_name'] = (count($staffName) > 0) ? $staffName[0] : 'NA';
+                    }
+                    else{
+                        $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get()->pluck('team_name');
+                        //  print_r($teamName);
+                        $resultChunk['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
+                    }
+                    $resultChunk['team_id'] = $team_id ? : 'NA';
                     $result[] = $resultChunk;
                 }
             }
@@ -265,7 +279,7 @@ class PatientAppointmentDetailsController extends Controller
 
     public function getPatientAppointmentDetailsTodayList()
     {
-        $resultSet = PatientAppointmentDetails::select('id','added_by', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'appointment_status')
+        $resultSet = PatientAppointmentDetails::select('id','added_by', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team','staff_id', 'appointment_status')
             ->with('service:service_name,id')
             ->where('status', '1')
             ->where('booking_date', date('Y-m-d'))
@@ -286,8 +300,8 @@ class PatientAppointmentDetailsController extends Controller
                     $resultChunk['patient_id'] = $patient[0]['id'] ?: 'NA';
                     $resultChunk['patient_mrn'] = $patient[0]['patient_mrn'] ?: 'NA';
                     $resultChunk['name_asin_nric'] = $patient[0]['name_asin_nric'];
-                    $resultChunk['nric_no'] = $patient[0]['nric_no'] ?: 'NA';
-                    $resultChunk['passport_no'] = $patient[0]['passport_no'] ?: 'NA';
+                    $resultChunk['nric_no'] = $patient[0]['nric_no'] ?: '';
+                    $resultChunk['passport_no'] = $patient[0]['passport_no'] ?: '';
                     // $resultChunk['salutation'] = $patient[0]['salutation'][0]['section_value'] ?: 'NA';
 
                     if ($patient[0]['salutation']  != null) {
@@ -305,11 +319,22 @@ class PatientAppointmentDetailsController extends Controller
                     $resultChunk['appointment_date'] = $val['booking_date'] ?: 'NA';
                     $resultChunk['appointment_time'] = date('H:i', strtotime($val['booking_time'])) ?: 'NA';
                     $resultChunk['appointment_status'] = $val['appointment_status'] ?: 'NA';
+                    $staff_id = $val['staff_id'] ?: 'NA';
+                    // dd($val['staff_id']);
                     $team_id = $val['assign_team'] ?: 'NA';
-                    $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get()->pluck('team_name');
-                    //  print_r($teamName);
-                    $resultChunk['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
+                    if($val['staff_id']){
+                        // dd('if');
+                        $staffName = StaffManagement::where('id', $staff_id)->get()->pluck('name');
+                        //  print_r($staffName);
+                        $resultChunk['team_name'] = (count($staffName) > 0) ? $staffName[0] : 'NA';
+                    }
+                    else{
+                        $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get()->pluck('team_name');
+                        //  print_r($teamName);
+                        $resultChunk['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
+                    }
                     $resultChunk['team_id'] = $team_id ? : 'NA';
+                   
                     $result[] = $resultChunk;
                 }
             }
@@ -348,8 +373,9 @@ class PatientAppointmentDetailsController extends Controller
 
     public function searchPatientListByBranchIdOrServiceIdOrByName(Request $request)
     {
+
         $validator = Validator::make($request->all(), [
-            // 'date' => 'required',
+            'date' => 'required',
             'service_id' => 'required|integer',
             'keyword' => 'required|string'
         ]);
@@ -370,7 +396,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->service_id != '0') {
             $sql = $sql->where('appointment_type', '=', $request->service_id);
         }
-        if ($request->date != 'yyyy-mm-dd' && $request->date != '' && $request->date != null) {
+        if ($request->date != 'yyyy-mm-dd') {
             $sql = $sql->where('booking_date', '=', $request->date);
         }
         if ($request->keyword != 'no-keyword') {
@@ -606,13 +632,13 @@ class PatientAppointmentDetailsController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-
+        // dd($request);
         PatientAppointmentDetails::where(
             ['id' => $request->appointment_id]
         )->update([
             'appointment_status' => '1',
             'added_by' => $request->added_by,
-            'assign_team' => $request->assign_team
+            'staff_id' => $request->assign_team
         ]);
 
         return response()->json(["message" => "Assigned Team has been update Successfully!", "code" => 200]);
@@ -661,7 +687,7 @@ class PatientAppointmentDetailsController extends Controller
         $patient_index_form = DB::table('patient_index_form')
             ->join('users', 'patient_index_form.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(patient_index_form.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(patient_index_form.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(patient_index_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(patient_index_form.created_at, '%h:%i PM')
        END)  as time"),
@@ -681,7 +707,7 @@ class PatientAppointmentDetailsController extends Controller
         $psychiatric_progress_note = DB::table('psychiatric_progress_note')
             ->join('users', 'psychiatric_progress_note.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(psychiatric_progress_note.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(psychiatric_progress_note.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(psychiatric_progress_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(psychiatric_progress_note.created_at, '%h:%i PM')
        END)  as time"),
@@ -700,7 +726,7 @@ class PatientAppointmentDetailsController extends Controller
         $cps_progress_note = DB::table('cps_progress_note')
             ->join('users', 'cps_progress_note.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(cps_progress_note.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(cps_progress_note.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(cps_progress_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(cps_progress_note.created_at, '%h:%i PM')
        END)  as time"),
@@ -719,7 +745,7 @@ class PatientAppointmentDetailsController extends Controller
         $se_progress_note = DB::table('se_progress_note')
             ->join('users', 'se_progress_note.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(se_progress_note.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(se_progress_note.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(se_progress_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(se_progress_note.created_at, '%h:%i PM')
        END)  as time"),
@@ -738,7 +764,7 @@ class PatientAppointmentDetailsController extends Controller
         $counselling_progress_note = DB::table('counselling_progress_note')
             ->join('users', 'counselling_progress_note.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(counselling_progress_note.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(counselling_progress_note.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(counselling_progress_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(counselling_progress_note.created_at, '%h:%i PM')
        END)  as time"),
@@ -757,7 +783,7 @@ class PatientAppointmentDetailsController extends Controller
         $etp_progress_note = DB::table('etp_progress_note')
             ->join('users', 'etp_progress_note.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(etp_progress_note.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(etp_progress_note.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(etp_progress_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(etp_progress_note.created_at, '%h:%i PM')
        END)  as time"),
@@ -776,7 +802,7 @@ class PatientAppointmentDetailsController extends Controller
         $job_club_progress_note = DB::table('job_club_progress_note')
             ->join('users', 'job_club_progress_note.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(job_club_progress_note.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(job_club_progress_note.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(job_club_progress_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(job_club_progress_note.created_at, '%h:%i PM')
        END)  as time"),
@@ -795,7 +821,7 @@ class PatientAppointmentDetailsController extends Controller
         $consultation_discharge_note = DB::table('consultation_discharge_note')
             ->join('users', 'consultation_discharge_note.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(consultation_discharge_note.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(consultation_discharge_note.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(consultation_discharge_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(consultation_discharge_note.created_at, '%h:%i PM')
        END)  as time"),
@@ -814,7 +840,7 @@ class PatientAppointmentDetailsController extends Controller
         $rehab_discharge_note = DB::table('rehab_discharge_note')
             ->join('users', 'rehab_discharge_note.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(rehab_discharge_note.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(rehab_discharge_note.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(rehab_discharge_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(rehab_discharge_note.created_at, '%h:%i PM')
        END)  as time"),
@@ -833,7 +859,7 @@ class PatientAppointmentDetailsController extends Controller
         $cps_discharge_note = DB::table('cps_discharge_note')
             ->join('users', 'cps_discharge_note.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(cps_discharge_note.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(cps_discharge_note.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(cps_discharge_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(cps_discharge_note.created_at, '%h:%i PM')
        END)  as time"),
@@ -852,7 +878,7 @@ class PatientAppointmentDetailsController extends Controller
         $cps_discharge_note = DB::table('cps_discharge_note')
             ->join('users', 'cps_discharge_note.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(cps_discharge_note.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(cps_discharge_note.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(cps_discharge_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(cps_discharge_note.created_at, '%h:%i PM')
        END)  as time"),
@@ -871,7 +897,7 @@ class PatientAppointmentDetailsController extends Controller
         $cps_homevisit_consent_form = DB::table('cps_homevisit_consent_form')
             ->join('users', 'cps_homevisit_consent_form.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(cps_homevisit_consent_form.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(cps_homevisit_consent_form.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(cps_homevisit_consent_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(cps_homevisit_consent_form.created_at, '%h:%i PM')
        END)  as time"),
@@ -891,7 +917,7 @@ class PatientAppointmentDetailsController extends Controller
         $cps_homevisit_withdrawal_form = DB::table('cps_homevisit_withdrawal_form')
             ->join('users', 'cps_homevisit_withdrawal_form.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(cps_homevisit_withdrawal_form.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(cps_homevisit_withdrawal_form.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(cps_homevisit_withdrawal_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(cps_homevisit_withdrawal_form.created_at, '%h:%i PM')
        END)  as time"),
@@ -911,7 +937,7 @@ class PatientAppointmentDetailsController extends Controller
         $cps_police_referral_form = DB::table('cps_police_referral_form')
             ->join('users', 'cps_police_referral_form.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(cps_police_referral_form.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(cps_police_referral_form.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(cps_police_referral_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(cps_police_referral_form.created_at, '%h:%i PM')
        END)  as time"),
@@ -930,7 +956,7 @@ class PatientAppointmentDetailsController extends Controller
         $photography_consent_form = DB::table('photography_consent_form')
             ->join('users', 'photography_consent_form.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(photography_consent_form.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(photography_consent_form.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(photography_consent_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(photography_consent_form.created_at, '%h:%i PM')
        END)  as time"),
@@ -949,7 +975,7 @@ class PatientAppointmentDetailsController extends Controller
         $se_consent_form = DB::table('se_consent_form')
             ->join('users', 'se_consent_form.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(se_consent_form.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(se_consent_form.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(se_consent_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(se_consent_form.created_at, '%h:%i PM')
        END)  as time"),
@@ -968,7 +994,7 @@ class PatientAppointmentDetailsController extends Controller
         $etp_consent_form = DB::table('etp_consent_form')
             ->join('users', 'etp_consent_form.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(etp_consent_form.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(etp_consent_form.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(etp_consent_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(etp_consent_form.created_at, '%h:%i PM')
        END)  as time"),
@@ -987,7 +1013,7 @@ class PatientAppointmentDetailsController extends Controller
         $job_club_consent_form = DB::table('job_club_consent_form')
             ->join('users', 'job_club_consent_form.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(job_club_consent_form.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(job_club_consent_form.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(job_club_consent_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(job_club_consent_form.created_at, '%h:%i PM')
        END)  as time"),
@@ -1005,11 +1031,11 @@ class PatientAppointmentDetailsController extends Controller
 
         //         $job_club_consent_form = DB::table('job_club_consent_form')
         //         ->join('users', 'job_club_consent_form.added_by', '=', 'users.id')
-        //         ->select(DB::raw("(CASE WHEN TIME(job_club_consent_form.created_at) BETWEEN '00:00:00' AND
+        //         ->select(DB::raw("(CASE WHEN TIME(job_club_consent_form.created_at) BETWEEN '00:00:00' AND 
         //         '11:59:59' THEN DATE_FORMAT(job_club_consent_form.created_at, '%h:%i AM')
         //         ELSE DATE_FORMAT(job_club_consent_form.created_at, '%h:%i PM')
-        //    END)  as time"), DB::raw("DATE_FORMAT(job_club_consent_form.created_at, '%d-%m-%Y') as date"),
-        //    'job_club_consent_form.consent_for_participation as status', 'job_club_consent_form.id', 'users.name',
+        //    END)  as time"), DB::raw("DATE_FORMAT(job_club_consent_form.created_at, '%d-%m-%Y') as date"), 
+        //    'job_club_consent_form.consent_for_participation as status', 'job_club_consent_form.id', 'users.name', 
         //    DB::raw("'JobClubConsentForm' as type"), DB::raw("'Job Club Consent Form' as section_name"))
         //         ->where('job_club_consent_form.patient_id', $request->patient_id)
         //         ->orderBy('job_club_consent_form.created_at', 'asc')
@@ -1018,7 +1044,7 @@ class PatientAppointmentDetailsController extends Controller
         $patient_care_paln = DB::table('patient_care_paln')
             ->join('users', 'patient_care_paln.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(patient_care_paln.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(patient_care_paln.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(patient_care_paln.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(patient_care_paln.created_at, '%h:%i PM')
        END)  as time"),
@@ -1037,7 +1063,7 @@ class PatientAppointmentDetailsController extends Controller
         $job_start_form = DB::table('job_start_form')
             ->join('users', 'job_start_form.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(job_start_form.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(job_start_form.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(job_start_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(job_start_form.created_at, '%h:%i PM')
        END)  as time"),
@@ -1056,7 +1082,7 @@ class PatientAppointmentDetailsController extends Controller
         $job_end_report = DB::table('job_end_report')
             ->join('users', 'job_end_report.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(job_end_report.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(job_end_report.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(job_end_report.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(job_end_report.created_at, '%h:%i PM')
        END)  as time"),
@@ -1075,7 +1101,7 @@ class PatientAppointmentDetailsController extends Controller
         $job_transition_report = DB::table('job_transition_report')
             ->join('users', 'job_transition_report.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(job_transition_report.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(job_transition_report.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(job_transition_report.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(job_transition_report.created_at, '%h:%i PM')
        END)  as time"),
@@ -1094,7 +1120,7 @@ class PatientAppointmentDetailsController extends Controller
         $laser_assesmen_form = DB::table('laser_assesmen_form')
             ->join('users', 'laser_assesmen_form.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(laser_assesmen_form.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(laser_assesmen_form.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(laser_assesmen_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(laser_assesmen_form.created_at, '%h:%i PM')
        END)  as time"),
@@ -1113,7 +1139,7 @@ class PatientAppointmentDetailsController extends Controller
         $triage_form = DB::table('triage_form')
             ->join('users', 'triage_form.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(triage_form.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(triage_form.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(triage_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(triage_form.created_at, '%h:%i PM')
        END)  as time"),
@@ -1132,7 +1158,7 @@ class PatientAppointmentDetailsController extends Controller
         $job_interest_checklist = DB::table('job_interest_checklist')
             ->join('users', 'job_interest_checklist.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(job_interest_checklist.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(job_interest_checklist.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(job_interest_checklist.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(job_interest_checklist.created_at, '%h:%i PM')
        END)  as time"),
@@ -1151,7 +1177,7 @@ class PatientAppointmentDetailsController extends Controller
         $work_analysis_form = DB::table('work_analysis_forms')
             ->join('users', 'work_analysis_forms.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(work_analysis_forms.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(work_analysis_forms.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(work_analysis_forms.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(work_analysis_forms.created_at, '%h:%i PM')
        END)  as time"),
@@ -1170,7 +1196,7 @@ class PatientAppointmentDetailsController extends Controller
         $list_job_club = DB::table('list_job_club')
             ->join('users', 'list_job_club.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(list_job_club.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(list_job_club.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(list_job_club.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(list_job_club.created_at, '%h:%i PM')
        END)  as time"),
@@ -1189,7 +1215,7 @@ class PatientAppointmentDetailsController extends Controller
         $list_of_etp = DB::table('list_of_etp')
             ->join('users', 'list_of_etp.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME( list_of_etp.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME( list_of_etp.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(list_of_etp.created_at, '%h:%i AM')
             ELSE DATE_FORMAT( list_of_etp.created_at, '%h:%i PM')
        END)  as time"),
@@ -1208,7 +1234,7 @@ class PatientAppointmentDetailsController extends Controller
         $list_of_job_search = DB::table('list_of_job_search')
             ->join('users', 'list_of_job_search.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(list_of_job_search.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(list_of_job_search.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(list_of_job_search.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(list_of_job_search.created_at, '%h:%i PM')
        END)  as time"),
@@ -1228,7 +1254,7 @@ class PatientAppointmentDetailsController extends Controller
         $log_meeting_with_employer = DB::table('log_meeting_with_employer')
             ->join('users', 'log_meeting_with_employer.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(log_meeting_with_employer.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(log_meeting_with_employer.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(log_meeting_with_employer.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(log_meeting_with_employer.created_at, '%h:%i PM')
        END)  as time"),
@@ -1247,7 +1273,7 @@ class PatientAppointmentDetailsController extends Controller
         $list_previous_current_job = DB::table('list_previous_current_job')
             ->join('users', 'list_previous_current_job.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(list_previous_current_job.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(list_previous_current_job.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(list_previous_current_job.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(list_previous_current_job.created_at, '%h:%i PM')
        END)  as time"),
@@ -1266,7 +1292,7 @@ class PatientAppointmentDetailsController extends Controller
         $internal_referral_form = DB::table('internal_referral_form')
             ->join('users', 'internal_referral_form.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(internal_referral_form.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(internal_referral_form.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(internal_referral_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(internal_referral_form.created_at, '%h:%i PM')
        END)  as time"),
@@ -1285,7 +1311,7 @@ class PatientAppointmentDetailsController extends Controller
         $external_referral_form = DB::table('external_referral_form')
             ->join('users', 'external_referral_form.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(external_referral_form.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(external_referral_form.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(external_referral_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(external_referral_form.created_at, '%h:%i PM')
        END)  as time"),
@@ -1304,7 +1330,7 @@ class PatientAppointmentDetailsController extends Controller
         $cps_referral_form = DB::table('cps_referral_form')
             ->join('users', 'cps_referral_form.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(cps_referral_form.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(cps_referral_form.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(cps_referral_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(cps_referral_form.created_at, '%h:%i PM')
        END)  as time"),
@@ -1323,7 +1349,7 @@ class PatientAppointmentDetailsController extends Controller
         $occt_referral_form = DB::table('occt_referral_form')
             ->join('users', 'occt_referral_form.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(occt_referral_form.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(occt_referral_form.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(occt_referral_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(occt_referral_form.created_at, '%h:%i PM')
        END)  as time"),
@@ -1342,7 +1368,7 @@ class PatientAppointmentDetailsController extends Controller
         $psychology_referral = DB::table('psychology_referral')
             ->join('users', 'psychology_referral.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(psychology_referral.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(psychology_referral.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(psychology_referral.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(psychology_referral.created_at, '%h:%i PM')
        END)  as time"),
@@ -1361,7 +1387,7 @@ class PatientAppointmentDetailsController extends Controller
         $rehab_referral_and_clinical_form = DB::table('rehab_referral_and_clinical_form')
             ->join('users', 'rehab_referral_and_clinical_form.added_by', '=', 'users.id')
             ->select(
-                DB::raw("(CASE WHEN TIME(rehab_referral_and_clinical_form.created_at) BETWEEN '00:00:00' AND
+                DB::raw("(CASE WHEN TIME(rehab_referral_and_clinical_form.created_at) BETWEEN '00:00:00' AND 
             '11:59:59' THEN DATE_FORMAT(rehab_referral_and_clinical_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(rehab_referral_and_clinical_form.created_at, '%h:%i PM')
        END)  as time"),
@@ -3221,7 +3247,7 @@ class PatientAppointmentDetailsController extends Controller
             $outcome = GeneralSetting::select('section_value')->where('id', "=", $val->outcome_id)->get();
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome_id ??  'NA';
-
+            
             // $list[$key]['complexity_services_id'] = $val->complexity_services_id ??  'NA';
             // $list[$key]['location_services_id'] = $val->location_services_id ??  'NA';
             // $list[$key]['outcome_id'] = $val->outcome_id ??  'NA';
@@ -3950,7 +3976,7 @@ class PatientAppointmentDetailsController extends Controller
             ->where('patient_appointment_details.id', $request->apid)
             ->get();
         }
-
+       
         if ($request->type == "PatientCarePlanAndCaseReviewForm") {
             $list = DB::table('patient_care_paln')
             ->join('users', 'patient_care_paln.added_by', '=', 'users.id')
@@ -4105,7 +4131,7 @@ class PatientAppointmentDetailsController extends Controller
             ->where('job_interest_checklist.id', $request->tbid)
             ->where('patient_appointment_details.id', $request->apid)
             ->get();
-
+           
         }
         if ($request->type == "WorkAnalysisForm") {
             $list = DB::table('work_analysis_forms')
@@ -4434,9 +4460,9 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+            
         }
-
+    
         if ($request->type == "PsychiatricProgressNote") {
 
             PsychiatricProgressNote::where('id','=',$request->tbid)->update([
@@ -4496,7 +4522,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+           
         }
         if ($request->type == "EtpProgressNote") {
             EtpProgressNote::where('id','=',$request->tbid)->update([
@@ -4511,7 +4537,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+           
         }
         if ($request->type == "JobClubProgressNote") {
             JobClubProgressNote::where('id','=',$request->tbid)->update([
@@ -4526,7 +4552,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+        
         }
         if ($request->type == "ConsultationDischargeNote") {
             ConsultationDischargeNote::where('id','=',$request->tbid)->update([
@@ -4541,7 +4567,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+    
         }
         if ($request->type == "RehabDischargeNote") {
             RehabDischargeNote::where('id','=',$request->tbid)->update([
@@ -4556,7 +4582,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+    
         }
         if ($request->type == "CpsDischargeNote") {
             CpsDischargeNote::where('id','=',$request->tbid)->update([
@@ -4572,7 +4598,7 @@ class PatientAppointmentDetailsController extends Controller
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
         }
-
+       
         if ($request->type == "PatientCarePlanAndCaseReviewForm") {
             PatientCarePaln::where('id','=',$request->tbid)->update([
                 'category_of_services' => $request->category_services,
@@ -4586,7 +4612,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+           
         }
         if ($request->type == "JobStartReport") {
             JobStartForm::where('id','=',$request->tbid)->update([
@@ -4601,7 +4627,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+           
         }
         if ($request->type == "JobEndReport") {
             JobStartForm::where('id','=',$request->tbid)->update([
@@ -4616,7 +4642,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+           
         }
         if ($request->type == "JobTransitionReport") {
 
@@ -4646,7 +4672,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+            
         }
         if ($request->type == "TriageForm") {
             TriageForm::where('id','=',$request->tbid)->update([
@@ -4661,7 +4687,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+        
         }
         if ($request->type == "JobInterestCheckList") {
             TriageForm::where('id','=',$request->tbid)->update([
@@ -4676,7 +4702,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+           
         }
         if ($request->type == "WorkAnalysisForm") {
 
@@ -4692,7 +4718,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+           
         }
         if ($request->type == "ListofJobClub") {
             TriageForm::where('id','=',$request->tbid)->update([
@@ -4707,7 +4733,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+           
         }
         if ($request->type == "ListofEtp") {
             ListOfETP::where('id','=',$request->tbid)->update([
@@ -4722,7 +4748,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+           
         }
         if ($request->type == "ListofJobSearch") {
 
@@ -4754,7 +4780,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+           
         }
         if ($request->type == "ListofPreviousCurrentJob") {
 
@@ -4770,7 +4796,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+          
         }
         if ($request->type == "InternalReferralForm") {
             InternalReferralForm::where('id','=',$request->tbid)->update([
@@ -4785,7 +4811,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+           
         }
         if ($request->type == "ExternalReferralForm") {
             ExternalReferralForm::where('id','=',$request->tbid)->update([
@@ -4800,7 +4826,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+           
         }
         if ($request->type == "CpsRefferalForm") {
             CPSReferralForm::where('id','=',$request->tbid)->update([
@@ -4815,7 +4841,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+            
         }
         if ($request->type == "OcctRefferalForm") {
             Occt_Referral_Form::where('id','=',$request->tbid)->update([
@@ -4845,7 +4871,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+           
         }
         if ($request->type == "RehabRefferalAndClinicalForm") {
             RehabReferralAndClinicalForm::where('id','=',$request->tbid)->update([
@@ -4860,7 +4886,7 @@ class PatientAppointmentDetailsController extends Controller
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
+        
         }
         return response()->json(["message" => "List Updated Successfully",  "code" => 200]);
     }
