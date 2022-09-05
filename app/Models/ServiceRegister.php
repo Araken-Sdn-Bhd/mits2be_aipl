@@ -10,7 +10,7 @@ class ServiceRegister extends Model
 {
     use HasFactory;
     protected $table = 'service_register';
-    protected $fillable = ['added_by', 'service_code', 'service_name', 'service_description', 'service_order'];
+    protected $fillable = ['added_by', 'service_code', 'service_name', 'service_description', 'service_order','status'];
 
     public function divisions()
     {
