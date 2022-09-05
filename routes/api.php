@@ -205,6 +205,7 @@ Route::group(['prefix' => 'address'], function () {
     Route::get('country/list', [AddressManagementController::class, 'getCountryList']);
     Route::get('state/list', [AddressManagementController::class, 'getStateList']);
     Route::get('/postcodelist', [AddressManagementController::class, 'getPostcodeList']);
+    Route::get('/postcodelistfiltered', [AddressManagementController::class, 'getPostcodeListFiltered']);
     Route::post('/{id}/updateCountry', [AddressManagementController::class, 'updateCountry']);
     Route::post('/{id}/updateState', [AddressManagementController::class, 'updateState']);
     Route::post('/{id}/updatePostcode', [AddressManagementController::class, 'updatePostcode']);
@@ -507,8 +508,8 @@ Route::group(['prefix' => 'patient-attachment'], function () {
 });
 Route::group(['prefix' => 'patient-alert'], function () {
     Route::post('/add', [PatientAlertController::class, 'store']);
-    Route::post('/alertListbyPatientId', [PatientAlertController::class, 'alertListbyPatientId']); 
-    Route::post('/getAlertbyAlertId', [PatientAlertController::class, 'alertListbyAlertId']); 
+    Route::post('/alertListbyPatientId', [PatientAlertController::class, 'alertListbyPatientId']);
+    Route::post('/getAlertbyAlertId', [PatientAlertController::class, 'alertListbyAlertId']);
     Route::post('/resolved', [PatientAlertController::class, 'resolved']);
 });
 
@@ -707,40 +708,39 @@ Route::group(['prefix' => 'shharp-patient-list'], function () {
 });
 //----------------------------------//////////////////////////////////////////////////-----------------
 Route::group(['prefix' => 'systemadmin'], function () {
-   
+
     Route::get('/get', [DashboardController::class, 'getsystemadmin']);
- 
+
 });
 
 Route::group(['prefix' => 'all-mentari-staff'], function () {
-   
+
    Route::get('/get', [DashboardController::class, 'getallmentaristaff']);
 });
 
 Route::group(['prefix' => 'user-admin-clerk'], function () {
-   
+
    Route::get('/get', [DashboardController::class, 'getuseradminclerk']);
 });
 
 Route::group(['prefix' => 'shharp'], function () {
-   
+
    Route::get('/get', [DashboardController::class, 'getshharp']);
 });
 
 Route::group(['prefix' => 'high-level-mgt'], function () {
-   
+
     Route::post('get', [DashboardController::class, 'gethighlevelMgt']);
 });
 Route::group(['prefix' => 'years'], function () {
-   
+
     Route::get('get', [DashboardController::class, 'getYears']);
 });
 Route::group(['prefix' => 'Notification'], function () {
-   
+
     Route::post('get', [DashboardController::class, 'getNotification']);
 });
 Route::group(['prefix' => 'staffDesignatioDetail'], function () {
     Route::post('/get', [PatientDetailsController::class, 'staffDesignatioDetail']);
     Route::post('/staffInchargeDetail', [PatientDetailsController::class, 'staffInchargeDetail']);
  });
- 

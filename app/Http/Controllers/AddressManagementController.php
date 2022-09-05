@@ -175,6 +175,18 @@ class AddressManagementController extends Controller
         return response()->json(["message" => "Post Code List", 'list' => $users, "code" => 200]);
     }
 
+    public function getPostcodeListFiltered(Request $request)
+    {
+        $users = DB::table('postcode')
+            ->join('state', 'postcode.state_id', '=', 'state.id')
+            ->join('country', 'postcode.country_id', '=', 'country.id')
+            ->select('postcode.id', 'postcode.city_name', 'postcode.postcode', 'postcode.postcode_order', 'country.country_name', 'state.state_name')
+            ->where('postcode.postcode_status', '=', '1')
+            ->WHERE('postcode.state_id','=',$request->state)
+            ->get();
+        return response()->json(["message" => "Post Code List", 'list' => $users, "code" => 200]);
+    }
+
 
     public function updateCountry(Request $request, $id)
     {
@@ -206,7 +218,7 @@ class AddressManagementController extends Controller
 
 
     /*$country1 = Country::find($id);
-      
+
             $country1->added_by =  $request->added_by;
             $country1->country_name =  $request->country_name;
             $country1->country_code =  $request->country_code;
@@ -244,7 +256,7 @@ class AddressManagementController extends Controller
     }
 
     /*$state1 = State::find($id);
-      
+
             $state1->added_by =  $request->added_by;
             $state1->country_id =  $request->country_id;
             $state1->state_name =  $request->state_name;
@@ -396,6 +408,6 @@ class AddressManagementController extends Controller
             }else{
                 return response()->json(["message" => "No Data Found", "code" => 400]);
             }
-        
+
     }
 }
