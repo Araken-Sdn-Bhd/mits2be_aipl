@@ -99,16 +99,20 @@ class StaffManagementController extends Controller
             if ($check == 0) {
                 StaffManagement::create($staffadd);
                 $role = Roles::select('role_name')->where('id', $request->role_id)->get();
-                // dd($role[0]['role_name']);
-                $default_pass = SystemSetting::select('variable_value')->where('section', "=", 'default-password')->get();
-                // dd($default_pass[1]['variable_value']);
-                if($default_pass[1]['variable_value']=="true"){
+
+                $default_pass = SystemSetting::select('variable_value')
+                ->where('section', "=", 'default-password')
+                ->where('status', "=", '1')
+                ->first();
+                
+                if($default_pass->variable_value =="true"){
                     // dd('if');
                     User::create(
                         ['name' => $request->name, 'email' => $request->email, 'role' => $role[0]['role_name'], 'password' => bcrypt('password@123')]
                     );
                     $toEmail    =   $request->email;
                     $data       =   ['name' => $request->name,'user_id' => $toEmail, 'password' =>'password@123'];
+
                     try {
                         Mail::to($toEmail)->send(new StaffReceiveMail($data));
                         // return response()->json(["message" => 'Email Sent', "code" => 200]);
@@ -117,12 +121,11 @@ class StaffManagementController extends Controller
                         return response()->json(["message" => $e->getMessage(), "code" => 500]);
                     }
                 }else{
-                    // dd('else');
                     User::create(
-                        ['name' => $request->name, 'email' => $request->email, 'role' => $role[0]['role_name'], 'password' => bcrypt($default_pass[0]['variable_value'])]
+                        ['name' => $request->name, 'email' => $request->email, 'role' => $role[0]['role_name'], 'password' => bcrypt($default_pass->variable_value)]
                     ); 
                     $toEmail    =   $request->email;
-                    $data       =   ['name' => $request->name,'user_id' => $toEmail, 'password' =>$default_pass[0]['variable_value']];
+                    $data       =   ['name' => $request->name,'user_id' => $toEmail, 'password' =>$default_pass->variable_value];
                     try {
                         Mail::to($toEmail)->send(new StaffReceiveMail($data));
                         // return response()->json(["message" => 'Email Sent', "code" => 200]);
