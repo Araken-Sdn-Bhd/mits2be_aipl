@@ -163,6 +163,7 @@ Route::group(['prefix' => 'hospital'], function () {
     Route::post('/removeBranchTeam', [HospitalManagementController::class, 'removeBranchTeam']);
     Route::get('/getServiceByBranchId', [HospitalManagementController::class, 'getHospitalBranchTeamListPatient']);
     Route::get('/getServiceByTeamId', [HospitalManagementController::class, 'getServiceByTeamId']);
+    
 });
 Route::group(['prefix' => 'screen-module'], function () {
     Route::post('/add', [ScreenModuleController::class, 'storeModule']);
