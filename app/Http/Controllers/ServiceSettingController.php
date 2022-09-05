@@ -27,7 +27,8 @@ class ServiceSettingController extends Controller
             'service_code' => $request->service_code,
             'service_name' => $request->service_name,
             'service_description' => $request->service_description,
-            'service_order' => $request->service_order
+            'service_order' => $request->service_order,
+            'status' => '1'
         ];
         ServiceRegister::firstOrCreate($service);
         return response()->json(["message" => "Service Registered Successfully!", "code" => 200]);

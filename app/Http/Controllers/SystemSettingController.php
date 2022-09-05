@@ -8,16 +8,9 @@ use Validator;
 
 class SystemSettingController extends Controller
 {
-    public function get_setting(Request $request)
+    public function get_setting($section)
     {
-        $validator = Validator::make($request->all(), [
-            'section' => 'required|string'
-        ]);
-        if ($validator->fails()) {
-            return response()->json(["message" => $validator->errors(), "code" => 422]);
-        }
-
-        $ss = SystemSetting::where('section', $request->section)->get();
+        $ss = SystemSetting::where('section', $section)->get();
         return response()->json(["message" => "Fetched Successfully", "setting" => $ss, "code" => 200]);
     }
     public function store(Request $request)

@@ -9,5 +9,5 @@ class SystemSetting extends Model
 {
     use HasFactory;
     protected $table = "system_setting";
-    protected $fillable = ["section", "variable_name", "variable_value"];
+    protected $fillable = ["section", "variable_name", "variable_value","status"];
 }

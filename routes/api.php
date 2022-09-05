@@ -141,7 +141,7 @@ Route::group(['prefix' => 'module-settings'], function () {
 
 Route::group(['prefix' => 'system-settings'], function () {
     Route::post('/insertOrupdate', [SystemSettingController::class, 'store']);
-    Route::post('/get-setting', [SystemSettingController::class, 'get_setting']);
+    Route::get('/get-setting/{section}', [SystemSettingController::class, 'get_setting']);
 });
 Route::group(['prefix' => 'hospital'], function () {
     Route::post('/add', [HospitalManagementController::class, 'store']);
@@ -163,6 +163,7 @@ Route::group(['prefix' => 'hospital'], function () {
     Route::post('/removeBranchTeam', [HospitalManagementController::class, 'removeBranchTeam']);
     Route::get('/getServiceByBranchId', [HospitalManagementController::class, 'getHospitalBranchTeamListPatient']);
     Route::get('/getServiceByTeamId', [HospitalManagementController::class, 'getServiceByTeamId']);
+    
 });
 Route::group(['prefix' => 'screen-module'], function () {
     Route::post('/add', [ScreenModuleController::class, 'storeModule']);
