@@ -24,8 +24,8 @@ class SystemSettingController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-
         if ($request->section == 'password-characteristic' or $request->section == 'default-password' or $request->section == 'email-setting') {
+            
             $prop = explode(',', $request->variable_name);
             $prop_val = explode(',', $request->variable_value);
             $prop_status = explode(',', $request->status);
@@ -41,6 +41,7 @@ class SystemSettingController extends Controller
             }
             return response()->json(["message" => "Setting has updated successfully", "code" => 200]);
         } else {
+            
             $ss = SystemSetting::updateOrCreate(
                 ['section' => $request->section],
                 [
