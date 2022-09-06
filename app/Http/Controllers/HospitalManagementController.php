@@ -409,7 +409,7 @@ class HospitalManagementController extends Controller
         $branchteam['hospital_code'] = $hm['hospital_code'];
         $branchteam['hospital_id'] = $hm['hospital_id'];
         $branchteam['hospital_branch_id'] = $hm['hospital_branch_id'];
-        $branchteam['hospital_branch_name '] = $hm['hospital_branch_name'];
+        $branchteam['hospital_branch_name'] = $hm['hospital_branch_name'];
         $branchteam['team_name'] = $hm['team_name'];
         // dd($hm);
        
