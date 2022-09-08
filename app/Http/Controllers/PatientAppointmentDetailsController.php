@@ -576,11 +576,10 @@ class PatientAppointmentDetailsController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        if($request->appointment_status == 2 || $request->appointment_status == '2'){
+        if($request->appointment_status == 10 || $request->appointment_status == '10'){
         PatientAppointmentDetails::where(
             ['id' => $request->appointment_id]
         )->update([
-            'appointment_status' =>  $request->appointment_status,
             'status' =>  '0',
         ]);
     }else{
