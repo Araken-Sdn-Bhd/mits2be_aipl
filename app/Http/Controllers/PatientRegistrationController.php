@@ -218,7 +218,7 @@ class PatientRegistrationController extends Controller
             } else {
                 $result[$key]['citizenships'] = 'NA';
             }
-           
+
 
             if ($val['service'] != null) {
                 $result[$key]['service'] = $val['service']['service_name'];
@@ -229,8 +229,8 @@ class PatientRegistrationController extends Controller
             $result[$key]['birth_date'] = $val['birth_date'] ?? 'NA';
             $result[$key]['drug_allergy_description'] = $val['drug_allergy_description'] ?? 'NA';
 
-           
-          
+
+
             //  dd($result);
         }
         return response()->json(["message" => "Patients List", 'list' => $list, "code" => 200]);
@@ -273,7 +273,7 @@ class PatientRegistrationController extends Controller
             } else {
                 $result[$key]['citizenships'] = 'NA';
             }
-           
+
 
             if ($val['service'] != null) {
                 $result[$key]['service'] = $val['service']['service_name'];
@@ -284,8 +284,8 @@ class PatientRegistrationController extends Controller
             $result[$key]['birth_date'] = $val['birth_date'] ?? 'NA';
             $result[$key]['drug_allergy_description'] = $val['drug_allergy_description'] ?? 'NA';
 
-           
-          
+
+
             //  dd($result);
         }
         return response()->json(["message" => "Patients List", 'list' => $result, "code" => 200]);
@@ -568,6 +568,22 @@ class PatientRegistrationController extends Controller
         $HOD = TransactionLog::insert($tran);
         return response()->json(["message" => "Patient Registration has updated successfully", "code" => 200]);
     }
+    public function validatePatientNric(Request $request)
+    {
+        $runByIC = PatientRegistration::where('nric_no',$request->ic)->count();
+        // dd($runByIC);
+        // $runByPassport = PatientRegistration::where('nric_no',$request->passport)->count();
+
+            if ($runByIC!=0) {
+                return response()->json(["message" => "Patient NRIC NO already exists", "code" => 422]);
+            } else {
+                return response()->json(["message" => "New Patient", "code" => 200]);
+            }
+
+            // if (!$this->checkIFPatientExists('passport_no', $request->passport_no, $request->id)) {
+            //     return response()->json(["message" => "Patient Passort NO already exists", "code" => 422]);
+            // }
+    }
 
     public function checkIFPatientExists($columnName, $columnValue, $id)
     {
@@ -591,7 +607,7 @@ class PatientRegistrationController extends Controller
             }else{
                 return response()->json(["message" => "No Data Found",  "code" => 400]);
             }
-        
+
     }
 
     public function demographic_add(Request $request)
