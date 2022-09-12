@@ -14,6 +14,7 @@ class AttemptTestController extends Controller
 {
     public function store(Request $request)
     {
+        // dd($request);
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
             'patient_id' => 'required|integer',
@@ -118,8 +119,9 @@ class AttemptTestController extends Controller
         $valuesphq9 = ['1' => 0, '2' => 1, '3'=>2,'4'=>3];
         $i = 1;
         // dd($resultSet);
-        if($testName=='cbi' || $testName=='dass'){
+        if($testName=='cbi'){
             // dd('if');
+            // dd($resultSet);
         foreach ($resultSet as $k => $v) {
             if($i<7){
             $result += $values[$v];
@@ -127,11 +129,24 @@ class AttemptTestController extends Controller
             else{
             $result += $revValues[$v];
             }
-           
+
             $i++;
         }
         return round($result/count($resultSet));
-    }elseif($testName=='si'){
+    } else if ($testName=='dass'){
+           // dd('if');
+           foreach ($resultSet as $k => $v) {
+            if($i<7){
+            $result += $values[$v];
+            }
+            else{
+            $result += $revValues[$v];
+            }
+
+            $i++;
+        }
+        return round($result/count($resultSet));
+    } elseif($testName=='si'){
         // dd($testName);
         $result = 0;
         $values = ['0' => 0, '1' => 1, '2'=>2];
@@ -140,19 +155,19 @@ class AttemptTestController extends Controller
             if($i<16){
             $result += $values[$v];
             }
-           
+
             $i++;
         }
         // dd($result);
-        return $result; 
-    } 
+        return $result;
+    }
     else{
         // dd('if'.$testName);
         $result = 0;
         foreach ($resultSet as $k => $v) {
             $result += $v;
         }
-        return $result; 
+        return $result;
     }
     }
     public function prepareWHODASResult($resultSet)
