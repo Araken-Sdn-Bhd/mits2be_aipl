@@ -219,9 +219,17 @@ class PatientDetailsController extends Controller
         $result['nric'] = $details[0]->nric_no;
         $result['birth_date'] = date('d/m/Y', strtotime($details[0]->birth_date));
         $result['age'] = date_diff(date_create($details[0]->birth_date), date_create('today'))->y;
+        if($details[0]->sex){
         $result['gender'] = $this->getGeneralSettingValue($details[0]->sex);
+        }else{
+            $result['gender'] = 'NA';
+        }
         $result['gender_id'] = $details[0]->sex;
+        if($details[0]->marital_id){
         $result['marital_status'] = $this->getGeneralSettingValue($details[0]->marital_id);
+        }else{
+            $result['marital_status'] ='NA';
+        }
         $result['contact_no'] = $details[0]->mobile_no;
         $result['nationality'] = ($details[0]->citizenship == 0) ? 'Malaysian' : (($details[0]->citizenship == 1) ? 'Permanent Resident' : 'Foreigner');
 
