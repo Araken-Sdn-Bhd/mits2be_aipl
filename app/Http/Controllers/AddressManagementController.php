@@ -388,12 +388,12 @@ class AddressManagementController extends Controller
         return response()->json(["message" => "Post Code Details", 'list' => $users, "code" => 200]);
     }
 
-    public function stateWisePostcodeList()
+    public function stateWisePostcodeList(Request $request,$id)
     {
         $users = DB::table('state')
             ->join('postcode', 'postcode.state_id', '=', 'state.id')
             ->select('state.state_name', 'postcode.id as id', 'postcode.postcode', 'postcode.city_name')
-            // ->where('state.id', '=', $id)
+            ->where('state.id', '=', $id)
             ->get();
         return response()->json(["message" => "stateWisePostcode List", 'list' => $users, "code" => 200]);
     }
