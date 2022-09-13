@@ -44,7 +44,8 @@ class PatientRegistrationController extends Controller
             'household_income' =>'',
             'ethnic_group' =>'',
             'patient_need_triage_screening' =>'',
-            'Sharp'=>''
+            'Sharp'=>'',
+            'branch_id' => '',
 
         ]);
         if($request->Sharp){
@@ -108,6 +109,7 @@ class PatientRegistrationController extends Controller
             // 'ethnic_group' =>$request->ethnic_group,patient_need_triage_screening
             'status' => "1",
             'sharp' => $request->Sharp, //0 represents for sharp registration patient list
+            'branch_id' =>$request->branch_id
         ];
 
 
@@ -455,7 +457,8 @@ class PatientRegistrationController extends Controller
             'drug_allergy' => '',
             'traditional_medication' => '',
             'other_allergy' => '',
-            'id' => 'required'
+            'id' => 'required',
+            'branch_id' =>''
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -508,6 +511,7 @@ class PatientRegistrationController extends Controller
             'other_description' => $request->other_description,
             'status' => "1",
             'updated_at' =>  date('Y-m-d h:i:s'),
+            'branch_id' =>$request->branch_id
         ];
 
         $validateCitizenship = [];
@@ -626,6 +630,7 @@ class PatientRegistrationController extends Controller
             'age' => '',
             'mobile_no' => 'required',
             'house_no' => '',
+            'branch_id' =>'',
 
             // 'services_type' => 'required',
             // 'referral_type' => 'required',
@@ -669,7 +674,7 @@ class PatientRegistrationController extends Controller
             'marital_id' =>  $request->marital_id,
             // 'accomodation_id' => $request->accomodation_id,
             'education_level' => $request->education_level,
-
+            'branch_id' =>  $request->branch_id,
             // 'occupation_status' => $request->occupation_status,
             // 'fee_exemption_status' => $request->fee_exemption_status,
             // 'occupation_sector' => $request->occupation_sector,

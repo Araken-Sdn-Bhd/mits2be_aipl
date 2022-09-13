@@ -567,6 +567,12 @@ class PatientDetailsController extends Controller
                 ->get();
                 $branch_id =  StaffManagement::select('branch_id')->where('email', '=', $tmp)
                 ->get();
+                if(!empty($branch_id[0])){
+                    $branch_id =  StaffManagement::select('branch_id')->where('email', '=', $tmp)
+                ->get();
+                }else{
+                    $branch_id =  "0";
+                }
             if (!empty($is_incharge[0]['is_incharge'])) {
                 $result[0]['is_incharge'] = $is_incharge[0]['is_incharge'] ?? 'NA';
                 $pc = HospitalBranchManagement::where(['id' => $branch_id[0]['branch_id']])->get()->toArray();
@@ -575,6 +581,6 @@ class PatientDetailsController extends Controller
                 $result[0]['is_incharge'] = 'NA';
             }
         }
-        return response()->json(["message" => "Hospital Inchagre Details", 'details' => $result, "code" => 200]);
+        return response()->json(["message" => "Hospital Inchagre Details", 'details' => $result, 'branch'=>$branch_id, "code" => 200]);
     }
 }
