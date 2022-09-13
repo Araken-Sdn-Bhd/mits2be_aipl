@@ -208,9 +208,10 @@ class PatientRegistrationController extends Controller
             } else {
                 $result[$key]['gender'] = 'NA';
             }
-            if ($val['maritialstatus'] != null) {
+            if (!empty($val['maritialstatus'][0])) {
                 $result[$key]['maritialstatus'] = $val['maritialstatus'][0]['section_value'] ?? 'NA';
             } else {
+                // $a = array('dd' => 'ok' );
                 $result[$key]['maritialstatus'] = 'NA';
             }
             if ($val['citizenships'] != null) {
@@ -233,6 +234,7 @@ class PatientRegistrationController extends Controller
 
             //  dd($result);
         }
+        // dd($result);
         return response()->json(["message" => "Patients List", 'list' => $list, "code" => 200]);
 
     }
@@ -283,7 +285,9 @@ class PatientRegistrationController extends Controller
             $result[$key]['mobile_no'] = $val['mobile_no'] ?? 'NA';
             $result[$key]['birth_date'] = $val['birth_date'] ?? 'NA';
             $result[$key]['drug_allergy_description'] = $val['drug_allergy_description'] ?? 'NA';
-
+            $result[$key]['kin_name_asin_nric'] = $val['kin_name_asin_nric'] ?? 'NA';
+            $result[$key]['kin_nric_no'] = $val['kin_nric_no'] ?? 'NA';
+            $result[$key]['kin_mobile_no'] = $val['kin_mobile_no'] ?? 'NA';
 
 
             //  dd($result);
