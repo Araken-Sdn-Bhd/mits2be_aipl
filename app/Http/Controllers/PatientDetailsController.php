@@ -80,7 +80,7 @@ class PatientDetailsController extends Controller
         $searchWord = $request->keyword;
         $resultSet = [];
         if ($searchWord) {
-            $sql = PatientRegistration::select('id', 'patient_mrn', 'name_asin_nric', 'passport_no', 'nric_no', 'salutation_id')
+            $sql = PatientRegistration::select('id', 'patient_mrn', 'name_asin_nric', 'passport_no', 'nric_no', 'salutation_id','services_type')
             ->where('sharp', '=', '0');
             if (count($search) > 0) {
         
@@ -90,6 +90,7 @@ class PatientDetailsController extends Controller
                         ->orWhere('name_asin_nric', 'LIKE', '%' . $searchWord . '%')
                         ->orWhere('passport_no', 'LIKE', '%' . $searchWord . '%')
                         ->orWhere('nric_no', 'LIKE', '%' . $searchWord . '%')
+                        ->orWhere('services_type', '=', $searchWord)
                         ->orWhereRaw("REPLACE(nric_no, '-', '') LIKE ?", ["%$searchWord%"]);
                         });
                         $sql->where($search);
@@ -100,6 +101,7 @@ class PatientDetailsController extends Controller
                         ->orWhere('name_asin_nric', 'LIKE', '%' . $searchWord . '%')
                         ->orWhere('passport_no', 'LIKE', '%' . $searchWord . '%')
                         ->orWhere('nric_no', 'LIKE', '%' . $searchWord . '%')
+                        ->orWhere('services_type', '=', $searchWord)
                         ->orWhereRaw("REPLACE(nric_no, '-', '') LIKE ?", ["%$searchWord%"]);
                 });
             }
@@ -110,7 +112,7 @@ class PatientDetailsController extends Controller
                 })
                 ->get()->toArray();
         }
-        //dd($resultSet);
+        // dd($resultSet);
         $result = [];
         if ($request->keyword == "no-keyword") {
             if(!$search){
@@ -130,7 +132,7 @@ class PatientDetailsController extends Controller
                 ->where($search)
                 ->get()->toArray();   
             }
-            //dd($list[0]['service']);
+            // dd($list);
             // $result = [];
             foreach ($list as $key => $val) {
                 $result[$key]['patient_mrn'] = $val['patient_mrn'];
@@ -145,6 +147,7 @@ class PatientDetailsController extends Controller
                     $result[$key]['salutation'] = 'NA';
                 }
                 if ($val['service'] != null) {
+                    // dd($val['service']['id']);
                     $result[$key]['service'] = $val['service']['service_name'];
                 } else {
                     $result[$key]['service'] = 'NA';
@@ -161,7 +164,7 @@ class PatientDetailsController extends Controller
                     $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get();
                     $result[$key]['team_name'] = $teamName[0]['team_name'];
                 } else {
-                    $result[$key]['service'] = 'NA';
+                    // $result[$key]['service'] = 'NA';
                     $result[$key]['appointments'] = 'NA';
                     $result[$key]['team_name'] = 'NA';
                 }
@@ -180,19 +183,24 @@ class PatientDetailsController extends Controller
                 } else {
                     $result[$key]['salutation'] = 'NA';
                 }
-
+                if ($val['service'] != null) {
+                    // dd($val['service']['id']);
+                    $result[$key]['service'] = $val['service']['service_name'];
+                } else {
+                    $result[$key]['service'] = 'NA';
+                }
                 if ($val['appointments'] != null) {
-                    if ($val['service'] != null) {
-                        $result[$key]['service'] = $val['service']['service_name'];
-                    } else {
-                        $result[$key]['service'] = 'NA';
-                    }
+                    // if ($val['service'] != null) {
+                    //     $result[$key]['service'] = $val['service']['service_name'];
+                    // } else {
+                    //     $result[$key]['service'] = 'NA';
+                    // }
                     $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
                     $team_id = $val['appointments'][0]['assign_team'];
                     $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get();
                     $result[$key]['team_name'] = $teamName[0]['team_name'];
                 } else {
-                    $result[$key]['service'] = 'NA';
+                    // $result[$key]['service'] = 'NA';
                     $result[$key]['appointments'] = 'NA';
                     $result[$key]['team_name'] = 'NA';
                 }

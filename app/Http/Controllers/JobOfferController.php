@@ -567,7 +567,7 @@ class JobOfferController extends Controller
             'icd_9_code' => $request->icd_9_code,
             'icd_9_subcode' => $request->icd_9_subcode,
             'medication_prescription' => $request->medication_prescription,
-            'created_at' => date('Y-m-d')
+            'created_at' => date('Y-m-d H:i:s')
         ];
         // PatientCarePaln::create()
         if($request->id){
@@ -576,11 +576,11 @@ class JobOfferController extends Controller
             return response()->json(["message" => "Updated", "code" => 200]);
          }else{
             $HOD=PatientCarePaln::create($patientcarepln);
-            // $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+            $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
             $notifi=[
                 'added_by' => $HOD['added_by'],
                 'patient_id' =>   $HOD['patient_id'],
-                'created_at' => date('Y-m-d H:i:s'),    //$date->format
+                'created_at' => $date->format('Y-m-d H:i:s'),    //$date->format
                 'message' =>  'upcoming review for Patient Care Plan',
             ];
             $HOD1 = Notifications::insert($notifi);  
