@@ -45,12 +45,15 @@ class PatientClinicalInfoController extends Controller
             'status' => "1",
             'created_at' => $date->format('Y-m-d H:i:s'),
         ];
+
         PatientAppointmentDetails::where(
             ['id' => $request->appointmentid]
         )->update([
-            'appointment_status' =>  4,  //0 is to show status Ready
+            'appointment_status' =>  4,
         ]);
+
         PatientClinicalInfo::create($module);
+
         return response()->json(["message" => "Patient Clinical Information Created Successfully!", "code" => 200]);
     }
 
@@ -64,9 +67,9 @@ class PatientClinicalInfoController extends Controller
         }
         $list = DB::table('patient_clinical_information')
             ->join('users', 'users.id', '=', 'patient_clinical_information.added_by')
-            ->select('patient_clinical_information.id', 'patient_clinical_information.temperature', 
-            'patient_clinical_information.blood_pressure', 'patient_clinical_information.pulse_rate', 
-            'patient_clinical_information.weight', 'patient_clinical_information.height', 'patient_clinical_information.bmi', 
+            ->select('patient_clinical_information.id', 'patient_clinical_information.temperature',
+            'patient_clinical_information.blood_pressure', 'patient_clinical_information.pulse_rate',
+            'patient_clinical_information.weight', 'patient_clinical_information.height', 'patient_clinical_information.bmi',
             'patient_clinical_information.waist_circumference', DB::raw("DATE_FORMAT(patient_clinical_information.created_at, '%d/%m/%Y %H:%i') as date_time")
             ,'users.name')
             ->where('patient_clinical_information.patient_id', $request->patient_id)

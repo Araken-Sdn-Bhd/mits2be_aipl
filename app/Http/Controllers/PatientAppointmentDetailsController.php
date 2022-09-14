@@ -279,6 +279,7 @@ class PatientAppointmentDetailsController extends Controller
 
     public function getPatientAppointmentDetailsTodayList()
     {
+        DB::enableQueryLog();
         $resultSet = PatientAppointmentDetails::select('id','added_by', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team','staff_id', 'appointment_status')
             ->with('service:service_name,id')
             ->where('status', '1')
@@ -373,9 +374,9 @@ class PatientAppointmentDetailsController extends Controller
 
     public function searchPatientListByBranchIdOrServiceIdOrByName(Request $request)
     {
-
+        DB::enableQueryLog();
         $validator = Validator::make($request->all(), [
-            'date' => 'required',
+            // 'date' => 'required',
             'service_id' => 'required|integer',
             'keyword' => 'required|string'
         ]);
@@ -383,12 +384,14 @@ class PatientAppointmentDetailsController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
 
-        if ($request->keyword == 'no-keyword' && $request->date == 'yyyy-mm-dd' && $request->service_id == '0') {
+        if ($request->keyword == 'no-keyword' || $request->date == 'yyyy-mm-dd' || $request->service_id == '0') {
             $resultSet = PatientAppointmentDetails::select('id', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'appointment_status')
                 ->with('service:service_name,id')
                 ->where('status', '1')
+                ->orWhere('status','2')
                 ->get()->toArray();
         }
+
         $resultSet = [];
         $sql = PatientAppointmentDetails::select('id', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'appointment_status')
             ->with('service:service_name,id')
@@ -396,7 +399,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->service_id != '0') {
             $sql = $sql->where('appointment_type', '=', $request->service_id);
         }
-        if ($request->date != 'yyyy-mm-dd') {
+        if ($request->date != "" ) {
             $sql = $sql->where('booking_date', '=', $request->date);
         }
         if ($request->keyword != 'no-keyword') {
@@ -440,7 +443,6 @@ class PatientAppointmentDetailsController extends Controller
                 $result[$key]['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
             }
         }
-
         return response()->json(["message" => "Appointment List.", 'list' => $result, "code" => 200]);
     }
 
@@ -576,10 +578,11 @@ class PatientAppointmentDetailsController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        if($request->appointment_status == 10 || $request->appointment_status == '10'){
+        if($request->appointment_status == 2 || $request->appointment_status == '2'){
         PatientAppointmentDetails::where(
             ['id' => $request->appointment_id]
         )->update([
+            'appointment_status' =>  $request->appointment_status,
             'status' =>  '0',
         ]);
     }else{
@@ -605,7 +608,8 @@ class PatientAppointmentDetailsController extends Controller
         PatientAppointmentDetails::where(
             ['patient_mrn_id' => $request->patient_id]
         )->update([
-            'end_appoitment_date' =>  date('Y-m-d h:i:s')
+            'end_appoitment_date' =>  date('Y-m-d h:i:s'),
+            'appointment_status' => $request->appointment_status
 
         ]);
 
