@@ -510,7 +510,7 @@ class PatientRegistrationController extends Controller
             'other_allergy' => $request->other_allergy,
             'other_description' => $request->other_description,
             'status' => "1",
-            'updated_at' =>  date('Y-m-d h:i:s'),
+            'updated_at' =>  $request->update_at,
             'branch_id' =>$request->branch_id
         ];
 
@@ -568,13 +568,13 @@ class PatientRegistrationController extends Controller
         $tran=[
             'patient_id' =>  $request->id,
             'added_by' =>  $request->added_by,
-            'date' =>  date("Y-m-d h:i:s"),
-            'time' =>  date("Y-m-d h:i:s"),
-            'created_at' =>  date("Y-m-d h:i:s"),
+            'date' =>  $request->update_at,
+            'time' =>  $request->update_at,
+            'created_at' =>  $request->update_at,
             'activity' => "Update Patient Demographic",
         ];
         $HOD = TransactionLog::insert($tran);
-        return response()->json(["message" => "Patient Registration has updated successfully", "code" => 200]);
+        return response()->json(["message" => "Patient Registration has updated successfully","Result" => $HOD, "code" => 200]);
     }
     public function validatePatientNric(Request $request)
     {
