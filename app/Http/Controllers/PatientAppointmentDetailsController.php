@@ -4450,7 +4450,7 @@ class PatientAppointmentDetailsController extends Controller
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
         }
-        if ($request->type == "CounsellorClerkingNote") {
+        else if ($request->type == "CounsellorClerkingNote") {
 
             PatientCounsellorClerkingNotes::where('id','=',$request->tbid)->update([
                 'category_services' => $request->category_services,
@@ -4465,7 +4465,7 @@ class PatientAppointmentDetailsController extends Controller
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
         }
-        if ($request->type == "PatientIndexForm") {
+        else if ($request->type == "PatientIndexForm") {
 
             PatientIndexForm::where('id','=',$request->tbid)->update([
                 'category_of_services' => $request->category_services,
@@ -4482,7 +4482,7 @@ class PatientAppointmentDetailsController extends Controller
 
         }
 
-        if ($request->type == "PsychiatricProgressNote") {
+        else if ($request->type == "PsychiatricProgressNote") {
 
             PsychiatricProgressNote::where('id','=',$request->tbid)->update([
                 'category_services' => $request->category_services,
@@ -4497,7 +4497,7 @@ class PatientAppointmentDetailsController extends Controller
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
         }
-        if ($request->type == "CPSProgressNote") {
+        else if ($request->type == "CPSProgressNote") {
 
             CpsProgressNote::where('id','=',$request->tbid)->update([
                 'service_category' => $request->category_services,
@@ -4513,7 +4513,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "SEProgressNote") {
+        else if ($request->type == "SEProgressNote") {
             CpsProgressNote::where('id','=',$request->tbid)->update([
                 'service_category' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
@@ -4528,7 +4528,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "CounsellingProgressNote") {
+        else if ($request->type == "CounsellingProgressNote") {
             CounsellingProgressNote::where('id','=',$request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services_id' =>  $request->complexity_services_id,
@@ -4543,7 +4543,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "EtpProgressNote") {
+        else if ($request->type == "EtpProgressNote") {
             EtpProgressNote::where('id','=',$request->tbid)->update([
                 'service_category' => $request->category_services,
                 'complexity_service' =>  $request->complexity_services_id,
@@ -4558,7 +4558,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "JobClubProgressNote") {
+        else  if ($request->type == "JobClubProgressNote") {
             JobClubProgressNote::where('id','=',$request->tbid)->update([
                 'service_category' => $request->category_services,
                 'complexity_service' =>  $request->complexity_services_id,
@@ -4573,7 +4573,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "ConsultationDischargeNote") {
+        else  if ($request->type == "ConsultationDischargeNote") {
             ConsultationDischargeNote::where('id','=',$request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
@@ -4588,7 +4588,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "RehabDischargeNote") {
+        else  if ($request->type == "RehabDischargeNote") {
             RehabDischargeNote::where('id','=',$request->tbid)->update([
                 'service_category' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
@@ -4603,7 +4603,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "CpsDischargeNote") {
+        else if ($request->type == "CpsDischargeNote") {
             CpsDischargeNote::where('id','=',$request->tbid)->update([
                 'service_category' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
@@ -4618,7 +4618,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
         }
 
-        if ($request->type == "PatientCarePlanAndCaseReviewForm") {
+        else  if ($request->type == "PatientCarePlanAndCaseReviewForm") {
             PatientCarePaln::where('id','=',$request->tbid)->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_services' =>  $request->complexity_services_id,
@@ -4633,7 +4633,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "JobStartReport") {
+        else  if ($request->type == "JobStartReport") {
             JobStartForm::where('id','=',$request->tbid)->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_services' =>  $request->complexity_services_id,
@@ -4648,7 +4648,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "JobEndReport") {
+        else  if ($request->type == "JobEndReport") {
             JobStartForm::where('id','=',$request->tbid)->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_services' =>  $request->complexity_services_id,
@@ -4663,7 +4663,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "JobTransitionReport") {
+        else  if ($request->type == "JobTransitionReport") {
 
             JobTransitionReport::where('id','=',$request->tbid)->update([
                 'category_of_services' => $request->category_services,
@@ -4678,7 +4678,7 @@ class PatientAppointmentDetailsController extends Controller
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
         }
-        if ($request->type == "LaserAssessment") {
+        else  if ($request->type == "LaserAssessment") {
             LASERAssesmenForm::where('id','=',$request->tbid)->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_services' =>  $request->complexity_services_id,
@@ -4693,7 +4693,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "TriageForm") {
+        else  if ($request->type == "TriageForm") {
             TriageForm::where('id','=',$request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services_id' =>  $request->complexity_services_id,
@@ -4708,7 +4708,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "JobInterestCheckList") {
+        else if ($request->type == "JobInterestCheckList") {
             TriageForm::where('id','=',$request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
@@ -4723,7 +4723,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "WorkAnalysisForm") {
+        else if ($request->type == "WorkAnalysisForm") {
 
             TriageForm::where('id','=',$request->tbid)->update([
                 'category_services' => $request->category_services,
@@ -4739,7 +4739,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "ListofJobClub") {
+        else if ($request->type == "ListofJobClub") {
             TriageForm::where('id','=',$request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
@@ -4754,7 +4754,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "ListofEtp") {
+        else  if ($request->type == "ListofEtp") {
             ListOfETP::where('id','=',$request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
@@ -4769,7 +4769,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "ListofJobSearch") {
+        else if ($request->type == "ListofJobSearch") {
 
             ListOfETP::where('id','=',$request->tbid)->update([
                 'category_services' => $request->category_services,
@@ -4785,7 +4785,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "LogMeetingWithEmployer") {
+        else if ($request->type == "LogMeetingWithEmployer") {
 
             LogMeetingWithEmployer::where('id','=',$request->tbid)->update([
                 'category_services' => $request->category_services,
@@ -4801,7 +4801,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "ListofPreviousCurrentJob") {
+        else if ($request->type == "ListofPreviousCurrentJob") {
 
             LogMeetingWithEmployer::where('id','=',$request->tbid)->update([
                 'category_services' => $request->category_services,
@@ -4817,7 +4817,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "InternalReferralForm") {
+        else if ($request->type == "InternalReferralForm") {
             InternalReferralForm::where('id','=',$request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
@@ -4832,7 +4832,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "ExternalReferralForm") {
+        else if ($request->type == "ExternalReferralForm") {
             ExternalReferralForm::where('id','=',$request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
@@ -4847,7 +4847,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "CpsRefferalForm") {
+        else  if ($request->type == "CpsRefferalForm") {
             CPSReferralForm::where('id','=',$request->tbid)->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_services' =>  $request->complexity_services_id,
@@ -4862,7 +4862,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "OcctRefferalForm") {
+        else if ($request->type == "OcctRefferalForm") {
             Occt_Referral_Form::where('id','=',$request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
@@ -4877,7 +4877,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "PsychologyRefferalForm") {
+        else if ($request->type == "PsychologyRefferalForm") {
             PsychologyReferral::where('id','=',$request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
@@ -4892,7 +4892,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        if ($request->type == "RehabRefferalAndClinicalForm") {
+        else if ($request->type == "RehabRefferalAndClinicalForm") {
             RehabReferralAndClinicalForm::where('id','=',$request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
