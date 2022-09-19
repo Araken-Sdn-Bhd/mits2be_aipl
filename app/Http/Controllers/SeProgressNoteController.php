@@ -19,6 +19,12 @@ class SeProgressNoteController extends Controller
         return response()->json(["message" => "Se Progress Activity List", 'list' => $list, "code" => 200]);
     }
 
+    public function GetSENamelist()
+    {
+        $list = SeProgressNote::select('id', 'staff_name', 'employment_status')
+            ->get();
+        return response()->json(["message" => "Se Progress Note Stafflist", 'list' => $list, "code" => 200]);
+    }
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

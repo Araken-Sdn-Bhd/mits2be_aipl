@@ -577,6 +577,7 @@ Route::group(['prefix' => 'intervention'], function () {
     Route::Post('/job-report-end', [JobOfferController::class, 'setJobEndReport']);
     Route::Post('/job-transition-report', [JobOfferController::class, 'setJobTransitionReport']);
     Route::get('/job-start-form-list', [JobOfferController::class, 'GetJobStartList']);
+    Route::get('/job-start-form', [JobOfferController::class, 'GetJobStartForm']);
 });
 Route::group(['prefix' => 'report'], function () {
     Route::post('/shharp', [ReportController::class, 'getSharpReport']);
@@ -638,6 +639,7 @@ Route::group(['prefix' => 'job-club-progress'], function () {
 Route::group(['prefix' => 'se-progress-note'], function () {
     Route::post('/add', [SeProgressNoteController::class, 'store']);
     Route::get('/activitylist', [SeProgressNoteController::class, 'GetActivityList']);
+    Route::get('/senamelist', [SeProgressNoteController::class, 'GetSENamelist']);
 });
 
 Route::group(['prefix' => 'rehab-discharge-note'], function () {
@@ -670,6 +672,7 @@ Route::group(['prefix' => 'list-of-etp'], function () {
 
 Route::group(['prefix' => 'log-employer-meeting'], function () {
     Route::post('/add', [LogMeetingWithEmployerController::class, 'store']);
+    Route::get('/employerlist', [LogMeetingWithEmployerController::class, 'GetEmployerList']);
 });
 Route::group(['prefix' => 'work-analysis'], function () {
     Route::post('/add', [WorkAnalysisFormController::class, 'store']);

@@ -982,7 +982,12 @@ class JobOfferController extends Controller
     }
     public function GetJobStartList()
     {
-       $list =JobStartFormList::select('id', 'job_title')->get();
+       $list =JobStartFormList::select('id', 'case_manager', 'job_title', 'name_of_employer')->get();
        return response()->json(["message" => "Job Start Form List", 'list' => $list, "code" => 200]);
+    }
+    public function GetJobStartForm()
+    {
+       $list =JobStartForm::select('id', 'case_manager', 'name_of_employer')->get();
+       return response()->json(["message" => "Job Start Form", 'list' => $list, "code" => 200]);
     }
 }

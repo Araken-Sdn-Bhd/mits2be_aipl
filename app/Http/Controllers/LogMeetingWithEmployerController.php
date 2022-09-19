@@ -82,4 +82,11 @@ class LogMeetingWithEmployerController extends Controller
          return response()->json(["message" => "Log Meeting Employer Created Successfully!", "code" => 200]);
         
     }
+
+    public function GetEmployerList()
+    {
+        $list = LogMeetingWithEmployer::select('id', 'employee_name')
+            ->get();
+        return response()->json(["message" => "Employer Name from Log Meeting with Employer", 'list' => $list, "code" => 200]);
+    }
 }
