@@ -26,6 +26,7 @@ class AttemptTestController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
+        // dd($request);
 
         $result = json_decode($request->result, true);
         // dd($result);
@@ -327,6 +328,68 @@ class AttemptTestController extends Controller
         return $result;
     }
 
+    public function prepareDassLevel($value, $level)
+    {
+            if ($level == 'stress') {
+                if ($value >= 0 && $value <= 7) {
+                    return 'Normal';
+                } else if ($value >= 8 && $value <= 9) {
+                    return 'Mild';
+                } else if ($value >= 10 && $value <= 13) {
+                    return 'Moderate';
+                } else if ($value >= 14 && $value <= 17) {
+                    return 'Severe';
+                } else {
+                    return 'Extreme';
+                }
+                return  $value;
+            }
+            if ($level == 'depression') {
+                if ($value >= 0 && $value <= 5) {
+                   return 'Normal';
+                } else if ($value >= 6 && $value <= 7) {
+                   return 'Mild';
+                } else if ($value >= 8 && $value <= 10) {
+                   return 'Moderate';
+                } else if ($value >= 11 && $value <= 14) {
+                   return 'Severe';
+                } else {
+                   return 'Extreme';
+                }
+                $result['Depression_Value'] = $value;
+            }
+            if ($level == 'anxiety') {
+                if ($value >= 0 && $value <= 4) {
+                    return 'Normal';
+                } else if ($value >= 5 && $value <= 6) {
+                    return 'Mild';
+                } else if ($value >= 7 && $value <= 8) {
+                    return 'Moderate';
+                } else if ($value >= 9 && $value <= 10) {
+                    return 'Severe';
+                } else {
+                    return 'Extreme';
+                }
+                return $value;
+            }
+       
+    }
+
+    public function preparePHQ9Level($value, $level)
+    {   
+        if ($value >= 0 && $value <= 4) {
+            return 'Minimal Depression';
+        } else if ($value >= 5 && $value <= 9) {
+            return 'Mild Depression';
+        } else if ($value >= 10 && $value <= 14) {
+            return 'Moderate Depression';
+        } else if ($value >= 15 && $value <= 19) {
+            return 'Moderately severe depression';
+        } else {
+            return 'Severe Depression';
+        }
+    }
+
     public function testHistory(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -335,20 +398,117 @@ class AttemptTestController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        $list1 = TestResult::select(DB::raw('SUM(result) AS result'), 'test_name', DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as date"),'id')
-            ->where('patient_id', $request->patient_id)->groupBy('created_at', 'test_name','id')->get();
+        $list1 = TestResult::select(DB::raw('SUM(result) AS result'), 'test_name','patient_id',DB::raw('group_concat(test_section_name) as test_section_name'),DB::raw('group_concat(result) as results'), 
+        DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as date")
+        ,DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') as datetime"))
+            ->where('patient_id', $request->patient_id)->groupBy('created_at', 'test_name','patient_id')->get();
+            // dd($list1);
 
-            $sr = TestResultSuicidalRisk::select('result', DB::raw("'SR' as test_name"), DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as date"),'id')
+            $sr = TestResultSuicidalRisk::select('result','patient_id', DB::raw("'SR' as test_name"), DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as date"),
+            DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') as datetime"))
             ->where('patient_id', $request->patient_id)->get();
 
             $list=[];
             foreach ($list1 as $key => $val) {
+                if($val['test_name'] == 'cbi'){
+                    $brk = explode(',',$val['results']);
+                    $levels = [];
+                    foreach($brk as $v){
+                    $levels[] =$this->prepareCBILevel($v,'cbi');
+                    }
+                    $val['levels'] = implode(',',$levels);
+                    }elseif($val['test_name'] == 'bdi'){
+                    $val['levels'] = $this->getBDINBAIResultValue($val['results'],'bdi');
+                    }elseif($val['test_name'] == 'phq9'){
+                    $val['levels'] = $this->preparePHQ9Level($val['results'],'phq9');
+                    }
+                    
+                    elseif($val['test_name'] == 'dass'){
+                    $brk = explode(',',$val['results']);
+                    $brk_txt = explode(',',$val['test_section_name']);
+                    $levels = [];
+                    foreach($brk as $k=>$v){
+                    $levels[] =$this->prepareDassLevel($v,strtolower($brk_txt[$k]));
+                    }
+                    $val['levels'] = implode(',',$levels);
+                    }
+                    elseif($val['test_name'] == 'bai'){
+                    $val['levels'] = $this->getBDINBAIResultValue($val['results'],'bai');
+                    }
+                    elseif($val['test_name'] == 'si'){
+                        $val['levels'] = $this->getBDINBAIResultValue($val['results'],'si');
+                        }
                 $list[] = $val;
             }
+            
             foreach ($sr as $key => $val) {
                 $list[] = $val;
             }
         return response()->json(["message" => "Test List.", 'list' => $list, "code" => 200]);
+    }
+
+    public function testHistoryResultShow(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'patient_id' => 'required|integer',
+            'type' =>''
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+        if($request->type=="atq"){
+            $list1 = DB::table('attempt_test')
+            ->join('patient_cbi_onlinetest', 'patient_cbi_onlinetest.id', '=', 'attempt_test.question_id')
+            ->select('*')
+            ->where('attempt_test.patient_mrn_id', $request->patient_id)->where('attempt_test.created_at', $request->datetime)
+            ->where('attempt_test.test_name', $request->type)
+            ->get();
+            
+            $list=[];
+            foreach ($list1 as $key => $val) {
+                $tmp1 =(array) $val;
+                for ($iii=0; $iii <6; $iii++) { 
+                    $tmp1["Answer$iii"] = array('value' => ($val->answer_id==$iii)? 'true':'false','text'=> $tmp1["Answer$iii"]);
+                }
+                $list[] =  $tmp1;
+            }
+        return response()->json(["message" => "Test List.", 'list' => $list, "code" => 200]);
+
+        }elseif($request->type=="psp"){
+            $list1 = DB::table('attempt_test')
+            ->join('patient_cbi_onlinetest', 'patient_cbi_onlinetest.id', '=', 'attempt_test.question_id')
+            ->select('*')
+            ->where('attempt_test.patient_mrn_id', $request->patient_id)->where('attempt_test.created_at', $request->datetime)
+            ->where('attempt_test.test_name', $request->type)
+            ->get();
+
+            $list=[];
+            foreach ($list1 as $key => $val) {
+                $tmp1 =(array) $val;
+                for ($iii=0; $iii <6; $iii++) { 
+                    $tmp1["Answer$iii"] = array('value' => ($val->answer_id==$iii)? 'true':'false','text'=> $tmp1["Answer$iii"]);
+                }
+                $list[] =  $tmp1;
+            }
+        return response()->json(["message" => "Test List.", 'list' => $list, "code" => 200]);
+        }else{
+            $list = TestResultSuicidalRisk::select('result', DB::raw("'SR' as test_name"), DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as date"))
+            ->where('patient_id', $request->patient_id)->get();
+        return response()->json(["message" => "Test List.", 'list' => $list, "code" => 200]);
+        }
+
+            // $sr = TestResultSuicidalRisk::select('result', DB::raw("'SR' as test_name"), DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as date"),'id')
+            // ->where('patient_id', $request->patient_id)->get();
+
+        //     $list=[];
+        //     foreach ($list1 as $key => $val) {
+        //         $tmp1 =(array) $val;
+        //         for ($iii=0; $iii <6; $iii++) { 
+        //             $tmp1["Answer$iii"] = array('value' => ($val->answer_id==$iii)? 'true':'false','text'=> $tmp1["Answer$iii"]);
+        //         }
+        //         $list[] =  $tmp1;
+        //     }
+        // return response()->json(["message" => "Test List.", 'list' => $list, "code" => 200]);
     }
 
     public function getBDINBAIResultValue($value, $testName)
