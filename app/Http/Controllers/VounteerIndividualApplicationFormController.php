@@ -14,6 +14,7 @@ use App\Models\VonAppointment;
 use App\Models\VonGroupApplication;
 use Exception;
 use Validator;
+use DB;
 
 class VounteerIndividualApplicationFormController extends Controller
 {
@@ -631,12 +632,12 @@ class VounteerIndividualApplicationFormController extends Controller
                 $result[$k]['area_of_involvment'] = $val['area_of_involvement'];
                 $result[$k]['phone_number'] = $val['phone_number'];
                 $result[$k]['email'] = $val['email'];
-                if($val['screening_mode']){
+                if ($val['screening_mode']) {
                     $result[$k]['screening'] = 'Yes';
-                }else{
+                } else {
                     $result[$k]['screening'] = 'No';
                 }
-               
+
                 if ($val['area_of_involvement'] == 'Volunteerism') {
                     $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
@@ -1262,117 +1263,268 @@ class VounteerIndividualApplicationFormController extends Controller
     }
     public function searchCollList(Request $request)
     {
+        DB::enableQueryLog();
         $search = [];
-        if ($request->name != '') {
-            $search['name'] = $request->name;
-        }
+        // if ($request->name != '') {
+        //     $search['name'] = $request->name;
+        // }
         if ($request->section != '') {
             $search['section'] = $request->section;
         }
         if ($request->area_of_involvement != '') {
             $search['area_of_involvement'] = $request->area_of_involvement;
         }
-        //dd($search);
+        $type = $request->name;
+        // dd($search);
 
         // if (count($search) == 0) {
         //     $search['section'] = 'individual';
         // }
         $result = [];
         $k = 0;
-        if(count($search) == 0) {
-            // $indi = VonOrgRepresentativeBackground::where('name', 'LIKE', '%' . $request->name. '%')->where('status', '0')->get();
-            $indi = VonOrgRepresentativeBackground::where('section', 'individual')->get();
-        }else{
-        $indi = VonOrgRepresentativeBackground::where($search)->get();
-        }
-        if ($indi) {
-            foreach ($indi as $key => $val) {
-                $statuscheck=VonAppointment::where('parent_section_id',$val['id'])->count();
-                // dd($statuscheck);
-                if($statuscheck>0){
-                $result[$k]['id'] = $val['id'];
-                $result[$k]['name'] = $val['name'];
-                $result[$k]['app_type'] = 'Individual';
-                $result[$k]['area_of_involvment'] = $val['area_of_involvement'];
-                $result[$k]['phone_number'] = $val['phone_number'];
-                $result[$k]['email'] = $val['email'];
-                $result[$k]['screening'] = ($val['screening_mode'] == '1') ? 'Yes' : 'No';
-                if ($val['area_of_involvement'] == 'Volunteerism') {
-                    $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
-                    $result[$k]['services'] = ($services) ? $services[0] : 'NA';
-                }
-                if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
-                    $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
-                    $result[$k]['services'] = ($services) ? $services[0] : 'NA';
-                }
-                if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
-                    $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
-                    $result[$k]['services'] = ($services) ? $services[0] : 'NA';
-                }
-                $k++;
+        if ($request->section == 'individual') {
+            if (count($search) == 0) {
+                // $indi = VonOrgRepresentativeBackground::where('name', 'LIKE', '%' . $request->name. '%')->where('status', '0')->get();
+                $indi = VonOrgRepresentativeBackground::where('section', 'individual')->where (function($query) use ($request){
+                    if ($request->name != '') {
+                        return $query->where ('name','LIKE', '%'. $request->name .'%');
+                    }
+                })->get();
+            } else {
+                $indi = VonOrgRepresentativeBackground::where($search)->where (function($query) use ($request){
+                    if ($request->name != '') {
+                        return $query->where ('name','LIKE', '%'. $request->name .'%');
+                    }
+                })->get();
             }
+            if ($indi) {
+                foreach ($indi as $key => $val) {
+                    $statuscheck = VonAppointment::where('parent_section_id', $val['id'])->count();
+                    // dd($statuscheck);
+                    if ($statuscheck > 0) {
+                        $result[$k]['id'] = $val['id'];
+                        $result[$k]['name'] = $val['name'];
+                        $result[$k]['app_type'] = 'Individual';
+                        $result[$k]['area_of_involvment'] = $val['area_of_involvement'];
+                        $result[$k]['phone_number'] = $val['phone_number'];
+                        $result[$k]['email'] = $val['email'];
+                        $result[$k]['screening'] = ($val['screening_mode'] == '1') ? 'Yes' : 'No';
+                        if ($val['area_of_involvement'] == 'Volunteerism') {
+                            $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                            $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                        }
+                        if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
+                            $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                            $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                        }
+                        if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
+                            $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                            $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                        }
+                        $k++;
+                    }
+                }
             }
-        }
-        if(count($search) == 0) {
-            $group = VonOrgRepresentativeBackground::where('section', 'group')->get();
-        }else{
-            $group = VonOrgRepresentativeBackground::where('section', 'group')->where($search)->get();
-        }
-        
-        if ($group) {
-            foreach ($group as $key => $val) {
-                $result[$k]['id'] = $val['id'];
-                $result[$k]['name'] = $val['name'];
-                $result[$k]['app_type'] = 'Group';
-                $result[$k]['area_of_involvment'] = $val['area_of_involvement'];
-                $result[$k]['phone_number'] = $val['phone_number'];
-                $result[$k]['email'] = $val['email'];
-                $result[$k]['screening'] = 'No';
-                if ($val['area_of_involvement'] == 'Volunteerism') {
-                    $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
-                    $result[$k]['services'] = ($services) ? $services[0] : 'NA';
-                }
-                if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
-                    $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
-                    $result[$k]['services'] = ($services) ? $services[0] : 'NA';
-                }
-                if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
-                    $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
-                    $result[$k]['services'] = ($services) ? $services[0] : 'NA';
-                }
-                $k++;
+        } else if ($request->section == 'group') {
+            if (count($search) == 0) {
+                $group = VonOrgRepresentativeBackground::where('section', 'group')->where (function($query) use ($request){
+                    if ($request->name != '') {
+                        return $query->where ('name','LIKE', '%'. $request->name .'%');
+                    }
+                })->get();
+            } else {
+                $group = VonOrgRepresentativeBackground::where('section', 'group')->where($search)->where (function($query) use ($request){
+                    if ($request->name != '') {
+                        return $query->where ('name','LIKE', '%'. $request->name .'%');
+                    }
+                })->get();
             }
-        }
-        if(count($search) == 0) {
-            $org = VonOrgRepresentativeBackground::where('section', 'org')->get();
-        }else{
-            $org = VonOrgRepresentativeBackground::where('section', 'org')->where($search)->get();
-        }
-        // $org = VonOrgRepresentativeBackground::where('section', 'org')->where($search)->get();
-        if ($org) {
-            foreach ($group as $key => $val) {
-                $result[$k]['id'] = $val['id'];
-                $name = VonOrgBackground::where('id', $val['org_background_id'])->get()->pluck('org_name')->toArray();
-                // dd($name[0]);
-                $result[$k]['name'] = ($name) ? $name[0] : 'NA';
-                $result[$k]['app_type'] = 'Organization';
-                $result[$k]['area_of_involvment'] = $val['area_of_involvement'];
-                $result[$k]['phone_number'] = $val['phone_number'];
-                $result[$k]['email'] = $val['email'];
-                $result[$k]['screening'] = 'No';
-                if ($val['area_of_involvement'] == 'Volunteerism') {
-                    $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
-                    $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+
+            if ($group) {
+                foreach ($group as $key => $val) {
+                    $result[$k]['id'] = $val['id'];
+                    $result[$k]['name'] = $val['name'];
+                    $result[$k]['app_type'] = 'Group';
+                    $result[$k]['area_of_involvment'] = $val['area_of_involvement'];
+                    $result[$k]['phone_number'] = $val['phone_number'];
+                    $result[$k]['email'] = $val['email'];
+                    $result[$k]['screening'] = 'No';
+                    if ($val['area_of_involvement'] == 'Volunteerism') {
+                        $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                        $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                    }
+                    if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
+                        $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                        $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                    }
+                    if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
+                        $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                        $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                    }
+                    $k++;
                 }
-                if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
-                    $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
-                    $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+            }
+        } else if ($request->section == 'organization') {
+            if (count($search) == 0) {
+                $org = VonOrgRepresentativeBackground::where('section', 'org')->where (function($query) use ($request){
+                    if ($request->name != '') {
+                        return $query->where ('name','LIKE', '%'. $request->name .'%');
+                    }
+                })->get();
+            } else {
+                $org = VonOrgRepresentativeBackground::where('section', 'org')->where (function($query) use ($request){
+                    if ($request->name != '') {
+                        return $query->where ('name','LIKE', '%'. $request->name .'%');
+                    }
+                })->get();
+            }
+            // $org = VonOrgRepresentativeBackground::where('section', 'org')->where($search)->get();
+            if ($org) {
+                foreach ($org as $key => $val) {
+                    $result[$k]['id'] = $val['id'];
+                    $name = VonOrgBackground::where('id', $val['org_background_id'])->get()->pluck('org_name')->toArray();
+                    // dd($name[0]);
+                    $result[$k]['name'] = ($name) ? $name[0] : 'NA';
+                    $result[$k]['app_type'] = 'Organization';
+                    $result[$k]['area_of_involvment'] = $val['area_of_involvement'];
+                    $result[$k]['phone_number'] = $val['phone_number'];
+                    $result[$k]['email'] = $val['email'];
+                    $result[$k]['screening'] = 'No';
+                    if ($val['area_of_involvement'] == 'Volunteerism') {
+                        $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                        $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                    }
+                    if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
+                        $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                        $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                    }
+                    if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
+                        $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                        $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                    }
+                    $k++;
                 }
-                if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
-                    $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
-                    $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+            }
+        } else {
+
+            if (count($search) == 0) {
+                // $indi = VonOrgRepresentativeBackground::where('name', 'LIKE', '%' . $request->name. '%')->where('status', '0')->get();
+                $indi = VonOrgRepresentativeBackground::where('section', 'individual')->where (function($query) use ($request){
+                    if ($request->name != '') {
+                        return $query->where ('name','LIKE', '%'. $request->name .'%');
+                    }
+                })->get();
+            } else {
+                $indi = VonOrgRepresentativeBackground::where($search)->where (function($query) use ($request){
+                    if ($request->name != '') {
+                        return $query->where ('name','LIKE', '%'. $request->name .'%');
+                    }
+                })->get();
+            }
+            if ($indi) {
+                foreach ($indi as $key => $val) {
+                    $statuscheck = VonAppointment::where('parent_section_id', $val['id'])->count();
+                    // dd($statuscheck);
+                    if ($statuscheck > 0) {
+                        $result[$k]['id'] = $val['id'];
+                        $result[$k]['name'] = $val['name'];
+                        $result[$k]['app_type'] = 'Individual';
+                        $result[$k]['area_of_involvment'] = $val['area_of_involvement'];
+                        $result[$k]['phone_number'] = $val['phone_number'];
+                        $result[$k]['email'] = $val['email'];
+                        $result[$k]['screening'] = ($val['screening_mode'] == '1') ? 'Yes' : 'No';
+                        if ($val['area_of_involvement'] == 'Volunteerism') {
+                            $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                            $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                        }
+                        if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
+                            $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                            $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                        }
+                        if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
+                            $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                            $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                        }
+                        $k++;
+                    }
                 }
-                $k++;
+            }
+            if (count($search) == 0) {
+                $group = VonOrgRepresentativeBackground::where('section', 'group')->where (function($query) use ($request){
+                    if ($request->name != '') {
+                        return $query->where ('name','LIKE', '%'. $request->name .'%');
+                    }
+                })->get();
+            } else {
+                $group = VonOrgRepresentativeBackground::where('section', 'group')->where($search)->where (function($query) use ($request){
+                    if ($request->name != '') {
+                        return $query->where ('name','LIKE', '%'. $request->name .'%');
+                    }
+                })->get();
+            }
+            if ($group) {
+                foreach ($group as $key => $val) {
+                    $result[$k]['id'] = $val['id'];
+                    $result[$k]['name'] = $val['name'];
+                    $result[$k]['app_type'] = 'Group';
+                    $result[$k]['area_of_involvment'] = $val['area_of_involvement'];
+                    $result[$k]['phone_number'] = $val['phone_number'];
+                    $result[$k]['email'] = $val['email'];
+                    $result[$k]['screening'] = 'No';
+                    if ($val['area_of_involvement'] == 'Volunteerism') {
+                        $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                        $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                    }
+                    if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
+                        $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                        $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                    }
+                    if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
+                        $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                        $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                    }
+                    $k++;
+                }
+            }
+            if (count($search) == 0) {
+                $org = VonOrgRepresentativeBackground::where('section', 'org')->where (function($query) use ($request){
+                    if ($request->name != '') {
+                        return $query->where ('name','LIKE', '%'. $request->name .'%');
+                    }
+                })->get();
+            } else {
+                $org = VonOrgRepresentativeBackground::where('section', 'org')->where($search)->where (function($query) use ($request){
+                    if ($request->name != '') {
+                        return $query->where ('name','LIKE', '%'. $request->name .'%');
+                    }
+                })->get();
+            }
+            // $org = VonOrgRepresentativeBackground::where('section', 'org')->where($search)->get();
+            if ($org) {
+                foreach ($org as $key => $val) {
+                    $result[$k]['id'] = $val['id'];
+                    $name = VonOrgBackground::where('id', $val['org_background_id'])->get()->pluck('org_name')->toArray();
+                    // dd($name[0]);
+                    $result[$k]['name'] = ($name) ? $name[0] : 'NA';
+                    $result[$k]['app_type'] = 'Organization';
+                    $result[$k]['area_of_involvment'] = $val['area_of_involvement'];
+                    $result[$k]['phone_number'] = $val['phone_number'];
+                    $result[$k]['email'] = $val['email'];
+                    $result[$k]['screening'] = 'No';
+                    if ($val['area_of_involvement'] == 'Volunteerism') {
+                        $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                        $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                    }
+                    if ($val['area_of_involvement'] == 'Outreach Project Collaboration') {
+                        $services = OutReachProjects::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                        $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                    }
+                    if ($val['area_of_involvement'] == 'Networking Make a Contribution') {
+                        $services = NetworkingContribution::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
+                        $result[$k]['services'] = ($services) ? $services[0] : 'NA';
+                    }
+                    $k++;
+                }
             }
         }
         $results = $result;
