@@ -234,14 +234,14 @@ class StaffManagementController extends Controller
         
         $users = DB::table('users')
         ->leftjoin('staff_management', 'users.email', '=', 'staff_management.email')
-        ->select('staff_management.id','users.id as users_id', 'users.name')
+        ->select('staff_management.id','users.id as users_id', 'users.name','users.role')
         //->where('staff_management.name','=', $request->name)
         // ->where('staff_management.branch_id', '=', $request->branch_id)
         ->get();
         }else{
             $users = DB::table('users')
             ->leftjoin('staff_management', 'users.email', '=', 'staff_management.email')
-            ->select('staff_management.id','users.id as users_id', 'users.name')
+            ->select('staff_management.id','users.id as users_id', 'users.name','users.role')
             //->where('staff_management.name','=', $request->name)
             ->where('staff_management.branch_id', '=', $request->branch_id)
             ->get();

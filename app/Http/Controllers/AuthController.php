@@ -50,7 +50,7 @@ class AuthController extends Controller
             $no_of_attempts = UserBlock::select('no_of_attempts')->where('user_id', $id)->pluck('no_of_attempts');
             $id_block_user = UserBlock::select('id')->where('user_id', $id)->pluck('id');
 
-            $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+            $date = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
             $newDate = $date->format('Y-m-d H:i:s');
             // dd($systemattempt[0].''.$no_of_attempts[0]);
             if (!empty($systemattempt[0]) == !empty($no_of_attempts[0])) {
@@ -94,6 +94,7 @@ class AuthController extends Controller
             }
             return response()->json(['message' => 'Unauthorized', "code" => 401], 401);
         }
+        $useradmin = User::select('role')->where('email', $request->email)->pluck('role');
         $id = User::select('id')->where('email', $request->email)->pluck('id');
         $id_block_user = UserBlock::select('id')->where('user_id', $id)->pluck('id');
 
@@ -128,6 +129,7 @@ class AuthController extends Controller
                         })
                         ->where('screens.screen_route', 'like', '%Dash%')
                         ->where('screen_access_roles.staff_id', '=', $id)
+                        ->orWhere('screen_access_roles.user_type', '=', $useradmin)
                         ->where('screen_access_roles.status', '=', '1')
                         ->get();
                     if (!empty($screenroute[0])) {
@@ -178,6 +180,7 @@ class AuthController extends Controller
                 })
                 ->where('screens.screen_route', 'like', '%Mod%')
                 ->where('screen_access_roles.staff_id', '=', $id)
+                ->orWhere('screen_access_roles.user_type', '=', $useradmin)
                 ->where('screen_access_roles.status', '=', '1')
                 ->get();
                 // dd($screenroute);

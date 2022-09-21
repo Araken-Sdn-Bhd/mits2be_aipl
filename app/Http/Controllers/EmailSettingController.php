@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\EmailTest;
 use App\Models\EmailSetting;
+use App\Models\User;
 use Illuminate\Http\Request;
 Use Exception;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Mail;
 use Validator;
 
 class EmailSettingController extends Controller
@@ -62,5 +66,24 @@ class EmailSettingController extends Controller
                     return response()->json(["message" => "Email Setting Updated Successfully!", "code" => 200]);
             }
        
+    }
+    public function getEmail(){
+        $email = EmailSetting::select('*')->get();
+        return response()->json(["message" => "Email Setting!", 'list'=>$email, "code" => 200]);
+    }
+
+    public function testEmail(Request $request)
+    {
+        // $chkUser = User::where('email', $request->emailaddress)->get()->toArray();
+        // // dd($chkUser);
+        // if ($chkUser) {
+            $toEmail    =   $request->send_email_from;
+            try {
+                Mail::to($toEmail)->send(new EmailTest());
+                return response()->json(["message" => 'Email Sent', "code" => 200]);
+            } catch (Exception $e) {
+                return response()->json(["message" => $e->getMessage(), "code" => 500]);
+            // }
+        }
     }
 }
