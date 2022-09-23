@@ -45,7 +45,7 @@ class PatientRegistration extends Model
     }
     public function citizenships()
     {
-        return $this->hasMany(Citizenship::class, "id", "citizenship");
+        return $this->hasMany(GeneralSetting::class, "id", "citizenship");
     }
     public function sharpharm()
     {

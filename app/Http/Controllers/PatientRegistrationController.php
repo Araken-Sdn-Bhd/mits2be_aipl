@@ -188,7 +188,7 @@ class PatientRegistrationController extends Controller
     {
         $list = PatientRegistration::where('id', '=', $request->id)->with('salutation:section_value,id')
             ->with('gender:section_value,id')->with('maritialstatus:section_value,id')
-            ->with('citizenships:citizenship_name,id')->get();
+            ->with('citizenships:section_value,id')->get();
             $result = [];
         foreach ($list as $key => $val) {
             // dd($list);
@@ -198,7 +198,6 @@ class PatientRegistrationController extends Controller
             $result[$key]['age'] = date_diff(date_create($val['birth_date']), date_create('today'))->y ?? 'NA';
             $result[$key]['nric_no'] = $val['nric_no'] ?? 'NA';
             $result[$key]['passport_no'] = $val['passport_no'] ?? 'NA';
-            // dd( $val['citizenships'][0]['citizenship_name']);
             if ($val['service'] != null) {
                 $result[$key]['salutation'] = $val['salutation'][0]['section_value'] ?? 'NA';
             } else {
@@ -217,7 +216,7 @@ class PatientRegistrationController extends Controller
                 $result[$key]['maritialstatus'] = 'NA';
             }
             if ($val['citizenships'] != null) {
-                $result[$key]['citizenships'] = $val['citizenships'][0]['citizenship_name'] ?? 'NA';
+                $result[$key]['citizenships'] = $val['citizenships'][0]['section_value'] ?? 'NA';
             } else {
                 $result[$key]['citizenships'] = 'NA';
             }
@@ -245,7 +244,7 @@ class PatientRegistrationController extends Controller
     {
         $list = PatientRegistration::where('id', '=', $request->id)->with('salutation:section_value,id')
             ->with('gender:section_value,id')->with('maritialstatus:section_value,id')
-            ->with('citizenships:citizenship_name,id')->get();
+            ->with('citizenships:section_value,id')->get();
             $result = [];
         foreach ($list as $key => $val) {
             // dd($list);
@@ -255,7 +254,6 @@ class PatientRegistrationController extends Controller
             $result[$key]['age'] = date_diff(date_create($val['birth_date']), date_create('today'))->y ?? 'NA';
             $result[$key]['nric_no'] = $val['nric_no'] ?? 'NA';
             $result[$key]['passport_no'] = $val['passport_no'] ?? 'NA';
-            // dd( $val['citizenships'][0]['citizenship_name']);
             if ($val['service'] != null) {
                 $result[$key]['salutation'] = $val['salutation'][0]['section_value'] ?? 'NA';
             } else {
@@ -273,7 +271,7 @@ class PatientRegistrationController extends Controller
                 $result[$key]['maritialstatus'] = 'NA';
             }
             if ($val['citizenships'] != null) {
-                $result[$key]['citizenships'] = $val['citizenships'][0]['citizenship_name'] ?? 'NA';
+                $result[$key]['citizenships'] = $val['citizenships'][0]['section_value'] ?? 'NA';
             } else {
                 $result[$key]['citizenships'] = 'NA';
             }
@@ -458,7 +456,8 @@ class PatientRegistrationController extends Controller
             'traditional_medication' => '',
             'other_allergy' => '',
             'id' => 'required',
-            'branch_id' =>''
+            'branch_id' =>'',
+            'household_income' =>''
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -511,7 +510,8 @@ class PatientRegistrationController extends Controller
             'other_description' => $request->other_description,
             'status' => "1",
             'updated_at' =>  $request->update_at,
-            'branch_id' =>$request->branch_id
+            'branch_id' =>$request->branch_id,
+            'household_income' =>$request->household_income
         ];
 
         $validateCitizenship = [];
@@ -568,8 +568,8 @@ class PatientRegistrationController extends Controller
         $tran=[
             'patient_id' =>  $request->id,
             'added_by' =>  $request->added_by,
-            'date' =>  date('Y-m-d'),
-            'time' =>  date('h:i:s'),
+            'date' =>  $request->update_at,
+            'time' =>  $request->update_at,
             'created_at' =>  $request->update_at,
             'activity' => "Update Patient Demographic",
         ];
