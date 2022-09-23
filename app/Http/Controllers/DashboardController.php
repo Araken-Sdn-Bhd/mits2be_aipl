@@ -304,9 +304,9 @@ class DashboardController extends Controller
 
         $shharpcaseSQL = ShharpReportGenerateHistory::select(DB::raw('count(*) as Sharptotal'));
         if ($request->sharpyear != 0)
-            $shharpcaseSQL->where('report_year', $request->sharpyear);
+            $shharpcaseSQL->whereYear('report_year', $request->sharpyear);
         if ($request->sharpmonth != 0)
-            $shharpcaseSQL->where('report_month', $request->sharpmonth);
+            $shharpcaseSQL->whereMonth('report_month', $request->sharpmonth);
         // if ($request->sharpmentari != 0)
         //     $shharpcaseSQL->where('hospital_id', $request->sharpmentari);
 
@@ -318,7 +318,7 @@ class DashboardController extends Controller
         if ($request->scryear != 0)
             $clinicreportSQLse->whereYear('created_at', '=', $request->scryear);
         if ($request->scrmonth != 0)
-            $clinicreportSQLse->whereYear('created_at', '=', $request->scrmonth);
+            $clinicreportSQLse->whereMonth('created_at', '=', $request->scrmonth);
         // if ($request->scrmentari != 0)
         // $clinicreportSQLse->whereYear('created_at', '=', $request->scrmentari);
         $clinicreportSe = $clinicreportSQLse->get();
@@ -327,7 +327,7 @@ class DashboardController extends Controller
         if ($request->scryear != 0)
             $clinicreportSQLConsultation->whereYear('created_at', '=', $request->scryear);
         if ($request->scrmonth != 0)
-            $clinicreportSQLConsultation->whereYear('created_at', '=', $request->scrmonth);
+            $clinicreportSQLConsultation->whereMonth('created_at', '=', $request->scrmonth);
         // if ($request->scrmentari != 0)
         // $clinicreportSQLse->whereYear('created_at', '=', $request->scrmentari);
         $clinicreportConsultation = $clinicreportSQLConsultation->get();
@@ -336,7 +336,7 @@ class DashboardController extends Controller
         if ($request->scryear != 0)
             $clinicreportSQLjobclub->whereYear('created_at', '=', $request->scryear);
         if ($request->scrmonth != 0)
-            $clinicreportSQLjobclub->whereYear('created_at', '=', $request->scrmonth);
+            $clinicreportSQLjobclub->whereMonth('created_at', '=', $request->scrmonth);
         // if ($request->scrmentari != 0)
         // $clinicreportSQLse->whereYear('created_at', '=', $request->scrmentari);
         $clinicreportjobclub = $clinicreportSQLjobclub->get();
@@ -345,7 +345,7 @@ class DashboardController extends Controller
         if ($request->scryear != 0)
             $clinicreportSQLrehabilitation->whereYear('created_at', '=', $request->scryear);
         if ($request->scrmonth != 0)
-            $clinicreportSQLrehabilitation->whereYear('created_at', '=', $request->scrmonth);
+            $clinicreportSQLrehabilitation->whereMonth('created_at', '=', $request->scrmonth);
         // if ($request->scrmentari != 0)
         // $clinicreportSQLse->whereYear('created_at', '=', $request->scrmentari);
         $clinicreportrehabilitation = $clinicreportSQLrehabilitation->get();
@@ -354,7 +354,7 @@ class DashboardController extends Controller
         if ($request->scryear != 0)
             $clinicreportSQLCps->whereYear('created_at', '=', $request->scryear);
         if ($request->scrmonth != 0)
-            $clinicreportSQLCps->whereYear('created_at', '=', $request->scrmonth);
+            $clinicreportSQLCps->whereMonth('created_at', '=', $request->scrmonth);
         // if ($request->scrmentari != 0)
         // $clinicreportSQLse->whereYear('created_at', '=', $request->scrmentari);
         $clinicreportCps = $clinicreportSQLCps->get();
@@ -422,7 +422,7 @@ class DashboardController extends Controller
         if ($request->scryear != 0)
             $clinicreportSQLseD->whereYear('created_at', '=', $request->scryear);
         if ($request->scrmonth != 0)
-            $clinicreportSQLseD->whereYear('created_at', '=', $request->scrmonth);
+            $clinicreportSQLseD->whereMonth('created_at', '=', $request->scrmonth);
         // if ($request->scrmentari != 0)
         // $clinicreportSQLseD->whereYear('created_at', '=', $request->scrmentari);
         $clinicreportSeD = $clinicreportSQLseD->get();
@@ -434,7 +434,7 @@ class DashboardController extends Controller
         if ($request->kpiyear != 0)
             $kpiSQL->whereYear('created_at', '=', $request->kpiyear);
         if ($request->kpimonth != 0)
-            $kpiSQL->whereYear('created_at', '=', $request->kpimonth);
+            $kpiSQL->whereMonth('created_at', '=', $request->kpimonth);
         $kpi = $kpiSQL->get();
 
 
@@ -458,7 +458,7 @@ class DashboardController extends Controller
         if ($request->kpiyear != 0)
             $kpiEmployement1->whereYear('created_at', '=', $request->kpiyear);
         if ($request->kpimonth != 0)
-            $kpiEmployement1->whereYear('created_at', '=', $request->kpimonth);
+            $kpiEmployement1->whereMonth('created_at', '=', $request->kpimonth);
         $kpiEmployement = $kpiEmployement1->get();
 
         $kpiUnemployement1 = SeProgressNote::select(DB::raw('count( employment_status ) as unemployed'))
@@ -466,7 +466,7 @@ class DashboardController extends Controller
         if ($request->kpiyear != 0)
             $kpiUnemployement1->whereYear('created_at', '=', $request->kpiyear);
         if ($request->kpimonth != 0)
-            $kpiUnemployement1->whereYear('created_at', '=', $request->kpimonth);
+            $kpiUnemployement1->whereMonth('created_at', '=', $request->kpimonth);
         $kpiUnemployement = $kpiUnemployement1->get();
 
         $kpiTerminated1 = SeProgressNote::select(DB::raw('count( employment_status ) as terminate'))
@@ -474,7 +474,7 @@ class DashboardController extends Controller
         if ($request->kpiyear != 0)
             $kpiTerminated1->whereYear('created_at', '=', $request->kpiyear);
         if ($request->kpimonth != 0)
-            $kpiTerminated1->whereYear('created_at', '=', $request->kpimonth);
+            $kpiTerminated1->whereMonth('created_at', '=', $request->kpimonth);
         $kpiTerminated = $kpiTerminated1->get();
 
 

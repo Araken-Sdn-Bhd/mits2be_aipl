@@ -54,4 +54,26 @@ class PasswordController extends Controller
         }
         //dd($user_id);
     }
+
+    public function changePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'userid' => 'required',
+            'password' => 'required|string'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 404]);
+        }
+        // $user_id = $request->userid;
+        $password = $request->password;
+        
+        try {
+            // $user_id = Crypt::decryptString($encyptUserId);
+            User::where('id', $request->userid)->update(['password' => bcrypt($password)]);
+            return response()->json(["message" => 'Password Changed Successfully.', "code" => 200]);
+        } catch (Exception $e) {
+            return response()->json(["message" => $e->getMessage(), "code" => 500]);
+        }
+        //dd($user_id);
+    }
 }
