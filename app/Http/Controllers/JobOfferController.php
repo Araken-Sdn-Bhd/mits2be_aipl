@@ -99,7 +99,15 @@ class JobOfferController extends Controller
 
     public function jobList(Request $request)
     {
-        return JobOffers::select(DB::raw("count('id') as job_posted"), 'id', 'position_offered')->where('added_by', $request->added_by)->groupBy('position_offered', 'id')->get();
+        DB::enableQueryLog();
+        // JobOffers::select(DB::raw("count('id') as job_posted"), 'id', 'position_offered')->where('added_by', $request->added_by)->groupBy('position_offered', 'id')->get();
+        $result = DB::table('job_offers as A')
+        ->select('A.id', 'A.position_offered')
+        ->where('A.added_by', $request->added_by)
+        ->groupBy('A.id')
+        ->get();
+        // dd(DB::getQueryLog());
+        return $result;
     }
 
     public function jobListById(Request $request)
@@ -237,7 +245,7 @@ class JobOfferController extends Controller
     {
         $result = [];
         $list = JobOffers::select('id', 'position_offered', 'duration_of_employment', 'position_location_1', 'salary_offered', 'work_schedule', 'company_id', 'job_availability')
-        ->where("status","!=","0")    
+        ->where("status","!=","0")
         ->get()->toArray();
         if (count($list) > 0) {
             foreach ($list as $k => $v) {
@@ -368,7 +376,7 @@ class JobOfferController extends Controller
             return response()->json(["message" => "SE Consent Form", "list" => $response,  "code" => 200]);
         }
         return response()->json(["message" => "SE Consent Form", "list" => $response,  "code" => 200]);
-       
+
     }
 
     public function setSEConsentForm(Request $request)
@@ -420,7 +428,7 @@ class JobOfferController extends Controller
 
     public function setLASERReferralForm(Request $request)
     {
-        
+
         $result = json_decode($request->result, true);
         // dd($result);
         $addTestResult = [];
@@ -454,8 +462,8 @@ class JobOfferController extends Controller
                                 $level[$kk] = $this->prepareLaserResult($vv);
                             }
                         // }
-                        
-                    } 
+
+                    }
                     // else if ($request->test_name == 'dass') {
                     //     $testResult = $this->prepareDASSResult($vv, $request);
                     //     $level = $this->getDassLevel($testResult);
@@ -505,17 +513,17 @@ class JobOfferController extends Controller
         ];
         if($request->id){
             LASERAssesmenForm::where(['id' => $request->id])->update($laserreferral);
-            // RehabDischargeNote::firstOrCreate($rehabdischarge);  
+            // RehabDischargeNote::firstOrCreate($rehabdischarge);
             return response()->json(["message" => "Updated", "code" => 200]);
          }else{
-            LASERAssesmenForm::create($laserreferral); 
+            LASERAssesmenForm::create($laserreferral);
             try {
                 AttemptTest::insert($addTestResult);
                 TestResult::insert($testResult);
                 return response()->json(["message" => "Answer submitted", "result" => $level, "code" => 200]);
             } catch (Exception $e) {
                 return response()->json(["message" => $e->getMessage(), 'Exception' => $addTestResult, "code" => 200]);
-            } 
+            }
         //  return response()->json(["message" => "Created", "code" => 200]);
          }
     }
@@ -572,7 +580,7 @@ class JobOfferController extends Controller
         // PatientCarePaln::create()
         if($request->id){
             PatientCarePaln::where(['id' => $request->id])->update($patientcarepln);
-            // RehabDischargeNote::firstOrCreate($rehabdischarge);  
+            // RehabDischargeNote::firstOrCreate($rehabdischarge);
             return response()->json(["message" => "Updated", "code" => 200]);
          }else{
             $HOD=PatientCarePaln::create($patientcarepln);
@@ -583,10 +591,10 @@ class JobOfferController extends Controller
                 'created_at' => $date->format('Y-m-d H:i:s'),    //$date->format
                 'message' =>  'upcoming review for Patient Care Plan',
             ];
-            $HOD1 = Notifications::insert($notifi);  
+            $HOD1 = Notifications::insert($notifi);
          return response()->json(["message" => "Created", "code" => 200]);
          }
-       
+
     }
 
     public function dischareCategory()
@@ -638,7 +646,11 @@ class JobOfferController extends Controller
     {
         $patient_id = $request->patient_id;
         $patient = PatientRegistration::select('name_asin_nric', 'nric_no', 'passport_no','kin_name_asin_nric','kin_nric_no')->where('id', $patient_id)->get();
-        $hospital = HospitalManagement::select('hospital_name')->where('added_by', $request->added_by)->get();
+        $hospital = HospitalManagement::select('hospital_name','hospital_adrress_1','hospital_adrress_2','hospital_adrress_3','hospital_state','hospital_city','hospital_postcode','state.state_name as state_name','postcode.city_name as city_name','postcode.postcode as postcode')
+        ->leftJoin('state', 'state.id', '=', 'hospital_management.hospital_state')
+        ->leftJoin('postcode', 'postcode.id', '=', 'hospital_management.hospital_postcode')
+        ->where('hospital_management.added_by', $request->added_by)
+        ->get();
         $user = User::select('name', 'role')->where('id', $request->added_by)->get();
         if(!empty($hospital[0])){
             $response = [
@@ -649,7 +661,14 @@ class JobOfferController extends Controller
                 'user_name' => $patient[0]['kin_name_asin_nric'] ?? 'NA',
                 'guardian_nric' =>  $patient[0]['kin_nric_no'] ?? 'NA',
                 'designation' => $user[0]['name'],
-                'hospital_name' => $hospital[0]['hospital_name']
+                'hospital_name' => $hospital[0]['hospital_name'],
+                'hospital_adrress_1' => $hospital[0]['hospital_adrress_1'],
+                'hospital_adrress_2' => $hospital[0]['hospital_adrress_2'],
+                'hospital_adrress_3' => $hospital[0]['hospital_adrress_3'],
+                'hospital_adrress_3' => $hospital[0]['hospital_adrress_3'],
+                'city_name' => $hospital[0]['city_name'],
+                'postcode' => $hospital[0]['postcode'],
+                'state_name' => $hospital[0]['state_name'],
             ];
             return response()->json(["message" => "CPS HomeVisit Consent Form", "list" => $response,  "code" => 200]);
         }
@@ -666,7 +685,7 @@ class JobOfferController extends Controller
             ];
             return response()->json(["message" => "CPS HomeVisit Consent Form", "list" => $response,  "code" => 200]);
         }
-       
+
     }
 
     public function getJobClubForm(Request $request)
@@ -816,7 +835,7 @@ class JobOfferController extends Controller
             ];
             return response()->json(["message" => "Photography Consent Form", "list" => $response,  "code" => 200]);
         }
-        
+
     }
 
     public function setPhotographyConsentForm(Request $request)
