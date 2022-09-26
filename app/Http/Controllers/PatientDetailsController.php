@@ -445,7 +445,7 @@ class PatientDetailsController extends Controller
     public function getSharrpPatientList(Request $request)
     {
         if ($request->keyword == 'no-keyword' && $request->fromDate == 'dd-mm-yyyy' && $request->toDate == 'dd-mm-yyyy') {
-            
+
             $query = DB::select("SELECT pr.*, d.*" . "FROM patient_registration pr left join 
         (select patient_id,harm_time,harm_date,status from sharp_registraion_final_step 
         where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
