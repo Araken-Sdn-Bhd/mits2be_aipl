@@ -457,7 +457,8 @@ class PatientRegistrationController extends Controller
             'other_allergy' => '',
             'id' => 'required',
             'branch_id' =>'',
-            'household_income' =>''
+            'household_income' =>'',
+            'employment_status' =>'',
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -511,7 +512,8 @@ class PatientRegistrationController extends Controller
             'status' => "1",
             'updated_at' =>  $request->update_at,
             'branch_id' =>$request->branch_id,
-            'household_income' =>$request->household_income
+            'household_income' =>$request->household_income,
+            'employment_status' =>$request->employment_status
         ];
 
         $validateCitizenship = [];
