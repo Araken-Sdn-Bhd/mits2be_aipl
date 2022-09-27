@@ -12,6 +12,8 @@ use App\Models\OutReachProjects;
 use App\Models\NetworkingContribution;
 use App\Models\VonAppointment;
 use App\Models\VonGroupApplication;
+use App\Models\State;
+use App\Models\Postcode;
 use Exception;
 use Validator;
 use DB;
@@ -686,7 +688,8 @@ class VounteerIndividualApplicationFormController extends Controller
     public function getRecord(Request $request)
     {
         $result = [];
-        $response = VonOrgRepresentativeBackground::where('id', $request->id)->get();
+        $response = VonOrgRepresentativeBackground::where('id', $request->id)
+        ->get();
         $section = $response[0]['section'];
         if ($section == 'org') {
             $org =  VonOrgBackground::where('id', $response[0]['org_background_id'])->get();
@@ -708,15 +711,17 @@ class VounteerIndividualApplicationFormController extends Controller
         $result['section'] = $response[0]['section'];
         $result['id'] = $response[0]['id'];
         if ($is_you_represenative == '1' || $section == 'org' || $section == 'individual') {
+            $getState=State::where('id',$response[0]['state_id'])->get();
+            $getPostcode=Postcode::where('id',$response[0]['postcode_id'])->get();
             $result['name'] = $response[0]['name'];
             $result['dob'] = $response[0]['dob'];
             $result['position_in_org'] = $response[0]['position_in_org'];
             $result['email'] = $response[0]['email'];
             $result['phone_number'] = $response[0]['phone_number'];
             $result['address'] = $response[0]['address'];
-            $result['postcode'] = $response[0]['postcode_id'];
-            $result['city'] = $response[0]['city_id'];
-            $result['state'] = $response[0]['state_id'];
+            $result['postcode'] = $getPostcode[0]['postcode'];
+            $result['city'] = $getPostcode[0]['city_name'];
+            $result['state'] = $getState[0]['state_name'];
             $result['education'] = $response[0]['education_id'];
             $result['occupation_sector'] = $response[0]['occupation_sector_id'];
             $result['branch_id'] = $response[0]['branch_id'];
