@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ServiceRegister;
 use App\Models\ServiceDivision;
+use App\Models\StaffManagement;
 use Validator;
 use Illuminate\Support\Facades\DB;
 
@@ -94,6 +95,21 @@ class ServiceSettingController extends Controller
         return response()->json(["message" => "List.", 'list' => $list, "code" => 200]);
     }
 
+    public function getServiceList(Request $request) //amir&faiz
+    {
+        $list = StaffManagement::select('id', 'branch_id')
+        ->where('email','=', $request->email)->get();
+        
+        $list2 = DB::table('service_register')
+        ->join('service_division', 'service_register.id', '=', 'service_id')
+        ->select('service_register.id', 'service_register.service_name', 'service_division.branch_id')
+        ->where('service_register.status','=', '1')
+        ->where('service_division.branch_id','=', $list[0]['branch_id'])
+        ->orderBy('service_order', 'asc')
+        ->get();
+
+        return response()->json(["message" => "List.", 'list' => $list2, "code" => 200]);
+    }
 
     public function storeDivision(Request $request)
     {
