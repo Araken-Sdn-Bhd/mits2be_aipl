@@ -403,7 +403,7 @@ class PatientRiskProtectiveAnswerController extends Controller
                 'patient_shharp_registration_data_producer.name_registering_officer'
             )
             ->where('sharp_registraion_final_step.patient_id', $request->patient_id)
-            ->orderBy('sharp_registraion_final_step.id', 'asc')->groupBy('sharp_registraion_final_step.id',
+            ->orderBy('sharp_registraion_final_step.id', 'desc')->groupBy('sharp_registraion_final_step.id',
             'sharp_registraion_final_step.created_at','patient_shharp_registration_data_producer.name_registering_officer',
             'sharp_registraion_final_step.status','patient_shharp_registration_data_producer.hospital_name')
             ->get();
