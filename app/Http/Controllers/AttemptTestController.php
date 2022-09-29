@@ -565,9 +565,9 @@ class AttemptTestController extends Controller
             if ($value >= 0 && $value <= 10) {
                 return ['Low Intent', '0-10'];
             } else if ($value > 10 && $value <= 20) {
-                return ['Medium Intent', '10-20'];
+                return ['Medium Intent', '11-20'];
             } else {
-                return ['High Intent', '>28'];
+                return ['High Intent', '21+'];
             }
         }
     }
