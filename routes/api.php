@@ -234,6 +234,7 @@ Route::group(['prefix' => 'service'], function () {
     Route::post('/update-division', [ServiceSettingController::class, 'updateDivision']);
     Route::post('/remove-division', [ServiceSettingController::class, 'removeDivision']);
     Route::post('/getServiceListById', [ServiceSettingController::class, 'getServiceListById']);
+    Route::get('/servicelist', [ServiceSettingController::class, 'getServiceList']);
 });
 Route::group(['prefix' => 'icd-setting'], function () {
     Route::post('/icdtype/add', [IcdSettingManagementController::class, 'addIcdType']);
@@ -708,6 +709,7 @@ Route::group(['prefix' => 'reset'], function () {
 });
 Route::group(['prefix' => 'access'], function () {
     Route::post('/sidebar', [ScreenModuleController::class, 'getAccessScreenByUserId']);
+    Route::post('/sidebarReport', [ScreenModuleController::class, 'getAccessScreenByUserIdforReport']);//faiz
 });
 Route::group(['prefix' => 'shharp-patient-list'], function () {
     Route::post('/list', [PatientDetailsController::class, 'getSharrpPatientList']);
