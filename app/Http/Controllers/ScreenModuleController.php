@@ -538,10 +538,11 @@ class ScreenModuleController extends Controller
             ->join('staff_management', 'screen_access_roles.staff_id', '=', 'staff_management.id')
             ->join('hospital_branch_team_details', 'screen_access_roles.team_id', '=', 'hospital_branch_team_details.id')
             ->leftjoin('screens', 'screen_access_roles.screen_id', '=', 'screens.id')
-            ->select('screen_access_roles.hospital_id','screen_access_roles.team_id','screen_access_roles.branch_id','screen_access_roles.module_id','screen_access_roles.sub_module_id',
+            ->select('screen_access_roles.id','screen_access_roles.hospital_id','screen_access_roles.team_id','screen_access_roles.branch_id','screen_access_roles.module_id','screen_access_roles.sub_module_id',
             DB::raw("'Active' as status"),'screens.screen_name','screens.screen_description','screen_access_roles.screen_id',
             'screen_access_roles.access_screen','screen_access_roles.read_writes','screen_access_roles.read_only',)
-            ->where('screen_access_roles.status','=', '1')
+            // ->where('screen_access_roles.status','=', '1')
+            // ->where('screen_access_roles.status','=', 0)
             ->where('screen_access_roles.team_id','=', $request->team_id)
             ->where('screen_access_roles.staff_id','=', $request->staff_id) //staff_id refers to the user table usersid
             ->get();
@@ -561,6 +562,8 @@ class ScreenModuleController extends Controller
                     $result[$key]['screen_name'] = $val['screen_name'] ??  'NA';
                     $result[$key]['sub_module_id'] = $val['sub_module_id'] ??  'NA';
                     $result[$key]['team_id'] = $val['team_id'] ??  'NA';
+                    $result[$key]['id'] = $val['id'] ??  'NA';
+                    $result[$key]['screen_id'] = $val['screen_id'] ??  'NA';
                 }
             }
         return response()->json(["message" => "User Matrix List", 'list' => $list,'user_details' => $result, "code" => 200]);
@@ -797,6 +800,7 @@ class ScreenModuleController extends Controller
         $validator = Validator::make($request->all(), [
             // 'screen_access_roles_id' => 'required|integer',
             'screen_idss' => 'required',
+            'userid'=>'required',
             // 'access_screen' => 'required',
             // 'read_writes' => 'required',
             // 'read_only' => 'required',
@@ -807,18 +811,26 @@ class ScreenModuleController extends Controller
         //     $data = array('question_name' => $key['question_name'],'patient_id' =>$request->patient_id,'answer'=>$key['answer'],'comment'=>$key['comment']);
         // }
         // $screen_idss = explode(',', $request->screen_idss);
+        // dd($request->screen_idss);
         foreach ($request->screen_idss as $k => $v) {
-
+            // dd($v);
+            if($v['access_screen']==true){
+                $true ='1';
+            }else{
+                $true ='0';
+            }
+            // dd($true);
             ScreenAccessRoles::where(
-                ['screen_id' => $v['screen_ids']]
+                ['staff_id' => $request->userid,
+                'screen_id' => $v['screen_ids']]
             )->update([
                 // 'module_id' => $request->module_id,
                 // 'sub_module_id' => $request->sub_module_id,
-                'screen_id' => $v['screen_ids'],
+                // 'screen_id' => $v['screen_ids'],
                 // 'hospital_id' => $request->hospital_id,
                 // 'branch_id' => $request->branch_id,
                 // 'team_id' => $request->team_id,
-                // 'staff_id' => $request->staff_id,
+                'status' => $true,
                 'access_screen' => $v['access_screen'],
                 'read_writes' =>$v['read_writes'],
                 'read_only' => $v['read_only'],

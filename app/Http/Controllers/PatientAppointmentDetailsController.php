@@ -1149,7 +1149,7 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'LaserAssessment' as type"),
                 DB::raw("'Laser Assessment Form' as section_name"),
-                "laser_assesmen_form.created_at"
+                DB::raw("DATE_FORMAT(laser_assesmen_form.created_at, '%Y-%m-%d %H:%i:%s') as created_at")
             )
             ->where('laser_assesmen_form.patient_id', $request->patient_id)
             ->orderBy('laser_assesmen_form.created_at', 'asc')
@@ -3652,7 +3652,7 @@ class PatientAppointmentDetailsController extends Controller
         //     }
         // }
 
-        // dd($ab);
+        // dd($list);
 
         // $list["Psychiatry_Clerking_Note"]=$Psychiatry_Clerking_Note;
         // $list["Counsellor_Clerking_Note"]=$Counsellor_Clerking_Note;
@@ -4429,7 +4429,7 @@ class PatientAppointmentDetailsController extends Controller
             'patient_category' => 'required|integer',
             'booking_date' => 'required',
             'booking_time' => '',
-            'end_appoitment_date' => 'required',
+            'end_appoitment_date' => '',
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
