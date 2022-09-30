@@ -1270,9 +1270,6 @@ class VounteerIndividualApplicationFormController extends Controller
     {
         DB::enableQueryLog();
         $search = [];
-        // if ($request->name != '') {
-        //     $search['name'] = $request->name;
-        // }
         if ($request->section != '') {
             $search['section'] = $request->section;
         }
@@ -1280,11 +1277,6 @@ class VounteerIndividualApplicationFormController extends Controller
             $search['area_of_involvement'] = $request->area_of_involvement;
         }
         $type = $request->name;
-        // dd($search);
-
-        // if (count($search) == 0) {
-        //     $search['section'] = 'individual';
-        // }
         $result = [];
         $k = 0;
         if ($request->section == 'individual') {
@@ -1504,7 +1496,6 @@ class VounteerIndividualApplicationFormController extends Controller
                     }
                 })->get();
             }
-            // $org = VonOrgRepresentativeBackground::where('section', 'org')->where($search)->get();
             if ($org) {
                 foreach ($org as $key => $val) {
                     $result[$k]['id'] = $val['id'];
@@ -1532,6 +1523,7 @@ class VounteerIndividualApplicationFormController extends Controller
                 }
             }
         }
+        // dd(DB::getQueryLog());
         $results = $result;
         if ($request->service != '') {
             $results = [];
