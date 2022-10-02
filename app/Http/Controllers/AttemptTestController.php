@@ -491,6 +491,10 @@ class AttemptTestController extends Controller
                 $list[] =  $tmp1;
             }
         return response()->json(["message" => "Test List.", 'list' => $list, "code" => 200]);
+        }elseif($request->type=="laser"){
+            $list1 = TestResult::select('*')->where('created_at',"=",$request->datetime)
+            ->where('patient_id',"=",$request->patient_id)->get();
+        return response()->json(["message" => "Test List laser.", 'list' => $list1, "code" => 200]);
         }else{
             $list = TestResultSuicidalRisk::select('result', DB::raw("'SR' as test_name"), DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as date"))
             ->where('patient_id', $request->patient_id)->get();

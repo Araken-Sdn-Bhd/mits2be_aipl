@@ -32,6 +32,7 @@ use App\Models\PsychiatricProgressNote;
 use App\Models\PsychiatryClerkingNote;
 use App\Models\RehabDischargeNote;
 use App\Models\SeProgressNote;
+use App\Models\ServiceRegister;
 use App\Models\ShharpReportGenerateHistory;
 use App\Models\StaffManagement;
 use App\Models\TriageForm;
@@ -263,6 +264,8 @@ class DashboardController extends Controller
             $totalmentarilocationSQL->whereMonth('created_at', $request->tarmonth);
         if ($request->tarmentari != 0)
             $totalmentarilocationSQL->where('hospital_id', $request->tarmentari);
+        if ($request->branch_stateid != 0)
+            $totalmentarilocationSQL->where('branch_state', $request->branch_stateid);
 
         $totalmentarilocation = $totalmentarilocationSQL->get();
 
@@ -302,67 +305,99 @@ class DashboardController extends Controller
         //     ->groupBy('report_month', 'report_year', 'state_name')
         //     ->get()->toArray();
 
-        $shharpcaseSQL = ShharpReportGenerateHistory::select(DB::raw('count(*) as Sharptotal'));
+        $shharpcaseSQL = PatientRegistration::select(DB::raw('count(*) as Sharptotal'))->where('sharp','1');
         if ($request->sharpyear != 0)
-            $shharpcaseSQL->whereYear('report_year', $request->sharpyear);
+            $shharpcaseSQL->whereYear('created_at', $request->sharpyear);
         if ($request->sharpmonth != 0)
-            $shharpcaseSQL->whereMonth('report_month', $request->sharpmonth);
-        // if ($request->sharpmentari != 0)
-        //     $shharpcaseSQL->where('hospital_id', $request->sharpmentari);
+            $shharpcaseSQL->whereMonth('created_at', $request->sharpmonth);
+        if ($request->sharpmentari != 0)
+            $shharpcaseSQL->where('branch_id', $request->sharpmentari);
+        // $shharpcaseSQL = DB::table('sharp_registraion_final_step')
+        // ->join('patient_registration', 'sharp_registraion_final_step.patient_id', '=', 'patient_registration.id')
+        // ->select(DB::raw('count(sharp_registraion_final_step.id) as Sharptotal'))
+        // ->where('patient_registration.branch_id','=', $request->sharpmentari);
+        $male=null;$female=null;
+        if ($request->sharprace == "Race")
+        $shharpcaseSQL->where('race_id','!=','0');
+        else if ($request->sharprace == "Employment Status")
+        $shharpcaseSQL->where('employment_status','!=','0');
+        else if ($request->sharprace == "Education")
+        $shharpcaseSQL->where('education_level', '!=','0');
+        else if ($request->sharprace == "Gender"){
+        $shharpcaseSQL->where('sharp', 1);
+        $getmalefemale=GeneralSetting::select('id','section_value')->where('section','gender')->where('status','=','1')->get();
+        if($getmalefemale[0]['section_value']){
+            // dd($getmalefemale[0]['id'].$getmalefemale[1]['id']);
+            $male1=PatientRegistration::select(DB::raw('count(*) as Sharptotal'))->where('sharp','1')->where('sex','426');
+            // ->get();
+            $female1=PatientRegistration::select(DB::raw('count(*) as Sharptotal'))->where('sharp','1')->where('sex','427');
+            // ->get();
+        if ($request->sharpyear != 0)
+            $male1->whereYear('created_at', $request->sharpyear);
+            // $female1->whereYear('created_at', $request->sharpyear);
+        if ($request->sharpmonth != 0)
+            $male1->whereMonth('created_at', $request->sharpmonth);
+            // $female1->whereMonth('created_at', $request->sharpmonth);
+        if ($request->sharpmentari != 0)
+            $male1->where('branch_id', $request->sharpmentari);
+            // $female1->where('branch_id', $request->sharpmentari);
 
+            if ($request->sharpyear != 0)
+            // $male1->whereYear('created_at', $request->sharpyear);
+            $female1->whereYear('created_at', $request->sharpyear);
+        if ($request->sharpmonth != 0)
+            // $male1->whereMonth('created_at', $request->sharpmonth);
+            $female1->whereMonth('created_at', $request->sharpmonth);
+        if ($request->sharpmentari != 0)
+            // $male1->where('branch_id', $request->sharpmentari);
+            $female1->where('branch_id', $request->sharpmentari);
+
+            $female = $female1->get();
+            $male = $male1->get();
+            
+            // dd($female);
+        }
+        }
+        else if ($request->sharprace == "Religion")
+        $shharpcaseSQL->where('religion_id','!=','0');
+        else if ($request->sharprace == "Range Of Age")
+        $shharpcaseSQL->where('age','!=','0');
+        
 
         $shharpcase = $shharpcaseSQL->get();
-        // dd($shharpcase);
+     
+        // dd($shharpcase. '  ' .$shharpcase1);
 
-        $clinicreportSQLse = SeProgressNote::select(DB::raw('count( * ) as SeProgressNote'));
-        if ($request->scryear != 0)
-            $clinicreportSQLse->whereYear('created_at', '=', $request->scryear);
-        if ($request->scrmonth != 0)
-            $clinicreportSQLse->whereMonth('created_at', '=', $request->scrmonth);
-        // if ($request->scrmentari != 0)
-        // $clinicreportSQLse->whereYear('created_at', '=', $request->scrmentari);
-        $clinicreportSe = $clinicreportSQLse->get();
-
-        $clinicreportSQLConsultation = ConsultationDischargeNote::select(DB::raw('count( * ) as ConsultationDischargeNote'));
-        if ($request->scryear != 0)
-            $clinicreportSQLConsultation->whereYear('created_at', '=', $request->scryear);
-        if ($request->scrmonth != 0)
-            $clinicreportSQLConsultation->whereMonth('created_at', '=', $request->scrmonth);
-        // if ($request->scrmentari != 0)
-        // $clinicreportSQLse->whereYear('created_at', '=', $request->scrmentari);
-        $clinicreportConsultation = $clinicreportSQLConsultation->get();
-
-        $clinicreportSQLjobclub = JobClubConsentForm::select(DB::raw('count( * ) as JobClubConsentForm'));
-        if ($request->scryear != 0)
-            $clinicreportSQLjobclub->whereYear('created_at', '=', $request->scryear);
-        if ($request->scrmonth != 0)
-            $clinicreportSQLjobclub->whereMonth('created_at', '=', $request->scrmonth);
-        // if ($request->scrmentari != 0)
-        // $clinicreportSQLse->whereYear('created_at', '=', $request->scrmentari);
-        $clinicreportjobclub = $clinicreportSQLjobclub->get();
-
-        $clinicreportSQLrehabilitation = RehabDischargeNote::select(DB::raw('count( * ) as RehabDischargeNote'));
-        if ($request->scryear != 0)
-            $clinicreportSQLrehabilitation->whereYear('created_at', '=', $request->scryear);
-        if ($request->scrmonth != 0)
-            $clinicreportSQLrehabilitation->whereMonth('created_at', '=', $request->scrmonth);
-        // if ($request->scrmentari != 0)
-        // $clinicreportSQLse->whereYear('created_at', '=', $request->scrmentari);
-        $clinicreportrehabilitation = $clinicreportSQLrehabilitation->get();
-
-        $clinicreportSQLCps = CPSReferralForm::select(DB::raw('count( * ) as CPSReferralForm'));
-        if ($request->scryear != 0)
-            $clinicreportSQLCps->whereYear('created_at', '=', $request->scryear);
-        if ($request->scrmonth != 0)
-            $clinicreportSQLCps->whereMonth('created_at', '=', $request->scrmonth);
-        // if ($request->scrmentari != 0)
-        // $clinicreportSQLse->whereYear('created_at', '=', $request->scrmentari);
-        $clinicreportCps = $clinicreportSQLCps->get();
-
-        $summaryActivity = $clinicreportSe[0]['SeProgressNote'] + $clinicreportConsultation[0]['ConsultationDischargeNote'] +
-            $clinicreportjobclub[0]['JobClubConsentForm'] + $clinicreportrehabilitation[0]['RehabDischargeNote'] +
-            $clinicreportCps[0]['CPSReferralForm'];
         // dd($summaryActivity);
+        function random_color_part() {
+            return str_pad( dechex( mt_rand( 0, 255 ) ), 2, '0', STR_PAD_LEFT);
+        }
+        
+        function random_color() {
+            return random_color_part() . random_color_part() . random_color_part();
+        }
+        $clinicrepor1 = PatientRegistration::select('services_type',DB::raw('count( * ) as TotalPatient'))->groupBy('services_type');
+        if ($request->scryear != 0)
+            $clinicrepor1->whereYear('created_at', '=', $request->scryear);
+        if ($request->scrmonth != 0)
+            $clinicrepor1->whereMonth('created_at', '=', $request->scrmonth);
+        if ($request->scrmentari != 0)
+            $clinicrepor1->where('branch_id', '=', $request->scrmentari);
+            $clini22 = $clinicrepor1->get();
+            // dd($clini22);
+            foreach ($clini22 as $key => $value) {
+                if($value['services_type']){
+                    // dd($value['services_type']);
+                    $aa=ServiceRegister::select('service_name')->where('id',$value['services_type'])->get();
+                    if(isset($aa)){
+                        $clini22[$key]['service_name'] = $aa[0]['service_name'] ?? null;
+                        $clini22[$key]['color'] = random_color();
+                    }
+                   
+                }
+                
+            }
+            // dd($clini22);
         // ----------------------------start for diagnosis---------------------------------------
 
         $id = IcdType::select('id')->where('icd_type_code', "=", 'ICD-10')->get();
@@ -435,6 +470,13 @@ class DashboardController extends Controller
             $kpiSQL->whereYear('created_at', '=', $request->kpiyear);
         if ($request->kpimonth != 0)
             $kpiSQL->whereMonth('created_at', '=', $request->kpimonth);
+        if ($request->kpimentari != 0)
+        $kpiSQL = DB::table('se_progress_note')
+        ->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
+        ->select(DB::raw('count(se_progress_note.employment_status) as kpiTotalCaseLoad'))
+        ->where('se_progress_note.patient_id','=', $request->kpimentari);
+        // ->get();
+            // $kpiSQL->where('id', '=', $request->kpimentari);
         $kpi = $kpiSQL->get();
 
 
@@ -459,6 +501,11 @@ class DashboardController extends Controller
             $kpiEmployement1->whereYear('created_at', '=', $request->kpiyear);
         if ($request->kpimonth != 0)
             $kpiEmployement1->whereMonth('created_at', '=', $request->kpimonth);
+        if ($request->kpimentari != 0)
+            $kpiEmployement1 = DB::table('se_progress_note')
+            ->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
+            ->select(DB::raw('count(se_progress_note.employment_status) as kpiTotalCaseLoad'))
+            ->where('se_progress_note.patient_id','=', $request->kpimentari);    
         $kpiEmployement = $kpiEmployement1->get();
 
         $kpiUnemployement1 = SeProgressNote::select(DB::raw('count( employment_status ) as unemployed'))
@@ -467,6 +514,11 @@ class DashboardController extends Controller
             $kpiUnemployement1->whereYear('created_at', '=', $request->kpiyear);
         if ($request->kpimonth != 0)
             $kpiUnemployement1->whereMonth('created_at', '=', $request->kpimonth);
+        if ($request->kpimentari != 0)
+            $kpiUnemployement1 = DB::table('se_progress_note')
+            ->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
+            ->select(DB::raw('count(se_progress_note.employment_status) as kpiTotalCaseLoad'))
+            ->where('se_progress_note.patient_id','=', $request->kpimentari); 
         $kpiUnemployement = $kpiUnemployement1->get();
 
         $kpiTerminated1 = SeProgressNote::select(DB::raw('count( employment_status ) as terminate'))
@@ -475,6 +527,11 @@ class DashboardController extends Controller
             $kpiTerminated1->whereYear('created_at', '=', $request->kpiyear);
         if ($request->kpimonth != 0)
             $kpiTerminated1->whereMonth('created_at', '=', $request->kpimonth);
+        if ($request->kpimentari != 0)
+            $kpiTerminated1 = DB::table('se_progress_note')
+            ->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
+            ->select(DB::raw('count(se_progress_note.employment_status) as kpiTotalCaseLoad'))
+            ->where('se_progress_note.patient_id','=', $request->kpimentari); 
         $kpiTerminated = $kpiTerminated1->get();
 
 
@@ -491,12 +548,14 @@ class DashboardController extends Controller
             'totalpatient' => $totalpatient,
             'totalmentarilocation' => $totalmentarilocation,
             'totalsharp' => $shharpcase,
+            'male' =>$male,
+            'female' =>$female,
             'kpi' => $kpi,
             "kpiEmployement" => $kpiEmployement,
             "kpiUnemployement" => $kpiUnemployement,
             "kpiTerminated" => $kpiTerminated,
 
-            "summaryActivity" => $summaryActivity,
+            "summaryActivity" => $clini22,
             "diagnosis" => $diagnosis,
             "code" => 200
         ]);
