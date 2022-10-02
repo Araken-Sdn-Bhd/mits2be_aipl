@@ -652,10 +652,10 @@ class ScreenModuleController extends Controller
         ->where('screen_access_roles.status','=', '1')
         ->where('screens.screen_status','=', '1')
         ->where('screen_access_roles.user_type','=', $request->type)
-        ->where('screen_modules.id','!=', '26')//Workload Report //faiz
-        ->where('screen_modules.id','!=', '27')//Activities Report //faiz
-        ->where('screen_modules.id','!=', '28')//National KPI //faiz
-        ->where('screen_modules.id','!=', '29')//SHHARP //faiz
+        ->where('screen_modules.id','!=', '26')//Workload Report
+        ->where('screen_modules.id','!=', '27')//Activities Report
+        ->where('screen_modules.id','!=', '28')//National KPI
+        ->where('screen_modules.id','!=', '29')//SHHARP
         ->orWhere('screen_access_roles.staff_id','=', $request->staff_id)
         // ->distinct('screen_access_roles.module_id')
         ->groupBy('screen_access_roles.id','screen_modules.id','screen_access_roles.module_id','screen_access_roles.sub_module_id','screens.screen_name','screens.screen_route','screen_modules.module_name','screens.icon','screens.index_val','screen_access_roles.screen_id',
@@ -694,10 +694,10 @@ class ScreenModuleController extends Controller
         ->where('screen_access_roles.status','=', '1')
         ->where('screens.screen_status','=', '1')
         ->where('screens.sub_module_id','=',$val['sub_module_id'])
-        ->where('screen_modules.id','!=', '26')//Workload Report //faiz
-        ->where('screen_modules.id','!=', '27')//Activities Report //faiz
-        ->where('screen_modules.id','!=', '28')//National KPI //faiz
-        ->where('screen_modules.id','!=', '29')//SHHARP //faiz
+        ->where('screen_modules.id','!=', '26')//Workload Report
+        ->where('screen_modules.id','!=', '27')//Activities Report
+        ->where('screen_modules.id','!=', '28')//National KPI
+        ->where('screen_modules.id','!=', '29')//SHHARP
         // ->where('screen_access_roles.staff_id','=', $request->staff_id)
         ->where('screen_access_roles.user_type','=', $request->type)
         ->groupBy('screens.id','screens.added_by','screens.module_id','screens.module_name','screens.sub_module_id',
@@ -731,10 +731,10 @@ class ScreenModuleController extends Controller
         ->where('screen_access_roles.status','=', '1')
         ->where('screens.screen_status','=', '1')
         ->where('screen_access_roles.staff_id','=', $request->staff_id)
-        ->where('screen_modules.id','!=', '26')//Workload Report //faiz
-        ->where('screen_modules.id','!=', '27')//Activities Report //faiz
-        ->where('screen_modules.id','!=', '28')//National KPI //faiz
-        ->where('screen_modules.id','!=', '29')//SHHARP //faiz
+        ->where('screen_modules.id','!=', '26')//Workload Report
+        ->where('screen_modules.id','!=', '27')//Activities Report
+        ->where('screen_modules.id','!=', '28')//National KPI
+        ->where('screen_modules.id','!=', '29')//SHHARP 
         // ->distinct('screen_access_roles.module_id')
         ->groupBy('screen_access_roles.id','screen_modules.id','screen_access_roles.module_id','screen_access_roles.sub_module_id','screens.screen_name','screens.screen_route','screen_modules.module_name','screens.icon','screens.index_val','screen_access_roles.screen_id',
         'screen_access_roles.read_writes','screen_access_roles.read_only')
