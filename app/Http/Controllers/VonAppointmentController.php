@@ -183,4 +183,18 @@ class VonAppointmentController extends Controller
         VonAppointment::where('id', $request->id)->update(['status' => $request->status]);
         return response()->json(["message" => "Appointment status updated!", "code" => 200]);
     }
+
+    public function setStatusgroup(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+            'status' => 'required|string'
+        ]);
+        dd($request);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+        VonAppointment::where('id', $request->id)->update(['status' => $request->status]);
+        return response()->json(["message" => "Appointment status updated!", "code" => 200]);
+    }
 }

@@ -538,10 +538,11 @@ class ScreenModuleController extends Controller
             ->join('staff_management', 'screen_access_roles.staff_id', '=', 'staff_management.id')
             ->join('hospital_branch_team_details', 'screen_access_roles.team_id', '=', 'hospital_branch_team_details.id')
             ->leftjoin('screens', 'screen_access_roles.screen_id', '=', 'screens.id')
-            ->select('screen_access_roles.hospital_id','screen_access_roles.team_id','screen_access_roles.branch_id','screen_access_roles.module_id','screen_access_roles.sub_module_id',
+            ->select('screen_access_roles.id','screen_access_roles.hospital_id','screen_access_roles.team_id','screen_access_roles.branch_id','screen_access_roles.module_id','screen_access_roles.sub_module_id',
             DB::raw("'Active' as status"),'screens.screen_name','screens.screen_description','screen_access_roles.screen_id',
             'screen_access_roles.access_screen','screen_access_roles.read_writes','screen_access_roles.read_only',)
-            ->where('screen_access_roles.status','=', '1')
+            // ->where('screen_access_roles.status','=', '1')
+            // ->where('screen_access_roles.status','=', 0)
             ->where('screen_access_roles.team_id','=', $request->team_id)
             ->where('screen_access_roles.staff_id','=', $request->staff_id) //staff_id refers to the user table usersid
             ->get();
@@ -561,6 +562,8 @@ class ScreenModuleController extends Controller
                     $result[$key]['screen_name'] = $val['screen_name'] ??  'NA';
                     $result[$key]['sub_module_id'] = $val['sub_module_id'] ??  'NA';
                     $result[$key]['team_id'] = $val['team_id'] ??  'NA';
+                    $result[$key]['id'] = $val['id'] ??  'NA';
+                    $result[$key]['screen_id'] = $val['screen_id'] ??  'NA';
                 }
             }
         return response()->json(["message" => "User Matrix List", 'list' => $list,'user_details' => $result, "code" => 200]);
@@ -652,6 +655,10 @@ class ScreenModuleController extends Controller
         ->where('screen_access_roles.status','=', '1')
         ->where('screens.screen_status','=', '1')
         ->where('screen_access_roles.user_type','=', $request->type)
+        ->where('screen_modules.id','!=', '26')//Workload Report
+        ->where('screen_modules.id','!=', '27')//Activities Report
+        ->where('screen_modules.id','!=', '28')//National KPI
+        ->where('screen_modules.id','!=', '29')//SHHARP
         ->orWhere('screen_access_roles.staff_id','=', $request->staff_id)
         // ->distinct('screen_access_roles.module_id')
         ->groupBy('screen_access_roles.id','screen_modules.id','screen_access_roles.module_id','screen_access_roles.sub_module_id','screens.screen_name','screens.screen_route','screen_modules.module_name','screens.icon','screens.index_val','screen_access_roles.screen_id',
@@ -690,6 +697,10 @@ class ScreenModuleController extends Controller
         ->where('screen_access_roles.status','=', '1')
         ->where('screens.screen_status','=', '1')
         ->where('screens.sub_module_id','=',$val['sub_module_id'])
+        ->where('screen_modules.id','!=', '26')//Workload Report
+        ->where('screen_modules.id','!=', '27')//Activities Report
+        ->where('screen_modules.id','!=', '28')//National KPI
+        ->where('screen_modules.id','!=', '29')//SHHARP
         // ->where('screen_access_roles.staff_id','=', $request->staff_id)
         ->where('screen_access_roles.user_type','=', $request->type)
         ->groupBy('screens.id','screens.added_by','screens.module_id','screens.module_name','screens.sub_module_id',
@@ -723,6 +734,175 @@ class ScreenModuleController extends Controller
         ->where('screen_access_roles.status','=', '1')
         ->where('screens.screen_status','=', '1')
         ->where('screen_access_roles.staff_id','=', $request->staff_id)
+        ->where('screen_modules.id','!=', '26')//Workload Report
+        ->where('screen_modules.id','!=', '27')//Activities Report
+        ->where('screen_modules.id','!=', '28')//National KPI
+        ->where('screen_modules.id','!=', '29')//SHHARP 
+        // ->distinct('screen_access_roles.module_id')
+        ->groupBy('screen_access_roles.id','screen_modules.id','screen_access_roles.module_id','screen_access_roles.sub_module_id','screens.screen_name','screens.screen_route','screen_modules.module_name','screens.icon','screens.index_val','screen_access_roles.screen_id',
+        'screen_access_roles.read_writes','screen_access_roles.read_only')
+        ->get();
+   
+        $result1 = (array) json_decode($list1,true);
+        // dd($result1);
+        $result=[];
+        $result2 = [];
+
+        if (count($result1) > 0) {
+            foreach ($result1 as $key => $val) {
+                if(empty($result[$val['module_id']])){
+                    $result[$val['module_id']]=[];
+                    $result[$val['module_id']]['module_id']=$val['module_id'] ??  'NA';
+                    $result[$val['module_id']]['screen_route'] = $val['screen_route'] ??  'NA';
+                    $result[$val['module_id']]['screen_name'] = $val['module_name'] ??  'NA';
+                    $result[$val['module_id']]['icon'] = $val['icon'] ??  'NA';
+                    $result[$val['module_id']]['read_writes'] = $val['read_writes'] ??  'NA';
+                    $result[$val['module_id']]['read_only'] = $val['read_only'] ??  'NA'; 
+                    $result[$val['module_id']]['screen_acess_role_id'] = $val['id'] ??  'NA';    
+
+                    $result[$val['module_id']]['sub_module_id']=[];
+                }
+
+                if($val['sub_module_id']){
+                    // dd($val);
+                //    $ab=ScreenPageModule:: select('*')->where('sub_module_id',$val['sub_module_id'])
+                //    ->get();
+                $ab = DB::table('screen_access_roles')
+        ->join('screens', 'screen_access_roles.screen_id', '=', 'screens.id')
+        ->select('screens.id','screens.added_by','screens.module_id','screens.module_name','screens.sub_module_id',
+        'screens.sub_module_name','screens.screen_name','screens.screen_route','screens.icon',
+        'screen_access_roles.id','screen_access_roles.read_writes','screen_access_roles.read_only')
+        ->where('screen_access_roles.status','=', '1')
+        ->where('screens.screen_status','=', '1')
+        ->where('screens.sub_module_id','=',$val['sub_module_id'])
+        ->where('screen_access_roles.staff_id','=', $request->staff_id)
+        ->groupBy('screens.id','screens.added_by','screens.module_id','screens.module_name','screens.sub_module_id',
+        'screens.sub_module_name','screens.screen_name','screens.screen_route','screens.icon',
+        'screen_access_roles.id','screen_access_roles.read_writes','screen_access_roles.read_only')
+        ->get();
+                   $result_tmp = (array) json_decode($ab,true);
+                   foreach ($result_tmp as $key => $val_) {
+                    $result[$val['module_id']]['sub_module_id'][] = $val_;
+                    }
+                }
+            }
+            foreach ($result as $key => $value) {
+                $result2[] = $value;
+            }
+        }
+        if($result2){
+            return response()->json(["message" => "User Access List2", 'list' => $result2, "code" => 200]);
+        }else{
+            return response()->json(["message" => "User Access List2", 'list' => $result2, "code" => 400]);
+        }
+
+    }
+
+        
+    }
+
+    public function getAccessScreenByUserIdForReport(Request $request)
+    {
+        $validator = Validator::make($request->all(), ['staff_id' => 'required|integer']);
+        if ($validator->fails()) return  response()->json(["message" => $validator->errors(), "code" => 422]);
+
+    if($request->type=="User Administrator"){
+        $list1 = DB::table('screen_access_roles')
+        ->join('screens', 'screen_access_roles.screen_id', '=', 'screens.id')
+        ->join('screen_modules', 'screen_modules.id', '=', 'screen_access_roles.module_id')
+        ->select('screen_access_roles.module_id','screen_access_roles.sub_module_id',
+        'screens.screen_route','screens.icon','screen_access_roles.screen_id',
+        // 'screen_sub_modules.sub_module_name',
+        'screen_modules.module_name','screen_access_roles.id','screen_access_roles.read_writes','screen_access_roles.read_only')
+        ->where('screen_access_roles.status','=', '1')
+        ->where('screens.screen_status','=', '1')
+        ->where('screen_access_roles.user_type','=', $request->type)
+        ->where(function ($query) {
+            $query->orWhere('screen_modules.id','=', '26')//Workload Report
+                  ->orWhere('screen_modules.id','=', '27')//Activities Report
+                  ->orWhere('screen_modules.id','=', '28')//National KPI
+                  ->orWhere('screen_modules.id','=', '29');//SHHARP 
+        })
+        ->where('screen_access_roles.staff_id','=', $request->staff_id)
+        // ->distinct('screen_access_roles.module_id')
+        ->groupBy('screen_access_roles.id','screen_modules.id','screen_access_roles.module_id','screen_access_roles.sub_module_id','screens.screen_name','screens.screen_route','screen_modules.module_name','screens.icon','screens.index_val','screen_access_roles.screen_id',
+        'screen_access_roles.read_writes','screen_access_roles.read_only')
+        ->get();
+   
+        $result1 = (array) json_decode($list1,true);
+        // dd($result1);
+        $result=[];
+        $result2 = [];
+
+        if (count($result1) > 0) {
+            foreach ($result1 as $key => $val) {
+                if(empty($result[$val['module_id']])){
+                    $result[$val['module_id']]=[];
+                    $result[$val['module_id']]['module_id']=$val['module_id'] ??  'NA';
+                    $result[$val['module_id']]['screen_route'] = $val['screen_route'] ??  'NA';
+                    $result[$val['module_id']]['screen_name'] = $val['module_name'] ??  'NA';
+                    $result[$val['module_id']]['icon'] = $val['icon'] ??  'NA';
+                    $result[$val['module_id']]['read_writes'] = $val['read_writes'] ??  'NA';
+                    $result[$val['module_id']]['read_only'] = $val['read_only'] ??  'NA'; 
+                    $result[$val['module_id']]['screen_acess_role_id'] = $val['id'] ??  'NA';    
+
+                    $result[$val['module_id']]['sub_module_id']=[];
+                }
+
+                if($val['sub_module_id']){
+                    $ab = DB::table('screen_access_roles')
+                        ->join('screens', 'screen_access_roles.screen_id', '=', 'screens.id')
+                        ->select('screens.id','screens.added_by','screens.module_id','screens.module_name','screens.sub_module_id',
+                        'screens.sub_module_name','screens.screen_name','screens.screen_route','screens.icon',
+                        'screen_access_roles.id','screen_access_roles.read_writes','screen_access_roles.read_only')
+                        ->where('screen_access_roles.status','=', '1')
+                        ->where('screens.screen_status','=', '1')
+                        ->where('screens.sub_module_id','=',$val['sub_module_id'])
+                        ->where(function ($query) {
+                            $query->orWhere('screen_modules.id','=', '26')//Workload Report
+                                  ->orWhere('screen_modules.id','=', '27')//Activities Report
+                                  ->orWhere('screen_modules.id','=', '28')//National KPI
+                                  ->orWhere('screen_modules.id','=', '29');//SHHARP 
+                        })
+                        // ->where('screen_access_roles.staff_id','=', $request->staff_id)
+                        ->where('screen_access_roles.user_type','=', $request->type)
+                        ->groupBy('screens.id','screens.added_by','screens.module_id','screens.module_name','screens.sub_module_id',
+                        'screens.sub_module_name','screens.screen_name','screens.screen_route','screens.icon',
+                        'screen_access_roles.id','screen_access_roles.read_writes','screen_access_roles.read_only')
+                        ->get();
+                    $result_tmp = (array) json_decode($ab,true);
+                    foreach ($result_tmp as $key => $val_) {
+                        $result[$val['module_id']]['sub_module_id'][] = $val_;
+                        }
+                }
+            }
+            foreach ($result as $key => $value) {
+                $result2[] = $value;
+            }
+        }
+        if($result2){
+            return response()->json(["message" => "User Access List", 'list' => $result2, "code" => 200]);
+        }else{
+            return response()->json(["message" => "User Access List", 'list' => $result2, "code" => 400]);
+        }
+    }else{
+
+        $list1 = DB::table('screen_access_roles')
+        ->join('screens', 'screen_access_roles.screen_id', '=', 'screens.id')
+        ->join('screen_modules', 'screen_modules.id', '=', 'screen_access_roles.module_id')
+        ->select('screen_access_roles.module_id','screen_access_roles.sub_module_id',
+        'screens.screen_route','screens.icon','screen_access_roles.screen_id',
+        // 'screen_sub_modules.sub_module_name',
+        'screen_modules.module_name','screen_access_roles.id','screen_access_roles.read_writes','screen_access_roles.read_only')
+        ->where('screen_access_roles.status','=', '1')
+        ->where('screens.screen_status','=', '1')
+        ->where('screen_access_roles.staff_id','=', $request->staff_id) //possibleconditionforappearingreport[all]
+        ->where(function ($query) {
+            $query->orWhere('screen_modules.id','=', '26')//Workload Report
+                  ->orWhere('screen_modules.id','=', '27')//Activities Report
+                  ->orWhere('screen_modules.id','=', '28')//National KPI
+                  ->orWhere('screen_modules.id','=', '29');//SHHARP 
+        })
         // ->distinct('screen_access_roles.module_id')
         ->groupBy('screen_access_roles.id','screen_modules.id','screen_access_roles.module_id','screen_access_roles.sub_module_id','screens.screen_name','screens.screen_route','screen_modules.module_name','screens.icon','screens.index_val','screen_access_roles.screen_id',
         'screen_access_roles.read_writes','screen_access_roles.read_only')
@@ -789,14 +969,13 @@ class ScreenModuleController extends Controller
 
 
 
-
-
     public function UpdateScreenRole(Request $request)
     {
         // dd('zsdg');
         $validator = Validator::make($request->all(), [
             // 'screen_access_roles_id' => 'required|integer',
             'screen_idss' => 'required',
+            'userid'=>'required',
             // 'access_screen' => 'required',
             // 'read_writes' => 'required',
             // 'read_only' => 'required',
@@ -807,18 +986,26 @@ class ScreenModuleController extends Controller
         //     $data = array('question_name' => $key['question_name'],'patient_id' =>$request->patient_id,'answer'=>$key['answer'],'comment'=>$key['comment']);
         // }
         // $screen_idss = explode(',', $request->screen_idss);
+        // dd($request->screen_idss);
         foreach ($request->screen_idss as $k => $v) {
-
+            // dd($v);
+            if($v['access_screen']==true){
+                $true ='1';
+            }else{
+                $true ='0';
+            }
+            // dd($true);
             ScreenAccessRoles::where(
-                ['screen_id' => $v['screen_ids']]
+                ['staff_id' => $request->userid,
+                'screen_id' => $v['screen_ids']]
             )->update([
                 // 'module_id' => $request->module_id,
                 // 'sub_module_id' => $request->sub_module_id,
-                'screen_id' => $v['screen_ids'],
+                // 'screen_id' => $v['screen_ids'],
                 // 'hospital_id' => $request->hospital_id,
                 // 'branch_id' => $request->branch_id,
                 // 'team_id' => $request->team_id,
-                // 'staff_id' => $request->staff_id,
+                'status' => $true,
                 'access_screen' => $v['access_screen'],
                 'read_writes' =>$v['read_writes'],
                 'read_only' => $v['read_only'],

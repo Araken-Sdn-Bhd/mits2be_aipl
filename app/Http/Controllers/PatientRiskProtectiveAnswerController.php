@@ -21,7 +21,7 @@ class PatientRiskProtectiveAnswerController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'patient_id' => 'required|integer',
+            'patient_id' => '',
             'added_by' => 'required|integer',
             'result' => '',
             'sharp_register_id' => 'required|integer',
@@ -44,7 +44,11 @@ class PatientRiskProtectiveAnswerController extends Controller
         if ($result) {
             foreach ($result[0] as $key => $val) {
                 $txt = '';
+                if ($val != '0') {
+                    $answer = 'Yes';
+                }else{
                 $answer = 'No';
+                }
                 if (in_array($key, [1, 3, 4, 6, 7, 8, 10])) {
                     if ($val != '0') {
                         if ($request->factor_type == 'risk') {
@@ -67,6 +71,7 @@ class PatientRiskProtectiveAnswerController extends Controller
                         'risk_factor_yes_value' => $request->risk_factor_yes_value
                     ];
                 } else {
+                    if(array_key_exists($key-1,$riskArray)){
                     PatientRiskProtectiveAnswer::where(['id' => $riskArray[$key - 1]])->update([
                         'added_by' => $request->added_by,
                         'patient_mrn_id' => $request->patient_id,
@@ -74,10 +79,25 @@ class PatientRiskProtectiveAnswerController extends Controller
                         'QuestionId' => $key,
                         'Answer' => $answer,
                         'Answer_text' => $txt,
-                        'status' =>  $request->status,
+                        // 'status' =>  $request->status,
                         'updated_at' => date('Y-m-d H:i:s'),
                         'risk_factor_yes_value' => $request->risk_factor_yes_value
                     ]);
+                }else{
+                    $table=PatientRiskProtectiveAnswer::insert([
+                        'added_by' => $request->added_by,
+                        'patient_mrn_id' => $request->patient_id,
+                        'factor_type' => 'risk',
+                        'QuestionId' => $key,
+                        'Answer' => $answer,
+                        'Answer_text' => $txt,
+                        // 'status' =>  $request->status,
+                        'updated_at' => date('Y-m-d H:i:s'),
+                        'risk_factor_yes_value' => $request->risk_factor_yes_value
+                    ]);
+                    // $id=$table->id;
+
+                }
                 }
             }
         }
@@ -123,7 +143,7 @@ class PatientRiskProtectiveAnswerController extends Controller
     public function storeProtective(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'patient_id' => 'required|integer',
+            'patient_id' => '',
             'added_by' => 'required|integer',
             'result' => '',
             'sharp_register_id' => 'required|integer'
@@ -142,14 +162,19 @@ class PatientRiskProtectiveAnswerController extends Controller
         $insertArray = [];
         if ($result) {
             foreach ($result[0] as $key => $val) {
+                // dd($key.$val);
                 $txt = '';
-                $answer = 'No';
+                if ($val != '0') {
+                    $answer = 'Yes';
+                }else{
+                    $answer = 'No';
+                }
+                // if (in_array($key, [13, 14, 15, 16, 17, 18])) {
                 if (in_array($key, [1, 3, 4, 6, 7, 8, 10])) {
                     if ($val != '0') {
                         if ($request->factor_type == 'risk') {
                             $txt = $val;
                         }
-                        $answer = 'Yes';
                     }
                 }
                 if (count($preIds) == 0) {
@@ -165,6 +190,7 @@ class PatientRiskProtectiveAnswerController extends Controller
                         'updated_at' => date('Y-m-d H:i:s')
                     ];
                 } else {
+                    if(array_key_exists($key-1,$preIds)){
                     PatientRiskProtectiveAnswer::where(['id' => $preIds[$key - 1]])->update([
                         'added_by' => $request->added_by,
                         'patient_mrn_id' => $request->patient_id,
@@ -175,6 +201,7 @@ class PatientRiskProtectiveAnswerController extends Controller
                         'status' =>  $request->status,
                         'updated_at' => date('Y-m-d H:i:s')
                     ]);
+                }
                 }
             }
         }
@@ -219,7 +246,7 @@ class PatientRiskProtectiveAnswerController extends Controller
     public function storeSelfHarmResult(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'patient_id' => 'required|integer',
+            'patient_id' => '',
             'added_by' => 'required|integer',
             'result' => 'required|json',
             'sharp_register_id' => 'required|integer'
@@ -311,7 +338,7 @@ class PatientRiskProtectiveAnswerController extends Controller
     public function storeSuicideRisk(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'patient_id' => 'required|integer',
+            'patient_id' => '',
             'added_by' => 'required|integer',
             'result' => '',
             'sharp_register_id' => 'required|integer'
