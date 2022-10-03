@@ -570,9 +570,9 @@ class PatientRegistrationController extends Controller
         $tran=[
             'patient_id' =>  $request->id,
             'added_by' =>  $request->added_by,
-            'date' =>  $request->update_at,
-            'time' =>  $request->update_at,
-            'created_at' =>  $request->update_at,
+            'date' =>  date('Y-m-d'),
+            'time' =>  date('h:i:s'),
+            'created_at' =>  date('Y-m-d h:i:s'),
             'activity' => "Update Patient Demographic",
         ];
         $HOD = TransactionLog::insert($tran);

@@ -387,7 +387,7 @@ class JobOfferController extends Controller
                 'added_by' => $request->added_by,
                 'consent_for_participation' => $request->consent_for_participation,
                 'consent_for_disclosure' => (string) $request->consent_for_disclosure,
-                'created_at' => date('Y-m-d')
+                'created_at' => date('Y-m-d H:i:s')
             ]);
             return response()->json(["message" => "Updated", "code" => 200]);
         }else{
@@ -396,7 +396,7 @@ class JobOfferController extends Controller
             'added_by' => $request->added_by,
             'consent_for_participation' => $request->consent_for_participation,
             'consent_for_disclosure' => (string) $request->consent_for_disclosure,
-            'created_at' => date('Y-m-d')
+            'created_at' => date('Y-m-d H:i:s')
         ]);
         return response()->json(["message" => "Created", "code" => 200]);
     }
@@ -421,7 +421,7 @@ class JobOfferController extends Controller
             'medication_des' => $request->medication,
             'medication_referrer_name' => $request->medication_referrer_name,
             'medication_referrer_designation' => $request->medication_referrer_designation,
-            'created_at' => date('Y-m-d')
+            'created_at' => date('Y-m-d H:i:s')
         ]);
         return response()->json(["message" => "Created", "code" => 200]);
     }
@@ -509,7 +509,7 @@ class JobOfferController extends Controller
             'icd_9_code' => $request->icd_9_code,
             'icd_9_subcode' => $request->icd_9_subcode,
             'medication_prescription' => $request->medication_prescription,
-            'created_at' => date('Y-m-d')
+            'created_at' => date('Y-m-d H:i:s'),
         ];
         if($request->id){
             LASERAssesmenForm::where(['id' => $request->id])->update($laserreferral);
@@ -627,7 +627,7 @@ class JobOfferController extends Controller
                 'added_by' => $request->added_by,
                 'consent_for_homevisit' => $request->consent_for_homevisit,
                 'consent_for_hereby_already_give_explanation' =>(string) $request->consent_for_hereby_already_give_explanation,
-                'created_at' => date('Y-m-d')
+                'created_at' => date('Y-m-d H:i:s')
             ]);
             return response()->json(["message" => "Created", "code" => 200]);
         }else{
@@ -636,7 +636,7 @@ class JobOfferController extends Controller
             'added_by' => $request->added_by,
             'consent_for_homevisit' => $request->consent_for_homevisit,
             'consent_for_hereby_already_give_explanation' =>(string) $request->consent_for_hereby_already_give_explanation,
-            'created_at' => date('Y-m-d')
+            'created_at' => date('Y-m-d H:i:s')
         ]);
         return response()->json(["message" => "Created", "code" => 200]);
     }
@@ -710,7 +710,7 @@ class JobOfferController extends Controller
                 'patient_id' => $request->patient_id,
                 'added_by' => $request->added_by,
                 'consent_for_participation' => $request->consent_for_participation,
-                'created_at' => date('Y-m-d')
+                'created_at' => date('Y-m-d H:i:s')
             ]);
             return response()->json(["message" => "Update", "code" => 200]);
         }else{
@@ -718,7 +718,7 @@ class JobOfferController extends Controller
             'patient_id' => $request->patient_id,
             'added_by' => $request->added_by,
             'consent_for_participation' => $request->consent_for_participation,
-            'created_at' => date('Y-m-d')
+            'created_at' => date('Y-m-d H:i:s')
         ]);
         return response()->json(["message" => "Created", "code" => 200]);
     }
@@ -747,7 +747,7 @@ class JobOfferController extends Controller
                 'added_by' => $request->added_by,
                 'consent_for_participation' => $request->consent_for_participation,
                 'consent_for_disclosure' =>(string) $request->consent_for_disclosure,
-                'created_at' => date('Y-m-d')
+                'created_at' => date('Y-m-d H:i:s')
             ]);
             return response()->json(["message" => "Updated", "code" => 200]);
         }else{
@@ -756,7 +756,7 @@ class JobOfferController extends Controller
             'added_by' => $request->added_by,
             'consent_for_participation' => $request->consent_for_participation,
             'consent_for_disclosure' =>(string) $request->consent_for_disclosure,
-            'created_at' => date('Y-m-d')
+            'created_at' => date('Y-m-d H:i:s')
         ]);
         return response()->json(["message" => "Created", "code" => 200]);
     }
@@ -769,7 +769,7 @@ class JobOfferController extends Controller
                 'patient_id' => $request->patient_id,
                 'added_by' => $request->added_by,
                 'community_psychiatry_services' => $request->community_psychiatry_services,
-                'created_at' => date('Y-m-d')
+                'created_at' => date('Y-m-d H:i:s')
             ]);
             return response()->json(["message" => "Updated", "code" => 200]);
         }else{
@@ -777,7 +777,7 @@ class JobOfferController extends Controller
             'patient_id' => $request->patient_id,
             'added_by' => $request->added_by,
             'community_psychiatry_services' => $request->community_psychiatry_services,
-            'created_at' => date('Y-m-d')
+            'created_at' => date('Y-m-d H:i:s')
         ]);
         return response()->json(["message" => "Created", "code" => 200]);
     }
@@ -845,7 +845,7 @@ class JobOfferController extends Controller
                 'patient_id' => $request->patient_id,
                 'added_by' => $request->added_by,
                 'photography_consent_form_agree' => $request->photography_consent_form_agree,
-                'created_at' => date('Y-m-d')
+                'created_at' => date('Y-m-d H:i:s')
             ]);
             return response()->json(["message" => "Created", "code" => 200]);
         }else{
@@ -853,7 +853,7 @@ class JobOfferController extends Controller
             'patient_id' => $request->patient_id,
             'added_by' => $request->added_by,
             'photography_consent_form_agree' => $request->photography_consent_form_agree,
-            'created_at' => date('Y-m-d')
+            'created_at' => date('Y-m-d H:i:s')
         ]);
         return response()->json(["message" => "Created", "code" => 200]);
     }
@@ -885,7 +885,7 @@ class JobOfferController extends Controller
             'icd_9_code' => $request->icd_9_code,
             'icd_9_subcode' => $request->icd_9_subcode,
             'medication_prescription' => $request->medication_prescription,
-            'created_at' => date('Y-m-d')
+            'created_at' => date('Y-m-d H:i:s')
         ];
         if($request->id){
             JobStartForm::where(['id' => $request->id])->update($jobstart);
@@ -925,7 +925,7 @@ class JobOfferController extends Controller
             'icd_9_code' => $request->icd_9_code,
             'icd_9_subcode' => $request->icd_9_subcode,
             'medication_prescription' => $request->medication_prescription,
-            'created_at' => date('Y-m-d')
+            'created_at' => date('Y-m-d H:i:s')
         ];
         if($request->id){
             JobEndReport::where(['id' => $request->id])->update($jobend);
@@ -989,7 +989,7 @@ class JobOfferController extends Controller
             'icd_9_code' => $request->icd_9_code,
             'icd_9_subcode' => $request->icd_9_subcode,
             'medication_prescription' => $request->medication_prescription,
-            'created_at' => date('Y-m-d')
+            'created_at' => date('Y-m-d H:i:s')
         ];
         if($request->id){
             JobTransitionReport::where(['id' => $request->id])->update($jobtransition);
@@ -1001,7 +1001,7 @@ class JobOfferController extends Controller
     }
     public function GetJobStartList()
     {
-       $list =JobStartFormList::select('id', 'case_manager', 'job_title', 'name_of_employer')->get();
+       $list =JobStartFormList::select('id','job_title')->get();
        return response()->json(["message" => "Job Start Form List", 'list' => $list, "code" => 200]);
     }
     public function GetJobStartForm()

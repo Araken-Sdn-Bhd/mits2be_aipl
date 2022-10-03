@@ -89,4 +89,16 @@ class PatientAlertController extends Controller
        
     }
 
+    public function alertLastbyPatientId(Request $request)
+    {
+        $users = DB::table('patient_alert')
+            ->join('users', 'patient_alert.added_by', '=', 'users.id')
+            ->select('patient_alert.id','patient_alert.message',DB::raw("DATE_FORMAT(patient_alert.created_at, '%d-%m-%Y') as created"),DB::raw("DATE_FORMAT(patient_alert.updated_at, '%d-%m-%Y') as updated"),'users.name')
+            ->where('patient_alert.patient_id', $request->patient_id)
+            ->orderBy('patient_alert.created_at', 'desc')->limit(1)
+            ->get();
+        // $ab= PatientAlert::select('id','message',DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as created"),DB::raw("DATE_FORMAT(updated_at, '%d-%m-%Y') as updated"))->where('patient_id', $request->patient_id)->get();
+        return response()->json(["message" => "Alert List", "list" => $users,  "code" => 200]);
+    }
+
 }

@@ -40,7 +40,12 @@ class ReportController extends Controller
 {
     public function getSharpReport(Request $request)
     {
-        $response = SharpRegistrationFinalStep::select('*', DB::raw('null as METHOD_OF_SELF_HARM'), DB::raw('null as SUCIDAL_INTENT'), DB::raw('null as IDEA_OF_METHOD'))->whereBetween('harm_date', [$request->fromDate, $request->toDate])->where('status', '1')->get()->toArray();
+        // if($request->fromDate && $request->toDate){
+            $response = SharpRegistrationFinalStep::select('*', DB::raw('null as METHOD_OF_SELF_HARM'), DB::raw('null as SUCIDAL_INTENT'), DB::raw('null as IDEA_OF_METHOD'))->whereBetween('harm_date', [$request->fromDate, $request->toDate])->where('status', '1')->get()->toArray();
+        // }else{
+        //     $response = SharpRegistrationFinalStep::select('*', DB::raw('null as METHOD_OF_SELF_HARM'), DB::raw('null as SUCIDAL_INTENT'), DB::raw('null as IDEA_OF_METHOD'))->where('status', '0')->get()->toArray();
+        // }
+        // dd($response);
         $rftxt = '';
         $ptxt = '';
         $patient = [];
@@ -264,7 +269,7 @@ class ReportController extends Controller
                     $result[$index]['PROTECTIVE_FACTOR'] = $ptxt;
                     $result[$index]['METHOD_OF_SELF_HARM'] = $v['METHOD_OF_SELF_HARM'];
                     $result[$index]['SUCIDAL_INTENT'] = $v['SUCIDAL_INTENT'];
-                    $result[$index]['IDEA_OF_METHOD'] = $v['IDEA_OF_METHOD'];
+                    $result[$index]['IDEA_OF_METHOD'] = $v['IDEA_OF_METHOD'][0];
 
                     $index++;
                 }
