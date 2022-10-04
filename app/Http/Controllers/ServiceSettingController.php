@@ -95,11 +95,11 @@ class ServiceSettingController extends Controller
         return response()->json(["message" => "List.", 'list' => $list, "code" => 200]);
     }
 
-    public function getServiceList(Request $request) //amir&faiz
+    public function getServiceList(Request $request)
     {
         $list = StaffManagement::select('id', 'branch_id')
         ->where('email','=', $request->email)->get();
-        
+
         $list2 = DB::table('service_register')
         ->join('service_division', 'service_register.id', '=', 'service_id')
         ->select('service_register.id', 'service_register.service_name', 'service_division.branch_id')
@@ -109,6 +109,19 @@ class ServiceSettingController extends Controller
         ->get();
 
         return response()->json(["message" => "List.", 'list' => $list2, "code" => 200]);
+    }
+
+    public function getServiceListByBranch(Request $request)
+    {
+        $listService = DB::table('service_register')
+        ->join('service_division', 'service_register.id', '=', 'service_id')
+        ->select('service_register.id', 'service_register.service_name', 'service_division.branch_id')
+        ->where('service_register.status','=', '1')
+        ->where('service_division.branch_id','=', $request->branchId)
+        ->orderBy('service_order', 'asc')
+        ->get();
+
+        return response()->json(["message" => "List.", 'list' => $listService, "code" => 200]);
     }
 
     public function storeDivision(Request $request)

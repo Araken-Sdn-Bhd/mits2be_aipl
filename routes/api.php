@@ -235,6 +235,8 @@ Route::group(['prefix' => 'service'], function () {
     Route::post('/remove-division', [ServiceSettingController::class, 'removeDivision']);
     Route::post('/getServiceListById', [ServiceSettingController::class, 'getServiceListById']);
     Route::get('/servicelist', [ServiceSettingController::class, 'getServiceList']);
+    Route::get('/getServiceListByBranch', [ServiceSettingController::class, 'getServiceListByBranch']);
+
 });
 Route::group(['prefix' => 'icd-setting'], function () {
     Route::post('/icdtype/add', [IcdSettingManagementController::class, 'addIcdType']);
@@ -514,8 +516,8 @@ Route::group(['prefix' => 'patient-attachment'], function () {
 });
 Route::group(['prefix' => 'patient-alert'], function () {
     Route::post('/add', [PatientAlertController::class, 'store']);
-    Route::post('/alertListbyPatientId', [PatientAlertController::class, 'alertListbyPatientId']); 
-    Route::post('/getAlertbyAlertId', [PatientAlertController::class, 'alertListbyAlertId']); 
+    Route::post('/alertListbyPatientId', [PatientAlertController::class, 'alertListbyPatientId']);
+    Route::post('/getAlertbyAlertId', [PatientAlertController::class, 'alertListbyAlertId']);
     Route::post('/resolved', [PatientAlertController::class, 'resolved']);
     Route::post('/alertLastbyPatientId', [PatientAlertController::class, 'alertLastbyPatientId']);
 });
@@ -720,40 +722,39 @@ Route::group(['prefix' => 'shharp-patient-list'], function () {
 });
 //----------------------------------//////////////////////////////////////////////////-----------------
 Route::group(['prefix' => 'systemadmin'], function () {
-   
+
     Route::get('/get', [DashboardController::class, 'getsystemadmin']);
- 
+
 });
 
 Route::group(['prefix' => 'all-mentari-staff'], function () {
-   
+
    Route::get('/get', [DashboardController::class, 'getallmentaristaff']);
 });
 
 Route::group(['prefix' => 'user-admin-clerk'], function () {
-   
+
    Route::get('/get', [DashboardController::class, 'getuseradminclerk']);
 });
 
 Route::group(['prefix' => 'shharp'], function () {
-   
+
    Route::get('/get', [DashboardController::class, 'getshharp']);
 });
 
 Route::group(['prefix' => 'high-level-mgt'], function () {
-   
+
     Route::post('get', [DashboardController::class, 'gethighlevelMgt']);
 });
 Route::group(['prefix' => 'years'], function () {
-   
+
     Route::get('get', [DashboardController::class, 'getYears']);
 });
 Route::group(['prefix' => 'Notification'], function () {
-   
+
     Route::post('get', [DashboardController::class, 'getNotification']);
 });
 Route::group(['prefix' => 'staffDesignatioDetail'], function () {
     Route::post('/get', [PatientDetailsController::class, 'staffDesignatioDetail']);
     Route::post('/staffInchargeDetail', [PatientDetailsController::class, 'staffInchargeDetail']);
  });
- 
