@@ -6,6 +6,7 @@ use App\Models\SystemSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\StaffManagement;
 use App\Models\UserBlock;
 use DateTime;
 use DateTimeZone;
@@ -97,7 +98,16 @@ class AuthController extends Controller
         $useradmin = User::select('role')->where('email', $request->email)->pluck('role');
         $id = User::select('id')->where('email', $request->email)->pluck('id');
         $id_block_user = UserBlock::select('id')->where('user_id', $id)->pluck('id');
-
+        $branch= DB::table('staff_management as s')
+        ->select('s.branch_id','b.hospital_branch_name','b.hospital_id','h.hospital_name')
+        ->join('hospital_branch__details as b', function ($join) {
+            $join->on('b.id', '=', 's.branch_id');
+        })
+        ->join('hospital_management as h', function ($join) {
+            $join->on('h.id', '=', 'b.hospital_id');
+        })
+        ->where('s.email', $request->email)->first();
+       
         $systemattempt = SystemSetting::select('variable_value')->where('section', 'login-attempt')->pluck('variable_value');
         $blocktime = SystemSetting::select('variable_value')->where('section', 'system-block-duration')->pluck('variable_value');
         $no_of_attempts = UserBlock::select('no_of_attempts')->where('user_id', $id)->pluck('no_of_attempts');
@@ -132,9 +142,12 @@ class AuthController extends Controller
                         ->orWhere('screen_access_roles.user_type', '=', $useradmin)
                         ->where('screen_access_roles.status', '=', '1')
                         ->get();
+
+                   
+
                     if (!empty($screenroute[0])) {
                         $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
-                        return $this->createNewToken($token, $tmp);
+                        return $this->createNewToken($token, $tmp, $branch);
                     } else {
                         $tmp = "";
                         return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
@@ -149,9 +162,10 @@ class AuthController extends Controller
                     ->where('screen_access_roles.staff_id', '=', $id)
                     ->where('screen_access_roles.status', '=', '1')
                     ->get();
+
                 if (!empty($screenroute[0])) {
                     $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
-                    return $this->createNewToken($token, $tmp);
+                    return $this->createNewToken($token, $tmp, $branch);
                 } else {
                     $tmp = "";
                     return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
@@ -183,10 +197,11 @@ class AuthController extends Controller
                 ->orWhere('screen_access_roles.user_type', '=', $useradmin)
                 ->where('screen_access_roles.status', '=', '1')
                 ->get();
+
                 // dd($screenroute);
             if (!empty($screenroute[0])) {
                 $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
-                return $this->createNewToken($token, $tmp);
+                return $this->createNewToken($token, $tmp, $branch);
             } else {
                 $tmp = "";
                 return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
@@ -201,9 +216,10 @@ class AuthController extends Controller
                     ->where('screen_access_roles.staff_id', '=', $id)
                     ->where('screen_access_roles.status', '=', '1')
                     ->get();
+
                 if (!empty($screenroute[0])) {
                     $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
-                    return $this->createNewToken($token, $tmp);
+                    return $this->createNewToken($token, $tmp, $branch);
                 } else {
                     $tmp = "";
                     return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
@@ -271,13 +287,14 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function createNewToken($token, $tmp)
+    protected function createNewToken($token, $tmp, $branch)
     {
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
             'expires_in' => auth()->factory()->getTTL() * 14400,
             'user' => auth()->user(),
+            'branch' => $branch,
             'route' => $tmp,
             'code' => '200'
         ]);

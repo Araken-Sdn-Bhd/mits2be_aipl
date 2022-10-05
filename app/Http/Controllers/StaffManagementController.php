@@ -262,6 +262,17 @@ class StaffManagementController extends Controller
         return response()->json(["message" => "Staff Management List", 'list' => $users, "code" => 200]);
     }
 
+    public function getStaffManagementListByBranchId(Request $request)
+    {
+        //dd($request->branch_id);
+        $users = DB::table('staff_management')
+            ->select('staff_management.id', 'staff_management.name', )
+            ->Where('staff_management.branch_id', '=', $request->branch_id)
+            ->get();
+        
+        return response()->json(["message" => "Staff Management List", 'list' => $users, "code" => 200]);
+    }
+
     public function getStaffManagementDetailsById(Request $request)
     {
         $validator = Validator::make($request->all(), [
