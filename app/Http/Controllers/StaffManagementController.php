@@ -16,6 +16,7 @@ use App\Models\GeneralSetting;
 use App\Models\SystemSetting;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class StaffManagementController extends Controller
 {
@@ -264,10 +265,10 @@ class StaffManagementController extends Controller
 
     public function getStaffManagementListByBranchId(Request $request)
     {
-        //dd($request->branch_id);
         $users = DB::table('staff_management')
             ->select('staff_management.id', 'staff_management.name', )
             ->Where('staff_management.branch_id', '=', $request->branch_id)
+            ->Where('staff_management.status', '=', '1')
             ->get();
         
         return response()->json(["message" => "Staff Management List", 'list' => $users, "code" => 200]);
