@@ -609,7 +609,11 @@ class VounteerIndividualApplicationFormController extends Controller
                 $result[$k]['area_of_involvment'] = $val['area_of_involvement'];
                 $result[$k]['phone_number'] = $val['phone_number'];
                 $result[$k]['email'] = $val['email'];
-                $result[$k]['screening'] = ($val['screening_mode'] == '1') ? 'Yes' : 'No';
+                if ($val['screening_mode'] == '1') {
+                    $result[$k]['screening'] = 'Yes';
+                } else if ($val['screening_mode'] == '0'){
+                    $result[$k]['screening'] = 'No';
+                }
                 if ($val['area_of_involvement'] == 'Volunteerism') {
                     $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
@@ -634,12 +638,11 @@ class VounteerIndividualApplicationFormController extends Controller
                 $result[$k]['area_of_involvment'] = $val['area_of_involvement'];
                 $result[$k]['phone_number'] = $val['phone_number'];
                 $result[$k]['email'] = $val['email'];
-                if ($val['screening_mode']) {
+                if ($val['screening_mode'] == '1') {
                     $result[$k]['screening'] = 'Yes';
-                } else {
+                } else if ($val['screening_mode'] == '0'){
                     $result[$k]['screening'] = 'No';
                 }
-
                 if ($val['area_of_involvement'] == 'Volunteerism') {
                     $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
@@ -666,7 +669,11 @@ class VounteerIndividualApplicationFormController extends Controller
                 $result[$k]['area_of_involvment'] = $val['area_of_involvement'];
                 $result[$k]['phone_number'] = $val['phone_number'];
                 $result[$k]['email'] = $val['email'];
-                $result[$k]['screening'] = 'No';
+                if ($val['screening_mode'] == '1') {
+                    $result[$k]['screening'] = 'Yes';
+                } else if ($val['screening_mode'] == '0'){
+                    $result[$k]['screening'] = 'No';
+                }
                 if ($val['area_of_involvement'] == 'Volunteerism') {
                     $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                     $result[$k]['services'] = ($services) ? $services[0] : 'NA';
@@ -786,156 +793,160 @@ class VounteerIndividualApplicationFormController extends Controller
     public function editOrganization($request)
     {
         $validation = [
-            'org_name' => 'required|string',
-            'org_reg_number' => 'required|string',
-            'org_desc' => 'required|string',
-            'org_email' => 'required|string',
-            'org_phone' => 'required|string',
-            'name' => 'required|string',
-            'dob' => 'string',
-            'position_in_org' => 'string',
-            'email' => 'required|string',
-            'phone_number' => 'required',
-            'address' => 'required|string',
-            'postcode_id' => 'required|integer',
-            'city_id' => 'required|integer',
-            'state_id' => 'required|integer',
-            'occupation_sector_id' => 'required|integer',
-            'education_id' => 'required|integer',
-            'branch_id' => 'required|integer',
-            'area_of_involvement' => 'required|string',
+            // 'org_name' => 'required|strinx`g',
+            // 'org_reg_number' => 'required|string',
+            // 'org_desc' => 'required|string',
+            // 'org_email' => 'required|string',
+            // 'org_phone' => 'required|string',
+            // 'name' => 'required|string',
+            // 'dob' => 'string',
+            // 'position_in_org' => 'string',
+            // 'email' => 'required|string',
+            // 'phone_number' => 'required',
+            // 'address' => 'required|string',
+            // 'postcode_id' => 'required|integer',
+            // 'city_id' => 'required|integer',
+            // 'state_id' => 'required|integer',
+            // 'occupation_sector_id' => 'required|integer',
+            // 'education_id' => 'required|integer',
+            // 'branch_id' => 'required|integer',
+            // 'area_of_involvement' => 'required|string',
             'is_agree' => 'required|string',
             'screening_mode' => 'required|string'
         ];
-
         $validator = Validator::make($request->all(), $validation);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
 
-        $orgBackground = [
-            'added_by' => $request->added_by,
-            'org_name' => $request->org_name,
-            'org_reg_number' => $request->org_reg_number,
-            'org_desc' => $request->org_desc,
-            'org_email' => $request->org_email,
-            'org_phone' => $request->org_phone,
-            'created_at' => date('Y-m-d H:i:s')
-        ];
+        // $orgBackground = [
+        //     'added_by' => $request->added_by,
+        //     'org_name' => $request->org_name,
+        //     'org_reg_number' => $request->org_reg_number,
+        //     'org_desc' => $request->org_desc,
+        //     'org_email' => $request->org_email,
+        //     'org_phone' => $request->org_phone,
+        //     'created_at' => date('Y-m-d H:i:s')
+        // ];
         $response = VonOrgRepresentativeBackground::where('id', $request->id)->get();
-        $org_background_id = $response[0]['org_background_id'];
-        VonOrgBackground::where('id', $org_background_id)->update($orgBackground);
+        // $org_background_id = $response[0]['org_background_id'];
+        // VonOrgBackground::where('id', $org_background_id)->update($orgBackground);
         $orgRepBackground = [
-            'added_by' => $request->added_by,
-            'section' => $request->section,
-            'name' => $request->name,
-            'position_in_org' => $request->position_in_org,
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-            'address' => $request->address,
-            'postcode_id' => $request->postcode_id,
-            'city_id' => $request->city_id,
-            'state_id' => $request->state_id,
-            'education_id' => $request->education_id,
-            'occupation_sector_id' => $request->occupation_sector_id,
-            'branch_id' => $request->branch_id,
-            'area_of_involvement' => $request->area_of_involvement,
+            // 'added_by' => $request->added_by,
+            // 'section' => $request->section,
+            // 'name' => $request->name,
+            // 'position_in_org' => $request->position_in_org,
+            // 'email' => $request->email,
+            // 'phone_number' => $request->phone_number,
+            // 'address' => $request->address,
+            // 'postcode_id' => $request->postcode_id,
+            // 'city_id' => $request->city_id,
+            // 'state_id' => $request->state_id,
+            // 'education_id' => $request->education_id,
+            // 'occupation_sector_id' => $request->occupation_sector_id,
+            // 'branch_id' => $request->branch_id,
+            // 'area_of_involvement' => $request->area_of_involvement,
             'is_agree' => $request->is_agree,
             'screening_mode' => $request->screening_mode,
-            'created_at' => date('Y-m-d H:i:s')
+            // 'created_at' => date('Y-m-d H:i:s')
         ];
-        VonOrgRepresentativeBackground::where('id', $request->id)->update($orgRepBackground);
-        if ($request->area_of_involvement == 'Volunteerism') {
-            $volunteerism = [
-                'added_by' => $request->added_by,
-                'is_voluneering_exp' => $request->is_voluneering_exp,
-                'exp_details'  => $request->exp_details,
-                'is_mental_health_professional' => $request->is_mental_health_professional,
-                'mentari_services' => $request->mentari_services,
-                'available_date' => $request->available_date,
-                'available_time' => $request->available_time,
-                'created_at' => date('Y-m-d H:i:s')
-            ];
-            // dd($request->all());
-            $volunteerism['resume'] = 'NA';
-            if ($request->is_mental_health_professional == '1') {
-                $validator = Validator::make($request->all(), ['health_professional_resume' => 'required|max:10240']);
-                if ($validator->fails()) {
-                    return response()->json(["message" => $validator->errors(), "code" => 422]);
-                } else {
-                    $files = $request->file('resume');
-                    $isUploaded = upload_file($files, 'HealthProfessionalResume');
-                    $volunteerism['resume'] =  $isUploaded->getData()->path;
-                }
-            }
-            try {
-                Volunteerism::where('parent_section_id', $request->id)->update($volunteerism);
-                return response()->json(["message" => "Application Updated Successfully", "code" => 200]);
-            } catch (Exception $e) {
-                return response()->json(["message" => $e->getMessage(), 'Volunteer' => $volunteerism, "code" => 500]);
-            }
+        try {
+            VonOrgRepresentativeBackground::where('id', $request->id)->update($orgRepBackground);
+            return response()->json(["message" => "Application Updated Successfully", "code" => 200]);
+        } catch (Exception $e) {
+            return response()->json(["message" => $e->getMessage(), "code" => 500]);
         }
+        // if ($request->area_of_involvement == 'Volunteerism') {
+        //     $volunteerism = [
+        //         'added_by' => $request->added_by,
+        //         'is_voluneering_exp' => $request->is_voluneering_exp,
+        //         'exp_details'  => $request->exp_details,
+        //         'is_mental_health_professional' => $request->is_mental_health_professional,
+        //         'mentari_services' => $request->mentari_services,
+        //         'available_date' => $request->available_date,
+        //         'available_time' => $request->available_time,
+        //         'created_at' => date('Y-m-d H:i:s')
+        //     ];
+        //     // dd($request->all());
+        //     $volunteerism['resume'] = 'NA';
+        //     if ($request->is_mental_health_professional == '1') {
+        //         $validator = Validator::make($request->all(), ['health_professional_resume' => 'required|max:10240']);
+        //         if ($validator->fails()) {
+        //             return response()->json(["message" => $validator->errors(), "code" => 422]);
+        //         } else {
+        //             $files = $request->file('resume');
+        //             $isUploaded = upload_file($files, 'HealthProfessionalResume');
+        //             $volunteerism['resume'] =  $isUploaded->getData()->path;
+        //         }
+        //     }
+        //     try {
+        //         Volunteerism::where('parent_section_id', $request->id)->update($volunteerism);
+        //         return response()->json(["message" => "Application Updated Successfully", "code" => 200]);
+        //     } catch (Exception $e) {
+        //         return response()->json(["message" => $e->getMessage(), 'Volunteer' => $volunteerism, "code" => 500]);
+        //     }
+        // }
 
-        if ($request->area_of_involvement == 'Outreach Project Collaboration') {
-            $outreachprojects = [
-                'added_by' => $request->added_by,
-                'project_name' => $request->project_name,
-                'project_background'  => $request->project_background,
-                'project_objectives' => $request->project_objectives,
-                'target_audience' => $request->target_audience,
-                'no_of_paricipants' => $request->no_of_paricipants,
-                'time_frame' => $request->time_frame,
-                'estimated_budget' => $request->estimated_budget,
-                'project_scopes' => $request->project_scopes,
-                'project_loaction' => $request->project_loaction,
-                'project_loaction_value' => $request->project_loaction_value,
-                'target_outcome' => $request->target_outcome,
-                'followup_projects' => $request->followup_projects,
-                'mentari_services' => $request->mentari_services,
-                'created_at' => date('Y-m-d H:i:s')
-            ];
-            try {
-                OutReachProjects::where('parent_section_id', $request->id)->update($outreachprojects);
-                return response()->json(["message" => "Application Updated Successfully", "code" => 200]);
-            } catch (Exception $e) {
-                return response()->json(["message" => $e->getMessage(), 'Volunteer' => $outreachprojects, "code" => 500]);
-            }
-        }
-        if ($request->area_of_involvement == 'Networking Make a Contribution') {
-            $NetworkingContribution = [
-                'added_by' => $request->added_by,
-                'contribution' => $request->contribution,
-                'budget'  => $request->budget,
-                'project_loaction' => $request->project_loaction,
-                'project_loaction_value' => $request->project_loaction_value,
-                'no_of_paricipants' => $request->no_of_paricipants,
-                'mentari_services' => $request->mentari_services,
-                'created_at' => date('Y-m-d H:i:s')
-            ];
-            try {
-                NetworkingContribution::where('parent_section_id', $request->id)->update($NetworkingContribution);
-                return response()->json(["message" => "Application Updated Successfully", "code" => 200]);
-            } catch (Exception $e) {
-                return response()->json(["message" => $e->getMessage(), 'Volunteer' => $NetworkingContribution, "code" => 500]);
-            }
-        }
+        // if ($request->area_of_involvement == 'Outreach Project Collaboration') {
+        //     $outreachprojects = [
+        //         'added_by' => $request->added_by,
+        //         'project_name' => $request->project_name,
+        //         'project_background'  => $request->project_background,
+        //         'project_objectives' => $request->project_objectives,
+        //         'target_audience' => $request->target_audience,
+        //         'no_of_paricipants' => $request->no_of_paricipants,
+        //         'time_frame' => $request->time_frame,
+        //         'estimated_budget' => $request->estimated_budget,
+        //         'project_scopes' => $request->project_scopes,
+        //         'project_loaction' => $request->project_loaction,
+        //         'project_loaction_value' => $request->project_loaction_value,
+        //         'target_outcome' => $request->target_outcome,
+        //         'followup_projects' => $request->followup_projects,
+        //         'mentari_services' => $request->mentari_services,
+        //         'created_at' => date('Y-m-d H:i:s')
+        //     ];
+        //     try {
+        //         OutReachProjects::where('parent_section_id', $request->id)->update($outreachprojects);
+        //         return response()->json(["message" => "Application Updated Successfully", "code" => 200]);
+        //     } catch (Exception $e) {
+        //         return response()->json(["message" => $e->getMessage(), 'Volunteer' => $outreachprojects, "code" => 500]);
+        //     }
+        // }
+        // if ($request->area_of_involvement == 'Networking Make a Contribution') {
+        //     $NetworkingContribution = [
+        //         'added_by' => $request->added_by,
+        //         'contribution' => $request->contribution,
+        //         'budget'  => $request->budget,
+        //         'project_loaction' => $request->project_loaction,
+        //         'project_loaction_value' => $request->project_loaction_value,
+        //         'no_of_paricipants' => $request->no_of_paricipants,
+        //         'mentari_services' => $request->mentari_services,
+        //         'created_at' => date('Y-m-d H:i:s')
+        //     ];
+        //     try {
+        //         NetworkingContribution::where('parent_section_id', $request->id)->update($NetworkingContribution);
+        //         return response()->json(["message" => "Application Updated Successfully", "code" => 200]);
+        //     } catch (Exception $e) {
+        //         return response()->json(["message" => $e->getMessage(), 'Volunteer' => $NetworkingContribution, "code" => 500]);
+        //     }
+        // }
     }
 
     public function editIndividual($request)
     {
         $validation = [
-            'name' => 'required|string',
-            'dob' => 'required|string',
-            'email' => 'required|string',
-            'phone_number' => 'required',
-            'address' => 'required|string',
-            'postcode_id' => 'required|integer',
-            'city_id' => 'required|integer',
-            'state_id' => 'required|integer',
-            'education_id' => 'required|integer',
-            'occupation_sector_id' => 'required|integer',
-            'branch_id' => 'required|integer',
-            'area_of_involvement' => 'required|string',
+            // 'name' => 'required|string',
+            // 'dob' => 'required|string',
+            // 'email' => 'required|string',
+            // 'phone_number' => 'required',
+            // 'address' => 'required|string',
+            // 'postcode_id' => 'required|integer',
+            // 'city_id' => 'required|integer',
+            // 'state_id' => 'required|integer',
+            // 'education_id' => 'required|integer',
+            // 'occupation_sector_id' => 'required|integer',
+            // 'branch_id' => 'required|integer',
+            // 'area_of_involvement' => 'required|string',
             'is_agree' => 'required|string',
             'screening_mode' => 'required|string'
         ];
@@ -946,110 +957,115 @@ class VounteerIndividualApplicationFormController extends Controller
         }
 
         $orgRepBackground = [
-            'added_by' => $request->added_by,
-            'org_background_id' => 0,
-            'section' => $request->section,
-            'name' => $request->name,
-            'dob' => $request->dob,
-            'email' => $request->email,
-            'phone_number' => $request->phone_number,
-            'address' => $request->address,
-            'postcode_id' => $request->postcode_id,
-            'city_id' => $request->city_id,
-            'state_id' => $request->state_id,
-            'education_id' => $request->education_id,
-            'occupation_sector_id' => $request->occupation_sector_id,
-            'branch_id' => $request->branch_id,
-            'area_of_involvement' => $request->area_of_involvement,
+            // 'added_by' => $request->added_by,
+            // 'org_background_id' => 0,
+            // 'section' => $request->section,
+            // 'name' => $request->name,
+            // 'dob' => $request->dob,
+            // 'email' => $request->email,
+            // 'phone_number' => $request->phone_number,
+            // 'address' => $request->address,
+            // 'postcode_id' => $request->postcode_id,
+            // 'city_id' => $request->city_id,
+            // 'state_id' => $request->state_id,
+            // 'education_id' => $request->education_id,
+            // 'occupation_sector_id' => $request->occupation_sector_id,
+            // 'branch_id' => $request->branch_id,
+            // 'area_of_involvement' => $request->area_of_involvement,
             'is_agree' => $request->is_agree,
             'screening_mode' => $request->screening_mode,
-            'created_at' => date('Y-m-d H:i:s')
+            // 'created_at' => date('Y-m-d H:i:s')
         ];
-        VonOrgRepresentativeBackground::where('id', $request->id)->update($orgRepBackground);
-        if ($request->area_of_involvement == 'Volunteerism') {
-            $volunteerism = [
-                'added_by' => $request->added_by,
-                'is_voluneering_exp' => $request->is_voluneering_exp,
-                'exp_details'  => $request->exp_details,
-                'is_mental_health_professional' => $request->is_mental_health_professional,
-                'mentari_services' => $request->mentari_services,
-                'available_date' => $request->available_date,
-                'available_time' => $request->available_time,
-                'created_at' => date('Y-m-d H:i:s')
-            ];
-            // dd($request->all());
-            $volunteerism['resume'] = 'NA';
-            if ($request->is_mental_health_professional == '1') {
-                $validator = Validator::make($request->all(), ['health_professional_resume' => 'required|max:10240']);
-                if ($validator->fails()) {
-                    return response()->json(["message" => $validator->errors(), "code" => 422]);
-                } else {
-                    $files = $request->file('resume');
-                    $isUploaded = upload_file($files, 'HealthProfessionalResume');
-                    $volunteerism['resume'] =  $isUploaded->getData()->path;
-                }
-            }
-            try {
-                Volunteerism::where('parent_section_id', $request->id)->update($volunteerism);
-                return response()->json(["message" => "Application Updated Successfully", "code" => 200]);
-            } catch (Exception $e) {
-                return response()->json(["message" => $e->getMessage(), 'Volunteer' => $volunteerism, "code" => 500]);
-            }
+        try {
+            VonOrgRepresentativeBackground::where('id', $request->id)->update($orgRepBackground);
+            return response()->json(["message" => "Application Updated Successfully", "code" => 200]);
+        } catch (Exception $e) {
+            return response()->json(["message" => $e->getMessage(), "code" => 500]);
         }
+        // if ($request->area_of_involvement == 'Volunteerism') {
+        //     $volunteerism = [
+        //         'added_by' => $request->added_by,
+        //         'is_voluneering_exp' => $request->is_voluneering_exp,
+        //         'exp_details'  => $request->exp_details,
+        //         'is_mental_health_professional' => $request->is_mental_health_professional,
+        //         'mentari_services' => $request->mentari_services,
+        //         'available_date' => $request->available_date,
+        //         'available_time' => $request->available_time,
+        //         'created_at' => date('Y-m-d H:i:s')
+        //     ];
+        //     // dd($request->all());
+        //     $volunteerism['resume'] = 'NA';
+        //     if ($request->is_mental_health_professional == '1') {
+        //         $validator = Validator::make($request->all(), ['health_professional_resume' => 'required|max:10240']);
+        //         if ($validator->fails()) {
+        //             return response()->json(["message" => $validator->errors(), "code" => 422]);
+        //         } else {
+        //             $files = $request->file('resume');
+        //             $isUploaded = upload_file($files, 'HealthProfessionalResume');
+        //             $volunteerism['resume'] =  $isUploaded->getData()->path;
+        //         }
+        //     }
+        //     try {
+        //         Volunteerism::where('parent_section_id', $request->id)->update($volunteerism);
+        //         return response()->json(["message" => "Application Updated Successfully", "code" => 200]);
+        //     } catch (Exception $e) {
+        //         return response()->json(["message" => $e->getMessage(), 'Volunteer' => $volunteerism, "code" => 500]);
+        //     }
+        // }
 
-        if ($request->area_of_involvement == 'Outreach Project Collaboration') {
-            $outreachprojects = [
-                'added_by' => $request->added_by,
-                'project_name' => $request->project_name,
-                'project_background'  => $request->project_background,
-                'project_objectives' => $request->project_objectives,
-                'target_audience' => $request->target_audience,
-                'no_of_paricipants' => $request->no_of_paricipants,
-                'time_frame' => $request->time_frame,
-                'estimated_budget' => $request->estimated_budget,
-                'project_scopes' => $request->project_scopes,
-                'project_loaction' => $request->project_loaction,
-                'project_loaction_value' => $request->project_loaction_value,
-                'target_outcome' => $request->target_outcome,
-                'followup_projects' => $request->followup_projects,
-                'mentari_services' => $request->mentari_services,
-                'created_at' => date('Y-m-d H:i:s')
-            ];
-            try {
-                OutReachProjects::where('parent_section_id', $request->id)->update($outreachprojects);
-                return response()->json(["message" => "Application Updated Successfully", "code" => 200]);
-            } catch (Exception $e) {
-                return response()->json(["message" => $e->getMessage(), 'Volunteer' => $outreachprojects, "code" => 500]);
-            }
-        }
-        if ($request->area_of_involvement == 'Networking Make a Contribution') {
-            $NetworkingContribution = [
-                'added_by' => $request->added_by,
-                'contribution' => $request->contribution,
-                'budget'  => $request->budget,
-                'project_loaction' => $request->project_loaction,
-                'project_loaction_value' => $request->project_loaction_value,
-                'no_of_paricipants' => $request->no_of_paricipants,
-                'mentari_services' => $request->mentari_services,
-                'created_at' => date('Y-m-d H:i:s')
-            ];
-            try {
-                NetworkingContribution::where('parent_section_id', $request->id)->update($NetworkingContribution);
-                return response()->json(["message" => "Application Updated Successfully", "code" => 200]);
-            } catch (Exception $e) {
-                return response()->json(["message" => $e->getMessage(), 'Volunteer' => $NetworkingContribution, "code" => 500]);
-            }
-        }
+        // if ($request->area_of_involvement == 'Outreach Project Collaboration') {
+        //     $outreachprojects = [
+        //         'added_by' => $request->added_by,
+        //         'project_name' => $request->project_name,
+        //         'project_background'  => $request->project_background,
+        //         'project_objectives' => $request->project_objectives,
+        //         'target_audience' => $request->target_audience,
+        //         'no_of_paricipants' => $request->no_of_paricipants,
+        //         'time_frame' => $request->time_frame,
+        //         'estimated_budget' => $request->estimated_budget,
+        //         'project_scopes' => $request->project_scopes,
+        //         'project_loaction' => $request->project_loaction,
+        //         'project_loaction_value' => $request->project_loaction_value,
+        //         'target_outcome' => $request->target_outcome,
+        //         'followup_projects' => $request->followup_projects,
+        //         'mentari_services' => $request->mentari_services,
+        //         'created_at' => date('Y-m-d H:i:s')
+        //     ];
+        //     try {
+        //         OutReachProjects::where('parent_section_id', $request->id)->update($outreachprojects);
+        //         return response()->json(["message" => "Application Updated Successfully", "code" => 200]);
+        //     } catch (Exception $e) {
+        //         return response()->json(["message" => $e->getMessage(), 'Volunteer' => $outreachprojects, "code" => 500]);
+        //     }
+        // }
+        // if ($request->area_of_involvement == 'Networking Make a Contribution') {
+        //     $NetworkingContribution = [
+        //         'added_by' => $request->added_by,
+        //         'contribution' => $request->contribution,
+        //         'budget'  => $request->budget,
+        //         'project_loaction' => $request->project_loaction,
+        //         'project_loaction_value' => $request->project_loaction_value,
+        //         'no_of_paricipants' => $request->no_of_paricipants,
+        //         'mentari_services' => $request->mentari_services,
+        //         'created_at' => date('Y-m-d H:i:s')
+        //     ];
+        //     try {
+        //         NetworkingContribution::where('parent_section_id', $request->id)->update($NetworkingContribution);
+        //         return response()->json(["message" => "Application Updated Successfully", "code" => 200]);
+        //     } catch (Exception $e) {
+        //         return response()->json(["message" => $e->getMessage(), 'Volunteer' => $NetworkingContribution, "code" => 500]);
+        //     }
+        // }
     }
 
     public function editGroup($request)
     {
         $validation = [
-            'added_by' => 'required|integer',
-            'is_represent_org' => 'required|string',
-            'members_count' => 'required|string',
-            'member_background' => 'required|string',
-            'is_you_represenative' => 'required|string',
+            // 'added_by' => 'required|integer',
+            // 'is_represent_org' => 'required|string',
+            // 'members_count' => 'required|string',
+            // 'member_background' => 'required|string',
+            // 'is_you_represenative' => 'required|string',
             'is_agree' => 'required|string',
             'screening_mode' => 'required|string'
         ];
@@ -1060,11 +1076,11 @@ class VounteerIndividualApplicationFormController extends Controller
         }
 
         $group = [
-            'added_by' => $request->added_by,
-            'is_represent_org' => $request->is_represent_org,
-            'members_count' => $request->members_count,
-            'member_background' => $request->member_background,
-            'is_you_represenative' => $request->is_you_represenative,
+            // 'added_by' => $request->added_by,
+            // 'is_represent_org' => $request->is_represent_org,
+            // 'members_count' => $request->members_count,
+            // 'member_background' => $request->member_background,
+            // 'is_you_represenative' => $request->is_you_represenative,
             'is_agree' => $request->is_agree
         ];
         $response = VonOrgRepresentativeBackground::where('id', $request->id)->get();
@@ -1072,24 +1088,30 @@ class VounteerIndividualApplicationFormController extends Controller
         VonGroupApplication::where('id', $org_background_id)->update($group);
         if ($request->is_you_represenative == '1') {
             $orgRepBackground = [
-                'added_by' => $request->added_by,
-                'section' => $request->section,
-                'name' => $request->name,
-                'dob' => $request->dob,
-                'email' => $request->email,
-                'phone_number' => $request->phone_number,
-                'address' => $request->address,
-                'postcode_id' => $request->postcode_id,
-                'city_id' => $request->city_id,
-                'state_id' => $request->state_id,
-                'education_id' => $request->education_id,
-                'occupation_sector_id' => $request->occupation_sector_id,
-                'branch_id' => $request->branch_id,
-                'area_of_involvement' => $request->area_of_involvement,
+                // 'added_by' => $request->added_by,
+                // 'section' => $request->section,
+                // 'name' => $request->name,
+                // 'dob' => $request->dob,
+                // 'email' => $request->email,
+                // 'phone_number' => $request->phone_number,
+                // 'address' => $request->address,
+                // 'postcode_id' => $request->postcode_id,
+                // 'city_id' => $request->city_id,
+                // 'state_id' => $request->state_id,
+                // 'education_id' => $request->education_id,
+                // 'occupation_sector_id' => $request->occupation_sector_id,
+                // 'branch_id' => $request->branch_id,
+                // 'area_of_involvement' => $request->area_of_involvement,
                 'is_agree' => $request->is_agree,
                 'screening_mode' => $request->screening_mode,
-                'created_at' => date('Y-m-d H:i:s')
+                // 'created_at' => date('Y-m-d H:i:s')
             ];
+            try {
+                VonOrgRepresentativeBackground::where('id', $request->id)->update($orgRepBackground);
+                return response()->json(["message" => "Application Updated Successfully", "code" => 200]);
+            } catch (Exception $e) {
+                return response()->json(["message" => $e->getMessage(), "code" => 500]);
+            }
             VonOrgRepresentativeBackground::where('id', $request->id)->update($orgRepBackground);
             if ($request->area_of_involvement == 'Volunteerism') {
                 $volunteerism = [
