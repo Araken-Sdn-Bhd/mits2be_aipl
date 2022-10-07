@@ -393,7 +393,7 @@ class PatientAppointmentDetailsController extends Controller
         }
 
         $resultSet = [];
-        $sql = PatientAppointmentDetails::select('id', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'appointment_status')
+        $sql = PatientAppointmentDetails::select('id', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'appointment_status','staff_id')
             ->with('service:service_name,id')
             ->where('status', '1');
         if ($request->service_id != '0') {
@@ -438,9 +438,18 @@ class PatientAppointmentDetailsController extends Controller
                 $result[$key]['appointment_date'] = $val['booking_date'] ??  'NA';
                 $result[$key]['appointment_time'] = date('H:i', strtotime($val['booking_time'])) ??  'NA';
                 $result[$key]['appointment_status'] = $val['appointment_status'] ??  'NA';
-                $team_id = $val['assign_team'] ??  'NA';
-                $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get()->pluck('team_name');
-                $result[$key]['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
+                // dd($val['staff_id']);
+                if ($val['staff_id'] != null ){
+                    // dd($val['staff_id']);
+                    $name = StaffManagement::select('id', 'name')
+                    ->where('id','=', $val['staff_id'])->first();
+                    // dd($name);
+                    $result[$key]['team_name'] = $name->name;
+                } else {
+                    $team_id = $val['assign_team'] ??  'NA';
+                    $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get()->pluck('team_name');
+                    $result[$key]['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
+                }
             }
         }
         return response()->json(["message" => "Appointment List.", 'list' => $result, "code" => 200]);
