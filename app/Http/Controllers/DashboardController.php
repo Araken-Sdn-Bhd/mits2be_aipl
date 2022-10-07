@@ -597,4 +597,22 @@ class DashboardController extends Controller
         // dd($ab);
         return response()->json(["message" => "Notifications List", 'list' => $ab, 'notification_count' => $count, "code" => 200]);
     }
+
+    public function AdminSpeciallist(Request $request)
+    {
+  
+        $query = DB::table('patient_appointment_details')
+        ->select('patient_appointment_details.id')
+        ->leftjoin('users', 'users.id', '=', 'patient_appointment_details.added_by')
+        ->leftjoin('staff_management', 'users.email', '=', 'staff_management.email')
+        ->Where("booking_date",'=',date('Y-m-d'))
+        ->Where("branch_id",'=',$request->branch)->get();      
+        $today_appointment = $query->count();
+
+
+               
+        return response()->json(["message" => "Today Appointment", 'today_appointment' => $today_appointment,  "code" => 200]);
+    }
+
+
 }
