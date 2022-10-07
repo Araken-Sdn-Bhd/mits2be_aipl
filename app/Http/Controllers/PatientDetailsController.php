@@ -444,47 +444,31 @@ class PatientDetailsController extends Controller
 
     public function getSharrpPatientList(Request $request)
     {
-        DB::enableQueryLog();
         if ($request->keyword == 'no-keyword' && $request->fromDate == 'dd-mm-yyyy' && $request->toDate == 'dd-mm-yyyy') {
-            $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
-            (select patient_id,harm_time,harm_date,status from sharp_registraion_final_step
-            where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
-            d on pr.id=d.patient_id order by patient_mrn;");
+
+            $query = DB::select("SELECT pr.*, d.*" . "FROM patient_registration pr left join
+        (select patient_id,harm_time,harm_date,status from sharp_registraion_final_step
+        where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
+         d on pr.id=d.patient_id order by patient_mrn;");
         } else {
+
             if ($request->fromDate != 'dd-mm-yyyy' && $request->toDate != 'dd-mm-yyyy') {
-                $query = DB::select("SELECT pr.*,d.* FROM patient_registration pr left join
-                (select patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step as A
-                where id in (SELECT max(id) id FROM sharp_registraion_final_step as B
-                where B.harm_date between $request->fromDate and $request->toDate
-                group by patient_id))
-                d on pr.id=d.patient_id
-                where d.patient_id = 1
-                order by pr.patient_mrn;");
-            } else if ($request->keyword != 'no-keyword') {
-                $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
-                (select id,patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
-                where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
-                d on pr.id=d.patient_id
-                where pr.name_asin_nric like '%$request->keyword%' or pr.nric_no like '%$request->keyword%'
-                order by pr.patient_mrn;");
-            } else if ($request->keyword != 'no-keyword' && $request->fromDate != 'dd-mm-yyyy' && $request->toDate != 'dd-mm-yyyy') {
-                $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
-                (select id,patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
-                where id in (SELECT max(id) id FROM sharp_registraion_final_step
-                where harm_date between $request->fromDate and $request->toDate
-                group by patient_id))
-                d on pr.id=d.patient_id
-                where pr.name_asin_nric like '%$request->keyword%' or pr.nric_no like '%$request->keyword%'
-                order by prpatient_mrn;");
+
+                $query = DB::select("SELECT pr.*, d.*" . "FROM patient_registration pr left join
+            (select patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
+            where id in (SELECT max(id) id FROM sharp_registraion_final_step
+            where harm_date between $request->fromDate and $request->toDate
+            group by patient_id))
+             d on pr.id=d.patient_id order by patient_mrn;");
             } else {
-                $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
+                $query = DB::select("SELECT pr.*, d.*" . "FROM patient_registration pr left join
                 (select id,patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
                 where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
-                d on pr.id=d.patient_id
-                order by pr.patient_mrn;");
+                 d on pr.id=d.patient_id
+                 order by patient_mrn;");
             }
         }
-        //  $data_get = mysqli_query($query);s
+        //  $data_get = mysqli_query($query);
         // $dataset =$query->get();
         //  dd($query);
         // $ab=collect($query)->toArray();
@@ -492,7 +476,7 @@ class PatientDetailsController extends Controller
 
         $result = [];
         foreach ($query as $key => $val) {
-            // dd($val);
+            // dd($val->added_by);
             if ($request->keyword != 'no-keyword') {
                 // dd('if');   $query->where('name_asin_nric', 'LIKE', '%' . $searchWord . '%')  $val->name_asin_nric==$request->keyword
                 if (stripos($val->name_asin_nric, $request->keyword) !== false || stripos($val->nric_no, $request->keyword) !== false) {
@@ -504,16 +488,11 @@ class PatientDetailsController extends Controller
                     $result[$key]['age'] = $val->age ??  'NA';
                     $result[$key]['name_asin_nric'] = $val->name_asin_nric ??  'NA';
                     $result[$key]['nric_no'] = $val->nric_no ??  'NA';
-                    if ($val->harm_time != null){
-                        if ($val->status) {
-                            $result[$key]['status'] = "Completed" ??  '-';
-                        } else {
-                            $result[$key]['status'] = "Draft" ?? '-';
-                        }
+                    if ($val->status) {
+                        $result[$key]['status'] = "Completed" ??  '-';
                     } else {
-                        $result[$key]['status'] = "-";
+                        $result[$key]['status'] = "Draft" ??  '-';
                     }
-
                 }
             } else {
                 $result[$key]['harm_time'] = $val->harm_time ??  '-';
@@ -523,14 +502,10 @@ class PatientDetailsController extends Controller
                 $result[$key]['age'] = $val->age ??  'NA';
                 $result[$key]['name_asin_nric'] = $val->name_asin_nric ??  'NA';
                 $result[$key]['nric_no'] = $val->nric_no ??  'NA';
-                if ($val->harm_time != null){
-                    if ($val->status) {
-                        $result[$key]['status'] = "Completed" ??  '-';
-                    } else {
-                        $result[$key]['status'] = "Draft" ?? '-';
-                    }
+                if ($val->status) {
+                    $result[$key]['status'] = "Completed" ??  '-';
                 } else {
-                    $result[$key]['status'] = "-";
+                    $result[$key]['status'] = "Draft" ??  '-';
                 }
                 if ($val->added_by) {
                     $users = DB::table('patient_registration')
