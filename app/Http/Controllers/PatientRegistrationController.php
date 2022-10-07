@@ -149,7 +149,6 @@ class PatientRegistrationController extends Controller
         try {
             // dd($patientregistration);
             $Patient = PatientRegistration::firstOrCreate($patientregistration);
-            dd(DB::getQueryLog());
             $MRN = $this->generateMRNString(10, $Patient['id']);
             PatientRegistration::where('id', $Patient['id'])->update(['patient_mrn' => $MRN]);
             $tran=[
