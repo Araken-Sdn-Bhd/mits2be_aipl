@@ -661,6 +661,14 @@ class PatientAppointmentDetailsController extends Controller
             $status  = '1';
         } else if ($request->service == "Rehabilitation"){
             $status = '4';
+        } else if ($request->service == "Rehabilitation-SE"){
+            $status = '4';
+        } else if ($request->service == "Rehabilitation-ETP"){
+            $status = '4';
+        } else if ($request->service == "Rehabilitation-Job Club"){
+            $status = '4';
+        } else if ($request->service == "Community Psychiatric Service(CPS)"){
+            $status = '4';
         }
 
         $patientAppointmentDetails = $patientAppointmentDetails->update([
