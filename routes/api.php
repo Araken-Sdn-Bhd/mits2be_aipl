@@ -326,6 +326,7 @@ Route::group(['prefix' => 'citizenship'], function () {
 Route::group(['prefix' => 'staff-management'], function () {
     Route::post('/addstaff', [StaffManagementController::class, 'store']);
     Route::get('/getList', [StaffManagementController::class, 'getStaffManagementList']);
+    Route::get('/getListByBranchId/{branch_id}', [StaffManagementController::class, 'getStaffManagementListByBranchId']);
     Route::post('/getListById', [StaffManagementController::class, 'getStaffManagementListById']);
     Route::post('/getDetailsById', [StaffManagementController::class, 'getStaffManagementDetailsById']);
     Route::post('/editDetailsById', [StaffManagementController::class, 'editStaffManagementDetailsById']);
@@ -336,6 +337,7 @@ Route::group(['prefix' => 'staff-management'], function () {
     Route::post('/checknricno', [StaffManagementController::class, 'checknricno']);
     Route::post('/getUserlist', [StaffManagementController::class, 'getUserlist']);
     Route::get('/getStaffManagementListOrById_', [StaffManagementController::class, 'getStaffManagementListOrById']);
+    Route::get('/getListBy', [StaffManagementController::class, 'getStaffManagementList']);
 });
 
 Route::group(['prefix' => 'calendar-management'], function () {
