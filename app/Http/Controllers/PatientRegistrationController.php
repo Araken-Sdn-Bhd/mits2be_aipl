@@ -18,6 +18,7 @@ class PatientRegistrationController extends Controller
 {
     public function store(Request $request)
     {
+        db::enableQueryLog();
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|string',
             'salutation_id' => '',
@@ -59,6 +60,7 @@ class PatientRegistrationController extends Controller
 
         $patientregistration = [
             'added_by' =>  $request->added_by,
+            'branch_id' =>$request->branch_id,
             'citizenship' =>  $request->citizenship,
             'salutation_id' =>  $request->salutation_id,
             'name_asin_nric' =>  $request->name_asin_nric,
@@ -108,8 +110,7 @@ class PatientRegistrationController extends Controller
             'household_income' =>$request->household_income,
             // 'ethnic_group' =>$request->ethnic_group,patient_need_triage_screening
             'status' => "1",
-            'sharp' => $request->Sharp, //0 represents for sharp registration patient list
-            'branch_id' =>$request->branch_id
+            'sharp' => $request->Sharp //0 represents for sharp registration patient list
         ];
 
 
@@ -466,6 +467,7 @@ class PatientRegistrationController extends Controller
 
         $patientregistration = [
             'added_by' =>  $request->added_by,
+            'branch_id' =>$request->branch_id,
             'citizenship' =>  $request->citizenship,
             'salutation_id' =>  $request->salutation_id,
             'name_asin_nric' =>  $request->name_asin_nric,
