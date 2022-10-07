@@ -492,7 +492,7 @@ class PatientDetailsController extends Controller
 
         $result = [];
         foreach ($query as $key => $val) {
-            // dd($val->added_by);
+            // dd($val);
             if ($request->keyword != 'no-keyword') {
                 // dd('if');   $query->where('name_asin_nric', 'LIKE', '%' . $searchWord . '%')  $val->name_asin_nric==$request->keyword
                 if (stripos($val->name_asin_nric, $request->keyword) !== false || stripos($val->nric_no, $request->keyword) !== false) {
@@ -504,11 +504,16 @@ class PatientDetailsController extends Controller
                     $result[$key]['age'] = $val->age ??  'NA';
                     $result[$key]['name_asin_nric'] = $val->name_asin_nric ??  'NA';
                     $result[$key]['nric_no'] = $val->nric_no ??  'NA';
-                    if ($val->status) {
-                        $result[$key]['status'] = "Completed" ??  '-';
+                    if ($val->harm_time != null){
+                        if ($val->status) {
+                            $result[$key]['status'] = "Completed" ??  '-';
+                        } else {
+                            $result[$key]['status'] = "Draft" ?? '-';
+                        }
                     } else {
-                        $result[$key]['status'] = "Draft" ??  '-';
+                        $result[$key]['status'] = "-";
                     }
+
                 }
             } else {
                 $result[$key]['harm_time'] = $val->harm_time ??  '-';
@@ -518,10 +523,14 @@ class PatientDetailsController extends Controller
                 $result[$key]['age'] = $val->age ??  'NA';
                 $result[$key]['name_asin_nric'] = $val->name_asin_nric ??  'NA';
                 $result[$key]['nric_no'] = $val->nric_no ??  'NA';
-                if ($val->status) {
-                    $result[$key]['status'] = "Completed" ??  '-';
+                if ($val->harm_time != null){
+                    if ($val->status) {
+                        $result[$key]['status'] = "Completed" ??  '-';
+                    } else {
+                        $result[$key]['status'] = "Draft" ?? '-';
+                    }
                 } else {
-                    $result[$key]['status'] = "Draft" ??  '-';
+                    $result[$key]['status'] = "-";
                 }
                 if ($val->added_by) {
                     $users = DB::table('patient_registration')
