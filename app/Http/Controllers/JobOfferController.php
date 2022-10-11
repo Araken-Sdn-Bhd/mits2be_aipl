@@ -97,15 +97,50 @@ class JobOfferController extends Controller
         }
     }
 
+    public function addJob(Request $request)
+    {
+
+        $data = JobOffers::where('added_by', $request->user_id)->where('position_offered', $request->job_id)->first();
+        $job = [
+            'added_by' => $data->added_by,
+            'company_id' => $data->company_id,
+            'position_offered' => $data->position_offered,
+            'position_location_1' => $data->position_location_1,
+            'position_location_2' => $data->position_location_2,
+            'position_location_3' => $data->position_location_3,
+            'education_id' => $data->education_id,
+            'duration_of_employment' => $data->duration_of_employment,
+            'salary_offered' => $data->salary_offered,
+            'work_schedule' => $data->work_schedule,
+            'is_transport' => $data->is_transport,
+            'is_accommodation' => $data->is_accommodation,
+            'work_requirement' => $data->work_requirement,
+            'branch_id' => $data->branch_id,
+            'job_availability' => "1",
+            'created_at' =>  date('Y-m-d H:i:s'),
+            'updated_at' =>  date('Y-m-d H:i:s')
+        ];
+        try {
+            JobOffers::create($job);
+            return response()->json(["message" => "Job Created", "result" => $job, "code" => 200]);
+        } catch (Exception $e) {
+            return response()->json(["message" => $e->getMessage(), "code" => 200]);
+        }
+    }
+
     public function jobList(Request $request)
     {
         DB::enableQueryLog();
-        // JobOffers::select(DB::raw("count('id') as job_posted"), 'id', 'position_offered')->where('added_by', $request->added_by)->groupBy('position_offered', 'id')->get();
-        $result = DB::table('job_offers as A')
-        ->select('A.id', 'A.position_offered')
-        ->where('A.added_by', $request->added_by)
-        ->groupBy('A.id')
+        $result = JobOffers::select(DB::raw("count('position_offered') as job_posted"), 'position_offered')
+        ->where('added_by', $request->added_by)
+        ->groupBy('position_offered')
         ->get();
+        // $result = DB::table('job_offers as A')
+        // ->select('*','A.id', 'A.position_offered')
+        // ->where('A.added_by', $request->added_by)
+        // ->groupBy('A.id')
+        // ->get();
+
         // dd(DB::getQueryLog());
         return $result;
     }
