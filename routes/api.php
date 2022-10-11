@@ -739,6 +739,7 @@ Route::group(['prefix' => 'all-mentari-staff'], function () {
 Route::group(['prefix' => 'user-admin-clerk'], function () {
 
    Route::get('/get', [DashboardController::class, 'getuseradminclerk']);
+   Route::get('/today_appointment', [DashboardController::class, 'AdminSpeciallist']);
 });
 
 Route::group(['prefix' => 'shharp'], function () {
