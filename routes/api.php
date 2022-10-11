@@ -505,6 +505,7 @@ Route::group(['prefix' => 'psychology-referral'], function () {
 Route::group(['prefix' => 'intervention-job'], function () {
     Route::post('/add', [JobOfferController::class, 'store']);
     Route::post('/list', [JobOfferController::class, 'JobList']);
+    Route::post('/addJob', [JobOfferController::class, 'addJob']);
     Route::post('/getListByTitle', [JobOfferController::class, 'getListByTitle']);
     Route::post('/setStatus', [JobOfferController::class, 'setStatus']);
     Route::post('/getJobApprovalRequest', [JobOfferController::class, 'JobRequestList']);
