@@ -44,11 +44,12 @@ class MailController extends Controller
         }
             
             try {
-                $check = User::where('email', $request->email)->count();
-                // dd($check);
+                $check = User::where('email', $request->email)
+                ->Where('role','employer')
+                ->count();
                 if ($check == 0) {
                     $id=User::create(
-                        ['name' => $request->company_name, 'email' => $request->email, 'role' => "Von", 'password' => bcrypt($request->password)]
+                        ['name' => $request->company_name, 'email' => $request->email, 'role' => "employer", 'password' => bcrypt($request->password)]
                     );
                     $userid= $id->id;
                     EmployeeRegistration::create([
@@ -58,35 +59,22 @@ class MailController extends Controller
                         'password' => bcrypt($request->password),
                         'user_id' =>  $userid,
                     ]);
-                    //dd($role[0]['section_value']);
                     $toEmail    =   $request->email;
                     $data       =   ['user_id' => Crypt::encryptString($userid), 'company_name' =>  $request->company_name, 'frontEndUrl' => env('FRONTEND_URL')];
                     try {
-                        Mail::to($toEmail)->send(new VerifyAccountEmail($data));
-                        // return response()->json(["message" => 'Email Sent', "code" => 200]);
+                        //Mail::to($toEmail)->send(new VerifyAccountEmail($data));
                         return response()->json(["message" => "User Created Successfully!", "code" => 200]);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), "code" => 500]);
                     }
                     
                     // return response()->json(["message" => "User Created Successfully!", "code" => 200]);
+                }else{
+                    return response()->json(["message" => "Employer already exists!", "code" => 200]);
                 }
             } catch (Exception $e) {
                 return response()->json(["message" => $e->getMessage(),  "code" => 200]);
             }
-            return response()->json(["message" => "Employee already exists!", "code" => 200]);
 
-
-
-
-
-
-        // $chkUser = User::where('email', $request->emailAddress)->get()->toArray();
-        // if ($chkUser) {
-           
-       
-        // else {
-        //     return response()->json(["message" => 'Email-Address Doesn\'t Exists In Our Records.', "code" => 404]);
-        // }
     }
 }
