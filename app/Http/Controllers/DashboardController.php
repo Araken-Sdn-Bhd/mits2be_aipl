@@ -35,6 +35,8 @@ use App\Models\SeProgressNote;
 use App\Models\ServiceRegister;
 use App\Models\ShharpReportGenerateHistory;
 use App\Models\StaffManagement;
+use App\Models\VonnAppointment;
+use App\Models\Announcement;
 use App\Models\TriageForm;
 use App\Models\Year;
 use DateTime;
@@ -124,7 +126,7 @@ class DashboardController extends Controller
         //     $count[] = $value;
         // }
 
-        return response()->json(["message" => "All Mentari Staff", 'list' => $AMS, 'today_appointment' => $list,
+        return response()->json(["message" => "All Mentari Staffams", 'list' => $AMS, 'today_appointment' => $list,
         'team_task' => $team_task, "code" => 200]);
     }
 
@@ -178,7 +180,7 @@ class DashboardController extends Controller
             $UAC[] = $value;
         }
 
-        return response()->json(["message" => "All Mentari Staff", 'list' => $UAC, "code" => 200]);
+        return response()->json(["message" => "All Mentari Staffuac", 'list' => $UAC, "code" => 200]);
     }
 
 
@@ -600,18 +602,62 @@ class DashboardController extends Controller
 
     public function AdminSpeciallist(Request $request)
     {
-  
-        $query = DB::table('patient_appointment_details')
-        ->select('patient_appointment_details.id')
-        ->leftjoin('users', 'users.id', '=', 'patient_appointment_details.added_by')
-        ->leftjoin('staff_management', 'users.email', '=', 'staff_management.email')
+
+        //////////Today's Appointment///////////
+        $today_appointment=0;
+        $query = DB::table('patient_appointment_details as p')
+        ->select('p.id')
+        ->leftjoin('users as u', function($join) {
+            $join->on('u.id', '=', 'p.added_by');
+
+        })
+        ->leftjoin('staff_management as s', function($join) {
+            $join->on('u.email', '=', 's.email');
+
+        })    
         ->Where("booking_date",'=',date('Y-m-d'))
-        ->Where("branch_id",'=',$request->branch)->get();      
+        ->Where("branch_id",'=',$request->branch)->get();  
         $today_appointment = $query->count();
 
 
+        //////////Personal Task///////////
+
+        $personal_task=0;
+        $query2 = DB::table('von_appointment as v')
+        ->select('v.id')
+        ->leftjoin('staff_management as s', function($join) {
+            $join->on('v.interviewer_id', '=', 's.id');
+
+        })
+        ->Where("booking_date",'=',date('Y-m-d'))->get();
+        $personal_task = $query2->count();  
+
+
+        //////////Team Task///////////
+
+        $team_task=0;
+        $list= StaffManagement::select("team_id")->Where("email",'=',$request->email)->get();
+
+        $query3 = DB::table('patient_care_paln as p')
+        ->select('p.id')
+        ->leftjoin('patient_registration as r', function($join) {
+            $join->on('p.patient_id', '=', 'r.id');
+        })
+        ->Where("p.services",'=', $list[0]['team_id'])
+        ->Where("r.branch_id",'=',$request->branch)
+        ->Where("p.next_review_date",'=',date('Y-m-d'))->get();
+        $team_task = $query3->count();
+        
+        
+        //////////Announcement Management///////////
+        ///////////kena tambah condition untuk status and designation/////////////////
+        
+        $list= Announcement::select("id","title")->Where("branch_id",'=',$request->branch)->get();
+     
+
                
-        return response()->json(["message" => "Today Appointment", 'today_appointment' => $today_appointment,  "code" => 200]);
+        return response()->json(["message" => "Admin & Specialist inCharge", 'today_appointment' => $today_appointment,
+        'personal_task' => $personal_task, 'team_task'=> $team_task, 'list'=> $list,  "code" => 200]);
     }
 
 
