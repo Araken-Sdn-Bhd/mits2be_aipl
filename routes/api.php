@@ -105,6 +105,7 @@ use Illuminate\Support\Facades\Mail;
 // Route::get('/test',function(){dd('check');});
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
     Route::post('/login', [AuthController::class, 'login']);
+    Route::post('/loginEmployer', [AuthController::class, 'loginEmployer']);
     Route::post('/register', [AuthController::class, 'register']);
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::post('/refresh', [AuthController::class, 'refresh']);

@@ -22,7 +22,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register','loginEmployer']]);
     }
 
     /**
@@ -172,7 +172,7 @@ class AuthController extends Controller
                 }
                 }
             } else {
-                return response()->json(['message' => '1Account has been blocked for next ' . $blocktime[0] . ' hour'], 401);
+                return response()->json(['message' => 'Account has been blocked for next ' . $blocktime[0] . ' hour'], 401);
             }
         } else {
             try {
@@ -227,6 +227,120 @@ class AuthController extends Controller
         }
         }
     }
+
+    public function loginEmployer(Request $request)
+    {
+       
+        app('log')->debug($request->all());
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required|string|min:6',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(['message' => 'Invalid Credential', 'code' => '400'], 401);
+        }
+       
+        if (!$token = auth()->attempt($validator->validated())) {
+            $id = User::select('id')->where('email', $request->email)->pluck('id');
+        
+            $systemattempt = SystemSetting::select('variable_value')->where('section', 'login-attempt')->pluck('variable_value');
+            $blocktime = SystemSetting::select('variable_value')->where('section', 'system-block-duration')->pluck('variable_value');
+            $no_of_attempts = UserBlock::select('no_of_attempts')->where('user_id', $id)->pluck('no_of_attempts');
+            $id_block_user = UserBlock::select('id')->where('user_id', $id)->pluck('id');
+
+            $date = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+            $newDate = $date->format('Y-m-d H:i:s');
+            if (!empty($systemattempt[0]) == !empty($no_of_attempts[0])) {
+              
+                $currentdatetime = date('Y-m-d H:i:s', strtotime($newDate . '+' . $blocktime[0] . 'hours'));
+            } else {
+                
+                $currentdatetime = $date->format('Y-m-d H:i:s');
+            }
+         
+            if (count($id_block_user) == 0) {
+              
+                $data = [
+                    'user_id' => $id[0],
+                    'no_of_attempts' => "1",
+                    'block_untill' => $currentdatetime,
+                    'created_at' => $date->format('Y-m-d H:i:s'),
+                    'updated_at' => $date->format('Y-m-d H:i:s'),
+                ];
+                UserBlock::insert($data);
+                return response()->json(["message" => "Incorrect password", "code" => 401]);
+            } else {
+              
+                if ($systemattempt[0] <= $no_of_attempts[0]) {
+                    return response()->json(['message' => 'Account has been blocked for next ' . $blocktime[0] . ' hour', 'code' => 201], 201);
+                } else {
+                    $count = number_format($no_of_attempts[0]) + 1;
+                    
+                    UserBlock::where(
+                        ['id' => $id_block_user]
+                    )->update([
+                        
+                        'no_of_attempts' => $count,
+                        'block_untill' => $currentdatetime
+                    ]);
+                    return response()->json(['message' => 'Incorrect password.', "code" => 401], 401);
+                }
+            }
+            return response()->json(['message' => 'Unauthorized', "code" => 401], 401);
+        }
+      
+        $useradmin = User::select('role')->where('email', $request->email)->pluck('role');
+        $id = User::select('id')->where('email', $request->email)->pluck('id');
+        $id_block_user = UserBlock::select('id')->where('user_id', $id)->pluck('id');
+        $branch= "";
+        $tmp = "/Modules/Dashboard/high-level-employer";
+       
+        $systemattempt = SystemSetting::select('variable_value')->where('section', 'login-attempt')->pluck('variable_value');
+        $blocktime = SystemSetting::select('variable_value')->where('section', 'system-block-duration')->pluck('variable_value');
+        $no_of_attempts = UserBlock::select('no_of_attempts')->where('user_id', $id)->pluck('no_of_attempts');
+        $block_untill = UserBlock::select('block_untill')->where('user_id', $id)->pluck('block_untill');
+       
+        $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+        $newDate = $date->format('Y-m-d H:i:s');
+        $currentdatetime = date('Y-m-d H:i:s', strtotime($newDate . '+' . 'hours'));
+      
+        if (!empty($no_of_attempts[0])) {
+        } else {
+            $no_of_attempts = "0";
+        }
+        if (($systemattempt[0]) <= ($no_of_attempts[0])) {
+           
+            if ($block_untill[0] < $newDate) {
+                UserBlock::where(
+                    ['id' => $id_block_user]
+                )->update([
+                    'user_id' => $id[0],
+                    'no_of_attempts' => "0",
+                    'block_untill' => $currentdatetime
+                ]);
+            
+                return $this->createNewToken($token, $tmp, $branch);   
+            } else {
+                return response()->json(['message' => 'Account has been blocked for next ' . $blocktime[0] . ' hour'], 401);
+            }
+        } else {
+            try {
+                UserBlock::where(
+                    ['id' => $id_block_user]
+                )->update([
+                    'user_id' => $id[0],
+                    'no_of_attempts' => "0",
+                    'block_untill' => $currentdatetime
+                ]);
+            } catch (\Throwable $th) {
+                //throw $th;
+            }
+            return $this->createNewToken($token, $tmp, $branch);  
+        }
+    }
+
+
+   
     /**
      * Register a User.
      *
