@@ -318,16 +318,22 @@ class PatientRegistrationController extends Controller
                 $query->where('appointment_status', '=', '1');
             })
             ->get()->toArray();
-        // dd($list[0]['service']);
         $result = [];
         foreach ($list as $key => $val) {
             $result[$key]['patient_mrn'] = $val['patient_mrn'] ?? 'NA';
             $result[$key]['name_asin_nric'] = $val['name_asin_nric'] ?? 'NA';
             $result[$key]['id'] = $val['id'];
             $result[$key]['age'] = date_diff(date_create($val['birth_date']), date_create('today'))->y ?? 'NA';
-            $result[$key]['nric_no'] = $val['nric_no'] ?? 'NA';
-            $result[$key]['passport_no'] = $val['passport_no'] ?? 'NA';
-            // dd( $val['salutation'][0]['section_value']);
+            if ($val['nric_no'] != null){
+                $result[$key]['nric_id'] = $val['nric_no'];
+            }
+            if ($val['passport_no'] != null){
+                $result[$key]['nric_id'] = $val['passport_no'];
+            }
+
+            if ($val['nric_no'] == null && $val['passport_no'] == null ){
+                $result[$key]['nric_id'] = 'NA';
+            }
             $result[$key]['salutation'] = $val['salutation'][0]['section_value'] ?? 'NA';
 
             if ($val['service'] != null) {
@@ -336,17 +342,11 @@ class PatientRegistrationController extends Controller
                 $result[$key]['service'] = 'NA';
             }
             if ($val['appointments'] != null) {
-                // if ($val['service'] != null) {
-                //     $result[$key]['service'] = $val['service']['service_name'];
-                // } else {
-                //     $result[$key]['service'] = 'NA';
-                // }
                 $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
                 $team_id = $val['appointments'][0]['assign_team'];
                 $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get();
                 $result[$key]['team_name'] = $teamName[0]['team_name'];
             } else {
-                // $result[$key]['service'] = 'NA';
                 $result[$key]['appointments'] = 'NA';
                 $result[$key]['team_name'] = 'NA';
             }
