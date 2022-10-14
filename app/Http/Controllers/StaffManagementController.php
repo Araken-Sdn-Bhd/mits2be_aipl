@@ -105,7 +105,7 @@ class StaffManagementController extends Controller
                 ->where('section', "=", 'default-password')
                 ->where('status', "=", '1')
                 ->first();
-                
+
                 if($default_pass->variable_value =="true"){
                     // dd('if');
                     User::create(
@@ -124,7 +124,7 @@ class StaffManagementController extends Controller
                 }else{
                     User::create(
                         ['name' => $request->name, 'email' => $request->email, 'role' => $role[0]['role_name'], 'password' => bcrypt($default_pass->variable_value)]
-                    ); 
+                    );
                     $toEmail    =   $request->email;
                     $data       =   ['name' => $request->name,'user_id' => $toEmail, 'password' =>$default_pass->variable_value];
                     try {
@@ -133,9 +133,9 @@ class StaffManagementController extends Controller
                         return response()->json(["message" => "Record Created Successfully!", "code" => 200]);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), "code" => 500]);
-                    } 
+                    }
                 }
-                
+
                 return response()->json(["message" => "Record Created Successfully!", "code" => 200]);
             }
         } catch (Exception $e) {
@@ -167,6 +167,18 @@ class StaffManagementController extends Controller
         return response()->json(["message" => "Staff Management List", 'list' => $users, "code" => 200]);
     }
 
+    public function getStaffDetailById(Request $request)
+    {
+        $users = DB::table('staff_management')
+                ->leftjoin('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
+                ->join('users', 'users.email', '=', 'staff_management.email')
+                ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
+                ->select('staff_management.id','users.id as users_id', 'staff_management.name', 'general_setting.section_value as designation_name', 'hospital_branch__details.hospital_branch_name')
+                ->where('staff_management.id', '=', $request->id)
+                ->get();
+        return response()->json(["message" => "Staff Detail", 'list' => $users, "code" => 200]);
+    }
+
     public function getStaffManagementListOrById(Request $request)
     {
 
@@ -177,7 +189,7 @@ class StaffManagementController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
         if ($request->name == '' && $request->branch_id == '0') {
-        
+
             $users = DB::table('staff_management')
                 ->leftjoin('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
                 ->join('users', 'users.email', '=', 'staff_management.email')
@@ -232,7 +244,7 @@ class StaffManagementController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
         if ( $request->branch_id == '0') {
-        
+
         $users = DB::table('users')
         ->leftjoin('staff_management', 'users.email', '=', 'staff_management.email')
         ->select('staff_management.id','users.id as users_id', 'users.name','users.role')
@@ -270,7 +282,7 @@ class StaffManagementController extends Controller
             ->Where('staff_management.branch_id', '=', $request->branch_id)
             ->Where('staff_management.status', '=', '1')
             ->get();
-        
+
         return response()->json(["message" => "Staff Management List", 'list' => $users, "code" => 200]);
     }
 

@@ -339,6 +339,7 @@ Route::group(['prefix' => 'staff-management'], function () {
     Route::post('/getUserlist', [StaffManagementController::class, 'getUserlist']);
     Route::get('/getStaffManagementListOrById_', [StaffManagementController::class, 'getStaffManagementListOrById']);
     Route::get('/getListBy', [StaffManagementController::class, 'getStaffManagementList']);
+    Route::get('/getStaffDetailById',[StaffManagementController::class,'getStaffDetailById']);
 });
 
 Route::group(['prefix' => 'calendar-management'], function () {
@@ -628,8 +629,11 @@ Route::group(['prefix' => 'patient-get-idea'], function () {
 });
 Route::group(['prefix' => 'diagnosis'], function () {
     Route::get('/getIcd10codeList', [IcdSettingManagementController::class, 'getIcd10codeList']);
+    Route::get('/getIcd10codeById', [IcdSettingManagementController::class, 'getIcd10codeById']);
     Route::get('/getIcd9codeList', [IcdSettingManagementController::class, 'getIcd9codeList']);
+    Route::get('/getIcd9codeById', [IcdSettingManagementController::class, 'getIcd9codeById']);
     Route::post('/getIcd9subcodeList', [IcdSettingManagementController::class, 'getIcd9subcodeList']);
+    Route::get('/getIcd9subcodeById', [IcdSettingManagementController::class, 'getIcd9subcodeById']);
     Route::get('/getIcd10codeList2', [IcdSettingManagementController::class, 'getIcd10codeList2']);
     Route::get('/getIcd9subcodeList_', [IcdSettingManagementController::class, 'getIcd9subcodeList_']);
 });
