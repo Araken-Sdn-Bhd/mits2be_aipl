@@ -139,8 +139,16 @@ class PatientDetailsController extends Controller
                 $result[$key]['name_asin_nric'] = $val['name_asin_nric'];
                 $result[$key]['id'] = $val['id'];
                 $result[$key]['age'] = date_diff(date_create($val['birth_date']), date_create('today'))->y;
-                $result[$key]['nric_no'] = $val['nric_no'];
-                $result[$key]['passport_no'] = $val['passport_no'];
+                if ($val['nric_no'] != null){
+                    $result[$key]['nric_id'] = $val['nric_no'];
+                }
+                if ($val['passport_no'] != null){
+                    $result[$key]['nric_id'] = $val['passport_no'];
+                }
+    
+                if ($val['nric_no'] == null && $val['passport_no'] == null ){
+                    $result[$key]['nric_id'] = 'NA';
+                }
                 if ($val['salutation'] != null) {
                     $result[$key]['salutation'] = $val['salutation'][0]['section_value'];
                 } else {
@@ -175,8 +183,16 @@ class PatientDetailsController extends Controller
                 $result[$key]['patient_mrn'] = $val['patient_mrn'];
                 $result[$key]['name_asin_nric'] = $val['name_asin_nric'];
                 $result[$key]['id'] = $val['id'];
-                $result[$key]['nric_no'] = $val['nric_no'];
-                $result[$key]['passport_no'] = $val['passport_no'];
+                if ($val['nric_no'] != null){
+                    $result[$key]['nric_id'] = $val['nric_no'];
+                }
+                if ($val['passport_no'] != null){
+                    $result[$key]['nric_id'] = $val['passport_no'];
+                }
+    
+                if ($val['nric_no'] == null && $val['passport_no'] == null ){
+                    $result[$key]['nric_id'] = 'NA';
+                }
 
                 if (!empty($val['salutation'][0])) {
                     $result[$key]['salutation'] = $val['salutation'][0]['section_value'];
