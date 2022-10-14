@@ -47,6 +47,13 @@ class PatientRegistrationController extends Controller
             'patient_need_triage_screening' =>'',
             'Sharp'=>'',
             'branch_id' => '',
+            'other_race' =>'',
+            'other_religion' =>'',
+            'other_accommodation' =>'',
+            'other_maritalList' =>'',
+            'other_feeExemptionStatus' =>'',
+            'other_occupationStatus' =>'',
+        
 
         ]);
         if($request->Sharp){
@@ -110,7 +117,13 @@ class PatientRegistrationController extends Controller
             'household_income' =>$request->household_income,
             // 'ethnic_group' =>$request->ethnic_group,patient_need_triage_screening
             'status' => "1",
-            'sharp' => $request->Sharp //0 represents for sharp registration patient list
+            'sharp' => $request->Sharp, //0 represents for sharp registration patient list
+            'other_race' => $request->other_race,
+            'other_religion' => $request->other_religion,
+            'other_accommodation' => $request->other_accommodation,
+            'other_maritalList' => $request->other_maritalList,
+            'other_feeExemptionStatus' => $request->other_feeExemptionStatus,
+            'other_occupationStatus' => $request->other_occupationStatus,
         ];
 
 
@@ -460,6 +473,13 @@ class PatientRegistrationController extends Controller
             'branch_id' =>'',
             'household_income' =>'',
             'employment_status' =>'',
+            'other_race' =>'',
+            'other_religion' =>'',
+            'other_accommodation' =>'',
+            'other_maritalList' =>'',
+            'other_feeExemptionStatus' =>'',
+            'other_occupationStatus' =>'',
+         
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -515,7 +535,13 @@ class PatientRegistrationController extends Controller
             'updated_at' =>  $request->update_at,
             'branch_id' =>$request->branch_id,
             'household_income' =>$request->household_income,
-            'employment_status' =>$request->employment_status
+            'employment_status' =>$request->employment_status,
+            'other_race' => $request->other_race,
+            'other_religion' => $request->other_religion,
+            'other_accommodation' => $request->other_accommodation,
+            'other_maritalList' => $request->other_maritalList,
+            'other_feeExemptionStatus' => $request->other_feeExemptionStatus,
+            'other_occupationStatus' => $request->other_occupationStatus,
         ];
 
         $validateCitizenship = [];
@@ -699,6 +725,7 @@ class PatientRegistrationController extends Controller
             // 'other_allergy' => $request->other_allergy,
             // 'other_description' => $request->other_description,
             'status' => "1"
+            
         ];
 
 

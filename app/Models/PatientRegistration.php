@@ -20,7 +20,8 @@ class PatientRegistration extends Model
         'kin_name_asin_nric', 'kin_relationship_id', 'kin_mobile_no', 'kin_house_no', 'kin_address1',
         'kin_address2', 'kin_address3', 'kin_state_id', 'kin_city_id', 'kin_postcode', 'drug_allergy',
         'drug_allergy_description', 'traditional_medication', 'kin_postcode', 'traditional_description',
-        'other_allergy', 'other_description', 'status','patient_need_triage_screening','kin_nric_no','sharp'
+        'other_allergy', 'other_description', 'status','patient_need_triage_screening','kin_nric_no','sharp','other_race',
+        'other_religion','other_accommodation','other_maritalList','other_feeExemptionStatus','other_occupationStatus',
     ];
 
     public function appointments()
