@@ -611,7 +611,7 @@ class PatientRegistrationController extends Controller
     //         ELSE DATE_FORMAT(transaction_log.time, '%h:%i PM')
     //    END) as time"),)
        ->select(DB::raw("DATE_FORMAT(transaction_log.date, '%d-%m-%Y') as date"),'transaction_log.activity','users.name',
-           'transaction_log.created_at as time')
+           'transaction_log.time as time')
         ->where('transaction_log.patient_id', '=', $request->patient_id)
             ->get();
             if(count($list)>0){
