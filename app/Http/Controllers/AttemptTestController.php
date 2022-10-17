@@ -518,8 +518,8 @@ class AttemptTestController extends Controller
     public function getBDINBAIResultValue($value, $testName)
     {
         if ($testName == 'bdi') {
-            if ($value >= 1 && $value <= 10) {
-                return ['Normal', '1-10'];
+            if ($value >= 0 && $value <= 10) {
+                return ['Normal', '0-10'];
             } else if ($value >= 11 && $value <= 16) {
                 return ['Mild mood disturbance', '11-16'];
             } else if ($value >= 17 && $value <= 20) {
