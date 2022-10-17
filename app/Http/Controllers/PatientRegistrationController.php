@@ -53,7 +53,7 @@ class PatientRegistrationController extends Controller
             'other_maritalList' =>'',
             'other_feeExemptionStatus' =>'',
             'other_occupationStatus' =>'',
-        
+
 
         ]);
         if($request->Sharp){
@@ -249,7 +249,6 @@ class PatientRegistrationController extends Controller
 
             //  dd($result);
         }
-        // dd($result);
         return response()->json(["message" => "Patients List", 'list' => $list, "code" => 200]);
 
     }
@@ -479,7 +478,7 @@ class PatientRegistrationController extends Controller
             'other_maritalList' =>'',
             'other_feeExemptionStatus' =>'',
             'other_occupationStatus' =>'',
-         
+
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -725,7 +724,7 @@ class PatientRegistrationController extends Controller
             // 'other_allergy' => $request->other_allergy,
             // 'other_description' => $request->other_description,
             'status' => "1"
-            
+
         ];
 
 
