@@ -112,7 +112,7 @@ class DashboardController extends Controller
             ->where('patient_appointment_details.appointment_status', '=', '0')
             ->groupBy('patient_appointment_details.appointment_status')
             ->get();
-
+   
         $AMS = [];
         // foreach ($result as $key => $value) {
         //     $AMS[] = $value;
@@ -648,16 +648,31 @@ class DashboardController extends Controller
         ->Where("p.next_review_date",'=',date('Y-m-d'))->get();
         $team_task = $query3->count();
         
-        
+        $request_appointment = 0;
+        $query = DB::table('patient_appointment_details as p')
+        ->select('p.id')
+        ->leftjoin('users as u', function($join) {
+            $join->on('u.id', '=', 'p.added_by');
+        })
+        ->leftjoin('staff_management as s', function($join) {
+            $join->on('u.email', '=', 's.email');
+        })    
+        ->Where("branch_id",'=',$request->branch)
+        ->get();  
+        $request_appointment = $query->count();
         //////////Announcement Management///////////
         ///////////kena tambah condition untuk status and designation/////////////////
         
-        $list= Announcement::select("id","title")->Where("branch_id",'=',$request->branch)->get();
+        $list= Announcement::select("id","title", "start_date")
+        ->Where("branch_id",'=',$request->branch)
+        ->Where("status", '=', "2")
+        ->OrderBy("start_date", 'DESC')
+        ->get();
      
 
                
         return response()->json(["message" => "Admin & Specialist inCharge", 'today_appointment' => $today_appointment,
-        'personal_task' => $personal_task, 'team_task'=> $team_task, 'list'=> $list,  "code" => 200]);
+        'personal_task' => $personal_task, 'team_task'=> $team_task, 'request_appointment' => $request_appointment, 'list'=> $list,  "code" => 200]);
     }
 
 

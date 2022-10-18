@@ -166,6 +166,7 @@ Route::group(['prefix' => 'hospital'], function () {
     Route::post('/removeBranchTeam', [HospitalManagementController::class, 'removeBranchTeam']);
     Route::get('/getServiceByBranchId', [HospitalManagementController::class, 'getHospitalBranchTeamListPatient']);
     Route::get('/getServiceByTeamId', [HospitalManagementController::class, 'getServiceByTeamId']);
+    Route::get('/getServiceByBranchTeamId', [HospitalManagementController::class, 'getServiceByBranchTeamId']);
 });
 Route::group(['prefix' => 'screen-module'], function () {
     Route::post('/add', [ScreenModuleController::class, 'storeModule']);
@@ -743,7 +744,7 @@ Route::group(['prefix' => 'all-mentari-staff'], function () {
 Route::group(['prefix' => 'user-admin-clerk'], function () {
 
    Route::get('/get', [DashboardController::class, 'getuseradminclerk']);
-   Route::get('/today_appointment', [DashboardController::class, 'AdminSpeciallist']);
+   Route::get('/get_data', [DashboardController::class, 'AdminSpeciallist']);
 });
 
 Route::group(['prefix' => 'shharp'], function () {
