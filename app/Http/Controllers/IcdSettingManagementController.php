@@ -147,14 +147,14 @@ class IcdSettingManagementController extends Controller
             ->where('icd_type_code', "ICD-10")
             ->pluck('id');
             // dd($checkicdtype10id);
-            $users = DB::table('icd_type')
-            // ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
-            ->join('icd_category', 'icd_type.id', '=', 'icd_category.icd_type_id')
-            ->join('icd_code', 'icd_type.id', '=', 'icd_code.icd_type_id')
-            ->select('icd_code.icd_code as icd_category_code', 'icd_category.id','icd_category.icd_category_name')
-            ->where('icd_category_status', '=', '1')
-            ->where('icd_category.icd_type_id', '=', $checkicdtype10id[0])
+            $users = DB::table('icd_code')
+            ->select('icd_code.icd_code as icd_code','icd_code.id','icd_code.icd_name')
+            ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
+            ->where('icd_code.icd_status', '=', '1')
+            ->where('icd_code.icd_type_id', '=', $checkicdtype10id[0])
             ->get();
+
+
         return response()->json(["message" => "Icd-10 Code List", 'list' => $users, "code" => 200]);
     }
 
