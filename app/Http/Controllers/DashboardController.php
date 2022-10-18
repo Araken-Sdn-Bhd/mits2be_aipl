@@ -91,43 +91,73 @@ class DashboardController extends Controller
     public function getallmentaristaff(Request $request)
     {
 
-        $search = "";
-        $result = PatientRegistration::select("patient_mrn", "name_asin_nric", "passport_no", "nric_no")
-            ->Where(DB::raw("concat(patient_mrn, ' ', name_asin_nric)"), 'LIKE', "%" . $search . "%")
-            ->where('patient_mrn', '=', $request->patient_mrn)
-            ->orwhere('name_asin_nric', '=', $request->name_asin_nric)
-            ->where('passport_no', '=', $request->passport_no)
-            ->orwhere('nric_no', '=', $request->nric_no)
-            ->get();
+        // $search = "";
+        // $result = PatientRegistration::select("patient_mrn", "name_asin_nric", "passport_no", "nric_no")
+        //     ->Where(DB::raw("concat(patient_mrn, ' ', name_asin_nric)"), 'LIKE', "%" . $search . "%")
+        //     ->where('patient_mrn', '=', $request->patient_mrn)
+        //     ->orwhere('name_asin_nric', '=', $request->name_asin_nric)
+        //     ->where('passport_no', '=', $request->passport_no)
+        //     ->orwhere('nric_no', '=', $request->nric_no)
+        //     ->get();
 
-        $list = PatientAppointmentDetails::select(DB::raw('count(*) as todays_appointment'))
-            //    ->whereDate('created_at', today())
-            ->where('booking_date', date('Y-m-d'))
-            ->groupBy('booking_date')
-            ->get();
 
-        $team_task = DB::table('patient_appointment_details')
-            ->join('patient_index_form', 'patient_index_form.patient_mrn_id', '=', 'patient_appointment_details.patient_mrn_id')
-            ->select(DB::raw('count(appointment_status) as team_task'))
-            ->where('patient_appointment_details.appointment_status', '=', '0')
-            ->groupBy('patient_appointment_details.appointment_status')
-            ->get();
-   
-        $AMS = [];
-        // foreach ($result as $key => $value) {
-        //     $AMS[] = $value;
-        // }
-        // $count = [];
-        // foreach ($list as $key => $value) {
-        //     $count[] = $value;
-        // }
+        //////////Today's Appointment///////////
 
-        // foreach ($users as $key => $value) {
-        //     $count[] = $value;
-        // }
+        $today_appointment=0;
+        $query = DB::table('patient_appointment_details as p')
+        ->select('p.id')
+        ->leftjoin('users as u', function($join) {
+            $join->on('u.id', '=', 'p.added_by');
 
-        return response()->json(["message" => "All Mentari Staffams", 'list' => $AMS, 'today_appointment' => $list,
-        'team_task' => $team_task, "code" => 200]);
+        })
+        ->leftjoin('staff_management as s', function($join) {
+            $join->on('u.email', '=', 's.email');
+
+        })    
+        ->Where("booking_date",'=',date('Y-m-d'))
+        ->Where("branch_id",'=',$request->branch)->get();  
+        $today_appointment = $query->count();
+
+
+        //////////Personal Task///////////
+
+        $personal_task=0;
+        $query2 = DB::table('von_appointment as v')
+        ->select('v.id')
+        ->leftjoin('staff_management as s', function($join) {
+            $join->on('v.interviewer_id', '=', 's.id');
+
+        })
+        ->Where("booking_date",'=',date('Y-m-d'))->get();
+        $personal_task = $query2->count();  
+
+
+        //////////Team Task///////////
+
+        $team_task=0;
+        $list= StaffManagement::select("team_id")->Where("email",'=',$request->email)->get();
+
+        $query3 = DB::table('patient_care_paln as p')
+        ->select('p.id')
+        ->leftjoin('patient_registration as r', function($join) {
+            $join->on('p.patient_id', '=', 'r.id');
+        })
+        ->Where("p.services",'=', $list[0]['team_id'])
+        ->Where("r.branch_id",'=',$request->branch)
+        ->Where("p.next_review_date",'=',date('Y-m-d'))->get();
+        $team_task = $query3->count();
+
+        //////////Announcement Management///////////
+        ///////////kena tambah condition untuk status and designation/////////////////
+        
+        $list= Announcement::select("id","title", "start_date")
+        ->Where("branch_id",'=',$request->branch)
+        ->Where("status", '=', "2")
+        ->OrderBy("start_date", 'DESC')
+        ->get();
+
+        return response()->json(["message" => "All Mentari Staffams", 'list' => $list, 'today_appointment' => $today_appointment,
+        'team_task' => $team_task, 'personal_task'=>$personal_task, "code" => 200]);
     }
 
     public function getuseradminclerk(Request $request)
