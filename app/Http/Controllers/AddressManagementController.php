@@ -410,4 +410,15 @@ class AddressManagementController extends Controller
             }
 
     }
+
+    public function getCityList(Request $request,$id)
+    {
+        $city = DB::table('state')
+            ->join('postcode', 'postcode.state_id', '=', 'state.id')
+            ->select('postcode.id as id', 'postcode.city_name')
+            ->where('state.id', '=', $id)
+            ->groupBy('postcode.city_name')
+            ->get();
+        return response()->json(["message" => "city List", 'list' => $city, "code" => 200]);
+    }
 }
