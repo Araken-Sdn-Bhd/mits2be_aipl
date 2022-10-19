@@ -223,6 +223,8 @@ Route::group(['prefix' => 'address'], function () {
     Route::post('/{id}/stateWisePostcodeList', [AddressManagementController::class, 'stateWisePostcodeList']);
     Route::post('/getStateCityByPostcode', [AddressManagementController::class, 'getStateCityByPostcode']);
     Route::get('/stateWisePostcodeList_', [AddressManagementController::class, 'stateWisePostcodeList']);
+    Route::post('/{id}/getCityList', [AddressManagementController::class, 'getCityList']);
+    Route::post('/{id}/getPostcodeListById', [AddressManagementController::class, 'getPostcodeListById']);
 });
 
 Route::group(['prefix' => 'service'], function () {
