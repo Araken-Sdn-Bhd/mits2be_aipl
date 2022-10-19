@@ -218,8 +218,8 @@ class PatientRegistrationController extends Controller
                 $result[$key]['salutation'] = 'NA';
             }
 
-            if ($val['sex'] != null) {
-                $result[$key]['gender'] = $val['sex'][0]['section_value'] ?? 'NA';
+            if ($val['gender'] != null) {
+                $result[$key]['gender'] = $val['gender'][0]['section_value'] ?? 'NA';
             } else {
                 $result[$key]['gender'] = 'NA';
             }
@@ -255,6 +255,7 @@ class PatientRegistrationController extends Controller
 
     public function getPatientRegistrationByIdShortDetails(Request $request)
     {
+        DB::enableQueryLog();
         $list = PatientRegistration::where('id', '=', $request->id)->with('salutation:section_value,id')
             ->with('gender:section_value,id')->with('maritialstatus:section_value,id')
             ->with('citizenships:section_value,id')->get();
@@ -272,9 +273,8 @@ class PatientRegistrationController extends Controller
             } else {
                 $result[$key]['salutation'] = 'NA';
             }
-
-            if ($val['sex'] != null) {
-                $result[$key]['gender'] = $val['sex'][0]['section_value'] ?? 'NA';
+            if ($val['gender'] != null) {
+                $result[$key]['gender'] = $val['gender'][0]['section_value'] ?? 'NA';
             } else {
                 $result[$key]['gender'] = 'NA';
             }
