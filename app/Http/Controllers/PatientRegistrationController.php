@@ -547,14 +547,14 @@ class PatientRegistrationController extends Controller
 
         if ($request->citizentype == 'Malaysian') {
             $validateCitizenship['nric_type'] = 'required';
-            $validateCitizenship['nric_no'] = 'required';
+            // $validateCitizenship['nric_no'] = 'required';
             $patientregistration['nric_type'] =  $request->nric_type;
             $patientregistration['nric_no'] =  $request->nric_no;
             if (!$this->checkIFPatientExists('nric_no', $request->nric_no, $request->id)) {
                 return response()->json(["message" => "Patient NRIC NO already exists", "code" => 422]);
             }
         } else if ($request->citizentype == 'Permanent Resident') {
-            $validateCitizenship['nric_no'] = 'required';
+            // $validateCitizenship['nric_no'] = 'required';
             $patientregistration['nric_no'] =  $request->nric_no;
             if (!$this->checkIFPatientExists('nric_no', $request->nric_no, $request->id)) {
                 return response()->json(["message" => "Patient NRIC NO already exists", "code" => 422]);
