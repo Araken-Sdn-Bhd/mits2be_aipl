@@ -130,14 +130,18 @@ class PatientRegistrationController extends Controller
         $validateCitizenship = [];
 
         if ($request->citizentype == 'Malaysian') {
+           
             $validateCitizenship['nric_type'] = 'required';
             $validateCitizenship['nric_no'] = 'required|unique:patient_registration';
             $patientregistration['nric_type'] =  $request->nric_type;
             $patientregistration['nric_no'] =  $request->nric_no;
         } else if ($request->citizentype == 'Permanent Resident') {
-            $validateCitizenship['nric_no'] = 'required|unique:patient_registration';
-            $patientregistration['nric_no'] =  $request->nric_no;
+            
+            //$validateCitizenship['nric_no'] = 'required|unique:patient_registration';
+            $patientregistration['nric_no'] =  $request->nric_no1;
+
         } else if ($request->citizentype == 'Foreigner') {
+            
             $validateCitizenship['passport_no'] = 'required|string|unique:patient_registration';
             $validateCitizenship['expiry_date'] = 'required';
             $validateCitizenship['country_id'] = 'required|integer';
@@ -160,7 +164,7 @@ class PatientRegistrationController extends Controller
         }
 
         try {
-            // dd($patientregistration);
+            
             $Patient = PatientRegistration::firstOrCreate($patientregistration);
             $MRN = $this->generateMRNString(10, $Patient['id']);
             PatientRegistration::where('id', $Patient['id'])->update(['patient_mrn' => $MRN]);
@@ -555,8 +559,8 @@ class PatientRegistrationController extends Controller
             }
         } else if ($request->citizentype == 'Permanent Resident') {
             // $validateCitizenship['nric_no'] = 'required';
-            $patientregistration['nric_no'] =  $request->nric_no;
-            if (!$this->checkIFPatientExists('nric_no', $request->nric_no, $request->id)) {
+            $patientregistration['nric_no'] =  $request->nric_no1;
+            if (!$this->checkIFPatientExists('nric_no', $request->nric_no1, $request->id)) {
                 return response()->json(["message" => "Patient NRIC NO already exists", "code" => 422]);
             }
         } else if ($request->citizentype == 'Foreigner') {
@@ -661,17 +665,6 @@ class PatientRegistrationController extends Controller
             'house_no' => '',
             'branch_id' =>'',
 
-            // 'services_type' => 'required',
-            // 'referral_type' => 'required',
-            // 'referral_letter' => 'max:10240',
-            // 'address1' => 'required',
-            // 'kin_name_asin_nric' => '',
-            // 'kin_relationship_id' => '',
-            // 'kin_mobile_no' => '',
-            // 'kin_address1' => '',
-            // 'drug_allergy' => 'required',
-            // 'traditional_medication' => 'required',
-            // 'other_allergy' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
