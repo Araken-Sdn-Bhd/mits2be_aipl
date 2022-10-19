@@ -218,8 +218,8 @@ class PatientRegistrationController extends Controller
                 $result[$key]['salutation'] = 'NA';
             }
 
-            if ($val['gender'] != null) {
-                $result[$key]['gender'] = $val['gender'][0]['section_value'] ?? 'NA';
+            if ($val['sex'] != null) {
+                $result[$key]['gender'] = $val['sex'][0]['section_value'] ?? 'NA';
             } else {
                 $result[$key]['gender'] = 'NA';
             }
@@ -273,8 +273,8 @@ class PatientRegistrationController extends Controller
                 $result[$key]['salutation'] = 'NA';
             }
 
-            if ($val['gender'] != null) {
-                $result[$key]['gender'] = $val['gender'][0]['section_value'] ?? 'NA';
+            if ($val['sex'] != null) {
+                $result[$key]['gender'] = $val['sex'][0]['section_value'] ?? 'NA';
             } else {
                 $result[$key]['gender'] = 'NA';
             }
