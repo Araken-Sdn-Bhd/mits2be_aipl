@@ -15,11 +15,8 @@ class AppointmentRequestController extends Controller
             'branch_id' => 'required|integer',
             'name' => 'required|string', 
             'contact_no' => 'required|string',
-            'address' => '',
             'email' => 'required|string',
             'patient_mrn_id' => '',
-            'nric_or_passportno' => '',
-            'address1' => '', 
             'ip_address' => '',
         ]);
         if ($validator->fails()) {
