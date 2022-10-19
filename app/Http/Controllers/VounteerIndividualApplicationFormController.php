@@ -394,7 +394,6 @@ class VounteerIndividualApplicationFormController extends Controller
     public function addGroup($request)
     {
         $validation = [
-            'added_by' => 'required|integer',
             'is_represent_org' => 'required|string',
             'members_count' => 'required|string',
             'member_background' => 'required|string',
