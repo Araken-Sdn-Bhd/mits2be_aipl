@@ -255,6 +255,7 @@ class PatientRegistrationController extends Controller
 
     public function getPatientRegistrationByIdShortDetails(Request $request)
     {
+        DB::enableQueryLog();
         $list = PatientRegistration::where('id', '=', $request->id)->with('salutation:section_value,id')
             ->with('gender:section_value,id')->with('maritialstatus:section_value,id')
             ->with('citizenships:section_value,id')->get();
@@ -272,7 +273,6 @@ class PatientRegistrationController extends Controller
             } else {
                 $result[$key]['salutation'] = 'NA';
             }
-
             if ($val['gender'] != null) {
                 $result[$key]['gender'] = $val['gender'][0]['section_value'] ?? 'NA';
             } else {
@@ -547,14 +547,14 @@ class PatientRegistrationController extends Controller
 
         if ($request->citizentype == 'Malaysian') {
             $validateCitizenship['nric_type'] = 'required';
-            $validateCitizenship['nric_no'] = 'required';
+            // $validateCitizenship['nric_no'] = 'required';
             $patientregistration['nric_type'] =  $request->nric_type;
             $patientregistration['nric_no'] =  $request->nric_no;
             if (!$this->checkIFPatientExists('nric_no', $request->nric_no, $request->id)) {
                 return response()->json(["message" => "Patient NRIC NO already exists", "code" => 422]);
             }
         } else if ($request->citizentype == 'Permanent Resident') {
-            $validateCitizenship['nric_no'] = 'required';
+            // $validateCitizenship['nric_no'] = 'required';
             $patientregistration['nric_no'] =  $request->nric_no;
             if (!$this->checkIFPatientExists('nric_no', $request->nric_no, $request->id)) {
                 return response()->json(["message" => "Patient NRIC NO already exists", "code" => 422]);

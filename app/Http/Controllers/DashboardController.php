@@ -149,10 +149,12 @@ class DashboardController extends Controller
 
         //////////Announcement Management///////////
         ///////////kena tambah condition untuk status and designation/////////////////
-        
+        $date= date('Y-m-d');
         $list= Announcement::select("id","title", "start_date")
         ->Where("branch_id",'=',$request->branch)
         ->Where("status", '=', "2")
+        ->Where("start_date", '<=', $date )
+        ->Where("end_date", '>=', $date)
         ->OrderBy("start_date", 'DESC')
         ->get();
 
@@ -692,13 +694,15 @@ class DashboardController extends Controller
         $request_appointment = $query->count();
         //////////Announcement Management///////////
         ///////////kena tambah condition untuk status and designation/////////////////
+        $date = date('Y-m-d');
         
-        $list= Announcement::select("id","title", "start_date")
+        $list= Announcement::select("id","title", "start_date", "end_date")
         ->Where("branch_id",'=',$request->branch)
         ->Where("status", '=', "2")
+        ->Where("start_date", '<=', $date )
+        ->Where("end_date", '>=', $date)
         ->OrderBy("start_date", 'DESC')
         ->get();
-     
 
                
         return response()->json(["message" => "Admin & Specialist inCharge", 'today_appointment' => $today_appointment,
