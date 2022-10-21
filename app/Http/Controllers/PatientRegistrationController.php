@@ -208,9 +208,13 @@ class PatientRegistrationController extends Controller
             ->with('salutation:section_value,id')->with('typeic:code,id')
             ->with('gender:section_value,id')->with('maritialstatus:section_value,id')
             ->with('city:city_name,id')->with('kincity:city_name,id')
+            ->with('race:section_value,id')->with('religion:section_value,id')
+            ->with('occupation:section_value,id')
+            ->with('fee:section_value,id')
+            ->with('accomondation:section_value,id')
+            ->with('citizenships:section_value,id')
             
-            
-            ->with('citizenships:section_value,id')->get();
+            ->get();
             $result = [];
         foreach ($list as $key => $val) {
             // dd($list);

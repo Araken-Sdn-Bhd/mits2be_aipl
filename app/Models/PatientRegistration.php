@@ -65,4 +65,25 @@ class PatientRegistration extends Model
     {
         return $this->hasMany(GeneralSetting::class, "id", "nric_type");
     }
+    public function race()
+    {
+        return $this->hasMany(GeneralSetting::class, "id", "race_id");
+    }
+    public function religion()
+    {
+        return $this->hasMany(GeneralSetting::class, "id", "religion_id");
+    }
+    public function occupation()
+    {
+        return $this->hasMany(GeneralSetting::class, "id", "occupation_status");
+    }
+    public function fee()
+    {
+        return $this->hasMany(GeneralSetting::class, "id", "fee_exemption_status");
+    }
+    public function accomondation()
+    {
+        return $this->hasMany(GeneralSetting::class, "id", "accomodation_id");
+    }
+    
 }
