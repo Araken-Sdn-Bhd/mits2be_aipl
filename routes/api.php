@@ -466,6 +466,7 @@ Route::group(['prefix' => 'internal-referral'], function () {
 Route::group(['prefix' => 'von'], function () {
     Route::post('/add', [VounteerIndividualApplicationFormController::class, 'addVon']);
     Route::get('/list', [VounteerIndividualApplicationFormController::class, 'getList']);
+    Route::get('/listByBranchId', [VounteerIndividualApplicationFormController::class, 'getListByBranchId']);
     Route::post('/get-record', [VounteerIndividualApplicationFormController::class, 'getRecord']);
     Route::post('/update-record', [VounteerIndividualApplicationFormController::class, 'updateRecord']);
     Route::post('/set-status', [VounteerIndividualApplicationFormController::class, 'setStatus']);
