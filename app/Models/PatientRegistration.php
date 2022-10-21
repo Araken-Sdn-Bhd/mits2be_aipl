@@ -8,6 +8,7 @@ use App\Models\PatientAppointmentDetails;
 use App\Models\GeneralSetting;
 use App\Models\ServiceRegister;
 use App\Models\Citizenship;
+use App\Models\Postcode;
 use App\Models\SharpRegistrationFinalStep;
 
 class PatientRegistration extends Model
@@ -51,5 +52,17 @@ class PatientRegistration extends Model
     public function sharpharm()
     {
         return $this->hasMany(SharpRegistrationFinalStep::class, "id", "patient_id");
+    }
+    public function city()
+    {
+        return $this->hasMany(Postcode::class, "id","city_id");
+    }
+    public function kincity()
+    {
+        return $this->hasMany(Postcode::class, "id","kin_city_id");
+    }
+    public function typeic()
+    {
+        return $this->hasMany(GeneralSetting::class, "id", "nric_type");
     }
 }
