@@ -273,6 +273,22 @@ class HospitalManagementController extends Controller
         $list = HospitalBranchTeamManagement::select('id', 'hospital_branch_name', 'team_name', 'hospital_code')->where('status','=', '1')->get();
         return response()->json(["message" => "Hospital Branch Team List", 'list' => $list, "code" => 200]);
     }
+
+    public function getAssignedTeamList(Request $request)
+    {
+        $list = DB::table('service_division as d')
+            ->join('service_register as r', function ($join)
+            {
+                $join->on('r.id', '=', 'd.service_id');
+            })
+            ->select('r.id', 'r.service_name')
+            ->where('d.branch_id', '=', $request->branch)
+            ->where('d.status','=', '1')
+            ->get();
+        
+        return response()->json(["message" => "Assigned Team List", 'list' => $list, "code" => 200]);
+    }
+    
     public function getHospitalBranchTeamListPatient(Request $request)
     {
         $added_by =  PatientRegistration::select('added_by')->where('id', '=', $request->patient_id)
