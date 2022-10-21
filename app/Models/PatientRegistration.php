@@ -8,6 +8,7 @@ use App\Models\PatientAppointmentDetails;
 use App\Models\GeneralSetting;
 use App\Models\ServiceRegister;
 use App\Models\Citizenship;
+use App\Models\Postcode;
 use App\Models\SharpRegistrationFinalStep;
 
 class PatientRegistration extends Model
@@ -52,4 +53,37 @@ class PatientRegistration extends Model
     {
         return $this->hasMany(SharpRegistrationFinalStep::class, "id", "patient_id");
     }
+    public function city()
+    {
+        return $this->hasMany(Postcode::class, "id","city_id");
+    }
+    public function kincity()
+    {
+        return $this->hasMany(Postcode::class, "id","kin_city_id");
+    }
+    public function typeic()
+    {
+        return $this->hasMany(GeneralSetting::class, "id", "nric_type");
+    }
+    public function race()
+    {
+        return $this->hasMany(GeneralSetting::class, "id", "race_id");
+    }
+    public function religion()
+    {
+        return $this->hasMany(GeneralSetting::class, "id", "religion_id");
+    }
+    public function occupation()
+    {
+        return $this->hasMany(GeneralSetting::class, "id", "occupation_status");
+    }
+    public function fee()
+    {
+        return $this->hasMany(GeneralSetting::class, "id", "fee_exemption_status");
+    }
+    public function accomondation()
+    {
+        return $this->hasMany(GeneralSetting::class, "id", "accomodation_id");
+    }
+    
 }
