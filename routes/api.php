@@ -156,6 +156,8 @@ Route::group(['prefix' => 'hospital'], function () {
     Route::get('/list/{hospital_id}', [HospitalManagementController::class, 'getHospitalListById']);
     Route::get('/branch-list', [HospitalManagementController::class, 'getHospitalBranchList']);
     Route::get('/branch-team-list', [HospitalManagementController::class, 'getHospitalBranchTeamList']);
+    Route::get('/branch-team-serv-div-list', [HospitalManagementController::class, 'getHospitalBranchTeamByServiceDivisionList']);
+    Route::get('/team-list', [HospitalManagementController::class, 'getTeamList']);
     Route::get('/assigned-team', [HospitalManagementController::class, 'getAssignedTeamList']);
     Route::post('/branch-list-by-hospital', [HospitalManagementController::class, 'getHospitalBranchListByHospital']);
     Route::post('/hospital-branch-team-list', [HospitalManagementController::class, 'getHospitalBranchTeamListByBranch']);
@@ -163,6 +165,7 @@ Route::group(['prefix' => 'hospital'], function () {
     Route::post('/updateHospitalBranch', [HospitalManagementController::class, 'updateHospitalBranch']);
     Route::post('/removeBranch', [HospitalManagementController::class, 'removeBranch']);
     Route::get('/get_team_by_id/{team_id}', [HospitalManagementController::class, 'get_team_by_id']);
+    Route::get('/get_hospitalBranchTeam_by_id/{service_id}', [HospitalManagementController::class, 'get_hospitalBranchTeam_by_id']);
     Route::post('/updateHospitalBranchTeam', [HospitalManagementController::class, 'updateHospitalBranchTeam']);
     Route::post('/removeBranchTeam', [HospitalManagementController::class, 'removeBranchTeam']);
     Route::get('/getServiceByBranchId', [HospitalManagementController::class, 'getHospitalBranchTeamListPatient']);
@@ -408,6 +411,7 @@ Route::group(['prefix' => 'patient-appointment-details'], function () {
     Route::post('/search', [PatientAppointmentDetailsController::class, 'searchPatientListByBranchIdOrServiceIdOrByName']);
     Route::post('/searchbybranch', [PatientAppointmentDetailsController::class, 'searchPatientListByBranchIdOrByName']);
     Route::post('/updateappointmentstatus', [PatientAppointmentDetailsController::class, 'updateappointmentstatus']);
+    Route::post('/cancelappointmentstatus', [PatientAppointmentDetailsController::class, 'cancelappointmentstatus']);
     Route::post('/getPatientAppointmentDetailsOfPatient', [PatientAppointmentDetailsController::class, 'getPatientAppointmentDetailsOfPatient']);
     Route::post('/get-next-prev', [PatientAppointmentDetailsController::class, 'getNextPrev']);
     Route::post('/updateTeam', [PatientAppointmentDetailsController::class, 'updateTeamDoctor']);
