@@ -723,6 +723,52 @@ class JobOfferController extends Controller
 
     }
 
+    public function postCpsHomevisitForm(Request $request)
+    {
+        $patient_id = $request->patient_id;
+        $patient = PatientRegistration::select('name_asin_nric', 'nric_no', 'passport_no','kin_name_asin_nric','kin_nric_no')->where('id', $patient_id)->get();
+        $hospital = HospitalManagement::select('hospital_name','hospital_adrress_1','hospital_adrress_2','hospital_adrress_3','hospital_state','hospital_city','hospital_postcode','state.state_name as state_name','postcode.city_name as city_name','postcode.postcode as postcode')
+        ->leftJoin('state', 'state.id', '=', 'hospital_management.hospital_state')
+        ->leftJoin('postcode', 'postcode.id', '=', 'hospital_management.hospital_postcode')
+        ->where('hospital_management.id', $request->hospital_id)
+        ->get();
+        $user = User::select('name', 'role')->where('id', $request->added_by)->get();
+        if(!empty($hospital[0])){
+            $response = [
+                'patient_name' => $patient[0]['name_asin_nric'],
+                'nric_no' => ($patient[0]['nric_no']) ? $patient[0]['nric_no'] : $patient[0]['passport_no'],
+                'date' => date('d/m/Y'),
+                'user_name1' => $user[0]['name'],
+                'user_name' => $patient[0]['kin_name_asin_nric'] ?? 'NA',
+                'guardian_nric' =>  $patient[0]['kin_nric_no'] ?? 'NA',
+                'designation' => $user[0]['name'],
+                'hospital_name' => $hospital[0]['hospital_name'],
+                'hospital_adrress_1' => $hospital[0]['hospital_adrress_1'],
+                'hospital_adrress_2' => $hospital[0]['hospital_adrress_2'],
+                'hospital_adrress_3' => $hospital[0]['hospital_adrress_3'],
+                'hospital_adrress_3' => $hospital[0]['hospital_adrress_3'],
+                'city_name' => $hospital[0]['city_name'],
+                'postcode' => $hospital[0]['postcode'],
+                'state_name' => $hospital[0]['state_name'],
+            ];
+            return response()->json(["message" => "CPS HomeVisit Consent Form", "list" => $response,  "code" => 200]);
+        }
+        else{
+            $response = [
+                'patient_name' => $patient[0]['name_asin_nric'],
+                'nric_no' => ($patient[0]['nric_no']) ? $patient[0]['nric_no'] : $patient[0]['passport_no'],
+                'date' => date('d/m/Y'),
+                'user_name1' => $user[0]['name'],
+                'designation' => $user[0]['name'],
+                'hospital_name' => "HOSPITAL [NA]",
+                'user_name' => $patient[0]['kin_name_asin_nric']  ?? 'NA',
+                'guardian_nric' =>  $patient[0]['kin_nric_no'] ?? 'NA',
+            ];
+            return response()->json(["message" => "CPS HomeVisit Consent Form", "list" => $response,  "code" => 200]);
+        }
+
+    }
+
     public function getJobClubForm(Request $request)
     {
         $patient_id = $request->patient_id;

@@ -592,6 +592,32 @@ class PatientAppointmentDetailsController extends Controller
             ['id' => $request->appointment_id]
         )->update([
             'appointment_status' =>  $request->appointment_status,
+        ]);
+    }else{
+        PatientAppointmentDetails::where(
+            ['id' => $request->appointment_id]
+        )->update([
+            'appointment_status' =>  $request->appointment_status,
+        ]);
+    }
+
+        return response()->json(["message" => "Appointment Status Updated Successfully!", "code" => 200]);
+    }
+
+    public function cancelappointmentstatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'appointment_id' => 'required|integer',
+            'appointment_status' => 'required|integer'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+        if($request->appointment_status == 2 || $request->appointment_status == '2'){
+        PatientAppointmentDetails::where(
+            ['id' => $request->appointment_id]
+        )->update([
+            'appointment_status' =>  $request->appointment_status,
             'status' =>  '0',
         ]);
     }else{
@@ -667,7 +693,7 @@ class PatientAppointmentDetailsController extends Controller
             $status = '4';
         } else if ($request->service == "Rehabilitation-Job Club"){
             $status = '4';
-        } else if ($request->service == "Community Psychiatric Service(CPS)"){
+        } else if ($request->service == "Community Psychiatric Service (CPS)"){
             $status = '4';
         }
 
