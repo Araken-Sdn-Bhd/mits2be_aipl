@@ -693,7 +693,7 @@ class PatientAppointmentDetailsController extends Controller
             $status = '4';
         } else if ($request->service == "Rehabilitation-Job Club"){
             $status = '4';
-        } else if ($request->service == "Community Psychiatric Service(CPS)"){
+        } else if ($request->service == "Community Psychiatric Service (CPS)"){
             $status = '4';
         }
 
