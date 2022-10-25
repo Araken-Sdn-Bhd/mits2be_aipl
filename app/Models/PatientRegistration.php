@@ -23,6 +23,8 @@ class PatientRegistration extends Model
         'drug_allergy_description', 'traditional_medication', 'kin_postcode', 'traditional_description',
         'other_allergy', 'other_description', 'status','patient_need_triage_screening','kin_nric_no','sharp','other_race',
         'other_religion','other_accommodation','other_maritalList','other_feeExemptionStatus','other_occupationStatus',
+        'employment_status','household_income',
+
     ];
 
     public function appointments()

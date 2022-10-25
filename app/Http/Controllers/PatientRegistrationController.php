@@ -64,7 +64,7 @@ class PatientRegistrationController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-
+        
         $patientregistration = [
             'added_by' =>  $request->added_by,
             'branch_id' =>$request->branch_id,
@@ -495,7 +495,7 @@ class PatientRegistrationController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-
+       
         $patientregistration = [
             'added_by' =>  $request->added_by,
             'branch_id' =>$request->branch_id,
@@ -556,7 +556,7 @@ class PatientRegistrationController extends Controller
         ];
 
         $validateCitizenship = [];
-
+         
         if ($request->citizentype == 'Malaysian') {
             $validateCitizenship['nric_type'] = 'required';
             // $validateCitizenship['nric_no'] = 'required';
