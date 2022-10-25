@@ -155,7 +155,20 @@ class IcdSettingManagementController extends Controller
             ->get();
 
 
-        return response()->json(["message" => "Icd-10 Code List", 'list' => $users, "code" => 200]);
+            $checkicdtype10id_external = IcdType::select('id')
+            ->where('icd_type_code', "ICD-10")
+            ->pluck('id');
+            // dd($checkicdtype10id);
+            $users_external = DB::table('icd_code')
+            ->select('icd_code.icd_code as icd_code','icd_code.id','icd_code.icd_name')
+            ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
+            ->where('icd_code.icd_status', '=', '1')
+            ->where('icd_code.icd_type_id', '=', $checkicdtype10id_external[0])
+            ->where('icd_code.icd_category_id', '=', '14')
+            ->get();
+
+
+        return response()->json(["message" => "Icd-10 Code List", 'list' => $users, 'list_external' => $users_external, "code" => 200]);
     }
 
     public function getIcd10codeById(Request $request)
