@@ -585,6 +585,7 @@ Route::group(['prefix' => 'intervention'], function () {
     Route::get('/screening-types', [JobOfferController::class, 'screeningTypes']);
     //abdus//
     Route::post('/get-homevisit-consent-form', [JobOfferController::class, 'getCpsHomevisitForm']);
+    Route::post('/post-homevisit-consent-form', [JobOfferController::class, 'postCpsHomevisitForm']);
     Route::post('/homevisit-form', [JobOfferController::class, 'setCpsHomevisitConsentForm']);
     Route::post('/get-photography-consent-form', [JobOfferController::class, 'getPhotographyForm']);
     Route::post('/photography-form', [JobOfferController::class, 'setPhotographyConsentForm']);
