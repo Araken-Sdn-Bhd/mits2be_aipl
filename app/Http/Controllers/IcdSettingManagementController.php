@@ -150,7 +150,6 @@ class IcdSettingManagementController extends Controller
             $users = DB::table('icd_code')
             ->select('icd_code.icd_code as icd_code','icd_code.id','icd_code.icd_name')
             ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
-            ->where('icd_code.icd_status', '=', '1')
             ->where('icd_code.icd_type_id', '=', $checkicdtype10id[0])
             ->get();
 
