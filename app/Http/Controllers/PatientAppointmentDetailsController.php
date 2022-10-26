@@ -723,7 +723,7 @@ class PatientAppointmentDetailsController extends Controller
             ELSE DATE_FORMAT(psychiatry_clerking_note.created_at, '%h:%i PM')
        END) as time"), DB::raw("DATE_FORMAT(psychiatry_clerking_note.created_at, '%d-%m-%Y') as date"), 'psychiatry_clerking_note.status', 'psychiatry_clerking_note.id', 'users.name', DB::raw("'PsychiatryClerkingNote' as type"), DB::raw("'Psychiatry Clerking Note' as section_name"), "psychiatry_clerking_note.created_at")
             ->where('psychiatry_clerking_note.patient_mrn_id', $request->patient_id)
-            ->orderBy('psychiatry_clerking_note.created_at', 'asc')
+            ->orderBy(DB::raw("str_to_date(psychiatry_clerking_note.created_at,'%d-%m-%Y')"), 'desc')
             ->get();
 
         $Counsellor_Clerking_Note = DB::table('patient_counsellor_clerking_notes')
@@ -1593,6 +1593,7 @@ class PatientAppointmentDetailsController extends Controller
         // $list["Psychiatry_Clerking_Note"]=$Psychiatry_Clerking_Note;
         // $list["Counsellor_Clerking_Note"]=$Counsellor_Clerking_Note;
 
+        $list = collect($list)->sortByDesc('created_at')->values();
 
         return response()->json(["message" => "List", 'Data' => $list, "code" => 200]);
     }
