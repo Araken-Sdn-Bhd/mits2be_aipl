@@ -278,7 +278,7 @@ class StaffManagementController extends Controller
     public function getStaffManagementListByBranchId(Request $request)
     {
         $users = DB::table('staff_management')
-            ->select('staff_management.id', 'staff_management.name', )
+            ->select('staff_management.id', 'staff_management.name', 'contact_no', 'email' )
             ->Where('staff_management.branch_id', '=', $request->branch_id)
             ->Where('staff_management.status', '=', '1')
             ->get();

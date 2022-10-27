@@ -64,7 +64,7 @@ class PatientRegistrationController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        
+
         $patientregistration = [
             'added_by' =>  $request->added_by,
             'branch_id' =>$request->branch_id,
@@ -130,18 +130,18 @@ class PatientRegistrationController extends Controller
         $validateCitizenship = [];
 
         if ($request->citizentype == 'Malaysian') {
-           
+
             $validateCitizenship['nric_type'] = 'required';
             $validateCitizenship['nric_no'] = 'required|unique:patient_registration';
             $patientregistration['nric_type'] =  $request->nric_type;
             $patientregistration['nric_no'] =  $request->nric_no;
         } else if ($request->citizentype == 'Permanent Resident') {
-            
+
             //$validateCitizenship['nric_no'] = 'required|unique:patient_registration';
             $patientregistration['nric_no'] =  $request->nric_no1;
 
         } else if ($request->citizentype == 'Foreigner') {
-            
+
             $validateCitizenship['passport_no'] = 'required|string|unique:patient_registration';
             $validateCitizenship['expiry_date'] = 'required';
             $validateCitizenship['country_id'] = 'required|integer';
@@ -164,7 +164,7 @@ class PatientRegistrationController extends Controller
         }
 
         try {
-            
+
             $Patient = PatientRegistration::firstOrCreate($patientregistration);
             $MRN = $this->generateMRNString(10, $Patient['id']);
             PatientRegistration::where('id', $Patient['id'])->update(['patient_mrn' => $MRN]);
@@ -213,7 +213,7 @@ class PatientRegistrationController extends Controller
             ->with('fee:section_value,id')
             ->with('accomondation:section_value,id')
             ->with('citizenships:section_value,id')
-            
+
             ->get();
             $result = [];
         foreach ($list as $key => $val) {
@@ -427,9 +427,27 @@ class PatientRegistrationController extends Controller
             $result[$key]['id'] = $val['id'];
             $result[$key]['age'] = date_diff(date_create($val['birth_date']), date_create('today'))->y ?? 'NA';
             $result[$key]['nric_no'] = $val['nric_no'] ?? 'NA';
-            $result[$key]['passport_no'] = $val['passport_no'] ?? 'NA';
-            // dd( $val['salutation'][0]['section_value']);
-            $result[$key]['salutation'] = $val['salutation'][0]['section_value'] ?? 'NA';
+            if ($val['nric_no'] != null){
+                $result[$key]['nric_id'] = $val['nric_no'];
+            }
+            if ($val['passport_no'] != null){
+                $result[$key]['nric_id'] = $val['passport_no'];
+            }
+
+            if ($val['nric_no'] == null && $val['passport_no'] == null ){
+                $result[$key]['nric_id'] = 'NA';
+            }
+            if ($val['salutation'] != null) {
+                $result[$key]['salutation'] = $val['salutation'][0]['section_value'];
+            } else {
+                $result[$key]['salutation'] = 'NA';
+            }
+            if ($val['service'] != null) {
+                // dd($val['service']['id']);
+                $result[$key]['service'] = $val['service']['service_name'];
+            } else {
+                $result[$key]['service'] = 'NA';
+            }
 
             if ($val['service'] != null) {
                 $result[$key]['service'] = $val['service']['service_name'];
@@ -495,7 +513,7 @@ class PatientRegistrationController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-       
+
         $patientregistration = [
             'added_by' =>  $request->added_by,
             'branch_id' =>$request->branch_id,
@@ -556,7 +574,7 @@ class PatientRegistrationController extends Controller
         ];
 
         $validateCitizenship = [];
-         
+
         if ($request->citizentype == 'Malaysian') {
             $validateCitizenship['nric_type'] = 'required';
             // $validateCitizenship['nric_no'] = 'required';

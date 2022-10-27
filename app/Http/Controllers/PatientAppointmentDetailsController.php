@@ -212,7 +212,7 @@ class PatientAppointmentDetailsController extends Controller
 
     public function getPatientAppointmentDetailsList()
     {
-        $resultSet = PatientAppointmentDetails::select('id', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team','staff_id', 'appointment_status')
+        $resultSet = PatientAppointmentDetails::select('id', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'staff_id', 'appointment_status')
             ->with('service:service_name,id')
             ->where('status', '1')
             ->get()
@@ -257,18 +257,17 @@ class PatientAppointmentDetailsController extends Controller
                     // $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get()->pluck('team_name');
                     // //  print_r($teamName);
                     // $resultChunk['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
-                    if($val['staff_id']){
+                    if ($val['staff_id']) {
                         // dd('if');
                         $staffName = StaffManagement::where('id', $staff_id)->get()->pluck('name');
                         //  print_r($staffName);
                         $resultChunk['team_name'] = (count($staffName) > 0) ? $staffName[0] : 'NA';
-                    }
-                    else{
+                    } else {
                         $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get()->pluck('team_name');
                         //  print_r($teamName);
                         $resultChunk['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
                     }
-                    $resultChunk['team_id'] = $team_id ? : 'NA';
+                    $resultChunk['team_id'] = $team_id ?: 'NA';
                     $result[] = $resultChunk;
                 }
             }
@@ -280,7 +279,7 @@ class PatientAppointmentDetailsController extends Controller
     public function getPatientAppointmentDetailsTodayList()
     {
         DB::enableQueryLog();
-        $resultSet = PatientAppointmentDetails::select('id','added_by', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team','staff_id', 'appointment_status')
+        $resultSet = PatientAppointmentDetails::select('id', 'added_by', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'staff_id', 'appointment_status')
             ->with('service:service_name,id')
             ->where('status', '1')
             ->where('booking_date', date('Y-m-d'))
@@ -291,7 +290,7 @@ class PatientAppointmentDetailsController extends Controller
         if (count($resultSet) > 0) {
             foreach ($resultSet as $key => $val) {
                 $patient = [];
-                $patient =  PatientRegistration::select('id','added_by', 'patient_mrn', 'name_asin_nric', 'passport_no', 'nric_no', 'salutation_id')
+                $patient =  PatientRegistration::select('id', 'added_by', 'patient_mrn', 'name_asin_nric', 'passport_no', 'nric_no', 'salutation_id')
                     ->where('id', $val['patient_mrn_id'])
                     ->with('salutation:section_value,id')
                     ->get()
@@ -323,18 +322,17 @@ class PatientAppointmentDetailsController extends Controller
                     $staff_id = $val['staff_id'] ?: 'NA';
                     // dd($val['staff_id']);
                     $team_id = $val['assign_team'] ?: 'NA';
-                    if($val['staff_id']){
+                    if ($val['staff_id']) {
                         // dd('if');
                         $staffName = StaffManagement::where('id', $staff_id)->get()->pluck('name');
                         //  print_r($staffName);
                         $resultChunk['team_name'] = (count($staffName) > 0) ? $staffName[0] : 'NA';
-                    }
-                    else{
+                    } else {
                         $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get()->pluck('team_name');
                         //  print_r($teamName);
                         $resultChunk['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
                     }
-                    $resultChunk['team_id'] = $team_id ? : 'NA';
+                    $resultChunk['team_id'] = $team_id ?: 'NA';
 
                     $result[] = $resultChunk;
                 }
@@ -388,18 +386,18 @@ class PatientAppointmentDetailsController extends Controller
             $resultSet = PatientAppointmentDetails::select('id', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'appointment_status')
                 ->with('service:service_name,id')
                 ->where('status', '1')
-                ->orWhere('status','2')
+                ->orWhere('status', '2')
                 ->get()->toArray();
         }
 
         $resultSet = [];
-        $sql = PatientAppointmentDetails::select('id', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'appointment_status','staff_id')
+        $sql = PatientAppointmentDetails::select('id', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'appointment_status', 'staff_id')
             ->with('service:service_name,id')
             ->where('status', '1');
         if ($request->service_id != '0') {
             $sql = $sql->where('appointment_type', '=', $request->service_id);
         }
-        if ($request->date != "" ) {
+        if ($request->date != "") {
             $sql = $sql->where('booking_date', '=', $request->date);
         }
         if ($request->keyword != 'no-keyword') {
@@ -439,10 +437,10 @@ class PatientAppointmentDetailsController extends Controller
                 $result[$key]['appointment_time'] = date('H:i', strtotime($val['booking_time'])) ??  'NA';
                 $result[$key]['appointment_status'] = $val['appointment_status'] ??  'NA';
                 // dd($val['staff_id']);
-                if ($val['staff_id'] != null ){
+                if ($val['staff_id'] != null) {
                     // dd($val['staff_id']);
                     $name = StaffManagement::select('id', 'name')
-                    ->where('id','=', $val['staff_id'])->first();
+                        ->where('id', '=', $val['staff_id'])->first();
                     // dd($name);
                     $result[$key]['team_name'] = $name->name;
                 } else {
@@ -587,19 +585,19 @@ class PatientAppointmentDetailsController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        if($request->appointment_status == 2 || $request->appointment_status == '2'){
-        PatientAppointmentDetails::where(
-            ['id' => $request->appointment_id]
-        )->update([
-            'appointment_status' =>  $request->appointment_status,
-        ]);
-    }else{
-        PatientAppointmentDetails::where(
-            ['id' => $request->appointment_id]
-        )->update([
-            'appointment_status' =>  $request->appointment_status,
-        ]);
-    }
+        if ($request->appointment_status == 2 || $request->appointment_status == '2') {
+            PatientAppointmentDetails::where(
+                ['id' => $request->appointment_id]
+            )->update([
+                'appointment_status' =>  $request->appointment_status,
+            ]);
+        } else {
+            PatientAppointmentDetails::where(
+                ['id' => $request->appointment_id]
+            )->update([
+                'appointment_status' =>  $request->appointment_status,
+            ]);
+        }
 
         return response()->json(["message" => "Appointment Status Updated Successfully!", "code" => 200]);
     }
@@ -613,20 +611,20 @@ class PatientAppointmentDetailsController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        if($request->appointment_status == 2 || $request->appointment_status == '2'){
-        PatientAppointmentDetails::where(
-            ['id' => $request->appointment_id]
-        )->update([
-            'appointment_status' =>  $request->appointment_status,
-            'status' =>  '0',
-        ]);
-    }else{
-        PatientAppointmentDetails::where(
-            ['id' => $request->appointment_id]
-        )->update([
-            'appointment_status' =>  $request->appointment_status,
-        ]);
-    }
+        if ($request->appointment_status == 2 || $request->appointment_status == '2') {
+            PatientAppointmentDetails::where(
+                ['id' => $request->appointment_id]
+            )->update([
+                'appointment_status' =>  $request->appointment_status,
+                'status' =>  '0',
+            ]);
+        } else {
+            PatientAppointmentDetails::where(
+                ['id' => $request->appointment_id]
+            )->update([
+                'appointment_status' =>  $request->appointment_status,
+            ]);
+        }
 
         return response()->json(["message" => "Appointment Status Updated Successfully!", "code" => 200]);
     }
@@ -683,17 +681,17 @@ class PatientAppointmentDetailsController extends Controller
         $patientAppointmentDetails = PatientAppointmentDetails::where(
             ['id' => $request->appointment_id]
         );
-        if ($request->service == "Consultation"){
+        if ($request->service == "Consultation") {
             $status  = '1';
-        } else if ($request->service == "Rehabilitation"){
+        } else if ($request->service == "Rehabilitation") {
             $status = '4';
-        } else if ($request->service == "Rehabilitation-SE"){
+        } else if ($request->service == "Rehabilitation-SE") {
             $status = '4';
-        } else if ($request->service == "Rehabilitation-ETP"){
+        } else if ($request->service == "Rehabilitation-ETP") {
             $status = '4';
-        } else if ($request->service == "Rehabilitation-Job Club"){
+        } else if ($request->service == "Rehabilitation-Job Club") {
             $status = '4';
-        } else if ($request->service == "Community Psychiatric Service (CPS)"){
+        } else if ($request->service == "Community Psychiatric Service (CPS)") {
             $status = '4';
         }
 
@@ -721,11 +719,10 @@ class PatientAppointmentDetailsController extends Controller
             ->join('users', 'psychiatry_clerking_note.added_by', '=', 'users.id')
             ->select(DB::raw("(CASE WHEN TIME(psychiatry_clerking_note.created_at) BETWEEN '00:00:00' AND '11:59:59' THEN DATE_FORMAT(psychiatry_clerking_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(psychiatry_clerking_note.created_at, '%h:%i PM')
-       END) as time"), DB::raw("DATE_FORMAT(psychiatry_clerking_note.created_at, '%d-%m-%Y') as date"), 'psychiatry_clerking_note.status', 'psychiatry_clerking_note.id', 'users.name', DB::raw("'PsychiatryClerkingNote' as type"), DB::raw("'Psychiatry Clerking Note' as section_name"), "psychiatry_clerking_note.created_at")
+            END) as time"), DB::raw("DATE_FORMAT(psychiatry_clerking_note.created_at, '%d-%m-%Y') as date"), 'psychiatry_clerking_note.status', 'psychiatry_clerking_note.id', 'users.name', DB::raw("'PsychiatryClerkingNote' as type"), DB::raw("'Psychiatry Clerking Note' as section_name"), "psychiatry_clerking_note.created_at")
             ->where('psychiatry_clerking_note.patient_mrn_id', $request->patient_id)
-            ->orderBy(DB::raw("str_to_date(psychiatry_clerking_note.created_at,'%d-%m-%Y')"), 'desc')
+            ->orderBy('psychiatry_clerking_note.created_at', 'asc')
             ->get();
-
         $Counsellor_Clerking_Note = DB::table('patient_counsellor_clerking_notes')
             //  ->join('staff_management', 'patient_counsellor_clerking_notes.added_by', '=', 'staff_management.id')
             ->join('users', 'patient_counsellor_clerking_notes.added_by', '=', 'users.id')
@@ -733,7 +730,7 @@ class PatientAppointmentDetailsController extends Controller
             ->select(
                 DB::raw("(CASE WHEN TIME(patient_counsellor_clerking_notes.created_at) BETWEEN '00:00:00' AND '11:59:59' THEN DATE_FORMAT(patient_counsellor_clerking_notes.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(patient_counsellor_clerking_notes.created_at, '%h:%i PM')
-       END)  as time1"),
+                    END)  as time1"),
                 DB::raw("DATE_FORMAT(patient_counsellor_clerking_notes.created_at, '%d-%m-%Y') as date"),
                 'patient_counsellor_clerking_notes.status',
                 'patient_counsellor_clerking_notes.id',
@@ -752,7 +749,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(patient_index_form.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(patient_index_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(patient_index_form.created_at, '%h:%i PM')
-       END)  as time"),
+                END)  as time"),
                 DB::raw("DATE_FORMAT(patient_index_form.created_at, '%d-%m-%Y') as date"),
                 'patient_index_form.status',
                 'patient_index_form.id',
@@ -772,7 +769,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(psychiatric_progress_note.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(psychiatric_progress_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(psychiatric_progress_note.created_at, '%h:%i PM')
-       END)  as time"),
+                END)  as time"),
                 DB::raw("DATE_FORMAT(psychiatric_progress_note.created_at, '%d-%m-%Y') as date"),
                 'psychiatric_progress_note.status',
                 'psychiatric_progress_note.id',
@@ -791,7 +788,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(cps_progress_note.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(cps_progress_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(cps_progress_note.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(cps_progress_note.created_at, '%d-%m-%Y') as date"),
                 'cps_progress_note.status',
                 'cps_progress_note.id',
@@ -810,7 +807,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(se_progress_note.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(se_progress_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(se_progress_note.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(se_progress_note.created_at, '%d-%m-%Y') as date"),
                 'se_progress_note.status',
                 'se_progress_note.id',
@@ -829,7 +826,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(counselling_progress_note.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(counselling_progress_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(counselling_progress_note.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(counselling_progress_note.created_at, '%d-%m-%Y') as date"),
                 'counselling_progress_note.status',
                 'counselling_progress_note.id',
@@ -848,7 +845,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(etp_progress_note.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(etp_progress_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(etp_progress_note.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(etp_progress_note.created_at, '%d-%m-%Y') as date"),
                 'etp_progress_note.status',
                 'etp_progress_note.id',
@@ -867,7 +864,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(job_club_progress_note.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(job_club_progress_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(job_club_progress_note.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(job_club_progress_note.created_at, '%d-%m-%Y') as date"),
                 'job_club_progress_note.status',
                 'job_club_progress_note.id',
@@ -886,7 +883,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(consultation_discharge_note.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(consultation_discharge_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(consultation_discharge_note.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(consultation_discharge_note.created_at, '%d-%m-%Y') as date"),
                 'consultation_discharge_note.status',
                 'consultation_discharge_note.id',
@@ -905,7 +902,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(rehab_discharge_note.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(rehab_discharge_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(rehab_discharge_note.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(rehab_discharge_note.created_at, '%d-%m-%Y') as date"),
                 'rehab_discharge_note.status',
                 'rehab_discharge_note.id',
@@ -924,7 +921,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(cps_discharge_note.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(cps_discharge_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(cps_discharge_note.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(cps_discharge_note.created_at, '%d-%m-%Y') as date"),
                 'cps_discharge_note.status',
                 'cps_discharge_note.id',
@@ -943,7 +940,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(cps_discharge_note.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(cps_discharge_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(cps_discharge_note.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(cps_discharge_note.created_at, '%d-%m-%Y') as date"),
                 'cps_discharge_note.status',
                 'cps_discharge_note.id',
@@ -962,7 +959,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(cps_homevisit_consent_form.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(cps_homevisit_consent_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(cps_homevisit_consent_form.created_at, '%h:%i PM')
-       END)  as time"),
+             END)  as time"),
                 DB::raw("DATE_FORMAT(cps_homevisit_consent_form.created_at, '%d-%m-%Y') as date"),
                 'cps_homevisit_consent_form.consent_for_homevisit',
                 'cps_homevisit_consent_form.id',
@@ -982,7 +979,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(cps_homevisit_withdrawal_form.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(cps_homevisit_withdrawal_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(cps_homevisit_withdrawal_form.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(cps_homevisit_withdrawal_form.created_at, '%d-%m-%Y') as date"),
                 'cps_homevisit_withdrawal_form.community_psychiatry_services',
                 'cps_homevisit_withdrawal_form.id',
@@ -1002,7 +999,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(cps_police_referral_form.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(cps_police_referral_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(cps_police_referral_form.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(cps_police_referral_form.created_at, '%d-%m-%Y') as date"),
                 'cps_police_referral_form.status',
                 'cps_police_referral_form.id',
@@ -1021,7 +1018,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(photography_consent_form.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(photography_consent_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(photography_consent_form.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(photography_consent_form.created_at, '%d-%m-%Y') as date"),
                 DB::raw("'1' as status"),
                 'photography_consent_form.id',
@@ -1040,7 +1037,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(se_consent_form.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(se_consent_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(se_consent_form.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(se_consent_form.created_at, '%d-%m-%Y') as date"),
                 DB::raw("'1' as status"),
                 'se_consent_form.id',
@@ -1059,7 +1056,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(etp_consent_form.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(etp_consent_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(etp_consent_form.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(etp_consent_form.created_at, '%d-%m-%Y') as date"),
                 DB::raw("'1' as status"),
                 'etp_consent_form.id',
@@ -1078,7 +1075,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(job_club_consent_form.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(job_club_consent_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(job_club_consent_form.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(job_club_consent_form.created_at, '%d-%m-%Y') as date"),
                 'job_club_consent_form.consent_for_participation as status',
                 'job_club_consent_form.id',
@@ -1109,7 +1106,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(patient_care_paln.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(patient_care_paln.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(patient_care_paln.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(patient_care_paln.created_at, '%d-%m-%Y') as date"),
                 DB::raw("'1' as status"),
                 'patient_care_paln.id',
@@ -1128,7 +1125,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(job_start_form.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(job_start_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(job_start_form.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(job_start_form.created_at, '%d-%m-%Y') as date"),
                 DB::raw("'1' as status"),
                 'job_start_form.id',
@@ -1147,7 +1144,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(job_end_report.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(job_end_report.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(job_end_report.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(job_end_report.created_at, '%d-%m-%Y') as date"),
                 DB::raw("'1' as status"),
                 'job_end_report.id',
@@ -1166,7 +1163,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(job_transition_report.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(job_transition_report.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(job_transition_report.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(job_transition_report.created_at, '%d-%m-%Y') as date"),
                 DB::raw("'1' as status"),
                 'job_transition_report.id',
@@ -1185,7 +1182,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(laser_assesmen_form.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(laser_assesmen_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(laser_assesmen_form.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(laser_assesmen_form.created_at, '%d-%m-%Y') as date"),
                 DB::raw("'1' as status"),
                 'laser_assesmen_form.id',
@@ -1204,7 +1201,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(triage_form.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(triage_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(triage_form.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(triage_form.created_at, '%d-%m-%Y') as date"),
                 DB::raw("'1' as status"),
                 'triage_form.id',
@@ -1223,7 +1220,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(job_interest_checklist.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(job_interest_checklist.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(job_interest_checklist.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(job_interest_checklist.created_at, '%d-%m-%Y') as date"),
                 DB::raw("'1' as status"),
                 'job_interest_checklist.id',
@@ -1242,7 +1239,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(work_analysis_forms.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(work_analysis_forms.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(work_analysis_forms.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(work_analysis_forms.created_at, '%d-%m-%Y') as date"),
                 DB::raw("work_analysis_forms.status"),
                 'work_analysis_forms.id',
@@ -1261,7 +1258,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(list_job_club.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(list_job_club.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(list_job_club.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(list_job_club.created_at, '%d-%m-%Y') as date"),
                 DB::raw("'1' as status"),
                 'list_job_club.id',
@@ -1280,7 +1277,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME( list_of_etp.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(list_of_etp.created_at, '%h:%i AM')
             ELSE DATE_FORMAT( list_of_etp.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(list_of_etp.created_at, '%d-%m-%Y') as date"),
                 DB::raw("list_of_etp.status"),
                 'list_of_etp.id',
@@ -1299,7 +1296,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(list_of_job_search.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(list_of_job_search.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(list_of_job_search.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(list_of_job_search.created_at, '%d-%m-%Y') as date"),
                 DB::raw("list_of_job_search.status"),
                 'list_of_job_search.id',
@@ -1319,7 +1316,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(log_meeting_with_employer.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(log_meeting_with_employer.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(log_meeting_with_employer.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(log_meeting_with_employer.created_at, '%d-%m-%Y') as date"),
                 DB::raw("log_meeting_with_employer.status"),
                 'log_meeting_with_employer.id',
@@ -1338,7 +1335,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(list_previous_current_job.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(list_previous_current_job.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(list_previous_current_job.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(list_previous_current_job.created_at, '%d-%m-%Y') as date"),
                 DB::raw("list_previous_current_job.status"),
                 'list_previous_current_job.id',
@@ -1357,7 +1354,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(internal_referral_form.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(internal_referral_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(internal_referral_form.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(internal_referral_form.created_at, '%d-%m-%Y') as date"),
                 DB::raw("internal_referral_form.status"),
                 'internal_referral_form.id',
@@ -1376,7 +1373,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(external_referral_form.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(external_referral_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(external_referral_form.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(external_referral_form.created_at, '%d-%m-%Y') as date"),
                 DB::raw("external_referral_form.status"),
                 'external_referral_form.id',
@@ -1395,7 +1392,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(cps_referral_form.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(cps_referral_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(cps_referral_form.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(cps_referral_form.created_at, '%d-%m-%Y') as date"),
                 DB::raw("'1' as status"),
                 'cps_referral_form.id',
@@ -1414,7 +1411,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(occt_referral_form.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(occt_referral_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(occt_referral_form.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(occt_referral_form.created_at, '%d-%m-%Y') as date"),
                 DB::raw("occt_referral_form.status"),
                 'occt_referral_form.id',
@@ -1433,7 +1430,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(psychology_referral.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(psychology_referral.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(psychology_referral.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(psychology_referral.created_at, '%d-%m-%Y') as date"),
                 DB::raw("'1' as status"),
                 'psychology_referral.id',
@@ -1452,7 +1449,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("(CASE WHEN TIME(rehab_referral_and_clinical_form.created_at) BETWEEN '00:00:00' AND
             '11:59:59' THEN DATE_FORMAT(rehab_referral_and_clinical_form.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(rehab_referral_and_clinical_form.created_at, '%h:%i PM')
-       END)  as time"),
+            END)  as time"),
                 DB::raw("DATE_FORMAT(rehab_referral_and_clinical_form.created_at, '%d-%m-%Y') as date"),
                 DB::raw("rehab_referral_and_clinical_form.status"),
                 'rehab_referral_and_clinical_form.id',
@@ -2566,233 +2563,233 @@ class PatientAppointmentDetailsController extends Controller
             ->orderBy('work_analysis_forms.created_at', 'asc')
             ->get();
 
-            $list_job_club = DB::table('list_job_club')
-                ->join('users', 'list_job_club.added_by', '=', 'users.id')
-                ->join('patient_appointment_details', 'list_job_club.added_by', '=', 'patient_appointment_details.added_by')
-                ->select(
-                    'patient_appointment_details.id as patient_appointment_id',
-                    'patient_appointment_details.patient_category',
-                    'patient_appointment_details.booking_date',
-                    'patient_appointment_details.booking_time',
-                    'patient_appointment_details.end_appoitment_date',
-                    'list_job_club.id',
-                    'list_job_club.category_services',
-                    'list_job_club.complexity_services',
-                    'list_job_club.location_services',
-                    'list_job_club.outcome',
-                    DB::raw("'ListOfJobClub' as type"),
-                )
-                ->where('list_job_club.added_by', $request->patient_id)
-                ->orderBy('list_job_club.created_at', 'asc')
-                ->get();
+        $list_job_club = DB::table('list_job_club')
+            ->join('users', 'list_job_club.added_by', '=', 'users.id')
+            ->join('patient_appointment_details', 'list_job_club.added_by', '=', 'patient_appointment_details.added_by')
+            ->select(
+                'patient_appointment_details.id as patient_appointment_id',
+                'patient_appointment_details.patient_category',
+                'patient_appointment_details.booking_date',
+                'patient_appointment_details.booking_time',
+                'patient_appointment_details.end_appoitment_date',
+                'list_job_club.id',
+                'list_job_club.category_services',
+                'list_job_club.complexity_services',
+                'list_job_club.location_services',
+                'list_job_club.outcome',
+                DB::raw("'ListOfJobClub' as type"),
+            )
+            ->where('list_job_club.added_by', $request->patient_id)
+            ->orderBy('list_job_club.created_at', 'asc')
+            ->get();
 
-            $list_of_etp = DB::table('list_of_etp')
-                ->join('users', 'list_of_etp.added_by', '=', 'users.id')
-                ->join('patient_appointment_details', 'list_of_etp.added_by', '=', 'patient_appointment_details.added_by')
-                ->select(
-                    'patient_appointment_details.id as patient_appointment_id',
-                    'patient_appointment_details.patient_category',
-                    'patient_appointment_details.booking_date',
-                    'patient_appointment_details.booking_time',
-                    'patient_appointment_details.end_appoitment_date',
-                    'list_of_etp.id',
-                    'list_of_etp.category_services',
-                    'list_of_etp.complexity_services',
-                    'list_of_etp.location_services',
-                    'list_of_etp.outcome',
-                    DB::raw("'ListofEtp' as type"),
-                )
-                ->where('list_of_etp.patient_id', $request->patient_id)
-                ->orderBy('list_of_etp.created_at', 'asc')
-                ->get();
+        $list_of_etp = DB::table('list_of_etp')
+            ->join('users', 'list_of_etp.added_by', '=', 'users.id')
+            ->join('patient_appointment_details', 'list_of_etp.added_by', '=', 'patient_appointment_details.added_by')
+            ->select(
+                'patient_appointment_details.id as patient_appointment_id',
+                'patient_appointment_details.patient_category',
+                'patient_appointment_details.booking_date',
+                'patient_appointment_details.booking_time',
+                'patient_appointment_details.end_appoitment_date',
+                'list_of_etp.id',
+                'list_of_etp.category_services',
+                'list_of_etp.complexity_services',
+                'list_of_etp.location_services',
+                'list_of_etp.outcome',
+                DB::raw("'ListofEtp' as type"),
+            )
+            ->where('list_of_etp.patient_id', $request->patient_id)
+            ->orderBy('list_of_etp.created_at', 'asc')
+            ->get();
 
-            $list_of_job_search = DB::table('list_of_job_search')
-                ->join('users', 'list_of_job_search.added_by', '=', 'users.id')
-                ->join('patient_appointment_details', 'list_of_job_search.added_by', '=', 'patient_appointment_details.added_by')
-                ->select(
-                    'patient_appointment_details.id as patient_appointment_id',
-                    'patient_appointment_details.patient_category',
-                    'patient_appointment_details.booking_date',
-                    'patient_appointment_details.booking_time',
-                    'patient_appointment_details.end_appoitment_date',
-                    'list_of_job_search.id',
-                    'list_of_job_search.category_services',
-                    'list_of_job_search.complexity_services',
-                    'list_of_job_search.location_services',
-                    'list_of_job_search.outcome',
-                    DB::raw("'ListofJobSearch' as type"),
-                )
-                ->where('list_of_job_search.added_by', $request->patient_id)
-                ->orderBy('list_of_job_search.created_at', 'asc')
-                ->get();
+        $list_of_job_search = DB::table('list_of_job_search')
+            ->join('users', 'list_of_job_search.added_by', '=', 'users.id')
+            ->join('patient_appointment_details', 'list_of_job_search.added_by', '=', 'patient_appointment_details.added_by')
+            ->select(
+                'patient_appointment_details.id as patient_appointment_id',
+                'patient_appointment_details.patient_category',
+                'patient_appointment_details.booking_date',
+                'patient_appointment_details.booking_time',
+                'patient_appointment_details.end_appoitment_date',
+                'list_of_job_search.id',
+                'list_of_job_search.category_services',
+                'list_of_job_search.complexity_services',
+                'list_of_job_search.location_services',
+                'list_of_job_search.outcome',
+                DB::raw("'ListofJobSearch' as type"),
+            )
+            ->where('list_of_job_search.added_by', $request->patient_id)
+            ->orderBy('list_of_job_search.created_at', 'asc')
+            ->get();
 
-            $log_meeting_with_employer = DB::table('log_meeting_with_employer')
-                ->join('users', 'log_meeting_with_employer.added_by', '=', 'users.id')
-                ->join('patient_appointment_details', 'log_meeting_with_employer.added_by', '=', 'patient_appointment_details.added_by')
-                ->select(
-                    'patient_appointment_details.id as patient_appointment_id',
-                    'patient_appointment_details.patient_category',
-                    'patient_appointment_details.booking_date',
-                    'patient_appointment_details.booking_time',
-                    'patient_appointment_details.end_appoitment_date',
-                    'log_meeting_with_employer.id',
-                    'log_meeting_with_employer.category_services',
-                    'log_meeting_with_employer.complexity_services',
-                    'log_meeting_with_employer.location_services',
-                    'log_meeting_with_employer.outcome',
-                    DB::raw("'LogMeetingWithEmployer' as type"),
-                )
-                ->where('log_meeting_with_employer.added_by', $request->patient_id)
-                ->orderBy('log_meeting_with_employer.created_at', 'asc')
-                ->get();
+        $log_meeting_with_employer = DB::table('log_meeting_with_employer')
+            ->join('users', 'log_meeting_with_employer.added_by', '=', 'users.id')
+            ->join('patient_appointment_details', 'log_meeting_with_employer.added_by', '=', 'patient_appointment_details.added_by')
+            ->select(
+                'patient_appointment_details.id as patient_appointment_id',
+                'patient_appointment_details.patient_category',
+                'patient_appointment_details.booking_date',
+                'patient_appointment_details.booking_time',
+                'patient_appointment_details.end_appoitment_date',
+                'log_meeting_with_employer.id',
+                'log_meeting_with_employer.category_services',
+                'log_meeting_with_employer.complexity_services',
+                'log_meeting_with_employer.location_services',
+                'log_meeting_with_employer.outcome',
+                DB::raw("'LogMeetingWithEmployer' as type"),
+            )
+            ->where('log_meeting_with_employer.added_by', $request->patient_id)
+            ->orderBy('log_meeting_with_employer.created_at', 'asc')
+            ->get();
 
-            $list_previous_current_job = DB::table('list_previous_current_job')
-                ->join('users', 'list_previous_current_job.added_by', '=', 'users.id')
-                ->join('patient_appointment_details', 'list_previous_current_job.added_by', '=', 'patient_appointment_details.added_by')
-                ->select(
-                    'patient_appointment_details.id as patient_appointment_id',
-                    'patient_appointment_details.patient_category',
-                    'patient_appointment_details.booking_date',
-                    'patient_appointment_details.booking_time',
-                    'patient_appointment_details.end_appoitment_date',
-                    'list_previous_current_job.id',
-                    'list_previous_current_job.category_services',
-                    'list_previous_current_job.complexity_services',
-                    'list_previous_current_job.location_services',
-                    'list_previous_current_job.outcome',
-                    DB::raw("'ListPreviousJob' as type"),
-                )
-                ->where('list_previous_current_job.added_by', $request->patient_id)
-                ->orderBy('list_previous_current_job.created_at', 'asc')
-                ->get();
+        $list_previous_current_job = DB::table('list_previous_current_job')
+            ->join('users', 'list_previous_current_job.added_by', '=', 'users.id')
+            ->join('patient_appointment_details', 'list_previous_current_job.added_by', '=', 'patient_appointment_details.added_by')
+            ->select(
+                'patient_appointment_details.id as patient_appointment_id',
+                'patient_appointment_details.patient_category',
+                'patient_appointment_details.booking_date',
+                'patient_appointment_details.booking_time',
+                'patient_appointment_details.end_appoitment_date',
+                'list_previous_current_job.id',
+                'list_previous_current_job.category_services',
+                'list_previous_current_job.complexity_services',
+                'list_previous_current_job.location_services',
+                'list_previous_current_job.outcome',
+                DB::raw("'ListPreviousJob' as type"),
+            )
+            ->where('list_previous_current_job.added_by', $request->patient_id)
+            ->orderBy('list_previous_current_job.created_at', 'asc')
+            ->get();
 
-            $internal_referral_form = DB::table('internal_referral_form')
-                ->join('users', 'internal_referral_form.added_by', '=', 'users.id')
-                ->join('patient_appointment_details', 'internal_referral_form.added_by', '=', 'patient_appointment_details.added_by')
-                ->select(
-                    'patient_appointment_details.id as patient_appointment_id',
-                    'patient_appointment_details.patient_category',
-                    'patient_appointment_details.booking_date',
-                    'patient_appointment_details.booking_time',
-                    'patient_appointment_details.end_appoitment_date',
-                    'internal_referral_form.id',
-                    'internal_referral_form.category_services',
-                    'internal_referral_form.complexity_services',
-                    'internal_referral_form.location_services',
-                    'internal_referral_form.outcome',
-                    DB::raw("'InternalReferralForm' as type"),
-                )
-                ->where('internal_referral_form.added_by', $request->patient_id)
-                ->orderBy('internal_referral_form.created_at', 'asc')
-                ->get();
+        $internal_referral_form = DB::table('internal_referral_form')
+            ->join('users', 'internal_referral_form.added_by', '=', 'users.id')
+            ->join('patient_appointment_details', 'internal_referral_form.added_by', '=', 'patient_appointment_details.added_by')
+            ->select(
+                'patient_appointment_details.id as patient_appointment_id',
+                'patient_appointment_details.patient_category',
+                'patient_appointment_details.booking_date',
+                'patient_appointment_details.booking_time',
+                'patient_appointment_details.end_appoitment_date',
+                'internal_referral_form.id',
+                'internal_referral_form.category_services',
+                'internal_referral_form.complexity_services',
+                'internal_referral_form.location_services',
+                'internal_referral_form.outcome',
+                DB::raw("'InternalReferralForm' as type"),
+            )
+            ->where('internal_referral_form.added_by', $request->patient_id)
+            ->orderBy('internal_referral_form.created_at', 'asc')
+            ->get();
 
-            $external_referral_form = DB::table('external_referral_form')
-                ->join('users', 'external_referral_form.added_by', '=', 'users.id')
-                ->join('patient_appointment_details', 'external_referral_form.added_by', '=', 'patient_appointment_details.added_by')
-                ->select(
-                    'patient_appointment_details.id as patient_appointment_id',
-                    'patient_appointment_details.patient_category',
-                    'patient_appointment_details.booking_date',
-                    'patient_appointment_details.booking_time',
-                    'patient_appointment_details.end_appoitment_date',
-                    'external_referral_form.id',
-                    'external_referral_form.category_services',
-                    'external_referral_form.complexity_services',
-                    'external_referral_form.location_services',
-                    'external_referral_form.outcome',
-                    DB::raw("'ExternalReferralForm' as type"),
-                )
-                ->where('external_referral_form.added_by', $request->patient_id)
-                ->orderBy('external_referral_form.created_at', 'asc')
-                ->get();
+        $external_referral_form = DB::table('external_referral_form')
+            ->join('users', 'external_referral_form.added_by', '=', 'users.id')
+            ->join('patient_appointment_details', 'external_referral_form.added_by', '=', 'patient_appointment_details.added_by')
+            ->select(
+                'patient_appointment_details.id as patient_appointment_id',
+                'patient_appointment_details.patient_category',
+                'patient_appointment_details.booking_date',
+                'patient_appointment_details.booking_time',
+                'patient_appointment_details.end_appoitment_date',
+                'external_referral_form.id',
+                'external_referral_form.category_services',
+                'external_referral_form.complexity_services',
+                'external_referral_form.location_services',
+                'external_referral_form.outcome',
+                DB::raw("'ExternalReferralForm' as type"),
+            )
+            ->where('external_referral_form.added_by', $request->patient_id)
+            ->orderBy('external_referral_form.created_at', 'asc')
+            ->get();
 
-            $cps_referral_form = DB::table('cps_referral_form')
-                ->join('users', 'cps_referral_form.added_by', '=', 'users.id')
-                ->join('patient_appointment_details', 'cps_referral_form.added_by', '=', 'patient_appointment_details.added_by')
-                ->select(
-                    'patient_appointment_details.id as patient_appointment_id',
-                    'patient_appointment_details.patient_category',
-                    'patient_appointment_details.booking_date',
-                    'patient_appointment_details.booking_time',
-                    'patient_appointment_details.end_appoitment_date',
-                    'cps_referral_form.id',
-                    'cps_referral_form.category_of_services',
-                    'cps_referral_form.complexity_of_services',
-                    'cps_referral_form.location_of_service',
-                    'cps_referral_form.outcome',
-                    DB::raw("'CpsRefferalForm' as type"),
-                    DB::raw("'Cps Refferal Form' as section_name"),
-                    "cps_referral_form.created_at"
-                )
-                ->where('cps_referral_form.added_by', $request->patient_id)
-                ->orderBy('cps_referral_form.created_at', 'asc')
-                ->get();
+        $cps_referral_form = DB::table('cps_referral_form')
+            ->join('users', 'cps_referral_form.added_by', '=', 'users.id')
+            ->join('patient_appointment_details', 'cps_referral_form.added_by', '=', 'patient_appointment_details.added_by')
+            ->select(
+                'patient_appointment_details.id as patient_appointment_id',
+                'patient_appointment_details.patient_category',
+                'patient_appointment_details.booking_date',
+                'patient_appointment_details.booking_time',
+                'patient_appointment_details.end_appoitment_date',
+                'cps_referral_form.id',
+                'cps_referral_form.category_of_services',
+                'cps_referral_form.complexity_of_services',
+                'cps_referral_form.location_of_service',
+                'cps_referral_form.outcome',
+                DB::raw("'CpsRefferalForm' as type"),
+                DB::raw("'Cps Refferal Form' as section_name"),
+                "cps_referral_form.created_at"
+            )
+            ->where('cps_referral_form.added_by', $request->patient_id)
+            ->orderBy('cps_referral_form.created_at', 'asc')
+            ->get();
 
-            $occt_referral_form = DB::table('occt_referral_form')
-                ->join('users', 'occt_referral_form.added_by', '=', 'users.id')
-                ->join('patient_appointment_details', 'occt_referral_form.added_by', '=', 'patient_appointment_details.added_by')
-                ->select(
-                    'patient_appointment_details.id as patient_appointment_id',
-                    'patient_appointment_details.patient_category',
-                    'patient_appointment_details.booking_date',
-                    'patient_appointment_details.booking_time',
-                    'patient_appointment_details.end_appoitment_date',
-                    'occt_referral_form.id',
-                    'occt_referral_form.category_services',
-                    'occt_referral_form.complexity_services',
-                    'occt_referral_form.location_services',
-                    'occt_referral_form.outcome',
-                    DB::raw("'OcctRefferalForm' as type"),
-                    DB::raw("'Occt Refferal Form' as section_name"),
-                    "occt_referral_form.created_at"
-                )
-                ->where('occt_referral_form.added_by', $request->patient_id)
-                ->orderBy('occt_referral_form.created_at', 'asc')
-                ->get();
+        $occt_referral_form = DB::table('occt_referral_form')
+            ->join('users', 'occt_referral_form.added_by', '=', 'users.id')
+            ->join('patient_appointment_details', 'occt_referral_form.added_by', '=', 'patient_appointment_details.added_by')
+            ->select(
+                'patient_appointment_details.id as patient_appointment_id',
+                'patient_appointment_details.patient_category',
+                'patient_appointment_details.booking_date',
+                'patient_appointment_details.booking_time',
+                'patient_appointment_details.end_appoitment_date',
+                'occt_referral_form.id',
+                'occt_referral_form.category_services',
+                'occt_referral_form.complexity_services',
+                'occt_referral_form.location_services',
+                'occt_referral_form.outcome',
+                DB::raw("'OcctRefferalForm' as type"),
+                DB::raw("'Occt Refferal Form' as section_name"),
+                "occt_referral_form.created_at"
+            )
+            ->where('occt_referral_form.added_by', $request->patient_id)
+            ->orderBy('occt_referral_form.created_at', 'asc')
+            ->get();
 
-            $psychology_referral = DB::table('psychology_referral')
-                ->join('users', 'psychology_referral.added_by', '=', 'users.id')
-                ->join('patient_appointment_details', 'psychology_referral.added_by', '=', 'patient_appointment_details.added_by')
-                ->select(
-                    'patient_appointment_details.id as patient_appointment_id',
-                    'patient_appointment_details.patient_category',
-                    'patient_appointment_details.booking_date',
-                    'patient_appointment_details.booking_time',
-                    'patient_appointment_details.end_appoitment_date',
-                    'psychology_referral.id',
-                    'psychology_referral.category_services',
-                    'psychology_referral.complexity_services',
-                    'psychology_referral.location_services',
-                    'psychology_referral.outcome',
-                    DB::raw("'PsychologyRefferalForm' as type"),
-                    DB::raw("'Psychology Refferal Form' as section_name"),
-                    'psychology_referral.created_at'
-                )
-                ->where('psychology_referral.added_by', $request->patient_id)
-                ->orderBy('psychology_referral.created_at', 'asc')
-                ->get();
+        $psychology_referral = DB::table('psychology_referral')
+            ->join('users', 'psychology_referral.added_by', '=', 'users.id')
+            ->join('patient_appointment_details', 'psychology_referral.added_by', '=', 'patient_appointment_details.added_by')
+            ->select(
+                'patient_appointment_details.id as patient_appointment_id',
+                'patient_appointment_details.patient_category',
+                'patient_appointment_details.booking_date',
+                'patient_appointment_details.booking_time',
+                'patient_appointment_details.end_appoitment_date',
+                'psychology_referral.id',
+                'psychology_referral.category_services',
+                'psychology_referral.complexity_services',
+                'psychology_referral.location_services',
+                'psychology_referral.outcome',
+                DB::raw("'PsychologyRefferalForm' as type"),
+                DB::raw("'Psychology Refferal Form' as section_name"),
+                'psychology_referral.created_at'
+            )
+            ->where('psychology_referral.added_by', $request->patient_id)
+            ->orderBy('psychology_referral.created_at', 'asc')
+            ->get();
 
-            $rehab_referral_and_clinical_form = DB::table('rehab_referral_and_clinical_form')
-                ->join('users', 'rehab_referral_and_clinical_form.added_by', '=', 'users.id')
-                ->join('patient_appointment_details', 'rehab_referral_and_clinical_form.added_by', '=', 'patient_appointment_details.added_by')
-                ->select(
-                    'patient_appointment_details.id as patient_appointment_id',
-                    'patient_appointment_details.patient_category',
-                    'patient_appointment_details.booking_date',
-                    'patient_appointment_details.booking_time',
-                    'patient_appointment_details.end_appoitment_date',
-                    'rehab_referral_and_clinical_form.id',
-                    'rehab_referral_and_clinical_form.category_services',
-                    'rehab_referral_and_clinical_form.complexity_services',
-                    'rehab_referral_and_clinical_form.location_services',
-                    'rehab_referral_and_clinical_form.outcome',
-                    DB::raw("'RehabRefferalAndClinicalForm' as type"),
-                    DB::raw("'Rehab Refferal And Clinical Form' as section_name"),
-                    "rehab_referral_and_clinical_form.created_at"
-                )
-                ->where('rehab_referral_and_clinical_form.added_by', $request->patient_id)
-                ->orderBy('rehab_referral_and_clinical_form.created_at', 'asc')
-                ->get();
+        $rehab_referral_and_clinical_form = DB::table('rehab_referral_and_clinical_form')
+            ->join('users', 'rehab_referral_and_clinical_form.added_by', '=', 'users.id')
+            ->join('patient_appointment_details', 'rehab_referral_and_clinical_form.added_by', '=', 'patient_appointment_details.added_by')
+            ->select(
+                'patient_appointment_details.id as patient_appointment_id',
+                'patient_appointment_details.patient_category',
+                'patient_appointment_details.booking_date',
+                'patient_appointment_details.booking_time',
+                'patient_appointment_details.end_appoitment_date',
+                'rehab_referral_and_clinical_form.id',
+                'rehab_referral_and_clinical_form.category_services',
+                'rehab_referral_and_clinical_form.complexity_services',
+                'rehab_referral_and_clinical_form.location_services',
+                'rehab_referral_and_clinical_form.outcome',
+                DB::raw("'RehabRefferalAndClinicalForm' as type"),
+                DB::raw("'Rehab Refferal And Clinical Form' as section_name"),
+                "rehab_referral_and_clinical_form.created_at"
+            )
+            ->where('rehab_referral_and_clinical_form.added_by', $request->patient_id)
+            ->orderBy('rehab_referral_and_clinical_form.created_at', 'asc')
+            ->get();
 
         $list = [];
         foreach ($Psychiatry_Clerking_Note as $key => $val) {
@@ -3756,7 +3753,7 @@ class PatientAppointmentDetailsController extends Controller
         dd($diagnosis);
     }
 
-     public function fetchPatientListByStaffId(Request $request)
+    public function fetchPatientListByStaffId(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'apid' => 'required|integer',
@@ -3768,71 +3765,71 @@ class PatientAppointmentDetailsController extends Controller
         }
         if ($request->type == "PsychiatryClerkingNote") {
             $list = DB::table('psychiatry_clerking_note')
-            ->join('users', 'psychiatry_clerking_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'psychiatry_clerking_note.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'psychiatry_clerking_note.id',
-                'psychiatry_clerking_note.category_services as category_services',
-                'psychiatry_clerking_note.complexity_services_id as complexity_services_id',
-                'psychiatry_clerking_note.location_services_id as location_services_id',
-                'psychiatry_clerking_note.outcome_id as outcome',
-                DB::raw("'PsychiatryClerkingNote' as type"),
-                DB::raw("'Psychiatry Clerking Note' as section_name"),
-                'psychiatry_clerking_note.id',
-            )
-            ->where('psychiatry_clerking_note.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'psychiatry_clerking_note.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'psychiatry_clerking_note.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'psychiatry_clerking_note.id',
+                    'psychiatry_clerking_note.category_services as category_services',
+                    'psychiatry_clerking_note.complexity_services_id as complexity_services_id',
+                    'psychiatry_clerking_note.location_services_id as location_services_id',
+                    'psychiatry_clerking_note.outcome_id as outcome',
+                    DB::raw("'PsychiatryClerkingNote' as type"),
+                    DB::raw("'Psychiatry Clerking Note' as section_name"),
+                    'psychiatry_clerking_note.id',
+                )
+                ->where('psychiatry_clerking_note.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "CounsellorClerkingNote") {
             $list = DB::table('patient_counsellor_clerking_notes')
-            ->join('users', 'patient_counsellor_clerking_notes.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'patient_counsellor_clerking_notes.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'patient_counsellor_clerking_notes.id',
-                'patient_counsellor_clerking_notes.category_services as category_services',
-                'patient_counsellor_clerking_notes.complexity_services_id as complexity_services_id',
-                'patient_counsellor_clerking_notes.location_services_id as location_services_id',
-                'patient_counsellor_clerking_notes.outcome_id as outcome',
-                DB::raw("'CounsellorClerkingNote' as type"),
-                DB::raw("'Counsellor Clerking Note' as section_name"),
-            )
-            ->where('patient_counsellor_clerking_notes.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'patient_counsellor_clerking_notes.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'patient_counsellor_clerking_notes.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'patient_counsellor_clerking_notes.id',
+                    'patient_counsellor_clerking_notes.category_services as category_services',
+                    'patient_counsellor_clerking_notes.complexity_services_id as complexity_services_id',
+                    'patient_counsellor_clerking_notes.location_services_id as location_services_id',
+                    'patient_counsellor_clerking_notes.outcome_id as outcome',
+                    DB::raw("'CounsellorClerkingNote' as type"),
+                    DB::raw("'Counsellor Clerking Note' as section_name"),
+                )
+                ->where('patient_counsellor_clerking_notes.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "PatientIndexForm") {
-            $list= DB::table('patient_index_form')
-            ->join('users', 'patient_index_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'patient_index_form.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'patient_index_form.id',
-                'patient_index_form.category_of_servicesas category_services',
-                'patient_index_form.complexity_of_serviceas complexity_services_id',
-                'patient_index_form.location_of_servicesas location_services_id',
-                'patient_index_form.outcome',
-                DB::raw("'PatientIndexForm' as type"),
-                DB::raw("1 as editstatus"),
-                DB::raw("'Patient Index Form' as section_name"),
-            )
-            ->where('patient_index_form.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+            $list = DB::table('patient_index_form')
+                ->join('users', 'patient_index_form.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'patient_index_form.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'patient_index_form.id',
+                    'patient_index_form.category_of_servicesas category_services',
+                    'patient_index_form.complexity_of_serviceas complexity_services_id',
+                    'patient_index_form.location_of_servicesas location_services_id',
+                    'patient_index_form.outcome',
+                    DB::raw("'PatientIndexForm' as type"),
+                    DB::raw("1 as editstatus"),
+                    DB::raw("'Patient Index Form' as section_name"),
+                )
+                ->where('patient_index_form.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         // if ($request->type == "PatientIndexForm") {
         //     $list = PatientIndexForm::select('*')
@@ -3842,620 +3839,618 @@ class PatientAppointmentDetailsController extends Controller
         // }
         if ($request->type == "PsychiatricProgressNote") {
             $list  = DB::table('psychiatric_progress_note')
-            ->join('users', 'psychiatric_progress_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'psychiatric_progress_note.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'psychiatric_progress_note.id',
-                'psychiatric_progress_note.category_services as category_services',
-                'psychiatric_progress_note.complexity_services_id as complexity_services_id',
-                'psychiatric_progress_note.location_services_id as location_services_id',
-                'psychiatric_progress_note.outcome_id as outcome',
-                DB::raw("'PsychiatricProgressNote' as type"),
-                DB::raw("'Psychiatric Progress Note' as section_name"),
-            )
-            ->where('psychiatric_progress_note.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'psychiatric_progress_note.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'psychiatric_progress_note.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'psychiatric_progress_note.id',
+                    'psychiatric_progress_note.category_services as category_services',
+                    'psychiatric_progress_note.complexity_services_id as complexity_services_id',
+                    'psychiatric_progress_note.location_services_id as location_services_id',
+                    'psychiatric_progress_note.outcome_id as outcome',
+                    DB::raw("'PsychiatricProgressNote' as type"),
+                    DB::raw("'Psychiatric Progress Note' as section_name"),
+                )
+                ->where('psychiatric_progress_note.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "CPSProgressNote") {
             $list = DB::table('cps_progress_note')
-            ->join('users', 'cps_progress_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'cps_progress_note.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'cps_progress_note.id',
-                'cps_progress_note.service_category as category_services',
-                'cps_progress_note.complexity_services as complexity_services_id',
-                'cps_progress_note.location_service as location_services_id',
-                'cps_progress_note.outcome',
-                DB::raw("'CPSProgressNote' as type"),
-                DB::raw("'CPS Progress Note' as section_name"),
-            )
-            ->where('cps_progress_note.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'cps_progress_note.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'cps_progress_note.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'cps_progress_note.id',
+                    'cps_progress_note.service_category as category_services',
+                    'cps_progress_note.complexity_services as complexity_services_id',
+                    'cps_progress_note.location_service as location_services_id',
+                    'cps_progress_note.outcome',
+                    DB::raw("'CPSProgressNote' as type"),
+                    DB::raw("'CPS Progress Note' as section_name"),
+                )
+                ->where('cps_progress_note.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "SEProgressNote") {
             $list = DB::table('se_progress_note')
-            ->join('users', 'se_progress_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'se_progress_note.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'se_progress_note.id',
-                'se_progress_note.service_category as category_services',
-                'se_progress_note.complexity_service as complexity_services_id',
-                'se_progress_note.location_service as location_services_id',
-                'se_progress_note.outcome',
-                DB::raw("'SEProgressNote' as type"),
-                DB::raw("'SE Progress Note' as section_name"),
-            )
-            ->where('se_progress_note.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'se_progress_note.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'se_progress_note.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'se_progress_note.id',
+                    'se_progress_note.service_category as category_services',
+                    'se_progress_note.complexity_service as complexity_services_id',
+                    'se_progress_note.location_service as location_services_id',
+                    'se_progress_note.outcome',
+                    DB::raw("'SEProgressNote' as type"),
+                    DB::raw("'SE Progress Note' as section_name"),
+                )
+                ->where('se_progress_note.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "CounsellingProgressNote") {
             $list = DB::table('counselling_progress_note')
-            ->join('users', 'counselling_progress_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'counselling_progress_note.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'counselling_progress_note.id',
-                'counselling_progress_note.category_services as category_services',
-                'counselling_progress_note.complexity_services_id as complexity_services_id',
-                'counselling_progress_note.location_services_id as location_services_id',
-                'counselling_progress_note.outcome_id',
-                DB::raw("'CounsellingProgressNote' as type"),
-                DB::raw("'Counselling Progress Note' as section_name"),
-            )
-            ->where('counselling_progress_note.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
-
+                ->join('users', 'counselling_progress_note.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'counselling_progress_note.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'counselling_progress_note.id',
+                    'counselling_progress_note.category_services as category_services',
+                    'counselling_progress_note.complexity_services_id as complexity_services_id',
+                    'counselling_progress_note.location_services_id as location_services_id',
+                    'counselling_progress_note.outcome_id',
+                    DB::raw("'CounsellingProgressNote' as type"),
+                    DB::raw("'Counselling Progress Note' as section_name"),
+                )
+                ->where('counselling_progress_note.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "EtpProgressNote") {
             $list = DB::table('etp_progress_note')
-            ->join('users', 'etp_progress_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'etp_progress_note.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'etp_progress_note.id',
-                'etp_progress_note.service_category as category_services',
-                'etp_progress_note.complexity_service as complexity_services_id',
-                'etp_progress_note.location_service as location_services_id',
-                'etp_progress_note.outcome',
-                DB::raw("'EtpProgressNote' as type"),
-                DB::raw("'Etp Progress Note' as section_name"),
-            )
-            ->where('etp_progress_note.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'etp_progress_note.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'etp_progress_note.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'etp_progress_note.id',
+                    'etp_progress_note.service_category as category_services',
+                    'etp_progress_note.complexity_service as complexity_services_id',
+                    'etp_progress_note.location_service as location_services_id',
+                    'etp_progress_note.outcome',
+                    DB::raw("'EtpProgressNote' as type"),
+                    DB::raw("'Etp Progress Note' as section_name"),
+                )
+                ->where('etp_progress_note.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "JobClubProgressNote") {
             $list = DB::table('job_club_progress_note')
-            ->join('users', 'job_club_progress_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'job_club_progress_note.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'job_club_progress_note.id',
-                'job_club_progress_note.service_category as category_services',
-                'job_club_progress_note.complexity_service as complexity_services_id',
-                'job_club_progress_note.location_service as location_services_id',
-                'job_club_progress_note.outcome',
-                DB::raw("'JobClubProgressNote' as type"),
-                DB::raw("'Job Club Progress Note' as section_name"),
-            )
-            ->where('job_club_progress_note.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'job_club_progress_note.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'job_club_progress_note.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'job_club_progress_note.id',
+                    'job_club_progress_note.service_category as category_services',
+                    'job_club_progress_note.complexity_service as complexity_services_id',
+                    'job_club_progress_note.location_service as location_services_id',
+                    'job_club_progress_note.outcome',
+                    DB::raw("'JobClubProgressNote' as type"),
+                    DB::raw("'Job Club Progress Note' as section_name"),
+                )
+                ->where('job_club_progress_note.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "ConsultationDischargeNote") {
             $list = DB::table('consultation_discharge_note')
-            ->join('users', 'consultation_discharge_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'consultation_discharge_note.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'consultation_discharge_note.id',
-                'consultation_discharge_note.category_services as category_services',
-                'consultation_discharge_note.complexity_services as complexity_services_id',
-                'consultation_discharge_note.location_services as location_services_id',
-                'consultation_discharge_note.outcome',
-                DB::raw("'ConsultationDischargeNote' as type"),
-                DB::raw("'Consultation Discharges Note' as section_name"),
-            )
-            ->where('consultation_discharge_note.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'consultation_discharge_note.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'consultation_discharge_note.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'consultation_discharge_note.id',
+                    'consultation_discharge_note.category_services as category_services',
+                    'consultation_discharge_note.complexity_services as complexity_services_id',
+                    'consultation_discharge_note.location_services as location_services_id',
+                    'consultation_discharge_note.outcome',
+                    DB::raw("'ConsultationDischargeNote' as type"),
+                    DB::raw("'Consultation Discharges Note' as section_name"),
+                )
+                ->where('consultation_discharge_note.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "RehabDischargeNote") {
             $list = DB::table('rehab_discharge_note')
-            ->join('users', 'rehab_discharge_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'rehab_discharge_note.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'rehab_discharge_note.id',
-                'rehab_discharge_note.service_category as category_services',
-                'rehab_discharge_note.complexity_services as complexity_services_id',
-                'rehab_discharge_note.location_services as location_services_id',
-                'rehab_discharge_note.outcome',
-                DB::raw("'RehabDischargeNote' as type"),
-                DB::raw("'Rehab Discharges Note' as section_name"),
-            )
-            ->where('rehab_discharge_note.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'rehab_discharge_note.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'rehab_discharge_note.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'rehab_discharge_note.id',
+                    'rehab_discharge_note.service_category as category_services',
+                    'rehab_discharge_note.complexity_services as complexity_services_id',
+                    'rehab_discharge_note.location_services as location_services_id',
+                    'rehab_discharge_note.outcome',
+                    DB::raw("'RehabDischargeNote' as type"),
+                    DB::raw("'Rehab Discharges Note' as section_name"),
+                )
+                ->where('rehab_discharge_note.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "CpsDischargeNote") {
             $list = DB::table('cps_discharge_note')
-            ->join('users', 'cps_discharge_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'cps_discharge_note.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'cps_discharge_note.id',
-                'cps_discharge_note.service_category as category_services',
-                'cps_discharge_note.complexity_services as complexity_services_id',
-                'cps_discharge_note.location_service as location_services_id',
-                'cps_discharge_note.outcome',
-                DB::raw("'CpsDischargeNote' as type"),
-                DB::raw("'Cps Discharges Note' as section_name"),
-            )
-            ->where('cps_discharge_note.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'cps_discharge_note.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'cps_discharge_note.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'cps_discharge_note.id',
+                    'cps_discharge_note.service_category as category_services',
+                    'cps_discharge_note.complexity_services as complexity_services_id',
+                    'cps_discharge_note.location_service as location_services_id',
+                    'cps_discharge_note.outcome',
+                    DB::raw("'CpsDischargeNote' as type"),
+                    DB::raw("'Cps Discharges Note' as section_name"),
+                )
+                ->where('cps_discharge_note.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
 
         if ($request->type == "PatientCarePlanAndCaseReviewForm") {
             $list = DB::table('patient_care_paln')
-            ->join('users', 'patient_care_paln.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'patient_care_paln.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'patient_care_paln.id',
-                'patient_care_paln.category_of_services as category_services',
-                'patient_care_paln.complexity_of_services as complexity_services_id',
-                'patient_care_paln.location_of_service as location_services_id',
-                'patient_care_paln.outcome',
-                DB::raw("'PatientCarePlanAndCaseReviewForm' as type"),
-                DB::raw("'Patient Care Plan And Case Review Form' as section_name"),
-            )
-            ->where('patient_care_paln.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'patient_care_paln.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'patient_care_paln.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'patient_care_paln.id',
+                    'patient_care_paln.category_of_services as category_services',
+                    'patient_care_paln.complexity_of_services as complexity_services_id',
+                    'patient_care_paln.location_of_service as location_services_id',
+                    'patient_care_paln.outcome',
+                    DB::raw("'PatientCarePlanAndCaseReviewForm' as type"),
+                    DB::raw("'Patient Care Plan And Case Review Form' as section_name"),
+                )
+                ->where('patient_care_paln.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "JobStartReport") {
-            $list= DB::table('job_start_form')
-            ->join('users', 'job_start_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'job_start_form.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'job_start_form.id',
-                'job_start_form.category_of_services as category_services',
-                'job_start_form.complexity_of_services as complexity_services_id',
-                'job_start_form.location_of_service as location_services_id',
-                'job_start_form.outcome',
-                DB::raw("'JobStartReport' as type"),
-                DB::raw("'Job Start Report' as section_name"),
-            )
-            ->where('job_start_form.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+            $list = DB::table('job_start_form')
+                ->join('users', 'job_start_form.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'job_start_form.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'job_start_form.id',
+                    'job_start_form.category_of_services as category_services',
+                    'job_start_form.complexity_of_services as complexity_services_id',
+                    'job_start_form.location_of_service as location_services_id',
+                    'job_start_form.outcome',
+                    DB::raw("'JobStartReport' as type"),
+                    DB::raw("'Job Start Report' as section_name"),
+                )
+                ->where('job_start_form.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "JobEndReport") {
             $list = DB::table('job_end_report')
-            ->join('users', 'job_end_report.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'job_end_report.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'job_end_report.id',
-                'job_end_report.category_of_services as category_services',
-                'job_end_report.complexity_of_services as complexity_services_id',
-                'job_end_report.location_of_service as location_services_id',
-                'job_end_report.outcome',
-                DB::raw("'JobEndReport' as type"),
-                DB::raw("'Job End Report' as section_name"),
-            )
-            ->where('job_end_report.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'job_end_report.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'job_end_report.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'job_end_report.id',
+                    'job_end_report.category_of_services as category_services',
+                    'job_end_report.complexity_of_services as complexity_services_id',
+                    'job_end_report.location_of_service as location_services_id',
+                    'job_end_report.outcome',
+                    DB::raw("'JobEndReport' as type"),
+                    DB::raw("'Job End Report' as section_name"),
+                )
+                ->where('job_end_report.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "JobTransitionReport") {
             $list  = DB::table('job_transition_report')
-            ->join('users', 'job_transition_report.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'job_transition_report.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'job_transition_report.id',
-                'job_transition_report.category_of_services as category_services',
-                'job_transition_report.complexity_of_services as complexity_services_id',
-                'job_transition_report.location_of_service as location_services_id',
-                'job_transition_report.outcome',
-                DB::raw("'JobTransitionReport' as type"),
-                DB::raw("'Job Transition Report' as section_name"),
-            )
-            ->where('job_transition_report.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'job_transition_report.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'job_transition_report.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'job_transition_report.id',
+                    'job_transition_report.category_of_services as category_services',
+                    'job_transition_report.complexity_of_services as complexity_services_id',
+                    'job_transition_report.location_of_service as location_services_id',
+                    'job_transition_report.outcome',
+                    DB::raw("'JobTransitionReport' as type"),
+                    DB::raw("'Job Transition Report' as section_name"),
+                )
+                ->where('job_transition_report.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "LaserAssessment") {
             $list = DB::table('laser_assesmen_form')
-            ->join('users', 'laser_assesmen_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'laser_assesmen_form.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'laser_assesmen_form.id',
-                'laser_assesmen_form.category_of_services as category_services',
-                'laser_assesmen_form.complexity_of_services as complexity_services_id',
-                'laser_assesmen_form.location_of_service as location_services_id',
-                'laser_assesmen_form.outcome',
-                DB::raw("'LaserAssessment' as type"),
-                DB::raw("'Laser Assessment Form' as section_name"),
-            )
-            ->where('laser_assesmen_form.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'laser_assesmen_form.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'laser_assesmen_form.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'laser_assesmen_form.id',
+                    'laser_assesmen_form.category_of_services as category_services',
+                    'laser_assesmen_form.complexity_of_services as complexity_services_id',
+                    'laser_assesmen_form.location_of_service as location_services_id',
+                    'laser_assesmen_form.outcome',
+                    DB::raw("'LaserAssessment' as type"),
+                    DB::raw("'Laser Assessment Form' as section_name"),
+                )
+                ->where('laser_assesmen_form.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "TriageForm") {
             $list = DB::table('triage_form')
-            ->join('users', 'triage_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'triage_form.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'triage_form.id',
-                'triage_form.category_services as category_services',
-                'triage_form.complexity_services_id as complexity_services_id',
-                'triage_form.location_services_id as location_services_id',
-                'triage_form.outcome_id as outcome',
-                DB::raw("'TriageForm' as type"),
-                DB::raw("'Triage Form' as section_name"),
-                "triage_form.created_at"
-            )
-            ->where('triage_form.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'triage_form.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'triage_form.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'triage_form.id',
+                    'triage_form.category_services as category_services',
+                    'triage_form.complexity_services_id as complexity_services_id',
+                    'triage_form.location_services_id as location_services_id',
+                    'triage_form.outcome_id as outcome',
+                    DB::raw("'TriageForm' as type"),
+                    DB::raw("'Triage Form' as section_name"),
+                    "triage_form.created_at"
+                )
+                ->where('triage_form.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "JobInterestCheckList") {
             $list = DB::table('job_interest_checklist')
-            ->join('users', 'job_interest_checklist.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'job_interest_checklist.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'job_interest_checklist.id',
-                'job_interest_checklist.category_services as category_services',
-                'job_interest_checklist.complexity_services as complexity_services_id',
-                'job_interest_checklist.location_services as location_services_id',
-                'job_interest_checklist.outcome',
-                DB::raw("'JobInterestCheckList' as type"),
-                DB::raw("'Job Interest Check List' as section_name"),
-            )
-            ->where('job_interest_checklist.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
-
+                ->join('users', 'job_interest_checklist.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'job_interest_checklist.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'job_interest_checklist.id',
+                    'job_interest_checklist.category_services as category_services',
+                    'job_interest_checklist.complexity_services as complexity_services_id',
+                    'job_interest_checklist.location_services as location_services_id',
+                    'job_interest_checklist.outcome',
+                    DB::raw("'JobInterestCheckList' as type"),
+                    DB::raw("'Job Interest Check List' as section_name"),
+                )
+                ->where('job_interest_checklist.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "WorkAnalysisForm") {
             $list = DB::table('work_analysis_forms')
-            ->join('users', 'work_analysis_forms.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'work_analysis_forms.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'work_analysis_forms.id',
-                'work_analysis_forms.category_services as category_services',
-                'work_analysis_forms.complexity_services as complexity_services_id',
-                'work_analysis_forms.location_services as location_services_id',
-                'work_analysis_forms.outcome',
-                DB::raw("'WorkAnalysisForm' as type"),
-                DB::raw("'Work Analysis Form' as section_name"),
-            )
-            ->where('job_interest_checklist.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'work_analysis_forms.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'work_analysis_forms.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'work_analysis_forms.id',
+                    'work_analysis_forms.category_services as category_services',
+                    'work_analysis_forms.complexity_services as complexity_services_id',
+                    'work_analysis_forms.location_services as location_services_id',
+                    'work_analysis_forms.outcome',
+                    DB::raw("'WorkAnalysisForm' as type"),
+                    DB::raw("'Work Analysis Form' as section_name"),
+                )
+                ->where('job_interest_checklist.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "ListofJobClub") {
             $list = DB::table('list_job_club')
-            ->join('users', 'list_job_club.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'list_job_club.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'list_job_club.id',
-                'list_job_club.category_services as category_services',
-                'list_job_club.complexity_services as complexity_services_id',
-                'list_job_club.location_services as location_services_id',
-                'list_job_club.outcome',
-                DB::raw("'ListOfJobClub' as type"),
-            )
-            ->where('list_job_club.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'list_job_club.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'list_job_club.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'list_job_club.id',
+                    'list_job_club.category_services as category_services',
+                    'list_job_club.complexity_services as complexity_services_id',
+                    'list_job_club.location_services as location_services_id',
+                    'list_job_club.outcome',
+                    DB::raw("'ListOfJobClub' as type"),
+                )
+                ->where('list_job_club.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "ListofEtp") {
             $list = DB::table('list_of_etp')
-            ->join('users', 'list_of_etp.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'list_of_etp.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'list_of_etp.id',
-                'list_of_etp.category_services as category_services',
-                'list_of_etp.complexity_services as complexity_services_id',
-                'list_of_etp.location_services as location_services_id',
-                'list_of_etp.outcome',
-                DB::raw("'ListofEtp' as type"),
-            )
-            ->where('list_of_etp.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'list_of_etp.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'list_of_etp.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'list_of_etp.id',
+                    'list_of_etp.category_services as category_services',
+                    'list_of_etp.complexity_services as complexity_services_id',
+                    'list_of_etp.location_services as location_services_id',
+                    'list_of_etp.outcome',
+                    DB::raw("'ListofEtp' as type"),
+                )
+                ->where('list_of_etp.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "ListofJobSearch") {
             $list = DB::table('list_of_job_search')
-            ->join('users', 'list_of_job_search.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'list_of_job_search.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'list_of_job_search.id',
-                'list_of_job_search.category_services as category_services',
-                'list_of_job_search.complexity_services as complexity_services_id',
-                'list_of_job_search.location_services as location_services_id',
-                'list_of_job_search.outcome',
-                DB::raw("'ListofJobSearch' as type"),
-            )
-            ->where('list_of_job_search.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'list_of_job_search.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'list_of_job_search.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'list_of_job_search.id',
+                    'list_of_job_search.category_services as category_services',
+                    'list_of_job_search.complexity_services as complexity_services_id',
+                    'list_of_job_search.location_services as location_services_id',
+                    'list_of_job_search.outcome',
+                    DB::raw("'ListofJobSearch' as type"),
+                )
+                ->where('list_of_job_search.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "LogMeetingWithEmployer") {
             $list = DB::table('log_meeting_with_employer')
-            ->join('users', 'log_meeting_with_employer.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'log_meeting_with_employer.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'log_meeting_with_employer.id',
-                'log_meeting_with_employer.category_services as category_services',
-                'log_meeting_with_employer.complexity_services as complexity_services_id',
-                'log_meeting_with_employer.location_services as location_services_id',
-                'log_meeting_with_employer.outcome',
-                DB::raw("'LogMeetingWithEmployer' as type"),
-            )
-            ->where('log_meeting_with_employer.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'log_meeting_with_employer.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'log_meeting_with_employer.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'log_meeting_with_employer.id',
+                    'log_meeting_with_employer.category_services as category_services',
+                    'log_meeting_with_employer.complexity_services as complexity_services_id',
+                    'log_meeting_with_employer.location_services as location_services_id',
+                    'log_meeting_with_employer.outcome',
+                    DB::raw("'LogMeetingWithEmployer' as type"),
+                )
+                ->where('log_meeting_with_employer.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "ListofPreviousCurrentJob") {
-           $list = DB::table('list_previous_current_job')
-           ->join('users', 'list_previous_current_job.added_by', '=', 'users.id')
-           ->join('patient_appointment_details', 'list_previous_current_job.added_by', '=', 'patient_appointment_details.added_by')
-           ->select(
-               'patient_appointment_details.id as patient_appointment_id',
-               'patient_appointment_details.patient_category',
-               'patient_appointment_details.booking_date',
-               'patient_appointment_details.booking_time',
-               'patient_appointment_details.end_appoitment_date',
-               'list_previous_current_job.id',
-               'list_previous_current_job.category_services as category_services',
-               'list_previous_current_job.complexity_services as complexity_services_id',
-               'list_previous_current_job.location_services as location_services_id',
-               'list_previous_current_job.outcome',
-               DB::raw("'ListPreviousJob' as type"),
-           )
-           ->where('list_previous_current_job.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-           ->get();
+            $list = DB::table('list_previous_current_job')
+                ->join('users', 'list_previous_current_job.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'list_previous_current_job.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'list_previous_current_job.id',
+                    'list_previous_current_job.category_services as category_services',
+                    'list_previous_current_job.complexity_services as complexity_services_id',
+                    'list_previous_current_job.location_services as location_services_id',
+                    'list_previous_current_job.outcome',
+                    DB::raw("'ListPreviousJob' as type"),
+                )
+                ->where('list_previous_current_job.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "InternalReferralForm") {
             $list = DB::table('internal_referral_form')
-            ->join('users', 'internal_referral_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'internal_referral_form.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'internal_referral_form.id',
-                'internal_referral_form.category_services as category_services',
-                'internal_referral_form.complexity_services as complexity_services_id',
-                'internal_referral_form.location_services as location_services_id',
-                'internal_referral_form.outcome',
-                DB::raw("'InternalReferralForm' as type"),
-            )
-            ->where('internal_referral_form.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'internal_referral_form.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'internal_referral_form.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'internal_referral_form.id',
+                    'internal_referral_form.category_services as category_services',
+                    'internal_referral_form.complexity_services as complexity_services_id',
+                    'internal_referral_form.location_services as location_services_id',
+                    'internal_referral_form.outcome',
+                    DB::raw("'InternalReferralForm' as type"),
+                )
+                ->where('internal_referral_form.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "ExternalReferralForm") {
             $list =  DB::table('external_referral_form')
-            ->join('users', 'external_referral_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'external_referral_form.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'external_referral_form.id',
-                'external_referral_form.category_services as category_services',
-                'external_referral_form.complexity_services as complexity_services_id',
-                'external_referral_form.location_services as location_services_id',
-                'external_referral_form.outcome',
-                DB::raw("'ExternalReferralForm' as type"),
-            )
-            ->where('external_referral_form.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'external_referral_form.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'external_referral_form.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'external_referral_form.id',
+                    'external_referral_form.category_services as category_services',
+                    'external_referral_form.complexity_services as complexity_services_id',
+                    'external_referral_form.location_services as location_services_id',
+                    'external_referral_form.outcome',
+                    DB::raw("'ExternalReferralForm' as type"),
+                )
+                ->where('external_referral_form.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "CpsRefferalForm") {
             $list = DB::table('cps_referral_form')
-            ->join('users', 'cps_referral_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'cps_referral_form.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'cps_referral_form.id',
-                'cps_referral_form.category_of_services as category_services',
-                'cps_referral_form.complexity_of_services as complexity_services_id',
-                'cps_referral_form.location_of_service as location_services_id',
-                'cps_referral_form.outcome',
-                DB::raw("'CpsRefferalForm' as type"),
-                DB::raw("'Cps Refferal Form' as section_name"),
-                "cps_referral_form.created_at"
-            )
-            ->where('cps_referral_form.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'cps_referral_form.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'cps_referral_form.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'cps_referral_form.id',
+                    'cps_referral_form.category_of_services as category_services',
+                    'cps_referral_form.complexity_of_services as complexity_services_id',
+                    'cps_referral_form.location_of_service as location_services_id',
+                    'cps_referral_form.outcome',
+                    DB::raw("'CpsRefferalForm' as type"),
+                    DB::raw("'Cps Refferal Form' as section_name"),
+                    "cps_referral_form.created_at"
+                )
+                ->where('cps_referral_form.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "OcctRefferalForm") {
             $list = DB::table('occt_referral_form')
-            ->join('users', 'occt_referral_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'occt_referral_form.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'occt_referral_form.id',
-                'occt_referral_form.category_services as category_services as category_services',
-                'occt_referral_form.complexity_services as complexity_services_id as complexity_services_id',
-                'occt_referral_form.location_services as location_services_id as location_services_id',
-                'occt_referral_form.outcome',
-                DB::raw("'OcctRefferalForm' as type"),
-                DB::raw("'Occt Refferal Form' as section_name"),
-                "occt_referral_form.created_at"
-            )
-            ->where('occt_referral_form.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'occt_referral_form.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'occt_referral_form.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'occt_referral_form.id',
+                    'occt_referral_form.category_services as category_services as category_services',
+                    'occt_referral_form.complexity_services as complexity_services_id as complexity_services_id',
+                    'occt_referral_form.location_services as location_services_id as location_services_id',
+                    'occt_referral_form.outcome',
+                    DB::raw("'OcctRefferalForm' as type"),
+                    DB::raw("'Occt Refferal Form' as section_name"),
+                    "occt_referral_form.created_at"
+                )
+                ->where('occt_referral_form.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "PsychologyRefferalForm") {
             $list = DB::table('psychology_referral')
-            ->join('users', 'psychology_referral.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'psychology_referral.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'psychology_referral.id',
-                'psychology_referral.category_services as category_services',
-                'psychology_referral.complexity_services as complexity_services_id',
-                'psychology_referral.location_services as location_services_id',
-                'psychology_referral.outcome as outcome',
-                DB::raw("'PsychologyRefferalForm' as type"),
-                DB::raw("'Psychology Refferal Form' as section_name"),
-                'psychology_referral.created_at'
-            )
-            ->where('psychology_referral.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'psychology_referral.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'psychology_referral.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'psychology_referral.id',
+                    'psychology_referral.category_services as category_services',
+                    'psychology_referral.complexity_services as complexity_services_id',
+                    'psychology_referral.location_services as location_services_id',
+                    'psychology_referral.outcome as outcome',
+                    DB::raw("'PsychologyRefferalForm' as type"),
+                    DB::raw("'Psychology Refferal Form' as section_name"),
+                    'psychology_referral.created_at'
+                )
+                ->where('psychology_referral.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         if ($request->type == "RehabRefferalAndClinicalForm") {
             $list = DB::table('rehab_referral_and_clinical_form')
-            ->join('users', 'rehab_referral_and_clinical_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'rehab_referral_and_clinical_form.added_by', '=', 'patient_appointment_details.added_by')
-            ->select(
-                'patient_appointment_details.id as patient_appointment_id',
-                'patient_appointment_details.patient_category',
-                'patient_appointment_details.booking_date',
-                'patient_appointment_details.booking_time',
-                'patient_appointment_details.end_appoitment_date',
-                'rehab_referral_and_clinical_form.id',
-                'rehab_referral_and_clinical_form.category_services as category_services',
-                   'rehab_referral_and_clinical_form.complexity_services as complexity_services_id',
-                'rehab_referral_and_clinical_form.location_services as location_services_id',
-                'rehab_referral_and_clinical_form.outcome as outcome',
-                DB::raw("'RehabRefferalAndClinicalForm' as type"),
-                DB::raw("'Rehab Refferal And Clinical Form' as section_name"),
-                "rehab_referral_and_clinical_form.created_at"
-            )
-            ->where('rehab_referral_and_clinical_form.id', $request->tbid)
-            ->where('patient_appointment_details.id', $request->apid)
-            ->get();
+                ->join('users', 'rehab_referral_and_clinical_form.added_by', '=', 'users.id')
+                ->join('patient_appointment_details', 'rehab_referral_and_clinical_form.added_by', '=', 'patient_appointment_details.added_by')
+                ->select(
+                    'patient_appointment_details.id as patient_appointment_id',
+                    'patient_appointment_details.patient_category',
+                    'patient_appointment_details.booking_date',
+                    'patient_appointment_details.booking_time',
+                    'patient_appointment_details.end_appoitment_date',
+                    'rehab_referral_and_clinical_form.id',
+                    'rehab_referral_and_clinical_form.category_services as category_services',
+                    'rehab_referral_and_clinical_form.complexity_services as complexity_services_id',
+                    'rehab_referral_and_clinical_form.location_services as location_services_id',
+                    'rehab_referral_and_clinical_form.outcome as outcome',
+                    DB::raw("'RehabRefferalAndClinicalForm' as type"),
+                    DB::raw("'Rehab Refferal And Clinical Form' as section_name"),
+                    "rehab_referral_and_clinical_form.created_at"
+                )
+                ->where('rehab_referral_and_clinical_form.id', $request->tbid)
+                ->where('patient_appointment_details.id', $request->apid)
+                ->get();
         }
         return response()->json(["message" => "List", 'Data' => $list, "code" => 200]);
     }
@@ -4481,475 +4476,417 @@ class PatientAppointmentDetailsController extends Controller
         // dd($request);
         if ($request->type == "PsychiatryClerkingNote") {
 
-            PsychiatryClerkingNote::where('id','=',$request->tbid)->update([
+            PsychiatryClerkingNote::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services_id' =>  $request->complexity_services_id,
                 'location_services_id' =>  $request->location_services_id,
                 'outcome_id' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-        }
-        else if ($request->type == "CounsellorClerkingNote") {
+        } else if ($request->type == "CounsellorClerkingNote") {
 
-            PatientCounsellorClerkingNotes::where('id','=',$request->tbid)->update([
+            PatientCounsellorClerkingNotes::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services_id' =>  $request->complexity_services_id,
                 'location_services_id' =>  $request->location_services_id,
                 'outcome_id' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-        }
-        else if ($request->type == "PatientIndexForm") {
+        } else if ($request->type == "PatientIndexForm") {
 
-            PatientIndexForm::where('id','=',$request->tbid)->update([
+            PatientIndexForm::where('id', '=', $request->tbid)->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_service' =>  $request->complexity_services_id,
                 'location_of_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
+        } else if ($request->type == "PsychiatricProgressNote") {
 
-        }
-
-        else if ($request->type == "PsychiatricProgressNote") {
-
-            PsychiatricProgressNote::where('id','=',$request->tbid)->update([
+            PsychiatricProgressNote::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services_id' =>  $request->complexity_services_id,
                 'location_services_id' =>  $request->location_services_id,
                 'outcome_id' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-        }
-        else if ($request->type == "CPSProgressNote") {
+        } else if ($request->type == "CPSProgressNote") {
 
-            CpsProgressNote::where('id','=',$request->tbid)->update([
+            CpsProgressNote::where('id', '=', $request->tbid)->update([
                 'service_category' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else if ($request->type == "SEProgressNote") {
-            CpsProgressNote::where('id','=',$request->tbid)->update([
+        } else if ($request->type == "SEProgressNote") {
+            CpsProgressNote::where('id', '=', $request->tbid)->update([
                 'service_category' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else if ($request->type == "CounsellingProgressNote") {
-            CounsellingProgressNote::where('id','=',$request->tbid)->update([
+        } else if ($request->type == "CounsellingProgressNote") {
+            CounsellingProgressNote::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services_id' =>  $request->complexity_services_id,
                 'location_services_id' =>  $request->location_services_id,
                 'outcome_id' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else if ($request->type == "EtpProgressNote") {
-            EtpProgressNote::where('id','=',$request->tbid)->update([
+        } else if ($request->type == "EtpProgressNote") {
+            EtpProgressNote::where('id', '=', $request->tbid)->update([
                 'service_category' => $request->category_services,
                 'complexity_service' =>  $request->complexity_services_id,
                 'location_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else  if ($request->type == "JobClubProgressNote") {
-            JobClubProgressNote::where('id','=',$request->tbid)->update([
+        } else  if ($request->type == "JobClubProgressNote") {
+            JobClubProgressNote::where('id', '=', $request->tbid)->update([
                 'service_category' => $request->category_services,
                 'complexity_service' =>  $request->complexity_services_id,
                 'location_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else  if ($request->type == "ConsultationDischargeNote") {
-            ConsultationDischargeNote::where('id','=',$request->tbid)->update([
+        } else  if ($request->type == "ConsultationDischargeNote") {
+            ConsultationDischargeNote::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else  if ($request->type == "RehabDischargeNote") {
-            RehabDischargeNote::where('id','=',$request->tbid)->update([
+        } else  if ($request->type == "RehabDischargeNote") {
+            RehabDischargeNote::where('id', '=', $request->tbid)->update([
                 'service_category' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else if ($request->type == "CpsDischargeNote") {
-            CpsDischargeNote::where('id','=',$request->tbid)->update([
+        } else if ($request->type == "CpsDischargeNote") {
+            CpsDischargeNote::where('id', '=', $request->tbid)->update([
                 'service_category' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-        }
-
-        else  if ($request->type == "PatientCarePlanAndCaseReviewForm") {
-            PatientCarePaln::where('id','=',$request->tbid)->update([
+        } else  if ($request->type == "PatientCarePlanAndCaseReviewForm") {
+            PatientCarePaln::where('id', '=', $request->tbid)->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_services' =>  $request->complexity_services_id,
                 'location_of_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else  if ($request->type == "JobStartReport") {
-            JobStartForm::where('id','=',$request->tbid)->update([
+        } else  if ($request->type == "JobStartReport") {
+            JobStartForm::where('id', '=', $request->tbid)->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_services' =>  $request->complexity_services_id,
                 'location_of_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else  if ($request->type == "JobEndReport") {
-            JobStartForm::where('id','=',$request->tbid)->update([
+        } else  if ($request->type == "JobEndReport") {
+            JobStartForm::where('id', '=', $request->tbid)->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_services' =>  $request->complexity_services_id,
                 'location_of_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
+        } else  if ($request->type == "JobTransitionReport") {
 
-        }
-        else  if ($request->type == "JobTransitionReport") {
-
-            JobTransitionReport::where('id','=',$request->tbid)->update([
+            JobTransitionReport::where('id', '=', $request->tbid)->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_services' =>  $request->complexity_services_id,
                 'location_of_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-        }
-        else  if ($request->type == "LaserAssessment") {
-            LASERAssesmenForm::where('id','=',$request->tbid)->update([
+        } else  if ($request->type == "LaserAssessment") {
+            LASERAssesmenForm::where('id', '=', $request->tbid)->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_services' =>  $request->complexity_services_id,
                 'location_of_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else  if ($request->type == "TriageForm") {
-            TriageForm::where('id','=',$request->tbid)->update([
+        } else  if ($request->type == "TriageForm") {
+            TriageForm::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services_id' =>  $request->complexity_services_id,
                 'location_services_id' =>  $request->location_services_id,
                 'outcome_id' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else if ($request->type == "JobInterestCheckList") {
-            TriageForm::where('id','=',$request->tbid)->update([
+        } else if ($request->type == "JobInterestCheckList") {
+            TriageForm::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
+        } else if ($request->type == "WorkAnalysisForm") {
 
-        }
-        else if ($request->type == "WorkAnalysisForm") {
-
-            TriageForm::where('id','=',$request->tbid)->update([
+            TriageForm::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else if ($request->type == "ListofJobClub") {
-            TriageForm::where('id','=',$request->tbid)->update([
+        } else if ($request->type == "ListofJobClub") {
+            TriageForm::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else  if ($request->type == "ListofEtp") {
-            ListOfETP::where('id','=',$request->tbid)->update([
+        } else  if ($request->type == "ListofEtp") {
+            ListOfETP::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
+        } else if ($request->type == "ListofJobSearch") {
 
-        }
-        else if ($request->type == "ListofJobSearch") {
-
-            ListOfETP::where('id','=',$request->tbid)->update([
+            ListOfETP::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
+        } else if ($request->type == "LogMeetingWithEmployer") {
 
-        }
-        else if ($request->type == "LogMeetingWithEmployer") {
-
-            LogMeetingWithEmployer::where('id','=',$request->tbid)->update([
+            LogMeetingWithEmployer::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
+        } else if ($request->type == "ListofPreviousCurrentJob") {
 
-        }
-        else if ($request->type == "ListofPreviousCurrentJob") {
-
-            LogMeetingWithEmployer::where('id','=',$request->tbid)->update([
+            LogMeetingWithEmployer::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else if ($request->type == "InternalReferralForm") {
-            InternalReferralForm::where('id','=',$request->tbid)->update([
+        } else if ($request->type == "InternalReferralForm") {
+            InternalReferralForm::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else if ($request->type == "ExternalReferralForm") {
-            ExternalReferralForm::where('id','=',$request->tbid)->update([
+        } else if ($request->type == "ExternalReferralForm") {
+            ExternalReferralForm::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else  if ($request->type == "CpsRefferalForm") {
-            CPSReferralForm::where('id','=',$request->tbid)->update([
+        } else  if ($request->type == "CpsRefferalForm") {
+            CPSReferralForm::where('id', '=', $request->tbid)->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_services' =>  $request->complexity_services_id,
                 'location_of_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else if ($request->type == "OcctRefferalForm") {
-            Occt_Referral_Form::where('id','=',$request->tbid)->update([
+        } else if ($request->type == "OcctRefferalForm") {
+            Occt_Referral_Form::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else if ($request->type == "PsychologyRefferalForm") {
-            PsychologyReferral::where('id','=',$request->tbid)->update([
+        } else if ($request->type == "PsychologyRefferalForm") {
+            PsychologyReferral::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
-        }
-        else if ($request->type == "RehabRefferalAndClinicalForm") {
-            RehabReferralAndClinicalForm::where('id','=',$request->tbid)->update([
+        } else if ($request->type == "RehabRefferalAndClinicalForm") {
+            RehabReferralAndClinicalForm::where('id', '=', $request->tbid)->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where('id', '=', $request->apid)->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
                 'end_appoitment_date' => $request->end_appoitment_date
             ]);
-
         }
         return response()->json(["message" => "List Updated Successfully",  "code" => 200]);
     }
