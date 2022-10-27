@@ -53,7 +53,7 @@ class PatientRegistrationController extends Controller
             'other_maritalList' =>'',
             'other_feeExemptionStatus' =>'',
             'other_occupationStatus' =>'',
-
+        
 
         ]);
         if($request->Sharp){
@@ -64,7 +64,7 @@ class PatientRegistrationController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-
+        // dd($request);
         $patientregistration = [
             'added_by' =>  $request->added_by,
             'branch_id' =>$request->branch_id,
@@ -117,11 +117,11 @@ class PatientRegistrationController extends Controller
             'household_income' =>$request->household_income,
             // 'ethnic_group' =>$request->ethnic_group,patient_need_triage_screening
             'status' => "1",
-            'sharp' => $request->Sharp, //0 represents for sharp registration patient list
+            'sharp' => $request->Sharp, //1 represents for sharp registration patient list
             'other_race' => $request->other_race,
             'other_religion' => $request->other_religion,
             'other_accommodation' => $request->other_accommodation,
-            'other_maritalList' => $request->other_maritalList,
+            'other_marritalList' => $request->other_maritalList,
             'other_feeExemptionStatus' => $request->other_feeExemptionStatus,
             'other_occupationStatus' => $request->other_occupationStatus,
         ];
@@ -130,18 +130,16 @@ class PatientRegistrationController extends Controller
         $validateCitizenship = [];
 
         if ($request->citizentype == 'Malaysian') {
-
             $validateCitizenship['nric_type'] = 'required';
             $validateCitizenship['nric_no'] = 'required|unique:patient_registration';
             $patientregistration['nric_type'] =  $request->nric_type;
             $patientregistration['nric_no'] =  $request->nric_no;
         } else if ($request->citizentype == 'Permanent Resident') {
-
-            //$validateCitizenship['nric_no'] = 'required|unique:patient_registration';
+            $validateCitizenship['nric_no'] = 'required|unique:patient_registration';
+            $patientregistration['nric_no'] =  $request->nric_no;
             $patientregistration['nric_no'] =  $request->nric_no1;
 
         } else if ($request->citizentype == 'Foreigner') {
-
             $validateCitizenship['passport_no'] = 'required|string|unique:patient_registration';
             $validateCitizenship['expiry_date'] = 'required';
             $validateCitizenship['country_id'] = 'required|integer';
@@ -164,7 +162,7 @@ class PatientRegistrationController extends Controller
         }
 
         try {
-
+            // dd($patientregistration);
             $Patient = PatientRegistration::firstOrCreate($patientregistration);
             $MRN = $this->generateMRNString(10, $Patient['id']);
             PatientRegistration::where('id', $Patient['id'])->update(['patient_mrn' => $MRN]);
@@ -173,7 +171,7 @@ class PatientRegistrationController extends Controller
                 'added_by' =>  $Patient['added_by'],
                 'date' =>  date("Y-m-d h:i:s"),
                 'time' =>  $Patient['created_at'],
-                'activity' => "Patient Registration",
+                'activity' => "Patient Registration", 
             ];
             $HOD = TransactionLog::insert($tran);
             $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
@@ -186,6 +184,14 @@ class PatientRegistrationController extends Controller
             ];
             $HOD = Notifications::insert($notifi);
         }
+            $notifi12=[
+                'added_by' => $Patient['added_by'],
+                'patient_id' =>   $Patient['id'],
+                'created_at' => $date->format('Y-m-d H:i:s'),
+                'message' =>  'Patient Registration',
+            ];
+            $HOD = Notifications::insert($notifi12);
+
         } catch (Exception $e) {
             return response()->json(["message" => $e->getMessage(), 'Patient Registration' => $patientregistration, "code" => 200]);
         }
@@ -204,17 +210,20 @@ class PatientRegistrationController extends Controller
 
     public function getPatientRegistrationById(Request $request)
     {
+        // $list = PatientRegistration::where('id', '=', $request->id)->with('salutation:section_value,id')
+        //     ->with('gender:section_value,id')->with('maritialstatus:section_value,id')
+        //     ->with('citizenships:section_value,id')->get();
         $list = PatientRegistration::where('id', '=', $request->id)
-            ->with('salutation:section_value,id')->with('typeic:code,id')
-            ->with('gender:section_value,id')->with('maritialstatus:section_value,id')
-            ->with('city:city_name,id')->with('kincity:city_name,id')
-            ->with('race:section_value,id')->with('religion:section_value,id')
-            ->with('occupation:section_value,id')
-            ->with('fee:section_value,id')
-            ->with('accomondation:section_value,id')
-            ->with('citizenships:section_value,id')
-
-            ->get();
+        ->with('salutation:section_value,id')->with('typeic:code,id')
+        ->with('gender:section_value,id')->with('maritialstatus:section_value,id')
+        ->with('city:city_name,id')->with('kincity:city_name,id')
+        ->with('race:section_value,id')->with('religion:section_value,id')
+        ->with('occupation:section_value,id')
+        ->with('fee:section_value,id')
+        ->with('accomondation:section_value,id')
+        ->with('citizenships:section_value,id')
+        
+        ->get();
             $result = [];
         foreach ($list as $key => $val) {
             // dd($list);
@@ -261,6 +270,7 @@ class PatientRegistrationController extends Controller
 
             //  dd($result);
         }
+        // dd($result);
         return response()->json(["message" => "Patients List", 'list' => $list, "code" => 200]);
 
     }
@@ -285,6 +295,7 @@ class PatientRegistrationController extends Controller
             } else {
                 $result[$key]['salutation'] = 'NA';
             }
+
             if ($val['gender'] != null) {
                 $result[$key]['gender'] = $val['gender'][0]['section_value'] ?? 'NA';
             } else {
@@ -427,6 +438,10 @@ class PatientRegistrationController extends Controller
             $result[$key]['id'] = $val['id'];
             $result[$key]['age'] = date_diff(date_create($val['birth_date']), date_create('today'))->y ?? 'NA';
             $result[$key]['nric_no'] = $val['nric_no'] ?? 'NA';
+            $result[$key]['passport_no'] = $val['passport_no'] ?? 'NA';
+            // dd( $val['salutation'][0]['section_value']);
+            // $result[$key]['salutation'] = $val['salutation'][0]['section_value'] ?? 'NA';
+
             if ($val['nric_no'] != null){
                 $result[$key]['nric_id'] = $val['nric_no'];
             }
@@ -448,6 +463,7 @@ class PatientRegistrationController extends Controller
             } else {
                 $result[$key]['service'] = 'NA';
             }
+
 
             if ($val['service'] != null) {
                 $result[$key]['service'] = $val['service']['service_name'];
@@ -508,7 +524,7 @@ class PatientRegistrationController extends Controller
             'other_maritalList' =>'',
             'other_feeExemptionStatus' =>'',
             'other_occupationStatus' =>'',
-
+         
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -568,7 +584,7 @@ class PatientRegistrationController extends Controller
             'other_race' => $request->other_race,
             'other_religion' => $request->other_religion,
             'other_accommodation' => $request->other_accommodation,
-            'other_maritalList' => $request->other_maritalList,
+            'other_marritalList' => $request->other_maritalList,
             'other_feeExemptionStatus' => $request->other_feeExemptionStatus,
             'other_occupationStatus' => $request->other_occupationStatus,
         ];
@@ -666,6 +682,7 @@ class PatientRegistrationController extends Controller
     //         ELSE DATE_FORMAT(transaction_log.time, '%h:%i PM')
     //    END) as time"),)
        ->select(DB::raw("DATE_FORMAT(transaction_log.date, '%d-%m-%Y') as date"),'transaction_log.activity','users.name',
+        //    'transaction_log.time as time')
            DB::raw("DATE_FORMAT(transaction_log.time, '%h:%i %p') as time"))
         ->where('transaction_log.patient_id', '=', $request->patient_id)
             ->get();
@@ -691,6 +708,17 @@ class PatientRegistrationController extends Controller
             'house_no' => '',
             'branch_id' =>'',
 
+            // 'services_type' => 'required',
+            // 'referral_type' => 'required',
+            // 'referral_letter' => 'max:10240',
+            // 'address1' => 'required',
+            // 'kin_name_asin_nric' => '',
+            // 'kin_relationship_id' => '',
+            // 'kin_mobile_no' => '',
+            // 'kin_address1' => '',
+            // 'drug_allergy' => 'required',
+            // 'traditional_medication' => 'required',
+            // 'other_allergy' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -743,7 +771,7 @@ class PatientRegistrationController extends Controller
             // 'other_allergy' => $request->other_allergy,
             // 'other_description' => $request->other_description,
             'status' => "1"
-
+            
         ];
 
 
