@@ -126,6 +126,68 @@ class PatientAppointmentDetailsController extends Controller
         }
     }
 
+    public function storeByPID(Request $request)
+    {
+        // patient_mrn_id is treated as patient_id
+        $validator = Validator::make($request->all(), [
+            'added_by' => 'required|integer',
+            'booking_date' => 'required',
+            'patient_mrn_id' => 'required',
+            'booking_time' => 'required',
+            'duration' => 'required|integer',
+            'appointment_type' => 'required|integer',
+            'type_visit' => 'required|integer',
+            'patient_category' => 'required|integer',
+            'assign_team' => 'required'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+
+        $getPatientIC = PatientRegistration::select('nric_no')
+            ->where('id', $request->patient_mrn_id)
+            ->pluck('nric_no');
+
+        if (count($getPatientIC) == 0) {
+            return response()->json(["message" => "This user is not registered", "code" => 401]);
+        } else {
+            $booking_date = $request->booking_date;
+            $booking_time = $request->booking_time;
+            $assign_team = $request->assign_team;
+            $endTime = date("H:i", strtotime('+30 minutes', strtotime($booking_time)));
+
+            $chkPoint =  PatientAppointmentDetails::where(function ($query) use ($booking_date, $booking_time, $assign_team, $endTime) {
+                $query->where('booking_date', '=', $booking_date)->whereBetween('booking_time', [$booking_time, $endTime])->where('assign_team', '=', $assign_team);
+            })->where('status', '1')->get();
+            //dd($chkPoint);
+            if ($chkPoint->count() == 0) {
+                $service = [
+                    'added_by' => $request->added_by,
+                    'nric_or_passportno' => $getPatientIC[0],
+                    'booking_date' => $request->booking_date,
+                    'booking_time' => $request->booking_time,
+                    'patient_mrn_id' =>$request->patient_mrn_id,
+                    'duration' => $request->duration,
+                    'appointment_type' => $request->appointment_type,
+                    'type_visit' => $request->type_visit,
+                    'patient_category' => $request->patient_category,
+                    'assign_team' => $request->assign_team
+                ];
+                $patient = PatientAppointmentDetails::create($service);
+                $notifi = [
+                    'patient_id' => $patient['patient_mrn_id'],
+                    'added_by' =>   $patient['added_by'],
+                    'created_at' =>  date("Y-m-d h:i:s"),
+                    'message' =>  'request for appointment(s)',
+                ];
+                $HOD = Notifications::insert($notifi);
+                return response()->json(["message" => "Patient Appointment Created Successfully!", "code" => 200]);
+            } else {
+                return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
+            }
+        }
+    }
+
     public function checkNricNoORPassport(Request $request)
     {
         $validator = Validator::make($request->all(), [

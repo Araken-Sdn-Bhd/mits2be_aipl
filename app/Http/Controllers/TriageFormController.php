@@ -65,7 +65,7 @@ class TriageFormController extends Controller
         $chkPoint1 =  PatientRegistration::where(function ($query) use ($patient_mrn_id) {
             $query->where('id', '=', $patient_mrn_id);
         })->where('status', '1')->get();
-
+        
         if ($chkPoint1->count() == 0) {
             return response()->json(["message" => "This user is not registered", "code" => 401]);
         } else {
@@ -105,7 +105,7 @@ class TriageFormController extends Controller
                     'placement_referred' => $request->placement_referred,
                     'placement_discharge' => $request->placement_discharge,
                     'screening_id' => $request->screening_id,
-
+                    'score' => $request->score,
                     'appointment_date' => $request->appointment_date,
                     'appointment_time' => $request->appointment_time,
                     'appointment_duration' => $request->appointment_duration,
