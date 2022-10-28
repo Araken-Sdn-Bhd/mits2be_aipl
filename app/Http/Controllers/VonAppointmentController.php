@@ -9,6 +9,7 @@ use App\Models\HospitalBranchTeamManagement;
 use App\Models\JobCompanies;
 use App\Models\AreasOfInvolvement;
 use App\Models\EtpRegister;
+use App\Models\VonOrgRepresentativeBackground;
 use Exception;
 use Validator;
 use Illuminate\Support\Facades\DB;
@@ -186,6 +187,7 @@ class VonAppointmentController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
+        VonOrgRepresentativeBackground::where('id', $request->id)->update(['status' => $request->status]);
         VonAppointment::where('id', $request->id)->update(['status' => $request->status]);
         return response()->json(["message" => "Appointment status updated!", "code" => 200]);
     }
@@ -196,7 +198,6 @@ class VonAppointmentController extends Controller
             'id' => 'required|integer',
             'status' => 'required|string'
         ]);
-        dd($request);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }

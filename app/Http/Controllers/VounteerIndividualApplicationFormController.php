@@ -1407,13 +1407,13 @@ class VounteerIndividualApplicationFormController extends Controller
         if ($request->section == 'individual') {
             if (count($search) == 0) {
                 // $indi = VonOrgRepresentativeBackground::where('name', 'LIKE', '%' . $request->name. '%')->where('status', '0')->get();
-                $indi = VonOrgRepresentativeBackground::where('section', 'individual')->where (function($query) use ($request){
+                $indi = VonOrgRepresentativeBackground::where('section', 'individual')->where('status', 1)->where (function($query) use ($request){
                     if ($request->name != '') {
                         return $query->where ('name','LIKE', '%'. $request->name .'%');
                     }
                 })->get();
             } else {
-                $indi = VonOrgRepresentativeBackground::where($search)->where (function($query) use ($request){
+                $indi = VonOrgRepresentativeBackground::where($search)->where('status', 1)->where (function($query) use ($request){
                     if ($request->name != '') {
                         return $query->where ('name','LIKE', '%'. $request->name .'%');
                     }
@@ -1447,15 +1447,16 @@ class VounteerIndividualApplicationFormController extends Controller
                     }
                 }
             }
-        } else if ($request->section == 'group') {
+        }
+         else if ($request->section == 'group') {
             if (count($search) == 0) {
-                $group = VonOrgRepresentativeBackground::where('section', 'group')->where (function($query) use ($request){
+                $group = VonOrgRepresentativeBackground::where('section', 'group')->where('status', 1)->where (function($query) use ($request){
                     if ($request->name != '') {
                         return $query->where ('name','LIKE', '%'. $request->name .'%');
                     }
                 })->get();
             } else {
-                $group = VonOrgRepresentativeBackground::where('section', 'group')->where($search)->where (function($query) use ($request){
+                $group = VonOrgRepresentativeBackground::where('section', 'group')->where('status', 1)->where($search)->where (function($query) use ($request){
                     if ($request->name != '') {
                         return $query->where ('name','LIKE', '%'. $request->name .'%');
                     }
@@ -1488,13 +1489,13 @@ class VounteerIndividualApplicationFormController extends Controller
             }
         } else if ($request->section == 'organization') {
             if (count($search) == 0) {
-                $org = VonOrgRepresentativeBackground::leftJoin('von_org_background','von_org_representative_background.org_background_id','=','von_org_background.id')->where('section', 'org')->where (function($query) use ($request){
+                $org = VonOrgRepresentativeBackground::leftJoin('von_org_background','von_org_representative_background.org_background_id','=','von_org_background.id')->where('section', 'org')->where('status', 1)->where (function($query) use ($request){
                     if ($request->name != '') {
                         return $query->where ('name','LIKE', '%'. $request->name .'%')->orWhere('von_org_background.org_name','LIKE', '%'. $request->name .'%');
                     }
                 })->get();
             } else {
-                $org = VonOrgRepresentativeBackground::leftJoin('von_org_background','von_org_representative_background.org_background_id','=','von_org_background.id')->where('section', 'org')->where (function($query) use ($request){
+                $org = VonOrgRepresentativeBackground::leftJoin('von_org_background','von_org_representative_background.org_background_id','=','von_org_background.id')->where('section', 'org')->where('status', 1)->where (function($query) use ($request){
                     if ($request->name != '') {
                         return $query->where ('name','LIKE', '%'. $request->name .'%')->orWhere('von_org_background.org_name','LIKE', '%'. $request->name .'%');
                     }
@@ -1527,17 +1528,18 @@ class VounteerIndividualApplicationFormController extends Controller
                     $k++;
                 }
             }
-        } else {
+        }
+        else {
 
             if (count($search) == 0) {
                 // $indi = VonOrgRepresentativeBackground::where('name', 'LIKE', '%' . $request->name. '%')->where('status', '0')->get();
-                $indi = VonOrgRepresentativeBackground::where('section', 'individual')->where (function($query) use ($request){
+                $indi = VonOrgRepresentativeBackground::where('section', 'individual')->where('status', 1)->where (function($query) use ($request){
                     if ($request->name != '') {
                         return $query->where ('name','LIKE', '%'. $request->name .'%');
                     }
                 })->get();
             } else {
-                $indi = VonOrgRepresentativeBackground::leftJoin('von_org_background','von_org_representative_background.org_background_id','=','von_org_background.id')->where($search)->where (function($query) use ($request){
+                $indi = VonOrgRepresentativeBackground::leftJoin('von_org_background','von_org_representative_background.org_background_id','=','von_org_background.id')->where('status', 1)->where($search)->where (function($query) use ($request){
                     if ($request->name != '') {
                         return $query->where ('name','LIKE', '%'. $request->name .'%')->orWhere('von_org_background.org_name','LIKE', '%'. $request->name .'%');
                     }
@@ -1554,7 +1556,11 @@ class VounteerIndividualApplicationFormController extends Controller
                         $result[$k]['area_of_involvment'] = $val['area_of_involvement'];
                         $result[$k]['phone_number'] = $val['phone_number'];
                         $result[$k]['email'] = $val['email'];
-                        $result[$k]['screening'] = ($val['screening_mode'] == '1') ? 'Yes' : 'No';
+                        if ($val['screening_mode'] == '1') {
+                            $result[$k]['screening'] = 'Yes';
+                        } else if ($val['screening_mode'] == '0'){
+                            $result[$k]['screening'] = 'No';
+                        }
                         if ($val['area_of_involvement'] == 'Volunteerism') {
                             $services = Volunteerism::where('parent_section_id', $val['id'])->get()->pluck('mentari_services')->toArray();
                             $result[$k]['services'] = ($services) ? $services[0] : 'NA';
@@ -1572,13 +1578,13 @@ class VounteerIndividualApplicationFormController extends Controller
                 }
             }
             if (count($search) == 0) {
-                $group = VonOrgRepresentativeBackground::where('section', 'group')->where (function($query) use ($request){
+                $group = VonOrgRepresentativeBackground::where('section', 'group')->where('status', 1)->where (function($query) use ($request){
                     if ($request->name != '') {
                         return $query->where ('name','LIKE', '%'. $request->name .'%');
                     }
                 })->get();
             } else {
-                $group = VonOrgRepresentativeBackground::where('section', 'group')->where($search)->where (function($query) use ($request){
+                $group = VonOrgRepresentativeBackground::where('section', 'group')->where('status', 1)->where($search)->where (function($query) use ($request){
                     if ($request->name != '') {
                         return $query->where ('name','LIKE', '%'. $request->name .'%');
                     }
@@ -1609,19 +1615,19 @@ class VounteerIndividualApplicationFormController extends Controller
                 }
             }
             if (count($search) == 0) {
-                $org = VonOrgRepresentativeBackground::leftJoin('von_org_background','von_org_representative_background.org_background_id','=','von_org_background.id')->where('section', 'org')->where (function($query) use ($request){
+                $org = VonOrgRepresentativeBackground::leftJoin('von_org_background','von_org_representative_background.org_background_id','=','von_org_background.id')->where('section', 'org')->where('status', 1)->where (function($query) use ($request){
                     if ($request->name != '') {
                         return $query->where ('name','LIKE', '%'. $request->name .'%')->orWhere('von_org_background.org_name','LIKE', '%'. $request->name .'%');
                     }
                 })->get();
             } else {
-                $org = VonOrgRepresentativeBackground::leftJoin('von_org_background','von_org_representative_background.org_background_id','=','von_org_background.id')->where('section', 'org')->where($search)->where (function($query) use ($request){
+                $org = VonOrgRepresentativeBackground::leftJoin('von_org_background','von_org_representative_background.org_background_id','=','von_org_background.id')->where('section', 'org')->where('status', 1)->where($search)->where (function($query) use ($request){
                     if ($request->name != '') {
                         return $query->where ('name','LIKE', '%'. $request->name .'%')->orWhere('von_org_background.org_name','LIKE', '%'. $request->name .'%');
                     }
                 })->get();
             }
-            // $org = VonOrgRepresentativeBackground::where('section', 'org')->where($search)->get();
+            // // $org = VonOrgRepresentativeBackground::where('section', 'org')->where($search)->get();
             if ($org) {
                 foreach ($org as $key => $val) {
                     $result[$k]['id'] = $val['id'];
