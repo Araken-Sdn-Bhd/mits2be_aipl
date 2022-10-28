@@ -20,7 +20,6 @@ class PatientByAgeReportController extends Controller
 
     public function getPatientByAgeReport(Request $request)
     {
-        $request->toDate ="2022-06-20";
         $response = PatientAppointmentDetails::select('*')
         ->whereBetween('booking_date', [$request->fromDate, $request->toDate])
         ->where('appointment_status', '1')->get()->toArray();
@@ -75,7 +74,7 @@ class PatientByAgeReportController extends Controller
 
             $patientDetails =  PatientRegistration::whereIn('id', $patientArray)->where($demo)->get()->toArray();
 
-            // dd($patientDetails);
+             
             if ($patientDetails) {
                 $patientInfo = [];
                 foreach ($patientDetails as $key => $val) {
