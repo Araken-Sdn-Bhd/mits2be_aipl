@@ -747,7 +747,8 @@ class ReportController extends Controller
                     $result[$index]['Registration_Time'] = date('h:i:s A', strtotime($patientInfo['created_at']));
                     $result[$index]['nric_no'] = $patientInfo['nric_no'];
                     $result[$index]['Name'] = $patientInfo['name_asin_nric'];
-                    $result[$index]['Attendance_status'] = get_appointment_status($v['appointment_status']);
+                    $result[$index]['Attendance_status'] = $v['appointment_status'];
+                    // $result[$index]['Attendance_status'] = get_appointment_status($v['appointment_status']);
                     $result[$index]['Name'] = $patientInfo['name_asin_nric'];
                     $result[$index]['ADDRESS'] = $patientInfo['address1'] . ' ' . $patientInfo['address2'] . ' ' . $patientInfo['address3'];
                     $result[$index]['CITY'] = $city_name;
@@ -782,6 +783,7 @@ class ReportController extends Controller
         // dd($result);
         if ($result) {
             $totalReports = count($result);
+            
             $filePath = '';
             if (isset($request->report_type) && $request->report_type == 'excel') {
                 $filePath = 'downloads/report/general-report-' . time() . '.xlsx';
