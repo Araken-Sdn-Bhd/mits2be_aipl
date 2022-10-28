@@ -159,7 +159,12 @@ class VonAppointmentController extends Controller
                 $list[$key]['app_date'] = date('d/m/Y', strtotime($val['booking_date']));
                 $list[$key]['app_time'] = date('H:i', strtotime($val['booking_time']));
                 $dr = JobCompanies::where('id', $val['interviewer_id'])->get()->pluck('contact_name')->toArray();
-                $list[$key]['dr_name'] = $dr[0];
+                if (!$dr){
+                    $list[$key]['dr_name'] = 'NA';
+                } else {
+
+                    $list[$key]['dr_name'] = $dr[0];
+                }
                 $aoi = AreasOfInvolvement::where('id', $val['area_of_involvement'])->get()->pluck('name')->toArray();
                 $list[$key]['aoi'] = $aoi[0];
                 // $service = EtpRegister::where('id', $val['services_type'])->get()->pluck('etp_name')->toArray();
@@ -167,6 +172,7 @@ class VonAppointmentController extends Controller
                 $list[$key]['service'] = $val['services_type'];
             }
         }
+
         return response()->json(["message" => "Von List", "list" => $list, "code" => 200]);
         // dd($list);
     }
