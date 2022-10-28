@@ -455,7 +455,7 @@ class PatientAppointmentDetailsController extends Controller
         }
 
         $resultSet = [];
-        $sql = PatientAppointmentDetails::select('id', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'appointment_status','staff_id')
+        $sql = PatientAppointmentDetails::select('id', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'appointment_status')
             ->with('service:service_name,id')
             ->where('status', '1');
         if ($request->service_id != '0') {
@@ -500,18 +500,9 @@ class PatientAppointmentDetailsController extends Controller
                 $result[$key]['appointment_date'] = $val['booking_date'] ??  'NA';
                 $result[$key]['appointment_time'] = date('H:i', strtotime($val['booking_time'])) ??  'NA';
                 $result[$key]['appointment_status'] = $val['appointment_status'] ??  'NA';
-                // dd($val['staff_id']);
-                if ($val['staff_id'] != null ){
-                    // dd($val['staff_id']);
-                    $name = StaffManagement::select('id', 'name')
-                    ->where('id','=', $val['staff_id'])->first();
-                    // dd($name);
-                    $result[$key]['team_name'] = $name->name;
-                } else {
-                    $team_id = $val['assign_team'] ??  'NA';
-                    $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get()->pluck('team_name');
-                    $result[$key]['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
-                }
+                $team_id = $val['assign_team'] ??  'NA';
+                $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get()->pluck('team_name');
+                $result[$key]['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
             }
         }
         return response()->json(["message" => "Appointment List.", 'list' => $result, "code" => 200]);
@@ -654,32 +645,6 @@ class PatientAppointmentDetailsController extends Controller
             ['id' => $request->appointment_id]
         )->update([
             'appointment_status' =>  $request->appointment_status,
-        ]);
-    }else{
-        PatientAppointmentDetails::where(
-            ['id' => $request->appointment_id]
-        )->update([
-            'appointment_status' =>  $request->appointment_status,
-        ]);
-    }
-
-        return response()->json(["message" => "Appointment Status Updated Successfully!", "code" => 200]);
-    }
-
-    public function cancelappointmentstatus(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'appointment_id' => 'required|integer',
-            'appointment_status' => 'required|integer'
-        ]);
-        if ($validator->fails()) {
-            return response()->json(["message" => $validator->errors(), "code" => 422]);
-        }
-        if($request->appointment_status == 2 || $request->appointment_status == '2'){
-        PatientAppointmentDetails::where(
-            ['id' => $request->appointment_id]
-        )->update([
-            'appointment_status' =>  $request->appointment_status,
             'status' =>  '0',
         ]);
     }else{
@@ -749,12 +714,6 @@ class PatientAppointmentDetailsController extends Controller
             $status  = '1';
         } else if ($request->service == "Rehabilitation"){
             $status = '4';
-        } else if ($request->service == "Rehabilitation-SE"){
-            $status = '4';
-        } else if ($request->service == "Rehabilitation-ETP"){
-            $status = '4';
-        } else if ($request->service == "Rehabilitation-Job Club"){
-            $status = '4';
         } else if ($request->service == "Community Psychiatric Service (CPS)"){
             $status = '4';
         }
@@ -785,7 +744,7 @@ class PatientAppointmentDetailsController extends Controller
             ELSE DATE_FORMAT(psychiatry_clerking_note.created_at, '%h:%i PM')
        END) as time"), DB::raw("DATE_FORMAT(psychiatry_clerking_note.created_at, '%d-%m-%Y') as date"), 'psychiatry_clerking_note.status', 'psychiatry_clerking_note.id', 'users.name', DB::raw("'PsychiatryClerkingNote' as type"), DB::raw("'Psychiatry Clerking Note' as section_name"), "psychiatry_clerking_note.created_at")
             ->where('psychiatry_clerking_note.patient_mrn_id', $request->patient_id)
-            ->orderBy(DB::raw("str_to_date(psychiatry_clerking_note.created_at,'%d-%m-%Y')"), 'desc')
+            ->orderBy('psychiatry_clerking_note.created_at', 'asc')
             ->get();
 
         $Counsellor_Clerking_Note = DB::table('patient_counsellor_clerking_notes')
@@ -825,7 +784,7 @@ class PatientAppointmentDetailsController extends Controller
                 "patient_index_form.created_at"
             )
             ->where('patient_index_form.patient_mrn_id', $request->patient_id)
-            ->orderBy('patient_index_form.created_at', 'asc')
+            ->orderBy(DB::raw("str_to_date(psychiatry_clerking_note.created_at,'%d-%m-%Y')"), 'desc')
             ->get();
 
         $psychiatric_progress_note = DB::table('psychiatric_progress_note')
@@ -1654,7 +1613,6 @@ class PatientAppointmentDetailsController extends Controller
 
         // $list["Psychiatry_Clerking_Note"]=$Psychiatry_Clerking_Note;
         // $list["Counsellor_Clerking_Note"]=$Counsellor_Clerking_Note;
-
         $list = collect($list)->sortByDesc('created_at')->values();
 
         return response()->json(["message" => "List", 'Data' => $list, "code" => 200]);
@@ -2074,7 +2032,7 @@ class PatientAppointmentDetailsController extends Controller
         return response()->json(["message" => "List", 'Data' => $list, "code" => 200]);
     }
 
-    public function fetchPatientStaffById(Request $request)
+    public function fetchPatientStaffById22(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'patient_id' => 'required|integer'  //patient_id is treated as staff id
@@ -2117,6 +2075,7 @@ class PatientAppointmentDetailsController extends Controller
                 'psychiatry_clerking_note.outcome_id',
             )
             ->get();
+            // dd($Psychiatry_Clerking_Note);
 
         $Counsellor_Clerking_Note = DB::table('patient_counsellor_clerking_notes')
             //  ->join('staff_management', 'patient_counsellor_clerking_notes.added_by', '=', 'staff_management.id')
@@ -3767,55 +3726,83 @@ class PatientAppointmentDetailsController extends Controller
         return response()->json(["message" => "List", 'Data' => $list, "code" => 200]);
     }
 
-    public function fetchPatientStaffById22()
+    public function fetchPatientStaffById(Request $request)
     {
-        $tabData = [
-            array("tab" => "psychiatry_clerking_note", "col" => "type_diagnosis_id", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "psychiatry_clerking_note", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "patient_counsellor_clerking_notes", "col" => "type_diagnosis_id", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "patient_counsellor_clerking_notes", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "psychiatric_progress_note", "col" => "type_diagnosis_id", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "psychiatric_progress_note", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "cps_progress_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "cps_progress_note", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "se_progress_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "se_progress_note", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "counselling_progress_note", "col" => "type_diagnosis_id", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "counselling_progress_note", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "etp_progress_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "etp_progress_note", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "job_club_progress_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "job_club_progress_note", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "consultation_discharge_note", "col" => "type_diagnosis_id", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "consultation_discharge_note", "id" => "id", "patient_mrn_id" => "patient_id"),
-            array("tab" => "rehab_discharge_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "rehab_discharge_note", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "cps_discharge_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "cps_discharge_note", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "patient_care_paln", "col" => "type_of_diagnosis", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "patient_care_paln", "id" => "id", "patient_mrn_id" => "patient_id"),
-            array("tab" => "job_start_form", "col" => "type_of_diagnosis", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "job_start_form", "id" => "id", "patient_mrn_id" => "patient_id"),
-            array("tab" => "job_end_report", "col" => "type_of_diagnosis", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "job_end_report", "id" => "id", "patient_mrn_id" => "patient_id"),
-            array("tab" => "job_transition_report", "col" => "type_of_diagnosis", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "job_transition_report", "id" => "id", "patient_mrn_id" => "patient_id"),
-            array("tab" => "laser_assesmen_form", "col" => "type_of_diagnosis", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "laser_assesmen_form", "id" => "id", "patient_mrn_id" => "patient_id"),
-            array("tab" => "triage_form", "col" => "type_diagnosis_id", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "triage_form", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "work_analysis_forms", "col" => "type_diagnosis_id", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "work_analysis_forms", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "list_job_club", "col" => "type_diagnosis_id", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "list_job_club", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "list_of_etp", "col" => "type_diagnosis_id", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "list_of_etp", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "list_of_job_search", "col" => "type_diagnosis_id", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "list_of_job_search", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "log_meeting_with_employer", "col" => "type_diagnosis_id", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "log_meeting_with_employer", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "list_previous_current_job", "col" => "type_diagnosis_id", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "list_previous_current_job", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "internal_referral_form", "col" => "type_diagnosis_id", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "internal_referral_form", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "external_referral_form", "col" => "type_diagnosis_id", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "external_referral_form", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "cps_referral_form", "col" => "type_of_diagnosis", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "cps_referral_form", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "occt_referral_form", "col" => "type_diagnosis_id", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "occt_referral_form", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "psychology_referral", "col" => "type_diagnosis_id", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "psychology_referral", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            array("tab" => "rehab_referral_and_clinical_form", "col" => "type_diagnosis_id", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "rehab_referral_and_clinical_form", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-        ];
-        $qry = "";
-        $id = PatientAppointmentDetails::select('patient_mrn_id')->get();
-        // dd($id[0]['id']);
-
-        foreach ($tabData as $key => $value) {
-            if ($qry) {
-                $qry .= " union all ";
-            }
-            $qry .= "SELECT count(cpn.{$value['col']}) count_ , cpn.{$value['col']} id_
-            FROM {$value['tab']} cpn
-            WHERE cpn.{$value['col']} in (select ic.id  from icd_category ic where ic.icd_type_id={$id[0]['id']} ) group by cpn.{$value['col']}";
+        $validator = Validator::make($request->all(), [
+            'patient_id' => 'required|integer'  //patient_id is treated as staff id
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
 
+        $tabData = [
+            array("tab" => "psychiatry_clerking_note", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services_id", "outcome" => "outcome_id", "ls" => "location_services_id", "type" => "PsychiatryClerkingNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
+            array("tab" => "patient_counsellor_clerking_notes", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services_id", "outcome" => "outcome_id", "ls" => "location_services_id", "type" => "CounsellorClerkingNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
+            // array("tab" => "patient_index_form", "col" => "type_of_diagnosis", "cos" => "category_of_services", "cs" => "complexity_of_service", "outcome" => "outcome", "ls" => "location_of_services", "type" => "PatientIndexForm", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
+            // array("tab" => "psychiatric_progress_note", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services_id", "outcome" => "outcome_id", "ls" => "location_services_id", "type" => "PsychiatricProgressNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
+            // array("tab" => "cps_progress_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_service", "type" => "CPSProgressNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
+            // array("tab" => "se_progress_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "SEProgressNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
+            // array("tab" => "counselling_progress_note", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services_id", "outcome" => "outcome_id", "ls" => "location_services_id", "type" => "CounsellingProgressNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
+            // array("tab" => "etp_progress_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "EtpProgressNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
+            // array("tab" => "job_club_progress_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "JobClubProgressNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
+            // array("tab" => "consultation_discharge_note", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "ConsultationDischargeNote", "id" => "id", "patient_mrn_id" => "patient_id"),
+            // array("tab" => "rehab_discharge_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "RehabDischargeNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
+            // array("tab" => "cps_discharge_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_service", "type" => "CpsDischargeNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
+            // array("tab" => "patient_care_paln", "col" => "type_of_diagnosis", "cos" => "category_of_services", "cs" => "complexity_of_services", "outcome" => "outcome", "ls" => "complexity_of_services", "type" => "PatientCarePlanAndCaseReviewForm", "id" => "id", "patient_mrn_id" => "patient_id"),
+            // array("tab" => "job_start_form", "col" => "type_of_diagnosis", "cos" => "category_of_services", "cs" => "complexity_of_services", "outcome" => "outcome", "ls" => "location_of_service", "type" => "JobStartReport", "id" => "id", "patient_mrn_id" => "patient_id"),
+            // array("tab" => "job_end_report", "col" => "type_of_diagnosis", "cos" => "category_of_services", "cs" => "complexity_of_services", "outcome" => "outcome", "ls" => "location_of_service", "type" => "JobEndReport", "id" => "id", "patient_mrn_id" => "patient_id"),
+            // array("tab" => "job_transition_report", "col" => "type_of_diagnosis", "cos" => "category_of_services", "cs" => "complexity_of_services", "outcome" => "outcome", "ls" => "location_of_service", "type" => "JobTransitionReport", "id" => "id", "patient_mrn_id" => "patient_id"),
+            // array("tab" => "laser_assesmen_form", "col" => "type_of_diagnosis", "cos" => "category_of_services", "cs" => "complexity_of_services", "outcome" => "outcome", "ls" => "location_of_service", "type" => "LaserAssessment", "id" => "id", "patient_mrn_id" => "patient_id"),
+            // array("tab" => "triage_form", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services_id", "outcome" => "outcome_id", "ls" => "location_services_id", "type" => "TriageForm", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
+            // array("tab" => "job_interest_checklist", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "JobInterestCheckList", "id" => "id", "patient_mrn_id" => "patient_id"),
+            // array("tab" => "work_analysis_forms", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "WorkAnalysisForm", "id" => "id", "patient_mrn_id" => "patient_id"),
+            // array("tab" => "list_job_club", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "ListofJobClub", "id" => "id", "patient_mrn_id" => "patient_id"),
+            // array("tab" => "list_of_etp", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "ListofEtp", "id" => "id", "patient_mrn_id" => "patient_id"),
+            // array("tab" => "list_of_job_search", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "ListofJobSearch", "id" => "id", "patient_mrn_id" => "patient_id"),
+            // array("tab" => "log_meeting_with_employer", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "LogMeetingWithEmployer", "id" => "id", "patient_mrn_id" => "patient_id"),
+            // array("tab" => "list_previous_current_job", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "ListofPreviousCurrentJob", "id" => "id", "patient_mrn_id" => "patient_id"),
+            // array("tab" => "internal_referral_form", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "InternalReferralForm", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
+            // array("tab" => "external_referral_form", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "ExternalReferralForm", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
+            // array("tab" => "cps_referral_form", "col" => "type_of_diagnosis", "cos" => "category_of_services", "cs" => "complexity_of_services", "outcome" => "outcome", "ls" => "location_of_service", "type" => "CpsRefferalForm", "id" => "id", "patient_mrn_id" => "patient_id"),
+            // array("tab" => "occt_referral_form", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "OcctRefferalForm", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
+            // array("tab" => "psychology_referral", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "PsychologyRefferalForm", "id" => "id", "patient_mrn_id" => "patient_id"),
+            // array("tab" => "rehab_referral_and_clinical_form", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "RehabRefferalAndClinicalForm", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
+        ];
+        // $qry = "";
+        $id = PatientAppointmentDetails::select('id','patient_mrn_id')->get()->toArray();
+        // dd($id[0]['patient_mrn_id']);
 
-        $diagnosis  = DB::select("SELECT sum(bb.count_) sum_, bb.id_ , icd.icd_category_code from ( $qry ) bb , icd_category icd where bb.id_=icd.id group by icd.id,bb.id_,icd.icd_category_code;");
-        dd($diagnosis);
+        $qry="";
+        foreach ($tabData as $key => $value) {
+            // $qry .= "alter table {$value['tab']} add pad_id int(4);\n";
+            // $qry .= "CREATE OR REPLACE TRIGGER {$value['tab']}_trigger  BEFORE INSERT ON {$value['tab']}  FOR EACH ROW  SET NEW.pad_id=(SELECT id FROM patient_appointment_details where added_by=NEW.added_by and patient_mrn_id=NEW.{$value['patient_mrn_id']} order by id desc limit 1);\n";
+
+            $qry .= ($qry=="" )?' ':' union all ';
+            $qry .= "select added_by,pad_id, CASE WHEN true THEN '{$value['type']}' END AS type ,  id id_ , created_at ,{$value['patient_mrn_id']} patient_mrn_id, {$value['col']} did,{$value['cos']} category_services_id,{$value['cs']} csr,{$value['outcome']} oc,{$value['ls']} ls from {$value['tab']} where added_by={$request->patient_id}";
+        }
+        // dd($qry);
+
+        $qry = "
+        select d.id patient_appointment_id, pac.appointment_category_name ,csr.section_value csr_ , oc.section_value oc_ , ls.section_value ls_ , d.*,c.* from (
+            select b.* from (
+                select a.* from ($qry) a order by a.patient_mrn_id , DATE_FORMAT(created_at ,'%Y%m%d%h%i%s') desc LIMIT 18446744073709551615
+            ) b group by b.patient_mrn_id , DATE_FORMAT(created_at ,'%Y%m%d') desc) c 
+        left join (
+            select * from patient_appointment_details order by patient_mrn_id ,created_at desc
+        ) d on c.pad_id=d.id left join general_setting csr on c.csr=csr.id left join general_setting oc on c.oc=oc.id left join general_setting ls on c.ls=ls.id
+        left join patient_appointment_category pac on d.patient_category=pac.id;";
+
+        // select a.* from (
+        //     select * from patient_appointment_details order by patient_mrn_id ,created_at desc
+        // ) a group by a.added_by order by a.added_by
+
+
+        // dd($qry);
+        $staff_patient_list  = DB::select( DB::raw($qry));
+        return response()->json(["message" => "List", 'Data' => $staff_patient_list, "code" => 200]);
+        // return $diagnosis;
+        // dd($diagnosis);
+        // dd($qry);
     }
 
      public function fetchPatientListByStaffId(Request $request)
@@ -4543,13 +4530,14 @@ class PatientAppointmentDetailsController extends Controller
         // dd($request);
         if ($request->type == "PsychiatryClerkingNote") {
 
-            PsychiatryClerkingNote::where('id','=',$request->tbid)->update([
+           PsychiatryClerkingNote::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services_id' =>  $request->complexity_services_id,
                 'location_services_id' =>  $request->location_services_id,
                 'outcome_id' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            
+           PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4558,13 +4546,13 @@ class PatientAppointmentDetailsController extends Controller
         }
         else if ($request->type == "CounsellorClerkingNote") {
 
-            PatientCounsellorClerkingNotes::where('id','=',$request->tbid)->update([
+            PatientCounsellorClerkingNotes::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services_id' =>  $request->complexity_services_id,
                 'location_services_id' =>  $request->location_services_id,
                 'outcome_id' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4573,13 +4561,13 @@ class PatientAppointmentDetailsController extends Controller
         }
         else if ($request->type == "PatientIndexForm") {
 
-            PatientIndexForm::where('id','=',$request->tbid)->update([
+            PatientIndexForm::where(['id' => $request->tbid])->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_service' =>  $request->complexity_services_id,
                 'location_of_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4590,13 +4578,13 @@ class PatientAppointmentDetailsController extends Controller
 
         else if ($request->type == "PsychiatricProgressNote") {
 
-            PsychiatricProgressNote::where('id','=',$request->tbid)->update([
+            PsychiatricProgressNote::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services_id' =>  $request->complexity_services_id,
                 'location_services_id' =>  $request->location_services_id,
                 'outcome_id' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4605,13 +4593,13 @@ class PatientAppointmentDetailsController extends Controller
         }
         else if ($request->type == "CPSProgressNote") {
 
-            CpsProgressNote::where('id','=',$request->tbid)->update([
+            CpsProgressNote::where(['id' => $request->tbid])->update([
                 'service_category' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4620,13 +4608,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else if ($request->type == "SEProgressNote") {
-            CpsProgressNote::where('id','=',$request->tbid)->update([
+            CpsProgressNote::where(['id' => $request->tbid])->update([
                 'service_category' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4635,13 +4623,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else if ($request->type == "CounsellingProgressNote") {
-            CounsellingProgressNote::where('id','=',$request->tbid)->update([
+            CounsellingProgressNote::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services_id' =>  $request->complexity_services_id,
                 'location_services_id' =>  $request->location_services_id,
                 'outcome_id' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4650,13 +4638,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else if ($request->type == "EtpProgressNote") {
-            EtpProgressNote::where('id','=',$request->tbid)->update([
+            EtpProgressNote::where(['id' => $request->tbid])->update([
                 'service_category' => $request->category_services,
                 'complexity_service' =>  $request->complexity_services_id,
                 'location_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4665,13 +4653,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else  if ($request->type == "JobClubProgressNote") {
-            JobClubProgressNote::where('id','=',$request->tbid)->update([
+            JobClubProgressNote::where(['id' => $request->tbid])->update([
                 'service_category' => $request->category_services,
                 'complexity_service' =>  $request->complexity_services_id,
                 'location_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4680,13 +4668,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else  if ($request->type == "ConsultationDischargeNote") {
-            ConsultationDischargeNote::where('id','=',$request->tbid)->update([
+            ConsultationDischargeNote::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4695,13 +4683,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else  if ($request->type == "RehabDischargeNote") {
-            RehabDischargeNote::where('id','=',$request->tbid)->update([
+            RehabDischargeNote::where(['id' => $request->tbid])->update([
                 'service_category' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4710,13 +4698,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else if ($request->type == "CpsDischargeNote") {
-            CpsDischargeNote::where('id','=',$request->tbid)->update([
+            CpsDischargeNote::where(['id' => $request->tbid])->update([
                 'service_category' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4725,13 +4713,13 @@ class PatientAppointmentDetailsController extends Controller
         }
 
         else  if ($request->type == "PatientCarePlanAndCaseReviewForm") {
-            PatientCarePaln::where('id','=',$request->tbid)->update([
+            PatientCarePaln::where(['id' => $request->tbid])->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_services' =>  $request->complexity_services_id,
                 'location_of_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4740,13 +4728,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else  if ($request->type == "JobStartReport") {
-            JobStartForm::where('id','=',$request->tbid)->update([
+            JobStartForm::where(['id' => $request->tbid])->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_services' =>  $request->complexity_services_id,
                 'location_of_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4755,13 +4743,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else  if ($request->type == "JobEndReport") {
-            JobStartForm::where('id','=',$request->tbid)->update([
+            JobStartForm::where(['id' => $request->tbid])->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_services' =>  $request->complexity_services_id,
                 'location_of_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4771,13 +4759,13 @@ class PatientAppointmentDetailsController extends Controller
         }
         else  if ($request->type == "JobTransitionReport") {
 
-            JobTransitionReport::where('id','=',$request->tbid)->update([
+            JobTransitionReport::where(['id' => $request->tbid])->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_services' =>  $request->complexity_services_id,
                 'location_of_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4785,13 +4773,13 @@ class PatientAppointmentDetailsController extends Controller
             ]);
         }
         else  if ($request->type == "LaserAssessment") {
-            LASERAssesmenForm::where('id','=',$request->tbid)->update([
+            LASERAssesmenForm::where(['id' => $request->tbid])->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_services' =>  $request->complexity_services_id,
                 'location_of_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4800,13 +4788,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else  if ($request->type == "TriageForm") {
-            TriageForm::where('id','=',$request->tbid)->update([
+            TriageForm::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services_id' =>  $request->complexity_services_id,
                 'location_services_id' =>  $request->location_services_id,
                 'outcome_id' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4815,13 +4803,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else if ($request->type == "JobInterestCheckList") {
-            TriageForm::where('id','=',$request->tbid)->update([
+            JobInterestChecklist::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4831,13 +4819,13 @@ class PatientAppointmentDetailsController extends Controller
         }
         else if ($request->type == "WorkAnalysisForm") {
 
-            TriageForm::where('id','=',$request->tbid)->update([
+            WorkAnalysisForm::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4845,14 +4833,14 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
         }
-        else if ($request->type == "ListofJobClub") {
-            TriageForm::where('id','=',$request->tbid)->update([
+        else if ($request->type == "ListOfJobClub") {
+            ListJobClub::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4861,13 +4849,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else  if ($request->type == "ListofEtp") {
-            ListOfETP::where('id','=',$request->tbid)->update([
+            ListOfETP::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4877,13 +4865,13 @@ class PatientAppointmentDetailsController extends Controller
         }
         else if ($request->type == "ListofJobSearch") {
 
-            ListOfETP::where('id','=',$request->tbid)->update([
+            ListOfJobSearch::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4893,13 +4881,13 @@ class PatientAppointmentDetailsController extends Controller
         }
         else if ($request->type == "LogMeetingWithEmployer") {
 
-            LogMeetingWithEmployer::where('id','=',$request->tbid)->update([
+            LogMeetingWithEmployer::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4909,13 +4897,13 @@ class PatientAppointmentDetailsController extends Controller
         }
         else if ($request->type == "ListofPreviousCurrentJob") {
 
-            LogMeetingWithEmployer::where('id','=',$request->tbid)->update([
+            ListPreviousCurrentJob::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4924,13 +4912,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else if ($request->type == "InternalReferralForm") {
-            InternalReferralForm::where('id','=',$request->tbid)->update([
+            InternalReferralForm::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4939,13 +4927,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else if ($request->type == "ExternalReferralForm") {
-            ExternalReferralForm::where('id','=',$request->tbid)->update([
+            ExternalReferralForm::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4954,13 +4942,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else  if ($request->type == "CpsRefferalForm") {
-            CPSReferralForm::where('id','=',$request->tbid)->update([
+            CPSReferralForm::where(['id' => $request->tbid])->update([
                 'category_of_services' => $request->category_services,
                 'complexity_of_services' =>  $request->complexity_services_id,
                 'location_of_service' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4969,13 +4957,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else if ($request->type == "OcctRefferalForm") {
-            Occt_Referral_Form::where('id','=',$request->tbid)->update([
+            Occt_Referral_Form::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4984,13 +4972,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else if ($request->type == "PsychologyRefferalForm") {
-            PsychologyReferral::where('id','=',$request->tbid)->update([
+            PsychologyReferral::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
@@ -4999,13 +4987,13 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         else if ($request->type == "RehabRefferalAndClinicalForm") {
-            RehabReferralAndClinicalForm::where('id','=',$request->tbid)->update([
+            RehabReferralAndClinicalForm::where(['id' => $request->tbid])->update([
                 'category_services' => $request->category_services,
                 'complexity_services' =>  $request->complexity_services_id,
                 'location_services' =>  $request->location_services_id,
                 'outcome' => $request->outcome_id
             ]);
-            PatientAppointmentDetails::where('id','=',$request->apid)->update([
+            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
                 'booking_time' =>  $request->booking_time,
