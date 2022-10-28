@@ -402,6 +402,7 @@ Route::group(['prefix' => 'patient-appointment-category'], function () {
 
 Route::group(['prefix' => 'patient-appointment-details'], function () {
     Route::post('/add', [PatientAppointmentDetailsController::class, 'store']);
+    Route::post('/addByPID', [PatientAppointmentDetailsController::class, 'storeByPID']);
     Route::get('/list', [PatientAppointmentDetailsController::class, 'getPatientAppointmentDetailsList']);
     Route::get('/todaylist', [PatientAppointmentDetailsController::class, 'getPatientAppointmentDetailsTodayList']);
     Route::post('/update', [PatientAppointmentDetailsController::class, 'update']);
