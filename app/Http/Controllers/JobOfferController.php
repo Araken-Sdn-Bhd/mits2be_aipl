@@ -946,7 +946,7 @@ class JobOfferController extends Controller
             'clients_preferences' => $request->clients_preferences,
             'staff_name' => $request->staff_name,
             'date' => $request->date,
-            'location_of_service' => $request->location_of_service,
+            'location_of_service' => $request->location_services_id,
             'type_of_diagnosis' => $request->type_of_diagnosis,
             'category_of_services' => $request->category_of_services,
             'services' => $request->services,
