@@ -1737,7 +1737,7 @@ class PatientAppointmentDetailsController extends Controller
         }
         if ($request->type == "ETPConsentForm") {
             $list = EtpConsentForm::select('*')
-                ->where('id', '=', $request->id)
+                ->where('patient_id', '=', $request->id)
                 // ->where('status', '1')
                 ->get();
         }
@@ -1767,7 +1767,7 @@ class PatientAppointmentDetailsController extends Controller
         }
         if ($request->type == "JobTransitionReport") {
             $list = JobTransitionReport::select('*')
-                ->where('id', '=', $request->id)
+                ->where('patient_id', '=', $request->id)
                 // ->where('status', '1')
                 ->get();
         }
@@ -1918,13 +1918,13 @@ class PatientAppointmentDetailsController extends Controller
         }
         if ($request->type == "ListofJobClub") {
             $list = ListJobClub::select('*')
-                ->where('id', '=', $request->id)
+                ->where('patient_id', '=', $request->id)
                 // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "ListofEtp") {
             $list = ListOfETP::select('*')
-                ->where('id', '=', $request->id)
+                ->where('patient_id', '=', $request->id)
                 // ->where('status', '1')
                 ->get();
         }
@@ -1960,7 +1960,7 @@ class PatientAppointmentDetailsController extends Controller
         }
         if ($request->type == "LogMeetingWithEmployer") {
             $list = LogMeetingWithEmployer::select('*')
-                ->where('id', '=', $request->id)
+                ->where('patient_id', '=', $request->id)
                 // ->where('status', '1')
                 ->get();
         }

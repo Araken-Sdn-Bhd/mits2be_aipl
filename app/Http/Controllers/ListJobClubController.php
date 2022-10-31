@@ -65,7 +65,7 @@ class ListJobClubController extends Controller
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
  
-         ListJobClub::firstOrCreate($listjobclub);  
+         ListJobClub::updateOrCreate( ['patient_id' => $request->patient_id], $listjobclub);   
          return response()->json(["message" => "Job Club list Created Successfully!", "code" => 200]);
         
     }

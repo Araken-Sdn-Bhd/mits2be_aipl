@@ -1021,8 +1021,8 @@ class JobOfferController extends Controller
             'medication_prescription' => $request->medication_prescription,
             'created_at' => date('Y-m-d H:i:s')
         ];
-        if($request->id){
-            JobTransitionReport::where(['id' => $request->id])->update($jobtransition);
+        if($request->patient_id){
+            JobTransitionReport::updateOrCreate( ['patient_id' => $request->patient_id], $jobtransition); 
             return response()->json(["message" => "Updated", "code" => 200]);
         }else{
             JobTransitionReport::create($jobtransition);

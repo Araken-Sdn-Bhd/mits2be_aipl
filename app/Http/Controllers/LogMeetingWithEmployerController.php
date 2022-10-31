@@ -40,25 +40,25 @@ class LogMeetingWithEmployerController extends Controller
  
         
             $logmeetingwithemployer = [
-            'added_by' => $request->added_by,
-            'patient_id' => $request->patient_id,
-            'date' => $request->date,
-            'employee_name' => $request->employee_name,
-            'company_name' => $request->company_name,
-            'purpose_of_meeting' => $request->purpose_of_meeting,
-            'discussion_start_time' => $request->discussion_start_time,
-            'discussion_end_time' => $request->discussion_end_time,
-            'staff_name' => $request->staff_name,
+            'added_by' => $request->get('added_by'),
+            'patient_id' => $request->get('patient_id'),
+            'date' => $request->get('date'),
+            'employee_name' => $request->get('employee_name'),
+            'company_name' => $request->get('company_name'),
+            'purpose_of_meeting' => $request->get('purpose_of_meeting'),
+            'discussion_start_time' => $request->get('discussion_start_time'),
+            'discussion_end_time' => $request->get('discussion_end_time'),
+            'staff_name' => $request->get('staff_name'),
            
-            'location_services' => $request->location_services,
-            'services_id' => $request->services_id,
-            'code_id' => $request->code_id,
-            'sub_code_id' => $request->sub_code_id,
-            'type_diagnosis_id' => $request->type_diagnosis_id,
-            'category_services' => $request->category_services,
-            'complexity_services' => $request->complexity_services,
-            'outcome' => $request->outcome,
-            'medication_des' => $request->medication_des,
+            'location_services' => $request->get('location_services'),
+            'services_id' => $request->get('services_id'),
+            'code_id' => $request->get('code_id'),
+            'sub_code_id' => $request->get('sub_code_id'),
+            'type_diagnosis_id' => $request->get('type_diagnosis_id'),
+            'category_services' => $request->get('category_services'),
+            'complexity_services' => $request->get('complexity_of_services'),
+            'outcome' => $request->get('outcome'),
+            'medication_des' => $request->get('medication_des'),
             'status' => "1"
             ];
  
@@ -78,7 +78,7 @@ class LogMeetingWithEmployerController extends Controller
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
  
-         LogMeetingWithEmployer::firstOrCreate($logmeetingwithemployer);  
+         LogMeetingWithEmployer::updateOrCreate( ['patient_id' => $request->patient_id], $logmeetingwithemployer);  
          return response()->json(["message" => "Log Meeting Employer Created Successfully!", "code" => 200]);
         
     }
