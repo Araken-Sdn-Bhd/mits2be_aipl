@@ -784,7 +784,7 @@ class PatientAppointmentDetailsController extends Controller
                 "patient_index_form.created_at"
             )
             ->where('patient_index_form.patient_mrn_id', $request->patient_id)
-            ->orderBy(DB::raw("str_to_date(psychiatry_clerking_note.created_at,'%d-%m-%Y')"), 'desc')
+            ->orderBy("patient_index_form.created_at", 'asc')
             ->get();
 
         $psychiatric_progress_note = DB::table('psychiatric_progress_note')
@@ -3786,7 +3786,7 @@ class PatientAppointmentDetailsController extends Controller
         select d.id patient_appointment_id, pac.appointment_category_name ,csr.section_value csr_ , oc.section_value oc_ , ls.section_value ls_ , d.*,c.* from (
             select b.* from (
                 select a.* from ($qry) a order by a.patient_mrn_id , DATE_FORMAT(created_at ,'%Y%m%d%h%i%s') desc LIMIT 18446744073709551615
-            ) b group by b.patient_mrn_id , DATE_FORMAT(created_at ,'%Y%m%d') desc) c 
+            ) b group by b.patient_mrn_id , DATE_FORMAT(created_at ,'%Y%m%d') desc) c
         left join (
             select * from patient_appointment_details order by patient_mrn_id ,created_at desc
         ) d on c.pad_id=d.id left join general_setting csr on c.csr=csr.id left join general_setting oc on c.oc=oc.id left join general_setting ls on c.ls=ls.id
@@ -4536,7 +4536,7 @@ class PatientAppointmentDetailsController extends Controller
                 'location_services_id' =>  $request->location_services_id,
                 'outcome_id' => $request->outcome_id
             ]);
-            
+
            PatientAppointmentDetails::where(['id'=>$request->apid])->update([
                 'patient_category' => $request->patient_category,
                 'booking_date' =>  $request->booking_date,
