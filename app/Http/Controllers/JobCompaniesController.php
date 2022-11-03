@@ -95,4 +95,10 @@ class JobCompaniesController extends Controller
     {
         return JobCompanies::select('id','contact_name','contact_name','contact_number')->get();
     }
+
+    public function list()
+    {
+        $job = JobCompanies::get();
+        return response()->json(["message" => "list", "list" => $job, "code" => 200]);
+    }
 }
