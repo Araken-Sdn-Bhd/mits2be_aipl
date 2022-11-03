@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\JobCompanies;
+use App\Models\EmployeeRegistration;
 use Validator;
 use DB;
 
@@ -94,5 +95,50 @@ class JobCompaniesController extends Controller
     public function getInterviewerList()
     {
         return JobCompanies::select('id','contact_name','contact_name','contact_number')->get();
+    }
+
+    public function update(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'type' => 'required|string',
+            'added_by' => 'required|integer',
+            'company_name' => 'required|string',
+            'company_registration_number' => 'required|string',
+            'company_address_1' => 'required|string',
+            'state_id' => 'required',
+            'city_id' => 'required',
+            'postcode' => 'required',
+            'corporate_body_sector' => 'required|json',
+            'is_existing_training_program' => 'required|integer',
+            'employment_sector' => 'required|json'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+        $company = [
+            'added_by' => $request->added_by,
+            'company_name' => $request->company_name,
+            'company_registration_number' => $request->company_registration_number,
+            'company_address_1' => $request->company_address_1,
+            'company_address_2' => $request->company_address_2,
+            'company_address_3' => $request->company_address_3,
+            'state_id' => $request->state_id,
+            'city_id' => $request->city_id,
+            'postcode' => $request->postcode,
+            'corporate_body_sector' => $request->corporate_body_sector,
+            'is_existing_training_program' => $request->is_existing_training_program,
+            'employment_sector' => $request->employment_sector,
+            'created_at' =>  date('Y-m-d H:i:s'),
+            'updated_at' =>  date('Y-m-d H:i:s')
+        ];
+          try {
+                $company['status'] = $request->status;
+                EmployeeRegistration::where('id', $request->company_id)->update($company);
+                return response()->json(["message" => "Job updated", "result" => $company, "code" => 200]);
+
+            } catch (Exception $e) {
+                return response()->json(["message" => $e->getMessage(), "code" => 200]);
+            }
+        
     }
 }

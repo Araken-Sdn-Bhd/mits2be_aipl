@@ -570,6 +570,7 @@ Route::group(['prefix' => 'sharp-mgmt'], function () {
 
 Route::group(['prefix' => 'intervention-company'], function () {
     Route::post('/add', [JobCompaniesController::class, 'store']);
+    Route::post('/update', [JobCompaniesController::class, 'update']);
     Route::post('/add-person', [JobCompaniesController::class, 'addContactPerson']);
     Route::post('/job-list', [JobOfferController::class, 'CompaniesJobs']);
     Route::post('/search-job-list', [JobOfferController::class, 'CompaniesJobsSearch']);
