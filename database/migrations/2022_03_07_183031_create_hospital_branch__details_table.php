@@ -24,7 +24,7 @@ class CreateHospitalBranchDetailsTable extends Migration
             $table->string('branch_adrress_2', 1024);
             $table->string('branch_adrress_3', 1024);
             $table->integer('branch_state');
-            $table->integer('branch_city');
+            $table->string('branch_city');
             $table->integer('branch_postcode');
             $table->string('branch_contact_number_office');
             $table->string('branch_contact_number_mobile');
