@@ -25,7 +25,7 @@ class CreateHospitalManagementTable extends Migration
             $table->string('hospital_adrress_2', 1024)->nullable();
             $table->string('hospital_adrress_3', 1024)->nullable();
             $table->integer('hospital_state');
-            $table->integer('hospital_city');
+            $table->string('hospital_city');
             $table->integer('hospital_postcode');
             $table->string('hospital_contact_number');
             $table->string('hospital_email');

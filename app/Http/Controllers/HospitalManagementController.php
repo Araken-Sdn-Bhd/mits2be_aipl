@@ -34,7 +34,7 @@ class HospitalManagementController extends Controller
             'hospital_name' => 'required|string',
             'hospital_adrress_1' => 'required|string',
             'hospital_state' => 'required|integer',
-            'hospital_city' => 'required|integer',
+            'hospital_city' => 'required|string',
             'hospital_postcode' => 'required|integer',
             'hospital_contact_number' => 'required|string',
             'hospital_email' => 'required|email',
@@ -107,7 +107,7 @@ class HospitalManagementController extends Controller
             'hospital_name' => 'required|string',
             'hospital_adrress_1' => 'required|string',
             'hospital_state' => 'required|integer',
-            'hospital_city' => 'required|integer',
+            'hospital_city' => 'required|string',
             'hospital_postcode' => 'required|integer',
             'hospital_contact_number' => 'required|string',
             'hospital_email' => 'required|email',
@@ -133,7 +133,7 @@ class HospitalManagementController extends Controller
                 'contact_office' =>  $request->contact_office,
                 'status' => "1"
             ]);
-    
+
             HospitalManagement::where(
                 ['hod_psychiatrist_id' => $request->id]
             )->update([
@@ -155,13 +155,13 @@ class HospitalManagementController extends Controller
                 'hospital_status' => "1"
             ]);
             return response()->json(["message" => "Updated Successfully.", "code" => 200]);
- 
+
         } catch (\Throwable $th) {
             //throw $th;
             return response()->json(["message" => "Something Went Wrong", "code" => 501]);
         }
-      
-       
+
+
     }
     public function storeBranch(Request $request)
     {
@@ -173,7 +173,7 @@ class HospitalManagementController extends Controller
             'isHeadquator' => 'required|integer',
             'branch_adrress_1' => 'required|string',
             'branch_state' => 'required|integer',
-            'branch_city' => 'required|integer',
+            'branch_city' => 'required|string',
             'branch_postcode' => 'required|integer',
             'branch_contact_number_office' => 'required|string',
             'branch_contact_number_mobile' => 'required|string',
@@ -285,10 +285,10 @@ class HospitalManagementController extends Controller
             ->where('d.branch_id', '=', $request->branch)
             ->where('d.status','=', '1')
             ->get();
-        
+
         return response()->json(["message" => "Assigned Team List", 'list' => $list, "code" => 200]);
     }
-    
+
     public function getHospitalBranchTeamListPatient(Request $request)
     {
         $added_by =  PatientRegistration::select('added_by')->where('id', '=', $request->patient_id)
@@ -316,7 +316,7 @@ class HospitalManagementController extends Controller
                     $result[$key]['team_name'] =  $value['name'] ?? 'NA';
                     $result[$key]['id'] =  $value['id'] ?? 'NA';
                 }
-               
+
             // } else {
             //     $result[0]['team_name'] = 'NA';
             // }
@@ -334,7 +334,7 @@ class HospitalManagementController extends Controller
         ->where('team_id','=', $list[0]['team_id'])->get();
 
         return response()->json(["message" => "Staff Name", 'list' => $list2, "code" => 200]);
-    
+
     }
 
     public function getServiceByBranchTeamId(Request $request)
@@ -428,7 +428,7 @@ class HospitalManagementController extends Controller
         $branch['branch_contact_number_mobile'] = $hm['branch_contact_number_mobile'];
         $branch['branch_fax_no'] = $hm['branch_fax_no'];
         // dd($hm);
-       
+
         return response()->json(["message" => "Branch List", 'list' => $branch, "code" => 200]);
     }
 
@@ -441,7 +441,7 @@ class HospitalManagementController extends Controller
         $branchteam['hospital_branch_name'] = $hm['hospital_branch_name'];
         $branchteam['team_name'] = $hm['team_name'];
         // dd($hm);
-       
+
         return response()->json(["message" => "Branch Team List", 'list' => $branchteam, "code" => 200]);
     }
 
@@ -457,7 +457,7 @@ class HospitalManagementController extends Controller
             'isHeadquator' => 'required|integer',
             'branch_adrress_1' => 'required|string',
             'branch_state' => 'required|integer',
-            'branch_city' => 'required|integer',
+            'branch_city' => 'required|string',
             'branch_postcode' => 'required|integer',
             'branch_contact_number_office' => 'required|string',
             'branch_contact_number_mobile' => 'required|string',
@@ -469,7 +469,7 @@ class HospitalManagementController extends Controller
             }
         $branch_city = $request->branch_city;
         $branch_postcode = $request->branch_postcode;
-        
+
         $chkPoint =  HospitalBranchManagement::where(function ($query) use ($branch_city, $branch_postcode) {
         $query->where('branch_city', '=', $branch_city)->where('branch_postcode', '=', $branch_postcode);
         })->where('id', '!=', $request->id)->where('branch_status', '1')->get();
@@ -519,7 +519,7 @@ class HospitalManagementController extends Controller
             }
         $hospital_code = $request->hospital_code;
         $hospital_branch_id = $request->hospital_branch_id;
-        
+
          $chkPoint =  HospitalBranchTeamManagement::where(['hospital_code' => $hospital_code, 'hospital_branch_id' => $request->hospital_branch_id, 'status' => '1','hospital_branch_name' =>  $request->hospital_branch_name,])->where('id','!=',$request->id)->get();
          if ($chkPoint->count() == 0) {
             //dd('die');
@@ -546,7 +546,7 @@ class HospitalManagementController extends Controller
         $validator = Validator::make($request->all(), [
             'id' => 'required|integer',
             'added_by' => 'required|integer',
-           
+
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -558,7 +558,7 @@ class HospitalManagementController extends Controller
             'added_by' => $request->added_by
         ]);
         return response()->json(["message" => "Deleted Successfully.", "code" => 200]);
-       
+
     }
 
      public function removeBranchTeam(Request $request)
@@ -566,7 +566,7 @@ class HospitalManagementController extends Controller
         $validator = Validator::make($request->all(), [
             'id' => 'required|integer',
             'added_by' => 'required|integer',
-           
+
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -578,6 +578,6 @@ class HospitalManagementController extends Controller
             'added_by' => $request->added_by
         ]);
         return response()->json(["message" => "Deleted Successfully.", "code" => 200]);
-       
+
     }
 }

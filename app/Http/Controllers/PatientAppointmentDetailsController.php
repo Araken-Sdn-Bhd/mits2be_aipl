@@ -1737,7 +1737,7 @@ class PatientAppointmentDetailsController extends Controller
         }
         if ($request->type == "ETPConsentForm") {
             $list = EtpConsentForm::select('*')
-                ->where('patient_id', '=', $request->id)
+                ->where('id', '=', $request->id)
                 // ->where('status', '1')
                 ->get();
         }

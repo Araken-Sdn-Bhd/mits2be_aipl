@@ -619,7 +619,10 @@ Route::group(['prefix' => 'von-appointment'], function () {
     Route::post('/list', [VonAppointmentController::class, 'listAppointment']);
     Route::post('/set-status', [VonAppointmentController::class, 'setStatus']);
 });
-
+Route::group(['prefix' => 'job-companies'], function () {
+    Route::get('/list', [JobCompaniesController::class, 'list']);
+    Route::get('/getListById', [JobCompaniesController::class, 'getListById']);
+});
 Route::group(['prefix' => 'assigned-interviwer'], function () {
     Route::get('/list', [JobCompaniesController::class, 'getInterviewerList']);
 });

@@ -121,7 +121,7 @@ class PatientRegistrationController extends Controller
             'other_race' => $request->other_race,
             'other_religion' => $request->other_religion,
             'other_accommodation' => $request->other_accommodation,
-            'other_marritalList' => $request->other_maritalList,
+            //'other_marritalList' => $request->other_maritalList,
             'other_feeExemptionStatus' => $request->other_feeExemptionStatus,
             'other_occupationStatus' => $request->other_occupationStatus,
         ];
@@ -262,7 +262,7 @@ class PatientRegistrationController extends Controller
             } else {
                 $result[$key]['service'] = 'NA';
             }
-            $result[$key]['mobile_no'] = $val['mobile_no'] ?? 'NA';
+            //$result[$key]['mobile_no'] = $val['mobile_no'] ?? 'NA';
             $result[$key]['birth_date'] = $val['birth_date'] ?? 'NA';
             $result[$key]['drug_allergy_description'] = $val['drug_allergy_description'] ?? 'NA';
 
@@ -516,8 +516,8 @@ class PatientRegistrationController extends Controller
             'other_allergy' => '',
             'id' => 'required',
             'branch_id' =>'',
-            'household_income' =>'',
-            'employment_status' =>'',
+            //'household_income' =>'',
+            //'employment_status' =>'',
             'other_race' =>'',
             'other_religion' =>'',
             'other_accommodation' =>'',
@@ -579,12 +579,12 @@ class PatientRegistrationController extends Controller
             'status' => "1",
             'updated_at' =>  $request->update_at,
             'branch_id' =>$request->branch_id,
-            'household_income' =>$request->household_income,
-            'employment_status' =>$request->employment_status,
+            //'household_income' =>$request->household_income,
+            //'employment_status' =>$request->employment_status,
             'other_race' => $request->other_race,
             'other_religion' => $request->other_religion,
             'other_accommodation' => $request->other_accommodation,
-            'other_marritalList' => $request->other_maritalList,
+            //'other_marritalList' => $request->other_maritalList,
             'other_feeExemptionStatus' => $request->other_feeExemptionStatus,
             'other_occupationStatus' => $request->other_occupationStatus,
         ];

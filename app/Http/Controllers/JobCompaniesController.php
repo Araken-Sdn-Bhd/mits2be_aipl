@@ -139,6 +139,16 @@ class JobCompaniesController extends Controller
             } catch (Exception $e) {
                 return response()->json(["message" => $e->getMessage(), "code" => 200]);
             }
+        }
         
+    public function list()
+    {
+        $job = JobCompanies::get();
+        return response()->json(["message" => "list", "list" => $job, "code" => 200]);
+    }
+
+    public function getListById(request $request){
+        $job = JobCompanies::select('*')->where(['id'=>$request->id])->get();
+        return response()->json(["message" => "list", "list" => $job, "code" => 200]);
     }
 }
