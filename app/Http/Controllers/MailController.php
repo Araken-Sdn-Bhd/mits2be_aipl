@@ -11,14 +11,15 @@ use App\Models\EmployeeRegistration;
 use Exception;
 use Validator;
 use Illuminate\Support\Facades\Crypt;
+use DB;
 
 class MailController extends Controller
 {
     public function sendForgotPasswordEmail(Request $request)
     {
-        $chkUser = User::where('email', $request->emailAddress)->get()->toArray();
+        $chkUser = User::where('email', $request->emailaddress)->get()->toArray();
         if ($chkUser) {
-            $toEmail    =   $request->emailAddress;
+            $toEmail    =   $request->emailaddress;
             $data       =   ['id' => Crypt::encryptString($chkUser[0]['id']), 'name' => $chkUser[0]['name'], 'frontEndUrl' => env('FRONTEND_URL')];
             try {
                 Mail::to($toEmail)->send(new ForgotPasswordEmail($data));
@@ -42,7 +43,7 @@ class MailController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors()->toJson(), 400);
         }
-            
+
             try {
                 $check = User::where('email', $request->email)
                 ->Where('role','employer')
@@ -67,7 +68,7 @@ class MailController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), "code" => 500]);
                     }
-                    
+
                     // return response()->json(["message" => "User Created Successfully!", "code" => 200]);
                 }else{
                     return response()->json(["message" => "Employer already exists!", "code" => 200]);
