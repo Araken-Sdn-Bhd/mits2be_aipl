@@ -58,7 +58,7 @@ class AnnouncementManagementController extends Controller
     {
         $users = DB::table('announcement_mgmt')
             ->join('hospital_branch__details', 'announcement_mgmt.branch_id', '=', 'hospital_branch__details.id')
-            ->select('announcement_mgmt.id', 'announcement_mgmt.title', 'announcement_mgmt.content', 'announcement_mgmt.document', 'announcement_mgmt.start_date', 'announcement_mgmt.end_date', 'announcement_mgmt.status', 'announcement_mgmt.audience_ids', 'hospital_branch__details.id as hospital_branch_id')
+            ->select('announcement_mgmt.id', 'announcement_mgmt.title', 'announcement_mgmt.content', 'announcement_mgmt.document', 'announcement_mgmt.start_date', 'announcement_mgmt.end_date', 'announcement_mgmt.status', 'announcement_mgmt.audience_ids', 'hospital_branch__details.id as hospital_branch_id', 'hospital_branch__details.hospital_branch_name as hospital_name' )
             ->where('announcement_mgmt.id', '=', $request->id)
             //->where('announcement_mgmt.status', '=', '0')
             //->orWhere('announcement_mgmt.status', '=', '1')
