@@ -51,7 +51,7 @@ class AuthController extends Controller
             $no_of_attempts = UserBlock::select('no_of_attempts')->where('user_id', $id)->pluck('no_of_attempts');
             $id_block_user = UserBlock::select('id')->where('user_id', $id)->pluck('id');
 
-            $date = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
+            $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
             $newDate = $date->format('Y-m-d H:i:s');
             // dd($systemattempt[0].''.$no_of_attempts[0]);
             if (!empty($systemattempt[0]) == !empty($no_of_attempts[0])) {
