@@ -101,4 +101,9 @@ class JobCompaniesController extends Controller
         $job = JobCompanies::get();
         return response()->json(["message" => "list", "list" => $job, "code" => 200]);
     }
+
+    public function getListById(request $request){
+        $job = JobCompanies::select('*')->where(['id'=>$request->id])->get();
+        response()->json(["message" => "list", "list" => $job, "code" => 200]);
+    }
 }
