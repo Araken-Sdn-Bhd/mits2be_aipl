@@ -168,7 +168,7 @@ class ServiceSettingController extends Controller
         }])->with(['hospitals' => function ($query) {
             $query->select('hospital_name', 'id');
         }])->with(['branchs' => function ($query) {
-            $query->select('hospital_branch_name', 'id');
+            $query->select('hospital_branch_name', 'hospital_code', 'id');
         }])->where('status','=','1')->get();
         return response()->json(["message" => "List", 'list' => $list, 'code' => 200]);
     }
