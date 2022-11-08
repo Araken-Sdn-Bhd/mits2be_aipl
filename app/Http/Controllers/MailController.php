@@ -61,8 +61,8 @@ class MailController extends Controller
                         'user_id' =>  $userid,
                         'updated_at' => $date->format('Y-m-d H:i:s'),
                     ]);
-                    //$toEmail    =   $request->email;
-                    //$data       =   ['user_id' => Crypt::encryptString($userid), 'company_name' =>  $request->company_name, 'frontEndUrl' => env('FRONTEND_URL')];
+                    $toEmail    =   $request->email;
+                    $data       =   ['user_id' => Crypt::encryptString($userid), 'company_name' =>  $request->company_name, 'frontEndUrl' => env('FRONTEND_URL')];
                     try {
                         //Mail::to($toEmail)->send(new VerifyAccountEmail($data));
                         return response()->json(["message" => "User Created Successfully!", "code" => 200]);
