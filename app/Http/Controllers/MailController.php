@@ -11,6 +11,8 @@ use App\Models\EmployeeRegistration;
 use Exception;
 use Validator;
 use Illuminate\Support\Facades\Crypt;
+use DateTime;
+use DateTimeZone;
 
 class MailController extends Controller
 {
@@ -52,12 +54,12 @@ class MailController extends Controller
                         ['name' => $request->company_name, 'email' => $request->email, 'role' => "employer", 'password' => bcrypt($request->password)]
                     );
                     $userid= $id->id;
+                    $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
                     EmployeeRegistration::create([
                         'company_name' =>  $request->company_name,
                         'contact_number' =>  $request->contact_number,
-                        'email' =>  $request->email,
-                        'password' => bcrypt($request->password),
                         'user_id' =>  $userid,
+                        'updated_at' => $date->format('Y-m-d H:i:s'),
                     ]);
                     $toEmail    =   $request->email;
                     $data       =   ['user_id' => Crypt::encryptString($userid), 'company_name' =>  $request->company_name, 'frontEndUrl' => env('FRONTEND_URL')];
