@@ -574,6 +574,7 @@ Route::group(['prefix' => 'intervention-company'], function () {
     Route::post('/add-person', [JobCompaniesController::class, 'addContactPerson']);
     Route::post('/job-list', [JobOfferController::class, 'CompaniesJobs']);
     Route::post('/search-job-list', [JobOfferController::class, 'CompaniesJobsSearch']);
+    Route::post('/company-details', [JobCompaniesController::class, 'getCompanyDetails']);
 });
 Route::group(['prefix' => 'intervention'], function () {
     Route::get('/job-record', [JobOfferController::class, 'jobRecordList']);
