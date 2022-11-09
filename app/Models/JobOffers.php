@@ -10,8 +10,8 @@ class JobOffers extends Model
     use HasFactory;
     protected $table = 'job_offers';
     protected $fillable = [
-        'company_id','branch_id','location_address_1','location_address_2','location_address_3','state_id','city_id','postcode',
-        'duration_of_employment','work_schedule','is_transport','is_accommodation','jov_availability','approval_status','approve_by'
+        'job_id','branch_id','location_address_1','location_address_2','location_address_3','state_id','city_id','postcode','salary_offered',
+        'duration_of_employment','work_schedule','is_transport','is_accommodation','jov_availability','approval_status','approve_by','user_id'
        ];
 
        public function city()
