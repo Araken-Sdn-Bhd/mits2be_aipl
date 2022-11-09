@@ -210,9 +210,7 @@ class PatientRegistrationController extends Controller
 
     public function getPatientRegistrationById(Request $request)
     {
-        // $list = PatientRegistration::where('id', '=', $request->id)->with('salutation:section_value,id')
-        //     ->with('gender:section_value,id')->with('maritialstatus:section_value,id')
-        //     ->with('citizenships:section_value,id')->get();
+       
         $list = PatientRegistration::where('id', '=', $request->id)
         ->with('salutation:section_value,id')->with('typeic:code,id')
         ->with('gender:section_value,id')->with('maritialstatus:section_value,id')

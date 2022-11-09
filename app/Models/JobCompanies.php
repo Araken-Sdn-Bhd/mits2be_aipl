@@ -30,8 +30,5 @@ class JobCompanies extends Model
         'created_at'
     ];
 
-    public function city()
-    {
-        return $this->belongsTo(Postcode::class, "city_id", "id");
-    }
+
 }

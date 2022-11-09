@@ -89,6 +89,7 @@ use App\Http\Controllers\ForgetpasswordController;
 use App\Http\Controllers\EmailSettingController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\JobController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Mail;
 
@@ -229,6 +230,7 @@ Route::group(['prefix' => 'address'], function () {
     Route::get('/stateWisePostcodeList_', [AddressManagementController::class, 'stateWisePostcodeList']);
     Route::post('/{id}/getCityList', [AddressManagementController::class, 'getCityList']);
     Route::post('/{id}/getPostcodeListById', [AddressManagementController::class, 'getPostcodeListById']);
+  
 });
 
 Route::group(['prefix' => 'service'], function () {
@@ -784,3 +786,11 @@ Route::group(['prefix' => 'staffDesignatioDetail'], function () {
     Route::post('/get', [PatientDetailsController::class, 'staffDesignatioDetail']);
     Route::post('/staffInchargeDetail', [PatientDetailsController::class, 'staffInchargeDetail']);
  });
+
+ Route::group(['prefix' => 'employer-job'], function () {
+    Route::post('/add', [JobController::class, 'store']);
+    Route::post('/repeat', [JobController::class, 'repeat']);
+    Route::post('/update', [JobController::class, 'update']);
+    Route::post('/list', [JobController::class, 'JobList']);
+    Route::post('/repeat-list', [JobController::class, 'RepeatList']);
+});

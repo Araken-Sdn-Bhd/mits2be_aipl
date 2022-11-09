@@ -158,6 +158,8 @@ class JobCompaniesController extends Controller
     public function getCompanyDetails(Request $request)
     {
         
-        return EmployeeRegistration::where('user_id', $request->added_by)->get();
+        return EmployeeRegistration::where('user_id', $request->added_by)
+        ->with('city:city_name,id')
+        ->get();
     }
 }
