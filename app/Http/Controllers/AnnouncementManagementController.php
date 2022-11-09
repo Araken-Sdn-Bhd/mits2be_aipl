@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Announcement;
+use Illuminate\Support\Facades\Storage;
 use Validator;
 use Exception;
+use Response;
 use Illuminate\Support\Facades\DB;
 
 class AnnouncementManagementController extends Controller
@@ -82,6 +84,15 @@ class AnnouncementManagementController extends Controller
             //->orWhere('announcement_mgmt.status', '=', '1')
             ->get();
         return response()->json(["message" => "List", 'list' => $users, "code" => 200]);
+    }
+
+    public function downloadFile(Request $request){
+        $headers= [
+            'Content-Type' => 'image/png',
+         ];
+        $fileName = 'tet.png';
+        $fileLocation = 'app/public/assets/announcements/'.$fileName;
+        return Storage::url($fileName);
     }
 
     public function updateAnnouncementManagement(Request $request)
