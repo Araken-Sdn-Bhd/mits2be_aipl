@@ -9,6 +9,7 @@ use App\Models\HospitalBranchTeamManagement;
 use App\Models\JobCompanies;
 use App\Models\AreasOfInvolvement;
 use App\Models\EtpRegister;
+use App\Models\StaffManagement;
 use App\Models\VonOrgRepresentativeBackground;
 use Exception;
 use Validator;
@@ -166,7 +167,7 @@ class VonAppointmentController extends Controller
                 $list[$key]['name'] = $val['name'];
                 $list[$key]['app_date'] = date('d/m/Y', strtotime($val['booking_date']));
                 $list[$key]['app_time'] = date('H:i a', strtotime($val['booking_time']));
-                $dr = JobCompanies::where('id', $val['interviewer_id'])->get()->pluck('contact_name')->toArray();
+                $dr = StaffManagement::where('id', $val['interviewer_id'])->get()->pluck('name')->toArray();
                 if (!$dr){
                     $list[$key]['dr_name'] = 'NA';
                 } else {
