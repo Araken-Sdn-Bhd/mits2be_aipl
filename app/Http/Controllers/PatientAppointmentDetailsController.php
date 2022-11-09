@@ -145,10 +145,9 @@ class PatientAppointmentDetailsController extends Controller
         }
 
         $getPatientIC = PatientRegistration::select('nric_no')
-            ->where('id', $request->patient_mrn_id)
+            ->where('id', $request->patient_mrn_id)->get()
             ->pluck('nric_no');
-
-        if (count($getPatientIC) == 0) {
+        if (count($getPatientIC) == 0 || $getPatientIC == null) {
             return response()->json(["message" => "This user is not registered", "code" => 401]);
         } else {
             $booking_date = $request->booking_date;
