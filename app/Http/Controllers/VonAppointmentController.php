@@ -129,6 +129,7 @@ class VonAppointmentController extends Controller
 
     public function listAppointment(Request $request)
     {
+
         $search = [];
         if ($request->date) {
             $search['booking_date'] = $request->date;
@@ -136,29 +137,35 @@ class VonAppointmentController extends Controller
         if ($request->service) {
             $search['services_type'] = $request->service;
         }
-        // if ($request->name) {
-        //     $search['name'] = $request->name;
-        // }
         $list = [];
-        if ($search) {
-            $records = VonAppointment::where($search)
-            ->where('booking_date', date('Y-m-d'))
-            ->get();
-        } else if($request->name) {
-            $records = VonAppointment::where('name', 'LIKE', '%' . $request->name. '%')
-            ->where('booking_date', date('Y-m-d'))
-            ->get();
+        if($request->name != "" || $request->name != null) {
+            $sql = VonAppointment::query();
+            $sql = $sql->where('name', 'LIKE', '%' . $request->name. '%');
+            if ($request->date != null || $request->date != ""){
+                $sql = $sql->where('booking_date','=', $request->date);
+            }
+            if ($request->service != null || $request->service != ""){
+                $sql = $sql->where('services_type','=', $request->service);
+            }
+            $records = $sql->get();
+            $records->get();
         }else{
-            $records = VonAppointment::all()->where('status','0')
-            ->where('booking_date', date('Y-m-d'))
-            ;
+            $sql = VonAppointment::query();
+            $sql = $sql->where('status','=','0');
+            if ($request->date != null || $request->date != ""){
+                $sql = $sql->where('booking_date','=', $request->date);
+            }
+            if ($request->service != null || $request->service != ""){
+                $sql = $sql->where('services_type','=', $request->service);
+            }
+            $records = $sql->get();
         }
         if ($records) {
             foreach ($records as $key => $val) {
                 $list[$key]['id'] = $val['id'];
                 $list[$key]['name'] = $val['name'];
                 $list[$key]['app_date'] = date('d/m/Y', strtotime($val['booking_date']));
-                $list[$key]['app_time'] = date('H:i', strtotime($val['booking_time']));
+                $list[$key]['app_time'] = date('H:i a', strtotime($val['booking_time']));
                 $dr = JobCompanies::where('id', $val['interviewer_id'])->get()->pluck('contact_name')->toArray();
                 if (!$dr){
                     $list[$key]['dr_name'] = 'NA';
@@ -168,14 +175,11 @@ class VonAppointmentController extends Controller
                 }
                 $aoi = AreasOfInvolvement::where('id', $val['area_of_involvement'])->get()->pluck('name')->toArray();
                 $list[$key]['aoi'] = $aoi[0];
-                // $service = EtpRegister::where('id', $val['services_type'])->get()->pluck('etp_name')->toArray();
-                // $list[$key]['service'] = $service[0];
                 $list[$key]['service'] = $val['services_type'];
             }
         }
 
         return response()->json(["message" => "Von List", "list" => $list, "code" => 200]);
-        // dd($list);
     }
 
     public function setStatus(Request $request)
