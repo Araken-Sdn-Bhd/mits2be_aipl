@@ -326,14 +326,23 @@ class HospitalManagementController extends Controller
 
     public function getServiceByTeamId(Request $request)
     {
-        $list = StaffManagement::select('team_id','branch_id')
+        //dd('ni');
+        $list = StaffManagement::select('team_id','branch_id','role_id')
         ->where('email','=', $request->email)->get();
 
         $list2 = StaffManagement::select('id', 'name')
         ->where('branch_id','=', $list[0]['branch_id'])
         ->where('team_id','=', $list[0]['team_id'])->get();
 
-        return response()->json(["message" => "Staff Name", 'list' => $list2, "code" => 200]);
+        $stafflist = StaffManagement::select('id', 'name')
+        ->where('branch_id','=', $list[0]['branch_id'])->get();
+
+        $role_id=7;
+        $rolelist = StaffManagement::select('id', 'name')
+        ->where('role_id','=', $role_id)->get();
+        // dd($list[0]['role_id']);
+
+        return response()->json(["message" => "Staff Name", 'list' => $list2, 'stafflist' => $stafflist, 'rolelist' => $rolelist, "code" => 200]);
 
     }
 
