@@ -216,17 +216,6 @@ class AddressManagementController extends Controller
         }
     }
 
-
-    /*$country1 = Country::find($id);
-
-            $country1->added_by =  $request->added_by;
-            $country1->country_name =  $request->country_name;
-            $country1->country_code =  $request->country_code;
-            $country1->country_order =  $request->country_order;
-            $country1->update();
-      return response()->json(["message" => "Country updated Successfully", "code" => 200]);
-        }*/
-
     public function updateState(Request $request, $id)
     {
         $validator = Validator::make($request->all(), [
@@ -432,8 +421,8 @@ class AddressManagementController extends Controller
             ->get();
         return response()->json(["message" => "postcode List", 'list' => $postcode, "code" => 200]);
     
+   }
 
-   
-}
+  
 
 }
