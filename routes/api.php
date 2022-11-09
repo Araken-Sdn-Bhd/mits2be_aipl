@@ -295,6 +295,7 @@ Route::group(['prefix' => 'announcement'], function () {
     Route::post('/add', [AnnouncementManagementController::class, 'store']);
     Route::post('/list', [AnnouncementManagementController::class, 'getAnnouncementList']);
     Route::post('/getAnnouncementDetails', [AnnouncementManagementController::class, 'getAnnouncementDetails']);
+    Route::post('/downloadFile', [AnnouncementManagementController::class, 'downloadFile']);
     Route::post('/update', [AnnouncementManagementController::class, 'updateAnnouncementManagement']);
     Route::post('/remove', [AnnouncementManagementController::class, 'remove']);
     Route::post('/getAnnouncementListById', [AnnouncementManagementController::class, 'getAnnouncementListById']);
