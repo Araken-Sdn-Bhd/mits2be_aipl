@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Postcode;
 
 class EmployeeRegistration extends Model
 {
@@ -13,4 +14,9 @@ class EmployeeRegistration extends Model
     state_id','city_id','postcode','employment_sector','is_existing_training_program','corporate_body_sector','contact_name',
     'contact_email','contact_position','status','updated_at','contact_number','user_id'];
 
+
+    public function city()
+    {
+        return $this->belongsto(Postcode::class);
+    }
 }
