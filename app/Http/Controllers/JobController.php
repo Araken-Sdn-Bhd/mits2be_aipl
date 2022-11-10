@@ -91,8 +91,6 @@ class JobController extends Controller
     {
         $company = DB::table('employee_registration')->select('id')->where('user_id', '=', $request->user_id)->first();
 
-        //return job::where('company_id',$company->id)->orderBy('id','DESC')->get();
-
         return  DB::table('jobs')
         ->select('id', 'position',DB::raw("DATE_FORMAT(created_at, '%d-%M-%y') as created_at"))
         ->orderBy('id','desc')
@@ -101,6 +99,14 @@ class JobController extends Controller
 
     public function RepeatList(Request $request)
     {
+        return  DB::table('job_offers')
+        ->select('jobs.*','job_offers.*','hospital_branch__details.*',DB::raw("DATE_FORMAT(job_offers.created_at, '%d-%M-%y') as created_at"))
+
+        ->join('jobs', 'job_offers.id', '=', 'jobs.id')
+        ->join('hospital_branch__details', 'job_offers.branch_id', '=', 'hospital_branch__details.id')
+
+        ->orderBy('job_offers.id','desc')
+        ->where('job_offers.job_id', '=', $request->job_id)->get();
     }
     
 }
