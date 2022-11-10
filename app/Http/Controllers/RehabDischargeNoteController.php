@@ -35,7 +35,6 @@ class RehabDischargeNoteController extends Controller
              'diagnosis_type' => 'required|integer',
              'complexity_services' => '',
              'outcome' => '',
-             'medication' => '',
              'specialist_name' => '',
              'case_manager' => '',
              'verification_date_1' => '',
