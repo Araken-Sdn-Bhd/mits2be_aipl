@@ -12,6 +12,7 @@ class Job extends Model
     protected $fillable = ['company_id',
         'position','education_id','work_requirement','updated_at'
     ];
+   
 
     public function jobOffers(){
         return $this->hasMany(JobOffers::class);

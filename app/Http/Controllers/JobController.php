@@ -16,7 +16,7 @@ class JobController extends Controller
       
         $validator = Validator::make($request->all(), [
             
-            'added_by' => 'required',
+            'user_id' => 'required',
             'position_offered' => 'required',
             'location_address_1' => 'required',
             'education_id' => 'required',
@@ -35,7 +35,7 @@ class JobController extends Controller
         }
  
        
-        $company = DB::table('employee_registration')->select('id')->where('user_id', '=', $request->added_by)->first();
+        $company = DB::table('employee_registration')->select('id')->where('user_id', '=', $request->user_id)->first();
 
         try {
         $job =[
@@ -89,6 +89,14 @@ class JobController extends Controller
 
     public function JobList(Request $request)
     {
+        $company = DB::table('employee_registration')->select('id')->where('user_id', '=', $request->user_id)->first();
+
+        //return job::where('company_id',$company->id)->orderBy('id','DESC')->get();
+
+        return  DB::table('jobs')
+        ->select('id', 'position',DB::raw("DATE_FORMAT(created_at, '%d-%M-%y') as created_at"))
+        ->orderBy('id','desc')
+        ->where('company_id', '=', $company->id)->get();
     }
 
     public function RepeatList(Request $request)
