@@ -9,9 +9,10 @@ class Job extends Model
 {
     use HasFactory;
     protected $table = 'jobs';
-    protected $fillable = [
+    protected $fillable = ['company_id',
         'position','education_id','work_requirement','updated_at'
     ];
+   
 
     public function jobOffers(){
         return $this->hasMany(JobOffers::class);
