@@ -118,6 +118,7 @@ class JobController extends Controller
             'branch_id' => $request->branch_id,
             'job_availability' => $request->job_availability,
             'is_repeated' => 1,
+            'approval_status' => 2,   //1:pending,0:reject,2:approved
             'created_at' =>  date('Y-m-d H:i:s'),
             'updated_at' =>  date('Y-m-d H:i:s')
         ];
@@ -139,10 +140,15 @@ class JobController extends Controller
         $company = DB::table('employee_registration')->select('id')->where('user_id', '=', $request->user_id)->first();
 
         return  DB::table('jobs')
-        ->select('jobs.*',DB::raw("DATE_FORMAT(jobs.created_at, '%d-%M-%y') as created_at"),'general_setting.section_value')
+        ->select('jobs.*',DB::raw("DATE_FORMAT(jobs.created_at, '%d-%M-%y') as created_at"),'general_setting.section_value',
+        'job_offers.approval_status')
+       
+        ->join('job_offers', 'jobs.id', '=', 'job_offers.job_id')
         ->join('general_setting', 'jobs.education_id', '=', 'general_setting.id')
         ->orderBy('jobs.id','desc')
-        ->where('jobs.company_id', '=', $company->id)->get();
+        ->where('jobs.company_id', '=', $company->id)
+        ->where('job_offers.is_repeated',0)
+        ->get();
     }
 
     public function RepeatList(Request $request)
