@@ -166,6 +166,23 @@ class JobController extends Controller
         
     }
 
+    public function getPendingApprovalList(Request $request)
+    {
+        return  DB::table('job_offers')
+
+        ->select('job_offers.id as joboffersId','jobs.*','job_offers.*','hospital_branch__details.*',DB::raw("DATE_FORMAT(job_offers.created_at, '%d-%M-%y') as created_at"),
+        'general_setting.section_value')
+
+        ->join('jobs', 'job_offers.job_id', '=', 'jobs.id')
+        ->join('hospital_branch__details', 'job_offers.branch_id', '=', 'hospital_branch__details.id')
+        ->join('general_setting', 'jobs.education_id', '=', 'general_setting.id')
+        ->orderBy('job_offers.id','desc')
+        ->where('jobs.company_id', '=', $request->company_id)
+        ->where('job_offers.is_repeated',0)
+        ->where('job_offers.approval_status',1)
+        ->get();
+    }
+
    
  
 

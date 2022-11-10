@@ -213,7 +213,7 @@ class JobOfferController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        JobOffers::where('id', $request->id)->update(['status' => $request->status, 'status_changed_by' => $request->added_by]);
+        JobOffers::where('id', $request->id)->update(['approval_status' => $request->status, 'approve_by' => $request->added_by]);
         return response()->json(["message" => "Job status updated!", "code" => 200]);
     }
     public function CompaniesJobs(Request $request)

@@ -794,5 +794,6 @@ Route::group(['prefix' => 'staffDesignatioDetail'], function () {
     Route::post('/update', [JobController::class, 'update']);
     Route::post('/list', [JobController::class, 'JobList']);
     Route::post('/repeat-list', [JobController::class, 'RepeatList']);
+    Route::post('/pending-approval', [JobController::class, 'getPendingApprovalList']);
  
 });
