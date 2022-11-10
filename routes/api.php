@@ -792,8 +792,10 @@ Route::group(['prefix' => 'staffDesignatioDetail'], function () {
     Route::post('/add', [JobController::class, 'store']);
     Route::post('/repeat', [JobController::class, 'repeat']);
     Route::post('/update', [JobController::class, 'update']);
-    Route::post('/list', [JobController::class, 'JobList']);
+    Route::post('/list', [JobController::class, 'JobListByCompany']);
     Route::post('/repeat-list', [JobController::class, 'RepeatList']);
     Route::post('/pending-approval', [JobController::class, 'getPendingApprovalList']);
- 
+    Route::get('/job-list', [JobController::class, 'JobList']);
+    Route::post('/setAvailable', [JobController::class, 'setStatus']);
+    Route::post('/view-detail', [JobController::class, 'ViewJobDetails']);
 });
