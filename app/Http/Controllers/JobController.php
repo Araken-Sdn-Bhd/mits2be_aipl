@@ -135,7 +135,7 @@ class JobController extends Controller
     public function update(Request $request)
     {
     }
-    public function JobList(Request $request)
+    public function JobListByCompany(Request $request)
     {
         $company = DB::table('employee_registration')->select('id')->where('user_id', '=', $request->user_id)->first();
 
@@ -163,6 +163,63 @@ class JobController extends Controller
         ->join('general_setting', 'jobs.education_id', '=', 'general_setting.id')
         ->orderBy('job_offers.id','desc')
         ->where('job_offers.job_id', '=', $request->job_id)->get();
+        
+    }
+
+    public function getPendingApprovalList(Request $request)
+    {
+        return  DB::table('job_offers')
+
+        ->select('job_offers.id as joboffersId','jobs.*','job_offers.*','hospital_branch__details.*',DB::raw("DATE_FORMAT(job_offers.created_at, '%d-%M-%y') as created_at"),
+        'general_setting.section_value')
+
+        ->join('jobs', 'job_offers.job_id', '=', 'jobs.id')
+        ->join('hospital_branch__details', 'job_offers.branch_id', '=', 'hospital_branch__details.id')
+        ->join('general_setting', 'jobs.education_id', '=', 'general_setting.id')
+        ->orderBy('job_offers.id','desc')
+        ->where('jobs.company_id', '=', $request->company_id)
+        ->where('job_offers.is_repeated',0)
+        ->where('job_offers.approval_status',1)
+        ->get();
+    }
+    public function JobList(Request $request)
+    {
+        return  DB::table('job_offers')
+        ->select('job_offers.id as jobofferId','job_offers.*','jobs.*','employee_registration.*')
+       
+        ->join('jobs', 'jobs.id', '=', 'job_offers.job_id')
+        ->join('employee_registration', 'jobs.company_id', '=', 'employee_registration.id')
+        ->orderBy('job_offers.id','desc')
+        ->where('job_offers.approval_status',2)
+        ->get();
+    }
+
+    public function setStatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+          
+            'id' => 'required|integer',
+            'status' => 'required|string'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+        JobOffers::where('id', $request->id)->update(['job_availability' => $request->status]);
+        return response()->json(["message" => "Job availability updated!", "code" => 200]);
+    }
+
+    public function ViewJobDetails(Request $request)
+    {
+        return  DB::table('job_offers')
+
+        ->select('jobs.*','job_offers.*','hospital_branch__details.*',DB::raw("DATE_FORMAT(job_offers.created_at, '%d-%M-%y') as created_at"),
+        'general_setting.section_value')
+
+        ->join('jobs', 'job_offers.job_id', '=', 'jobs.id')
+        ->join('hospital_branch__details', 'job_offers.branch_id', '=', 'hospital_branch__details.id')
+        ->join('general_setting', 'jobs.education_id', '=', 'general_setting.id')
+        ->orderBy('job_offers.id','desc')
+        ->where('job_offers.id', '=', $request->id)->get();
         
     }
 
