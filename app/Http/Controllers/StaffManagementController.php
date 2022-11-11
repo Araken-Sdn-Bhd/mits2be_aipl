@@ -229,7 +229,7 @@ class StaffManagementController extends Controller
                 ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
                 ->select('staff_management.id','users.id as users_id', 'staff_management.name', 'general_setting.section_value as designation_name', 'hospital_branch__details.hospital_branch_name')
                 ->where('staff_management.branch_id', '=', $request->branch_id)
-                ->where('staff_management.name', 'LIKE', "%{$request->name}%", '=', $request->name)
+                ->where('staff_management.name', 'LIKE', "%{$request->name}%")
                 ->orderBy('staff_management.name', 'asc')
                 ->get();
             return response()->json(["message" => "Staff Management List else", 'list' => $users, "code" => 200]);
