@@ -37,11 +37,7 @@ class RehabReferralAndClinicalFormController extends Controller
              'tobacco' => 'required|string',
              'others' => 'required|string',
              'other_information' => '',
- 
              'location_services' => 'required',
-             'services_id' => '',
-             'code_id' => '',
-             'sub_code_id' => '',
              'type_diagnosis_id' => 'required|integer',
              'category_services' => 'required',
              'complexity_services' => '',
