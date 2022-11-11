@@ -431,7 +431,6 @@ class ReportController extends Controller
             $ssh = $appointments->where('appointment_status', $request->appointment_status);
 
         $ssh = $appointments->get()->toArray();
-
         $apcount = [];
         $result = [];
         if ($ssh) {
@@ -461,10 +460,9 @@ class ReportController extends Controller
                     $query->where('referral_type', $request->referral_type);
                 if ($request->gender != 0)
                     $query->where('sex', $request->gender);
-
-                $patientInfon = $query->get()->toArray();
+                    $patientInfon = $query->get()->toArray();
                 if ($patientInfon) {
-                    $patientInfo = $patientInfon[0];
+                    $patientInfo = $patientInfon[0];                   
                     $pc = GeneralSetting::where(['id' => $patientInfo['sex']])->get()->toArray();
                     $st = PatientAppointmentType::where(['id' => $v['appointment_type']])->get()->toArray();
                     $vt = PatientAppointmentVisit::where('id', $v['type_visit'])->get()->toArray();
@@ -477,15 +475,15 @@ class ReportController extends Controller
                     $nxtAppointments = ($nap) ? $nap->toArray() : [];
                     $gender = ($pc) ? $pc[0]['section_value'] : 'NA';
                     $appointment_type = ($st) ? $st[0]['appointment_type_name'] : 'NA';
-
                     $visit_type = ($vt) ? $vt[0]['appointment_visit_name'] : 'NA';
                     $category = ($cp) ? $cp[0]['appointment_category_name'] : 'NA';
-
+                    $result[$index]['No']=$index+1;
                     $result[$index]['Next_visit'] = ($nxtAppointments) ? date('d/m/Y', strtotime($nxtAppointments['booking_date'])) : '-';
                     $result[$index]['time_registered'] = ($nxtAppointments) ? date('h:i:s A', strtotime($nxtAppointments['booking_time'])) : '-';
                     $result[$index]['time_seen'] = ($nxtAppointments) ? date('h:i:s A', strtotime($nxtAppointments['booking_time'])) : '-';
                     $result[$index]['Procedure'] = ($icd) ? $icd['icd_name'] : 'NA';
-                    $result[$index]['Attendance_status'] = get_appointment_status($v['appointment_status']);
+                    // $result[$index]['Attendance_status'] = get_appointment_status($v['appointment_status']);
+                                        $result[$index]['Attendance_status'] = get_appointment_status($v['appointment_status']);
                     $result[$index]['Name'] = $patientInfo['name_asin_nric'];
                     $result[$index]['Attending_staff'] = ($staff) ? $staff[0]['name'] : 'NA';
                     $result[$index]['IC_NO'] = '-';
@@ -499,25 +497,49 @@ class ReportController extends Controller
                     $result[$index]['TYPE_OF_Refferal'] = ($reftyp) ? $reftyp[0]['section_value'] : 'NA';
                     $result[$index]['app_no'] = 'C' . $apcount[$v['patient_mrn_id']];
                     $index++;
+                   
                 }
+                
             }
+            // dd($index);
         }
         //dd($result);
         if ($result) {
-            $totalPatients = count($result);
+            $totalPatients ='Total Patient:   '.count($result).'<br>';
             $diff = date_diff(date_create($request->fromDate), date_create($request->toDate));
-            $totalDays = $diff->format("%a");
+            $totalDays = 'Total Days:  '.$diff->format("%a").'<br>';
             $fromDate = $request->fromDate;
             $toDate = $request->toDate;
             $filePath = '';
+            $filename='';
+            $periodofservice='Period of Services :'.$fromDate. ' To '. $toDate .'<br>';
+            $AttendNo=34;
+            $NoShowNo=21;
+            $Attend='Attend:   '.$AttendNo.'<br>';
+            $NoShow='No Show:   '.$NoShowNo.'<br>';
+            $summary= $periodofservice.'<br>'.$totalDays.'<br>'.$totalPatients.'<br>'.$Attend.'<br>'.$NoShow.'<br>';
             if (isset($request->report_type) && $request->report_type == 'excel') {
-                $filePath = 'downloads/report/activity-patient-report-' . time() . '.xlsx';
-                Excel::store(new PatientActivityReportExport($result, $totalPatients, $totalDays, $fromDate, $toDate), $filePath, 'public');
-
-                return response()->json([
-                    "message" => "Toal Patient & Type of Refferal Report", 'result' => $result, 'filepath' => env('APP_URL') . '/storage/app/public/' . $filePath,
-                    "Total_Days" => $totalDays, "Total_Patient" => $totalPatients, "Attend" => $totalPatients, "No_Show" => $totalPatients, "code" => 200
+                // $filePath = 'downloads/report/activity-patient-report-' . time() . '.xlsx';
+                $filename = 'patient-report-'.time().'.xls';
+                // // Excel::store(new PatientActivityReportExport($result, $totalPatients, $totalDays, $fromDate, $toDate), $filePath, 'public');
+                // return Excel::download(new PatientActivityReportExport($result, $totalPatients, $totalDays, $fromDate, $toDate),'activity-patient-report-' . time() . '.xlsx');
+                // return response()->json(["message"=>"Patient Activity Report", "excel"=>$excel]);
+                //dd($result);
+                return response([
+                    'message' => 'Data successfully retrieved.',
+                    'result' => $result,
+                    'totalPatients' => $totalPatients,
+                    'totalDays' =>  $totalDays,
+                    'fromDate' => $fromDate,
+                    'toDate' =>  $toDate,
+                    'header' => $summary,
+                    'filename' => $filename,
+                    'code' => 200
                 ]);
+                // return response()->json([
+                //     "message" => "Toal Patient & Type of Refferal Report", 'result' => $result, 'filepath' => 'storage/app/public/' . $filePath,
+                //     "Total_Days" => $totalDays, "Total_Patient" => $totalPatients, "Attend" => $totalPatients, "No_Show" => $totalPatients, "code" => 200
+                // ]);
             } else {
                 return response()->json([
                     "message" => "Toal Patient & Type of Refferal Report", 'result' => $result, 'filepath' => '',

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\JobCompanies;
 use App\Models\EmployeeRegistration;
 use App\Models\User;
+use App\Models\jobs;
+use App\Models\JobOffers;
 use Validator;
 use DB;
 
@@ -162,4 +164,17 @@ class JobCompaniesController extends Controller
         ->with('city:city_name,id')
         ->get();
     }
+
+    public function getApprovalList(Request $request)
+    {
+        return  DB::table('job_offers')
+        ->select(DB::raw("count('job_offers.id') as job_posted"), DB::raw("COUNT(CASE WHEN job_offers.approval_status = '1' THEN 1 END) NewJobs"),
+         'jobs.company_id',DB::raw("MAX(employee_registration.company_name) as company_name"))
+        ->join('jobs', 'jobs.id', '=', 'job_offers.job_id')
+        ->join('employee_registration', 'employee_registration.id', '=', 'jobs.company_id')
+        ->groupBy('jobs.company_id')
+        ->get();
+        
+    }
+    
 }
