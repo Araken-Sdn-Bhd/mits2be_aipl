@@ -149,7 +149,7 @@ class VonAppointmentController extends Controller
                 $sql = $sql->where('services_type','=', $request->service);
             }
             $records = $sql->get();
-            $records->get();
+            // $records->get();
         }else{
             $sql = VonAppointment::query();
             $sql = $sql->where('status','=','0');
@@ -177,6 +177,7 @@ class VonAppointmentController extends Controller
                 $aoi = AreasOfInvolvement::where('id', $val['area_of_involvement'])->get()->pluck('name')->toArray();
                 $list[$key]['aoi'] = $aoi[0];
                 $list[$key]['service'] = $val['services_type'];
+                
             }
         }
 
