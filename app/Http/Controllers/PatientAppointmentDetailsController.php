@@ -56,6 +56,7 @@ use App\Models\WorkAnalysisForm;
 use App\Models\WorkAnalysisJobSpecification;
 use Exception;
 use Validator;
+use DateTime;
 use Illuminate\Support\Facades\DB;
 
 class PatientAppointmentDetailsController extends Controller
@@ -112,13 +113,18 @@ class PatientAppointmentDetailsController extends Controller
                     'assign_team' => $request->assign_team
                 ];
                 $patient = PatientAppointmentDetails::create($service);
-                $notifi = [
-                    'patient_id' => $patient['patient_mrn_id'],
-                    'added_by' =>   $patient['added_by'],
-                    'created_at' =>  date("Y-m-d h:i:s"),
-                    'message' =>  'request for appointment(s)',
+
+                $notifi=[
+                    'added_by' => $Patient['added_by'],
+                    'branch_id'=>$request->branch_id,
+                    'role'=>'Admin/Clerk',
+                    'patient_mrn' =>   $request->id,
+                    'url_route' => "Modules/Patient/list-of-appointment",
+                    'created_at' => $date->format('Y-m-d H:i:s'),
+                    'message' =>  'Request for appointment(s)',
                 ];
                 $HOD = Notifications::insert($notifi);
+
                 return response()->json(["message" => "Patient Appointment Created Successfully!", "code" => 200]);
             } else {
                 return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
@@ -173,13 +179,18 @@ class PatientAppointmentDetailsController extends Controller
                     'assign_team' => $request->assign_team
                 ];
                 $patient = PatientAppointmentDetails::create($service);
-                $notifi = [
-                    'patient_id' => $patient['patient_mrn_id'],
-                    'added_by' =>   $patient['added_by'],
-                    'created_at' =>  date("Y-m-d h:i:s"),
-                    'message' =>  'request for appointment(s)',
+
+                $notifi=[
+                    'added_by' => $Patient['added_by'],
+                    'branch_id'=>$request->branch_id,
+                    'role'=>'Admin/Clerk',
+                    'patient_mrn' =>   $request->id,
+                    'url_route' => "Modules/Patient/list-of-appointment",
+                    'created_at' => $date->format('Y-m-d H:i:s'),
+                    'message' =>  'Request for appointment(s)',
                 ];
                 $HOD = Notifications::insert($notifi);
+
                 return response()->json(["message" => "Patient Appointment Created Successfully!", "code" => 200]);
             } else {
                 return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
@@ -245,6 +256,18 @@ class PatientAppointmentDetailsController extends Controller
                 'patient_category' => $request->patient_category,
                 'assign_team' => $request->assign_team
             ]);
+
+            $notifi=[
+                'added_by' => $Patient['added_by'],
+                'branch_id'=>$request->branch_id,
+                'role'=>'Admin/Clerk',
+                'patient_mrn' =>   $request->id,
+                'url_route' => "Modules/Patient/list-of-appointment",
+                'created_at' => $date->format('Y-m-d H:i:s'),
+                'message' =>  'Request for appointment(s)',
+            ];
+            $HOD = Notifications::insert($notifi);
+
             return response()->json(["message" => "Appointment Updated Successfully!", "code" => 200]);
         } else {
             return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);

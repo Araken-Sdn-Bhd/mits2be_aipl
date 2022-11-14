@@ -11,11 +11,14 @@ class Notifications extends Model
     protected $table = 'notifications';
     protected $fillable = [
         'added_by',
-        'patient_id',
+        'patient_mrn',
+        'branch_id',
         'team_id',
+        'role',
         'message',
         'isseen_staff',
         'isseen_admin',
         'created_at'
     ];
 }
+

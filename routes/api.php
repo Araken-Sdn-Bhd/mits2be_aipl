@@ -89,6 +89,7 @@ use App\Http\Controllers\ForgetpasswordController;
 use App\Http\Controllers\EmailSettingController;
 use App\Http\Controllers\MailController;
 use App\Http\Controllers\PasswordController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\JobController;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Mail;
@@ -781,7 +782,9 @@ Route::group(['prefix' => 'years'], function () {
 });
 Route::group(['prefix' => 'Notification'], function () {
 
-    Route::post('get', [DashboardController::class, 'getNotification']);
+    Route::post('get', [NotificationController::class, 'getNotification']);
+    Route::post('delete', [NotificationController::class, 'deleteNotification']);
+    
 });
 Route::group(['prefix' => 'staffDesignatioDetail'], function () {
     Route::post('/get', [PatientDetailsController::class, 'staffDesignatioDetail']);

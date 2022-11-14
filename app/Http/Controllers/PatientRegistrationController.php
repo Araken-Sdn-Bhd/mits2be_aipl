@@ -180,9 +180,10 @@ class PatientRegistrationController extends Controller
                 'added_by' => $Patient['added_by'],
                 'branch_id'=>$request->branch_id,
                 'role'=>'Triage Personnel',
-                'patient_id' =>   $Patient['id'],
+                'patient_mrn' =>   $Patient['id'],
+                'url_route' => "/Modules/Intervention/patient-summary?id=".$Patient['id'],
                 'created_at' => $date->format('Y-m-d H:i:s'),
-                'message' =>  'request for patient screening',
+                'message' =>  'Request for patient screening',
             ];
             $HOD = Notifications::insert($notifi);
         }
