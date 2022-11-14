@@ -113,7 +113,7 @@ class PatientAppointmentDetailsController extends Controller
                     'assign_team' => $request->assign_team
                 ];
                 $patient = PatientAppointmentDetails::create($service);
-
+                $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
                 $notifi=[
                     'added_by' => $request->added_by,
                     'branch_id'=>$request->branch_id,
@@ -179,7 +179,7 @@ class PatientAppointmentDetailsController extends Controller
                     'assign_team' => $request->assign_team
                 ];
                 $patient = PatientAppointmentDetails::create($service);
-
+                $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
                 $notifi=[
                     'added_by' => $request->added_by,
                     'branch_id'=>$request->branch_id,
@@ -267,7 +267,7 @@ class PatientAppointmentDetailsController extends Controller
                 'message' =>  'Request for appointment(s)',
             ];
             $HOD = Notifications::insert($notifi);
-
+            $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
             return response()->json(["message" => "Appointment Updated Successfully!", "code" => 200]);
         } else {
             return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
