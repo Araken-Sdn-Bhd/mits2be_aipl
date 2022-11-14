@@ -74,7 +74,6 @@ class CpsProgressNoteController extends Controller
             'intervention_others' => 'required|string',
             'remarks' => 'required|string',
             'employment_past_months' => 'required|string',
-            'if_employment_yes' => 'string',
             'psychiatric_clinic' => 'required|date',
             'im_depot_clinic' => 'required|date',
             'next_community_visit' => 'required|date',
