@@ -115,7 +115,7 @@ class PatientAppointmentDetailsController extends Controller
                 $patient = PatientAppointmentDetails::create($service);
 
                 $notifi=[
-                    'added_by' => $Patient['added_by'],
+                    'added_by' => $request->added_by,
                     'branch_id'=>$request->branch_id,
                     'role'=>'Admin/Clerk',
                     'patient_mrn' =>   $request->id,
@@ -181,7 +181,7 @@ class PatientAppointmentDetailsController extends Controller
                 $patient = PatientAppointmentDetails::create($service);
 
                 $notifi=[
-                    'added_by' => $Patient['added_by'],
+                    'added_by' => $request->added_by,
                     'branch_id'=>$request->branch_id,
                     'role'=>'Admin/Clerk',
                     'patient_mrn' =>   $request->id,
@@ -258,7 +258,7 @@ class PatientAppointmentDetailsController extends Controller
             ]);
 
             $notifi=[
-                'added_by' => $Patient['added_by'],
+                'added_by' => $request->added_by,
                 'branch_id'=>$request->branch_id,
                 'role'=>'Admin/Clerk',
                 'patient_mrn' =>   $request->id,
