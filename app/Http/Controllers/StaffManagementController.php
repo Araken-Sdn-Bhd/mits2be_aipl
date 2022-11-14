@@ -297,16 +297,16 @@ class StaffManagementController extends Controller
         }
         $users = DB::table('staff_management')
             ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
-            ->join('hospital_branch_team_details', 'staff_management.team_id', '=', 'hospital_branch_team_details.id')
+            ->join('service_register', 'staff_management.team_id', '=', 'service_register.id')
             ->join('roles', 'staff_management.role_id', '=', 'roles.id')
             ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
-            ->select('staff_management.id as Staff_managementId', 'staff_management.name', 'staff_management.nric_no', 'general_setting.section_value as designation_name', 'staff_management.designation_period_start_date', 'staff_management.designation_period_end_date', 'staff_management.registration_no', 'roles.role_name', 'hospital_branch_team_details.team_name', 'staff_management.branch_id', 'staff_management.is_incharge', 'staff_management.contact_no', 'staff_management.email', 'staff_management.status', 'staff_management.start_date', 'staff_management.end_date', 'hospital_branch__details.hospital_branch_name')
+            ->select('staff_management.id as Staff_managementId', 'staff_management.name', 'staff_management.nric_no', 'general_setting.section_value as designation_name', 'staff_management.designation_period_start_date', 'staff_management.designation_period_end_date', 'staff_management.registration_no', 'roles.role_name', 'service_register.service_name', 'staff_management.branch_id', 'staff_management.is_incharge', 'staff_management.contact_no', 'staff_management.email', 'staff_management.status', 'staff_management.start_date', 'staff_management.end_date', 'hospital_branch__details.hospital_branch_name')
             ->where('staff_management.id', '=', $request->id)
             ->get();
         return response()->json(["message" => "Staff Management Details", 'list' => $users, "code" => 200]);
     }
 
-    public function editStaffManagementDetailsById(Request $requestteam_id)
+    public function editStaffManagementDetailsById(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'id' => 'required|integer'
@@ -316,12 +316,13 @@ class StaffManagementController extends Controller
         }
         $users = DB::table('staff_management')
             ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
-            ->join('hospital_branch_team_details', 'staff_management.team_id', '=', 'hospital_branch_team_details.id')
+            ->join('service_register', 'staff_management.team_id', '=', 'service_register.id')
             ->join('roles', 'staff_management.role_id', '=', 'roles.id')
-            ->select('staff_management.id as Staff_managementId', 'staff_management.name', 'staff_management.role_id', 'staff_management.team_id', 'staff_management.nric_no', 'staff_management.branch_id', 'general_setting.section_value as designation_name', 'general_setting.id as designation_id', 'staff_management.designation_period_start_date', 'staff_management.designation_period_end_date', 'staff_management.registration_no', 'roles.role_name', 'hospital_branch_team_details.team_name', 'hospital_branch_team_details.hospital_branch_name', 'staff_management.branch_id', 'staff_management.is_incharge', 'staff_management.contact_no', 'staff_management.email', 'staff_management.status', 'staff_management.start_date', 'staff_management.end_date')
+            ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
+            ->select('staff_management.id as Staff_managementId', 'staff_management.name', 'staff_management.role_id', 'staff_management.team_id', 'staff_management.nric_no', 'staff_management.branch_id', 'general_setting.section_value as designation_name', 'general_setting.id as designation_id', 'staff_management.designation_period_start_date', 'staff_management.designation_period_end_date', 'staff_management.registration_no', 'roles.role_name', 'service_register.service_name', 'hospital_branch__details.hospital_branch_name', 'staff_management.branch_id', 'staff_management.is_incharge', 'staff_management.contact_no', 'staff_management.email', 'staff_management.status', 'staff_management.start_date', 'staff_management.end_date')
             ->where('staff_management.id', '=', $request->id)
             ->get();
-        return response()->json(["message" => "Staff Management Details fjwqij", 'list' => $users, "code" => 200]);
+        return response()->json(["message" => "Staff Management Details", 'list' => $users, "code" => 200]);
     }
 
     public function updateStaffManagement(Request $request)
