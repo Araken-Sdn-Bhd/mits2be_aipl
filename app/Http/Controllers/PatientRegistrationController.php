@@ -178,19 +178,21 @@ class PatientRegistrationController extends Controller
             if($Patient['patient_need_triage_screening']){
             $notifi=[
                 'added_by' => $Patient['added_by'],
+                'branch_id'=>$request->branch_id,
+                'role'=>'Triage Personnel',
                 'patient_id' =>   $Patient['id'],
                 'created_at' => $date->format('Y-m-d H:i:s'),
                 'message' =>  'request for patient screening',
             ];
             $HOD = Notifications::insert($notifi);
         }
-            $notifi12=[
-                'added_by' => $Patient['added_by'],
-                'patient_id' =>   $Patient['id'],
-                'created_at' => $date->format('Y-m-d H:i:s'),
-                'message' =>  'Patient Registration',
-            ];
-            $HOD = Notifications::insert($notifi12);
+            // $notifi12=[
+            //     'added_by' => $Patient['added_by'],
+            //     'patient_id' =>   $Patient['id'],
+            //     'created_at' => $date->format('Y-m-d H:i:s'),
+            //     'message' =>  'Patient Registration',
+            // ];
+            // $HOD = Notifications::insert($notifi12);
 
         } catch (Exception $e) {
             return response()->json(["message" => $e->getMessage(), 'Patient Registration' => $patientregistration, "code" => 200]);
