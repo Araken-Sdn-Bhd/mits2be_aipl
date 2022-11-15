@@ -45,7 +45,7 @@ class NotificationController extends Controller
 
     public function deleteNotification(Request $request)
     {
-        // $list = Notifications::where('id',$request->notifi_id)->delete();
+        $list = Notifications::where('id',$request->notifi_id)->delete();
 
         return response()->json(["message" => "Notifications Deleted", "code" => 200]);
     }
