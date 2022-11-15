@@ -805,7 +805,7 @@ class ReportController extends Controller
         // dd($result);
         if ($result) {
             $totalReports = count($result);
-
+            $filename = 'GeneralReport-'.time().'.pdf';
             if (isset($request->report_type) && $request->report_type == 'excel') {
                 
                   return response([
@@ -815,7 +815,7 @@ class ReportController extends Controller
                     'filename' => $filename,
                     'code' => 200]);
             } else {
-                $filename = 'GeneralReport-'.time().'.pdf';
+
                 return response()->json(["message" => "General Report", 'result' => $result, 'filename' => $filename, "code" => 200]);
             }
         } else {
