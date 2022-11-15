@@ -57,6 +57,8 @@ use App\Models\WorkAnalysisJobSpecification;
 use Exception;
 use Validator;
 use DateTime;
+use App\Models\TransactionLog;
+use DateTimeZone;
 use Illuminate\Support\Facades\DB;
 
 class PatientAppointmentDetailsController extends Controller
@@ -118,8 +120,8 @@ class PatientAppointmentDetailsController extends Controller
                     'added_by' => $request->added_by,
                     'branch_id'=>$request->branch_id,
                     'role'=>'Admin/Clerk',
-                    'patient_mrn' =>   $request->id,
-                    'url_route' => "Modules/Patient/list-of-appointment",
+                    'patient_mrn' =>   $getmnr_id[0],
+                    'url_route' => "app/Modules/Patient/list-of-appointment",
                     'created_at' => $date->format('Y-m-d H:i:s'),
                     'message' =>  'Request for appointment(s)',
                 ];
@@ -184,7 +186,7 @@ class PatientAppointmentDetailsController extends Controller
                     'added_by' => $request->added_by,
                     'branch_id'=>$request->branch_id,
                     'role'=>'Admin/Clerk',
-                    'patient_mrn' =>   $request->id,
+                    'patient_mrn' =>   $request->patient_mrn_id,
                     'url_route' => "Modules/Patient/list-of-appointment",
                     'created_at' => $date->format('Y-m-d H:i:s'),
                     'message' =>  'Request for appointment(s)',
@@ -217,6 +219,7 @@ class PatientAppointmentDetailsController extends Controller
             return response()->json(["message" => "This user is registered", 'list' => $chkPoint1, "code" => 200]);
         }
     }
+
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -256,12 +259,15 @@ class PatientAppointmentDetailsController extends Controller
                 'patient_category' => $request->patient_category,
                 'assign_team' => $request->assign_team
             ]);
-
+            $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+            $patient_id = PatientRegistration::select('id')
+                ->where('nric_no', $request->nric_or_passportno)
+                ->orWhere('passport_no', $request->nric_or_passportno)->get();
             $notifi=[
                 'added_by' => $request->added_by,
                 'branch_id'=>$request->branch_id,
                 'role'=>'Admin/Clerk',
-                'patient_mrn' =>   $request->id,
+                'patient_mrn' =>   $patient_id,
                 'url_route' => "Modules/Patient/list-of-appointment",
                 'created_at' => $date->format('Y-m-d H:i:s'),
                 'message' =>  'Request for appointment(s)',
