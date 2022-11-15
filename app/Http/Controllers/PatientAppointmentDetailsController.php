@@ -121,7 +121,7 @@ class PatientAppointmentDetailsController extends Controller
                     'branch_id'=>$request->branch_id,
                     'role'=>'Admin/Clerk',
                     'patient_mrn' =>   $getmnr_id[0],
-                    'url_route' => "app/Modules/Patient/list-of-appointment",
+                    'url_route' => "/Modules/Patient/list-of-appointment",
                     'created_at' => $date->format('Y-m-d H:i:s'),
                     'message' =>  'Request for appointment(s)',
                 ];
@@ -187,7 +187,7 @@ class PatientAppointmentDetailsController extends Controller
                     'branch_id'=>$request->branch_id,
                     'role'=>'Admin/Clerk',
                     'patient_mrn' =>   $request->patient_mrn_id,
-                    'url_route' => "Modules/Patient/list-of-appointment",
+                    'url_route' => "/Modules/Patient/list-of-appointment",
                     'created_at' => $date->format('Y-m-d H:i:s'),
                     'message' =>  'Request for appointment(s)',
                 ];
@@ -268,7 +268,7 @@ class PatientAppointmentDetailsController extends Controller
                 'branch_id'=>$request->branch_id,
                 'role'=>'Admin/Clerk',
                 'patient_mrn' =>   $patient_id,
-                'url_route' => "Modules/Patient/list-of-appointment",
+                'url_route' => "/Modules/Patient/list-of-appointment",
                 'created_at' => $date->format('Y-m-d H:i:s'),
                 'message' =>  'Request for appointment(s)',
             ];
