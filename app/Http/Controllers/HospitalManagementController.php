@@ -406,13 +406,13 @@ class HospitalManagementController extends Controller
         $hod['gender_id'] = $hbm->genders->id;
         $hod['citizenship'] =  $hbm['citizenship'];
         if($hbm->citizenships){
-        $hod['citizenship_name'] =  $hbm->citizenships->citizenship_name;
+        $hod['citizenship_name'] =  $hbm->citizenships->section_value;
         }else{
             $hod['citizenship_name'] =  'NA';
         }
         $hod['designation'] =  $hbm['designation'];
         if($hbm->designations){
-            $hod['designation_name'] =  $hbm->designations->designation_name;
+            $hod['designation_name'] =  $hbm->designations->section_value;
             }else{
                 $hod['designation_name'] =  'NA';
             }
