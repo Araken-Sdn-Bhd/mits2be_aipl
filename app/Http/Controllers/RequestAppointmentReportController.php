@@ -27,34 +27,35 @@ class RequestAppointmentReportController extends Controller
 
     public function getRequestAppointmentReport(Request $request)
     {
-        
-        $list = StaffManagement::select('id', 'team_id', 'branch_id')->where('email','=', $request->email)->get();
+ 
         $response = AppointmentRequest::select('name','nric_or_passportno','address','contact_no','email', 'created_at')
         ->whereBetween('created_at', [$request->fromDate, $request->toDate])
-        ->where('branch_id','=', $list[0]['branch_id'])
+        ->where('branch_id','=', $request->branch_id)
         ->where('status', '1')->get()->toArray();
+        
         
         $patient = [];
         $result = [];
     
         if ($response) {
 
+            if (isset($request->report_type) && $request->report_type == 'excel') {
+                $filename = 'RequestAppointmentReport-'.time().'.xls';
+                return response([
+                    'message' => 'Data successfully retrieved.',
+                    'result' => $response,
+                    'header' => 'Request Appointment Report from '.$request->fromDate.' To '.$request->toDate,
+                    'filename' => $filename,
+                    'code' => 200]);
 
-            if ($response) {
+                } else {
+                    $filename = 'RequestAppointmentReport-'.time().'.pdf';
+                return response()->json(["message" => "Request Report",'result' => $response,'filename' => $filename, "code" => 200]);
 
-                  
+                }
 
-                $totalReports = count($result);
-                 
-                $filePath = 'downloads/report/report-' . time() . '.xlsx';
-                Excel::store(new RequestAppointmentReportExport($result, $totalReports, $request->fromDate, $request->toDate), $filePath, 'public');
-               
-
-                return response()->json(["message" => "Request Report",'result' => $response, 'filepath' => env('APP_URL') . '/storage/app/public/' . $filePath, "code" => 200]);
-            } else {
-                return response()->json(["message" => "Request Report",'result' => [], 'filepath' => null, "code" => 200]);
-            }
         } else {
+
             return response()->json(["message" => "Request Report", 'result' => [], 'filepath' => null, "code" => 200]);
         }
     }
