@@ -90,9 +90,14 @@ class AnnouncementManagementController extends Controller
         $headers= [
             'Content-Type' => 'image/png',
          ];
-        $fileName = 'tet.png';
-        $fileLocation = 'app/public/assets/announcements/'.$fileName;
-        return Storage::url($fileName);
+        $fileName = 'q6HDgDvoVyl25JRdAUV4A0SswdqrXbT37BXx1KJk.png';
+        $fileLocation = 'assets/announcements/'.$fileName;
+        // $pathToFile = Storage::url($fileLocation);
+        $pathToFile = $request->document;
+        $fullPathToFile = env('APP_URL') . $pathToFile;
+        return response()->json(["message" => "Announcement Document",  'filepath' => $pathToFile, "code" => 200]);
+
+        // return response()->download($fullPathToFile);
     }
 
     public function updateAnnouncementManagement(Request $request)
