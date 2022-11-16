@@ -7,6 +7,7 @@ use App\Models\AppointmentRequest;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use App\Models\Notifications;
 use Validator;
 use Illuminate\Support\Facades\DB;
 
