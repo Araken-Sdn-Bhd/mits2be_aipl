@@ -13,6 +13,7 @@ use App\Models\PatientAppointmentDetails;
 use App\Models\GeneralSetting;
 use PhpParser\Node\Expr\Cast\Object_;
 use stdClass;
+use Illuminate\Support\Facades\Storage;
 
 class PatientByAgeReportController extends Controller
 {
@@ -250,16 +251,28 @@ $listKey=[];
 //                 $listKey[] =var_dump($lis);
 //                 dd($listKey);
         //  $totalReports = count($mainResult);
-                $filePath = 'downloads/report/patientbyage-' . time() . '.xlsx';
-                Excel::store(new PatientByAgeReportExport($mainResult, $request->fromDate, $request->toDate), $filePath, 'public');
-               
-                return response()->json(["message" => "Patient By Age Report", 'result' => $mainResult,'filepath' => env('APP_URL') . '/storage/app/public/' . $filePath, "code" => 200]);
+        $headers = [
+            'Content-Type' => 'application/vnd.ms-excel',
+            'Access-Control-Allow-Origin'      => '*',
+            'Access-Control-Allow-Methods'     => 'POST, GET, OPTIONS',
+            'Access-Control-Allow-Credentials' => 'true',
+            'Access-Control-Max-Age'           => '86400',
+            'Access-Control-Allow-Headers'     => 'Content-Type, Authorization, X-Requested-With'
+        ];
+        $filePath = '';
+        if (isset($request->report_type) && $request->report_type == 'excel') {
+            $filename = 'PatientByAgeGenderEthnicityReport'.time() . '.xlsx';
+            $filePath = 'downloads/report/'.$filename;
+            $KPIExcel = Excel::store(new PatientByAgeReportExport($mainResult), $filePath, 'public');
+            $pathToFile = Storage::url($filePath);
+            return response()->json(["message" => "Patient By Age Report", 'result' => $mainResult,  'filepath' => env('APP_URL') . $pathToFile, "code" => 200]);
             } else {
-                return response()->json(["message" => "Patient By Age Report", 'result' => [], 'filepath' => null, "code" => 200]);
+                return response()->json(["message" => "Patient By Age Report", 'result' => $mainResult, "code" => 200]);
             }
         } else {
             return response()->json(["message" => "Patient By Age Report", 'result' => [], 'filepath' => null, "code" => 200]);
         }
     }
+}
 
 }
