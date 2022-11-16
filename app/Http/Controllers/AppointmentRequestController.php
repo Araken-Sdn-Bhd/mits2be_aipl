@@ -48,6 +48,7 @@ class AppointmentRequestController extends Controller
                 'created_at' => $date->format('Y-m-d H:i:s'),
                 'message' =>  'Request for appointment(s)',
             ];
+            $HOD2 = Notifications::insert($notifi);
         } catch (Exception $e) {
             return response()->json(["message" => $e->getMessage(), 'AppointmentRequest' => $appointmentrequest, "code" => 200]);
         }
