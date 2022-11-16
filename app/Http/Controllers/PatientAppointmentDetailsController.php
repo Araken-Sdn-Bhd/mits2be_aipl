@@ -3750,6 +3750,7 @@ class PatientAppointmentDetailsController extends Controller
 
     public function fetchPatientStaffById(Request $request)
     {
+       
         $validator = Validator::make($request->all(), [
             'patient_id' => 'required|integer'  //patient_id is treated as staff id
         ]);
@@ -3760,71 +3761,44 @@ class PatientAppointmentDetailsController extends Controller
         $tabData = [
             array("tab" => "psychiatry_clerking_note", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services_id", "outcome" => "outcome_id", "ls" => "location_services_id", "type" => "PsychiatryClerkingNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
             array("tab" => "patient_counsellor_clerking_notes", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services_id", "outcome" => "outcome_id", "ls" => "location_services_id", "type" => "CounsellorClerkingNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            // array("tab" => "patient_index_form", "col" => "type_of_diagnosis", "cos" => "category_of_services", "cs" => "complexity_of_service", "outcome" => "outcome", "ls" => "location_of_services", "type" => "PatientIndexForm", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            // array("tab" => "psychiatric_progress_note", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services_id", "outcome" => "outcome_id", "ls" => "location_services_id", "type" => "PsychiatricProgressNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            // array("tab" => "cps_progress_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_service", "type" => "CPSProgressNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            // array("tab" => "se_progress_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "SEProgressNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            // array("tab" => "counselling_progress_note", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services_id", "outcome" => "outcome_id", "ls" => "location_services_id", "type" => "CounsellingProgressNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            // array("tab" => "etp_progress_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "EtpProgressNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            // array("tab" => "job_club_progress_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "JobClubProgressNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            // array("tab" => "consultation_discharge_note", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "ConsultationDischargeNote", "id" => "id", "patient_mrn_id" => "patient_id"),
-            // array("tab" => "rehab_discharge_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "RehabDischargeNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            // array("tab" => "cps_discharge_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_service", "type" => "CpsDischargeNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            // array("tab" => "patient_care_paln", "col" => "type_of_diagnosis", "cos" => "category_of_services", "cs" => "complexity_of_services", "outcome" => "outcome", "ls" => "complexity_of_services", "type" => "PatientCarePlanAndCaseReviewForm", "id" => "id", "patient_mrn_id" => "patient_id"),
-            // array("tab" => "job_start_form", "col" => "type_of_diagnosis", "cos" => "category_of_services", "cs" => "complexity_of_services", "outcome" => "outcome", "ls" => "location_of_service", "type" => "JobStartReport", "id" => "id", "patient_mrn_id" => "patient_id"),
-            // array("tab" => "job_end_report", "col" => "type_of_diagnosis", "cos" => "category_of_services", "cs" => "complexity_of_services", "outcome" => "outcome", "ls" => "location_of_service", "type" => "JobEndReport", "id" => "id", "patient_mrn_id" => "patient_id"),
-            // array("tab" => "job_transition_report", "col" => "type_of_diagnosis", "cos" => "category_of_services", "cs" => "complexity_of_services", "outcome" => "outcome", "ls" => "location_of_service", "type" => "JobTransitionReport", "id" => "id", "patient_mrn_id" => "patient_id"),
-            // array("tab" => "laser_assesmen_form", "col" => "type_of_diagnosis", "cos" => "category_of_services", "cs" => "complexity_of_services", "outcome" => "outcome", "ls" => "location_of_service", "type" => "LaserAssessment", "id" => "id", "patient_mrn_id" => "patient_id"),
-            // array("tab" => "triage_form", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services_id", "outcome" => "outcome_id", "ls" => "location_services_id", "type" => "TriageForm", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            // array("tab" => "job_interest_checklist", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "JobInterestCheckList", "id" => "id", "patient_mrn_id" => "patient_id"),
-            // array("tab" => "work_analysis_forms", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "WorkAnalysisForm", "id" => "id", "patient_mrn_id" => "patient_id"),
-            // array("tab" => "list_job_club", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "ListofJobClub", "id" => "id", "patient_mrn_id" => "patient_id"),
-            // array("tab" => "list_of_etp", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "ListofEtp", "id" => "id", "patient_mrn_id" => "patient_id"),
-            // array("tab" => "list_of_job_search", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "ListofJobSearch", "id" => "id", "patient_mrn_id" => "patient_id"),
-            // array("tab" => "log_meeting_with_employer", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "LogMeetingWithEmployer", "id" => "id", "patient_mrn_id" => "patient_id"),
-            // array("tab" => "list_previous_current_job", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "ListofPreviousCurrentJob", "id" => "id", "patient_mrn_id" => "patient_id"),
-            // array("tab" => "internal_referral_form", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "InternalReferralForm", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            // array("tab" => "external_referral_form", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "ExternalReferralForm", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            // array("tab" => "cps_referral_form", "col" => "type_of_diagnosis", "cos" => "category_of_services", "cs" => "complexity_of_services", "outcome" => "outcome", "ls" => "location_of_service", "type" => "CpsRefferalForm", "id" => "id", "patient_mrn_id" => "patient_id"),
-            // array("tab" => "occt_referral_form", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "OcctRefferalForm", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-            // array("tab" => "psychology_referral", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "PsychologyRefferalForm", "id" => "id", "patient_mrn_id" => "patient_id"),
-            // array("tab" => "rehab_referral_and_clinical_form", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "RehabRefferalAndClinicalForm", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
-        ];
+            ];
         // $qry = "";
         $id = PatientAppointmentDetails::select('id','patient_mrn_id')->get()->toArray();
         // dd($id[0]['patient_mrn_id']);
 
         $qry="";
         foreach ($tabData as $key => $value) {
-            // $qry .= "alter table {$value['tab']} add pad_id int(4);\n";
-            // $qry .= "CREATE OR REPLACE TRIGGER {$value['tab']}_trigger  BEFORE INSERT ON {$value['tab']}  FOR EACH ROW  SET NEW.pad_id=(SELECT id FROM patient_appointment_details where added_by=NEW.added_by and patient_mrn_id=NEW.{$value['patient_mrn_id']} order by id desc limit 1);\n";
-
             $qry .= ($qry=="" )?' ':' union all ';
-            $qry .= "select added_by,pad_id, CASE WHEN true THEN '{$value['type']}' END AS type ,  id id_ , created_at ,{$value['patient_mrn_id']} patient_mrn_id, {$value['col']} did,{$value['cos']} category_services_id,{$value['cs']} csr,{$value['outcome']} oc,{$value['ls']} ls from {$value['tab']} where added_by={$request->patient_id}";
+            $qry .= "select added_by,id, CASE WHEN true THEN '{$value['type']}' END AS type ,  id id_ , created_at ,{$value['patient_mrn_id']} patient_mrn_id, {$value['col']} did,{$value['cos']} category_services_id,{$value['cs']} csr,{$value['outcome']} oc,{$value['ls']} ls from {$value['tab']} where added_by={$request->patient_id}";
         }
-        // dd($qry);
+        //dd($qry);
 
-        $qry = "
-        select d.id patient_appointment_id, pac.appointment_category_name ,csr.section_value csr_ , oc.section_value oc_ , ls.section_value ls_ , d.*,c.* from (
-            select b.* from (
-                select a.* from ($qry) a order by a.patient_mrn_id , DATE_FORMAT(created_at ,'%Y%m%d%h%i%s') desc LIMIT 18446744073709551615
-            ) b group by b.patient_mrn_id , DATE_FORMAT(created_at ,'%Y%m%d') desc) c
-        left join (
-            select * from patient_appointment_details order by patient_mrn_id ,created_at desc
-        ) d on c.pad_id=d.id left join general_setting csr on c.csr=csr.id left join general_setting oc on c.oc=oc.id left join general_setting ls on c.ls=ls.id
-        left join patient_appointment_category pac on d.patient_category=pac.id;";
+        $qry2 = "select d.id patient_appointment_id, pac.appointment_category_name ,csr.section_value csr_ , oc.section_value oc_ , 
+        ls.section_value ls_ , d.*,c.* from (select distinct(b.patient_mrn_id) as patient, b.* from (select * from ($qry) a) b) c
+        left join (select * from patient_appointment_details order by patient_mrn_id ,created_at desc) d on c.id=d.id 
+        left join patient_appointment_category pac on d.patient_category=pac.id
+        left join general_setting csr on c.csr=csr.id 
+        left join general_setting oc on c.oc=oc.id 
+        left join general_setting ls on c.ls=ls.id
+        order by c.patient_mrn_id , DATE_FORMAT(c.created_at ,'%Y%m%d%h%i%s') desc LIMIT 18446744073709551615";
 
-        // select a.* from (
-        //     select * from patient_appointment_details order by patient_mrn_id ,created_at desc
-        // ) a group by a.added_by order by a.added_by
+        //select d.id patient_appointment_id, pac.appointment_category_name ,csr.section_value csr_ , oc.section_value oc_ , ls.section_value ls_ , d.*,c.* from (
+        //    select b.* from (
+        //        select a.* from ($qry) a order by a.patient_mrn_id , DATE_FORMAT(created_at ,'%Y%m%d%h%i%s') desc LIMIT 18446744073709551615
+        //    ) b group by b.patient_mrn_id , DATE_FORMAT(created_at ,'%Y%m%d') desc) c
+        //left join (
+        //    select * from patient_appointment_details order by patient_mrn_id ,created_at desc
+        //) d on c.pad_id=d.id left join general_setting csr on c.csr=csr.id left join general_setting oc on c.oc=oc.id left join general_setting ls on c.ls=ls.id
+        //left join patient_appointment_category pac on d.patient_category=pac.id;";
+    
+      
+         //$staff_patient_list  = DB::select(DB::raw($qry2));
 
-
-        // dd($qry);
-        $staff_patient_list  = DB::select( DB::raw($qry));
+         $staff_patient_list= DB::select( DB::raw($qry2));
+        
+       
         return response()->json(["message" => "List", 'Data' => $staff_patient_list, "code" => 200]);
-        // return $diagnosis;
-        // dd($diagnosis);
-        // dd($qry);
+      
     }
 
      public function fetchPatientListByStaffId(Request $request)
