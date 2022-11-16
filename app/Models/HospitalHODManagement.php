@@ -21,12 +21,12 @@ class HospitalHODManagement extends Model
 
     public function citizenships()
     {
-        return $this->hasOne(Citizenship::class, 'id', 'citizenship');
+        return $this->hasOne(GeneralSetting::class, 'id', 'citizenship');
     }
 
     public function designations()
     {
-        return $this->hasOne(Designation::class, 'id', 'designation');
+        return $this->hasOne(GeneralSetting::class, 'id', 'designation');
     }
 
     public function religions()
