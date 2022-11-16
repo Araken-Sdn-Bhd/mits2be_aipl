@@ -35,6 +35,7 @@ use App\Models\OutReachProjects;
 use App\Models\Volunteerism;
 use App\Models\HospitalBranchManagement;
 use App\Models\SeProgressNote;
+use Illuminate\Support\Facades\Storage;
 
 class ReportController extends Controller
 {
@@ -278,11 +279,11 @@ class ReportController extends Controller
             if ($result) {
                 $totalReports =
                     ShharpReportGenerateHistory::select(DB::raw('count( * ) as total'),
-                     DB::raw("CASE WHEN report_month=1 THEN 'January' WHEN report_month=2 THEN 'Febuary' 
-                     WHEN report_month=3 THEN 'March'  WHEN report_month=4 THEN 'April'  WHEN report_month=5 
-                     THEN 'May'  WHEN report_month=6 THEN 'June'  WHEN report_month=7 THEN 'July'  
-                     WHEN report_month=8 THEN 'August'  WHEN report_month=9 THEN 'September'  
-                     WHEN report_month=10 THEN 'October'  WHEN report_month=11 THEN 'November' 
+                     DB::raw("CASE WHEN report_month=1 THEN 'January' WHEN report_month=2 THEN 'Febuary'
+                     WHEN report_month=3 THEN 'March'  WHEN report_month=4 THEN 'April'  WHEN report_month=5
+                     THEN 'May'  WHEN report_month=6 THEN 'June'  WHEN report_month=7 THEN 'July'
+                     WHEN report_month=8 THEN 'August'  WHEN report_month=9 THEN 'September'
+                     WHEN report_month=10 THEN 'October'  WHEN report_month=11 THEN 'November'
                      ELSE 'December' END as month"), 'report_month', 'report_year')
                      ->where('report_type', 'shharp_mgmt')->groupBy('report_month', 'report_year')->get()->toArray();
                 $filePath = '';
@@ -462,7 +463,7 @@ class ReportController extends Controller
                     $query->where('sex', $request->gender);
                     $patientInfon = $query->get()->toArray();
                 if ($patientInfon) {
-                    $patientInfo = $patientInfon[0];                   
+                    $patientInfo = $patientInfon[0];
                     $pc = GeneralSetting::where(['id' => $patientInfo['sex']])->get()->toArray();
                     $st = PatientAppointmentType::where(['id' => $v['appointment_type']])->get()->toArray();
                     $vt = PatientAppointmentVisit::where('id', $v['type_visit'])->get()->toArray();
@@ -497,9 +498,9 @@ class ReportController extends Controller
                     $result[$index]['TYPE_OF_Refferal'] = ($reftyp) ? $reftyp[0]['section_value'] : 'NA';
                     $result[$index]['app_no'] = 'C' . $apcount[$v['patient_mrn_id']];
                     $index++;
-                   
+
                 }
-                
+
             }
             // dd($index);
         }
@@ -805,7 +806,7 @@ class ReportController extends Controller
         // dd($result);
         if ($result) {
             $totalReports = count($result);
-            
+            $filePath = '';
             if (isset($request->report_type) && $request->report_type == 'excel') {
                 $filename = 'GeneralReport-'.time().'.xls';
                   return response([
@@ -899,11 +900,26 @@ class ReportController extends Controller
         // dd($yearArray);
         // dd($result);
         if ($result) {
+            $headers = [
+                'Content-Type' => 'application/vnd.ms-excel',
+                'Access-Control-Allow-Origin'      => '*',
+                'Access-Control-Allow-Methods'     => 'POST, GET, OPTIONS',
+                'Access-Control-Allow-Credentials' => 'true',
+                'Access-Control-Max-Age'           => '86400',
+                'Access-Control-Allow-Headers'     => 'Content-Type, Authorization, X-Requested-With'
+            ];
             $filePath = '';
             if (isset($request->report_type) && $request->report_type == 'excel') {
-                $filePath = 'downloads/report/kpi-report-rg-'.time() . '.xlsx';
-                Excel::store(new KPIReportExport($result, $yearArray, $months), $filePath, 'public');
-                return response()->json(["message" => "KPI Report", 'result' => $result,  'filepath' => env('APP_URL') . '/storage/app/public/' . $filePath, "code" => 200]);
+                // $filePath = 'downloads/report/kpi-report-rg-'.time() . '.xlsx';
+                // Excel::store(new KPIReportExport($result, $yearArray, $months), $filePath, 'public');
+                // return response()->json(["message" => "KPI Report", 'result' => $result,  'filepath' => env('APP_URL') . '/storage/app/public/' . $filePath, "code" => 200]);
+                $filename = 'kpi-report-rg-'.time() . '.xlsx';
+                $filePath = 'downloads/report/'.$filename;
+                $KPIExcel = Excel::store(new KPIReportExport($result, $yearArray, $months), $filePath, 'public');
+                $pathToFile = Storage::url($filePath);
+                return response()->json(["message" => "KPI Report", 'result' => $result,  'filepath' => env('APP_URL') . $pathToFile, "code" => 200]);
+                // return response()->download($pathToFile,$filename,$headers);
+                // return response()->json(["message" => "KPI Report", 'filename' => $filePath,  'filepath' => null, "code" => 200])->download(storage_path().'/app/public/'.$filePath)->deleteFileAfterSend(true);;
             } else {
                 return response()->json(["message" => "KPI Report", 'result' => $result,  'filepath' => null, "code" => 200]);
             }
