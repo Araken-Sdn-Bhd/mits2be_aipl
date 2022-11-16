@@ -3821,7 +3821,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "PsychiatryClerkingNote") {
             $list = DB::table('psychiatry_clerking_note')
             ->join('users', 'psychiatry_clerking_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'psychiatry_clerking_note.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'psychiatry_clerking_note.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -3845,7 +3845,7 @@ class PatientAppointmentDetailsController extends Controller
             
             $list = DB::table('patient_counsellor_clerking_notes')
             ->join('users', 'patient_counsellor_clerking_notes.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'patient_counsellor_clerking_notes.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'patient_counsellor_clerking_notes.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -3868,7 +3868,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "PatientIndexForm") {
             $list= DB::table('patient_index_form')
             ->join('users', 'patient_index_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'patient_index_form.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'patient_index_form.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -3892,7 +3892,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "PsychiatricProgressNote") {
             $list  = DB::table('psychiatric_progress_note')
             ->join('users', 'psychiatric_progress_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'psychiatric_progress_note.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'psychiatric_progress_note.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -3914,7 +3914,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "CPSProgressNote") {
             $list = DB::table('cps_progress_note')
             ->join('users', 'cps_progress_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'cps_progress_note.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'cps_progress_note.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -3936,7 +3936,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "SEProgressNote") {
             $list = DB::table('se_progress_note')
             ->join('users', 'se_progress_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'se_progress_note.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'se_progress_note.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -3958,7 +3958,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "CounsellingProgressNote") {
             $list = DB::table('counselling_progress_note')
             ->join('users', 'counselling_progress_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'counselling_progress_note.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'counselling_progress_note.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -3981,7 +3981,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "EtpProgressNote") {
             $list = DB::table('etp_progress_note')
             ->join('users', 'etp_progress_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'etp_progress_note.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'etp_progress_note.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4003,7 +4003,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "JobClubProgressNote") {
             $list = DB::table('job_club_progress_note')
             ->join('users', 'job_club_progress_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'job_club_progress_note.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'job_club_progress_note.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4025,7 +4025,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "ConsultationDischargeNote") {
             $list = DB::table('consultation_discharge_note')
             ->join('users', 'consultation_discharge_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'consultation_discharge_note.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'consultation_discharge_note.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4047,7 +4047,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "RehabDischargeNote") {
             $list = DB::table('rehab_discharge_note')
             ->join('users', 'rehab_discharge_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'rehab_discharge_note.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'rehab_discharge_note.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4069,7 +4069,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "CpsDischargeNote") {
             $list = DB::table('cps_discharge_note')
             ->join('users', 'cps_discharge_note.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'cps_discharge_note.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'cps_discharge_note.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4092,7 +4092,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "PatientCarePlanAndCaseReviewForm") {
             $list = DB::table('patient_care_paln')
             ->join('users', 'patient_care_paln.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'patient_care_paln.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'patient_care_paln.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4114,7 +4114,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "JobStartReport") {
             $list= DB::table('job_start_form')
             ->join('users', 'job_start_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'job_start_form.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'job_start_form.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4136,7 +4136,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "JobEndReport") {
             $list = DB::table('job_end_report')
             ->join('users', 'job_end_report.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'job_end_report.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'job_end_report.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4158,7 +4158,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "JobTransitionReport") {
             $list  = DB::table('job_transition_report')
             ->join('users', 'job_transition_report.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'job_transition_report.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'job_transition_report.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4180,7 +4180,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "LaserAssessment") {
             $list = DB::table('laser_assesmen_form')
             ->join('users', 'laser_assesmen_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'laser_assesmen_form.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'laser_assesmen_form.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4202,7 +4202,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "TriageForm") {
             $list = DB::table('triage_form')
             ->join('users', 'triage_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'triage_form.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'triage_form.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4225,7 +4225,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "JobInterestCheckList") {
             $list = DB::table('job_interest_checklist')
             ->join('users', 'job_interest_checklist.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'job_interest_checklist.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'job_interest_checklist.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4248,7 +4248,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "WorkAnalysisForm") {
             $list = DB::table('work_analysis_forms')
             ->join('users', 'work_analysis_forms.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'work_analysis_forms.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'work_analysis_forms.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4270,7 +4270,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "ListofJobClub") {
             $list = DB::table('list_job_club')
             ->join('users', 'list_job_club.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'list_job_club.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'list_job_club.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4291,7 +4291,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "ListofEtp") {
             $list = DB::table('list_of_etp')
             ->join('users', 'list_of_etp.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'list_of_etp.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'list_of_etp.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4312,7 +4312,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "ListofJobSearch") {
             $list = DB::table('list_of_job_search')
             ->join('users', 'list_of_job_search.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'list_of_job_search.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'list_of_job_search.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4333,7 +4333,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "LogMeetingWithEmployer") {
             $list = DB::table('log_meeting_with_employer')
             ->join('users', 'log_meeting_with_employer.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'log_meeting_with_employer.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'log_meeting_with_employer.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4354,7 +4354,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "ListofPreviousCurrentJob") {
            $list = DB::table('list_previous_current_job')
            ->join('users', 'list_previous_current_job.added_by', '=', 'users.id')
-           ->join('patient_appointment_details', 'list_previous_current_job.added_by', '=', 'patient_appointment_details.added_by')
+           ->join('patient_appointment_details', 'list_previous_current_job.appointment_details_id', '=', 'patient_appointment_details.id')
            ->select(
                'patient_appointment_details.id as patient_appointment_id',
                'patient_appointment_details.patient_category',
@@ -4375,7 +4375,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "InternalReferralForm") {
             $list = DB::table('internal_referral_form')
             ->join('users', 'internal_referral_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'internal_referral_form.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'internal_referral_form.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4396,7 +4396,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "ExternalReferralForm") {
             $list =  DB::table('external_referral_form')
             ->join('users', 'external_referral_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'external_referral_form.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'external_referral_form.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4417,7 +4417,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "CpsRefferalForm") {
             $list = DB::table('cps_referral_form')
             ->join('users', 'cps_referral_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'cps_referral_form.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'cps_referral_form.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4440,7 +4440,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "OcctRefferalForm") {
             $list = DB::table('occt_referral_form')
             ->join('users', 'occt_referral_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'occt_referral_form.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'occt_referral_form.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4463,7 +4463,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "PsychologyRefferalForm") {
             $list = DB::table('psychology_referral')
             ->join('users', 'psychology_referral.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'psychology_referral.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'psychology_referral.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4486,7 +4486,7 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "RehabRefferalAndClinicalForm") {
             $list = DB::table('rehab_referral_and_clinical_form')
             ->join('users', 'rehab_referral_and_clinical_form.added_by', '=', 'users.id')
-            ->join('patient_appointment_details', 'rehab_referral_and_clinical_form.added_by', '=', 'patient_appointment_details.added_by')
+            ->join('patient_appointment_details', 'rehab_referral_and_clinical_form.appointment_details_id', '=', 'patient_appointment_details.id')
             ->select(
                 'patient_appointment_details.id as patient_appointment_id',
                 'patient_appointment_details.patient_category',
@@ -4512,9 +4512,9 @@ class PatientAppointmentDetailsController extends Controller
     public function updatePatientListByStaffId(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'apid' => 'required|integer',
+            'apid' => 'required',
             'type' => 'required|string',
-            'tbid' => 'required|integer',
+            'tbid' => 'required',
             'category_services' => 'required',
             'complexity_services_id' => 'required|integer',
             'location_services_id' => 'required|integer',

@@ -33,7 +33,8 @@ class PsychiatryClerkingNoteController extends Controller
             'complexity_services_id' => '',
             'outcome_id' => '',
             'medication_des' => '',
-            'id' => ''
+            'id' => '',
+            'appointment_details_id' => '',
 
         ]);
         if ($validator->fails()) {
@@ -72,6 +73,7 @@ class PsychiatryClerkingNoteController extends Controller
                     'medication_des' =>  $request->medication_des,
                     'status' => "1",
                     'created_at' => $date->format('Y-m-d H:i:s'),
+                    
                 ];
 
                 try {
@@ -160,6 +162,7 @@ class PsychiatryClerkingNoteController extends Controller
                     'medication_des' =>  $request->medication_des,
                     'status' => "1",
                     'created_at' => date('Y-m-d H:i:s'),
+                    'appointment_details_id' => $request->appId,
                 ];
 
                 try {
@@ -211,4 +214,6 @@ class PsychiatryClerkingNoteController extends Controller
             }
         }
     }
+
+  
 }
