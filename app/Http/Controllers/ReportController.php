@@ -764,7 +764,7 @@ class ReportController extends Controller
                     $appointment_type = ($apt) ? $apt[0]['appointment_type_name'] : 'NA';
                     $visit_type = ($vt) ? $vt[0]['appointment_visit_name'] : 'NA';
                     $category = ($cp) ? $cp[0]['appointment_category_name'] : 'NA';
-
+                    $result[$index]['No']=$index+1;
                     $result[$index]['Registration_date'] = date('d/m/Y', strtotime($patientInfo['created_at']));
                     $result[$index]['Registration_Time'] = date('h:i:s A', strtotime($patientInfo['created_at']));
                     $result[$index]['nric_no'] = $patientInfo['nric_no'];
@@ -805,17 +805,21 @@ class ReportController extends Controller
         // dd($result);
         if ($result) {
             $totalReports = count($result);
-            
-            $filePath = '';
+            $filename = 'GeneralReport-'.time().'.pdf';
             if (isset($request->report_type) && $request->report_type == 'excel') {
-                $filePath = 'downloads/report/general-report-' . time() . '.xlsx';
-                Excel::store(new GeneralReportExport($result, $totalReports, $request->fromDate, $request->toDate), $filePath, 'public');
-                return response()->json(["message" => "General Report", 'result' => $result, 'filepath' => env('APP_URL') . '/storage/app/public/' . $filePath, "code" => 200]);
+                
+                  return response([
+                    'message' => 'Data successfully retrieved.',
+                    'result' => $result,
+                    'header' => 'General Report from '.$request->fromDate.' To '.$request->toDate,
+                    'filename' => $filename,
+                    'code' => 200]);
             } else {
-                return response()->json(["message" => "General Report", 'result' => $result, 'filepath' => '', "code" => 200]);
+
+                return response()->json(["message" => "General Report", 'result' => $result, 'filename' => $filename, "code" => 200]);
             }
         } else {
-            return response()->json(["message" => "General Report", 'result' => [], 'filepath' => null, "code" => 200]);
+            return response()->json(["message" => "General Report", 'result' => [], 'filename' => null, "code" => 200]);
         }
     }
 
