@@ -56,12 +56,12 @@ if (!function_exists('appointment_status')) {
     function appointment_status()
     {
         return [
-            '0' => 'Completed',
-            '1' => 'Completed',
+            '0' => 'Attend',
+            '1' => 'Attend',
             '2' => 'No Show',
-            '3' => 'Completed',
-            '4'  => 'Completed',
-            '10' => 'Completed'
+            '3' => 'Attend',
+            '4'  => 'Attend',
+            '10' => 'Attend'
         ];
     }
 }
