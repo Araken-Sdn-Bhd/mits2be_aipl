@@ -361,7 +361,7 @@ class ReportController extends Controller
                     } else {
                         $rfa['Refferal'] = $rfa['Refferal'] + 1;
                     }
-
+                    $result[$index]['No']=$index+1;
                     $result[$index]['DATE'] = date('d/m/Y', strtotime($v['booking_date']));
                     $result[$index]['TIME'] = date('h:i:s A', strtotime($v['booking_time']));
                     $result[$index]['NRIC_NO_PASSPORT_NO'] = ($patientInfo['nric_no']) ? $patientInfo['nric_no'] : $patientInfo['passport_no'];;
@@ -401,13 +401,24 @@ class ReportController extends Controller
 
             $filePath = '';
             if (isset($request->report_type) && $request->report_type == 'excel') {
-                $filePath = 'downloads/report/report-' . time() . '.xlsx';
-                Excel::store(new WorkloadTotalPatienTypeRefferalReportExport($result, $totalPatients, $totalDays, $patientCategories, $visitTypes, $refferals), $filePath, 'public');
+                $filename = 'TotalPatient&TypeOfReferralReport-'.time().'.xls';
 
-                return response()->json([
-                    "message" => "Toal Patient & Type of Refferal Report", 'result' => $result, 'filepath' => env('APP_URL') . '/storage/app/public/' . $filePath, 'Total_Patient' => $totalPatients, 'Total_Days' => $totalDays,
-                    'Referal_walk' => $rfa, 'Visit_Type' => $visitTypes, 'refferals' =>  $refferals, 'Category_Patient' => $patientCategories, "code" => 200
-                ]);
+                //$periodofservice='TOTAL PATIENT AND TYPE OF REFERRAL'.'<br>'.$fromDate. ' To '. $toDate .'<br>';
+                // $AttendNo=34;
+                // $NoShowNo=21;
+                // $Attend='Attend:   '.$AttendNo.'<br>';
+                // $NoShow='No Show:   '.$NoShowNo.'<br>';
+
+                $summary= 'TOTAL PATIENT AND TYPE OF REFERRAL'.'<br>'.'TOTAL DAYS:   '.$totalDays.'<br>'.'TOTAL PATIENT:    '.$totalPatients.'<br>';
+                // 'Referal_walk' => $rfa, 'Visit_Type' => $visitTypes, 'refferals' =>  $refferals, 'Category_Patient' => $patientCategories,
+                
+                return response([
+                    'message' => 'Data successfully retrieved.',
+                    'result' => $result,
+                    'header' => $summary,
+                    'filename' => $filename,
+                    'code' => 200]);
+
             } else {
                 return response()->json([
                     "message" => "Toal Patient & Type of Refferal Report", 'result' => $result, 'filepath' => '', 'Total_Patient' => $totalPatients, 'Total_Days' => $totalDays,
