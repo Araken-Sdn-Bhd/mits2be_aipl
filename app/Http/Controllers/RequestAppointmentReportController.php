@@ -27,34 +27,44 @@ class RequestAppointmentReportController extends Controller
 
     public function getRequestAppointmentReport(Request $request)
     {
-        
-        $list = StaffManagement::select('id', 'team_id', 'branch_id')->where('email','=', $request->email)->get();
+ 
         $response = AppointmentRequest::select('name','nric_or_passportno','address','contact_no','email', 'created_at')
         ->whereBetween('created_at', [$request->fromDate, $request->toDate])
-        ->where('branch_id','=', $list[0]['branch_id'])
-        ->where('status', '1')->get()->toArray();
+            ->where('branch_id','=', $request->branch_id)
+        ->where('status', '1');
         
-        $patient = [];
+        $ssh= $response->get()->toArray();
         $result = [];
-    
+        $index=0;
+        foreach ($ssh as $k => $v) {
+        $result[$index]['No']=$index+1;
+        $result[$index]['name']=$v['name'];
+        $result[$index]['nric_or_passportno']=$v['nric_or_passportno'];
+        $result[$index]['address']=$v['address'];
+        $result[$index]['contact_no']=$v['contact_no'];
+        $result[$index]['email']=$v['email'];
+        $result[$index]['created_at']=$v['created_at'];
+        $index++;
+        }
         if ($response) {
 
+            if (isset($request->report_type) && $request->report_type == 'excel') {
+                $filename = 'RequestAppointmentReport-'.time().'.xls';
+                return response([
+                    'message' => 'Data successfully retrieved.',
+                    'result' => $result,
+                    'header' => 'Request Appointment Report from '.$request->fromDate.' To '.$request->toDate,
+                    'filename' => $filename,
+                    'code' => 200]);
 
-            if ($response) {
+                } else {
+                    $filename = 'RequestAppointmentReport-'.time().'.pdf';
+                return response()->json(["message" => "Request Report",'result' => $result,'filename' => $filename, "code" => 200]);
 
-                  
+                }
 
-                $totalReports = count($result);
-                 
-                $filePath = 'downloads/report/report-' . time() . '.xlsx';
-                Excel::store(new RequestAppointmentReportExport($result, $totalReports, $request->fromDate, $request->toDate), $filePath, 'public');
-               
-
-                return response()->json(["message" => "Request Report",'result' => $response, 'filepath' => env('APP_URL') . '/storage/app/public/' . $filePath, "code" => 200]);
-            } else {
-                return response()->json(["message" => "Request Report",'result' => [], 'filepath' => null, "code" => 200]);
-            }
         } else {
+
             return response()->json(["message" => "Request Report", 'result' => [], 'filepath' => null, "code" => 200]);
         }
     }
