@@ -35,6 +35,7 @@ use App\Models\OutReachProjects;
 use App\Models\Volunteerism;
 use App\Models\HospitalBranchManagement;
 use App\Models\SeProgressNote;
+use Illuminate\Support\Facades\Storage;
 
 class ReportController extends Controller
 {
@@ -278,11 +279,11 @@ class ReportController extends Controller
             if ($result) {
                 $totalReports =
                     ShharpReportGenerateHistory::select(DB::raw('count( * ) as total'),
-                     DB::raw("CASE WHEN report_month=1 THEN 'January' WHEN report_month=2 THEN 'Febuary' 
-                     WHEN report_month=3 THEN 'March'  WHEN report_month=4 THEN 'April'  WHEN report_month=5 
-                     THEN 'May'  WHEN report_month=6 THEN 'June'  WHEN report_month=7 THEN 'July'  
-                     WHEN report_month=8 THEN 'August'  WHEN report_month=9 THEN 'September'  
-                     WHEN report_month=10 THEN 'October'  WHEN report_month=11 THEN 'November' 
+                     DB::raw("CASE WHEN report_month=1 THEN 'January' WHEN report_month=2 THEN 'Febuary'
+                     WHEN report_month=3 THEN 'March'  WHEN report_month=4 THEN 'April'  WHEN report_month=5
+                     THEN 'May'  WHEN report_month=6 THEN 'June'  WHEN report_month=7 THEN 'July'
+                     WHEN report_month=8 THEN 'August'  WHEN report_month=9 THEN 'September'
+                     WHEN report_month=10 THEN 'October'  WHEN report_month=11 THEN 'November'
                      ELSE 'December' END as month"), 'report_month', 'report_year')
                      ->where('report_type', 'shharp_mgmt')->groupBy('report_month', 'report_year')->get()->toArray();
                 $filePath = '';
@@ -360,7 +361,7 @@ class ReportController extends Controller
                     } else {
                         $rfa['Refferal'] = $rfa['Refferal'] + 1;
                     }
-
+                    $result[$index]['No']=$index+1;
                     $result[$index]['DATE'] = date('d/m/Y', strtotime($v['booking_date']));
                     $result[$index]['TIME'] = date('h:i:s A', strtotime($v['booking_time']));
                     $result[$index]['NRIC_NO_PASSPORT_NO'] = ($patientInfo['nric_no']) ? $patientInfo['nric_no'] : $patientInfo['passport_no'];;
@@ -400,13 +401,24 @@ class ReportController extends Controller
 
             $filePath = '';
             if (isset($request->report_type) && $request->report_type == 'excel') {
-                $filePath = 'downloads/report/report-' . time() . '.xlsx';
-                Excel::store(new WorkloadTotalPatienTypeRefferalReportExport($result, $totalPatients, $totalDays, $patientCategories, $visitTypes, $refferals), $filePath, 'public');
+                $filename = 'TotalPatient&TypeOfReferralReport-'.time().'.xls';
 
-                return response()->json([
-                    "message" => "Toal Patient & Type of Refferal Report", 'result' => $result, 'filepath' => env('APP_URL') . '/storage/app/public/' . $filePath, 'Total_Patient' => $totalPatients, 'Total_Days' => $totalDays,
-                    'Referal_walk' => $rfa, 'Visit_Type' => $visitTypes, 'refferals' =>  $refferals, 'Category_Patient' => $patientCategories, "code" => 200
-                ]);
+                //$periodofservice='TOTAL PATIENT AND TYPE OF REFERRAL'.'<br>'.$fromDate. ' To '. $toDate .'<br>';
+                // $AttendNo=34;
+                // $NoShowNo=21;
+                // $Attend='Attend:   '.$AttendNo.'<br>';
+                // $NoShow='No Show:   '.$NoShowNo.'<br>';
+
+                $summary= 'TOTAL PATIENT AND TYPE OF REFERRAL'.'<br>'.'TOTAL DAYS:   '.$totalDays.'<br>'.'TOTAL PATIENT:    '.$totalPatients.'<br>';
+                // 'Referal_walk' => $rfa, 'Visit_Type' => $visitTypes, 'refferals' =>  $refferals, 'Category_Patient' => $patientCategories,
+                
+                return response([
+                    'message' => 'Data successfully retrieved.',
+                    'result' => $result,
+                    'header' => $summary,
+                    'filename' => $filename,
+                    'code' => 200]);
+
             } else {
                 return response()->json([
                     "message" => "Toal Patient & Type of Refferal Report", 'result' => $result, 'filepath' => '', 'Total_Patient' => $totalPatients, 'Total_Days' => $totalDays,
@@ -433,6 +445,9 @@ class ReportController extends Controller
         $ssh = $appointments->get()->toArray();
         $apcount = [];
         $result = [];
+        $attendanceStatus = [];
+        $attend = 0;
+        $noShow = 0;
         if ($ssh) {
             $index = 0;
             foreach ($ssh as $k => $v) {
@@ -462,7 +477,7 @@ class ReportController extends Controller
                     $query->where('sex', $request->gender);
                     $patientInfon = $query->get()->toArray();
                 if ($patientInfon) {
-                    $patientInfo = $patientInfon[0];                   
+                    $patientInfo = $patientInfon[0];
                     $pc = GeneralSetting::where(['id' => $patientInfo['sex']])->get()->toArray();
                     $st = PatientAppointmentType::where(['id' => $v['appointment_type']])->get()->toArray();
                     $vt = PatientAppointmentVisit::where('id', $v['type_visit'])->get()->toArray();
@@ -483,7 +498,7 @@ class ReportController extends Controller
                     $result[$index]['time_seen'] = ($nxtAppointments) ? date('h:i:s A', strtotime($nxtAppointments['booking_time'])) : '-';
                     $result[$index]['Procedure'] = ($icd) ? $icd['icd_name'] : 'NA';
                     // $result[$index]['Attendance_status'] = get_appointment_status($v['appointment_status']);
-                                        $result[$index]['Attendance_status'] = get_appointment_status($v['appointment_status']);
+                    $result[$index]['Attendance_status'] = get_appointment_status($v['appointment_status']);
                     $result[$index]['Name'] = $patientInfo['name_asin_nric'];
                     $result[$index]['Attending_staff'] = ($staff) ? $staff[0]['name'] : 'NA';
                     $result[$index]['IC_NO'] = '-';
@@ -496,27 +511,36 @@ class ReportController extends Controller
                     $result[$index]['TYPE_OF_Visit'] = $visit_type;
                     $result[$index]['TYPE_OF_Refferal'] = ($reftyp) ? $reftyp[0]['section_value'] : 'NA';
                     $result[$index]['app_no'] = 'C' . $apcount[$v['patient_mrn_id']];
+                    $attendanceStatus[$index] = $result[$index]['Attendance_status'];
+
+                    if($attendanceStatus[$index] == "Attend"){
+                        $attend += 1;
+                    }
+                    elseif($attendanceStatus[$index] == "No Show"){
+                        $noShow += 1;
+                    };
                     $index++;
-                   
+
                 }
-                
+
             }
             // dd($index);
         }
-        //dd($result);
+        //dd($attend);
         if ($result) {
+            
             $totalPatients ='Total Patient:   '.count($result).'<br>';
+            $totalPatientsPDF =count($result);
             $diff = date_diff(date_create($request->fromDate), date_create($request->toDate));
             $totalDays = 'Total Days:  '.$diff->format("%a").'<br>';
+            $totalDaysPDF = $diff->format("%a");
             $fromDate = $request->fromDate;
             $toDate = $request->toDate;
             $filePath = '';
             $filename='';
             $periodofservice='Period of Services :'.$fromDate. ' To '. $toDate .'<br>';
-            $AttendNo=34;
-            $NoShowNo=21;
-            $Attend='Attend:   '.$AttendNo.'<br>';
-            $NoShow='No Show:   '.$NoShowNo.'<br>';
+            $Attend='Attend:   '.$attend.'<br>';
+            $NoShow='No Show:   '.$noShow.'<br>';
             $summary= $periodofservice.'<br>'.$totalDays.'<br>'.$totalPatients.'<br>'.$Attend.'<br>'.$NoShow.'<br>';
             if (isset($request->report_type) && $request->report_type == 'excel') {
                 // $filePath = 'downloads/report/activity-patient-report-' . time() . '.xlsx';
@@ -543,7 +567,7 @@ class ReportController extends Controller
             } else {
                 return response()->json([
                     "message" => "Toal Patient & Type of Refferal Report", 'result' => $result, 'filepath' => '',
-                    "Total_Days" => $totalDays, "Total_Patient" => $totalPatients, "Attend" => $totalPatients, "No_Show" => $totalPatients, "code" => 200
+                    "Total_Days" => $totalDays, "Total_Patient" => $totalPatients, "Attend" => $attend, "No_Show" => $noShow, "Total_PatientsPDF" => $totalPatientsPDF, "Total_DaysPDF"=> $totalDaysPDF, "code" => 200
                 ]);
             }
         } else {
@@ -558,7 +582,7 @@ class ReportController extends Controller
         $result = [];
         $index = 0;
         $toc = ['individual' => 'INDIVIDUAL', 'org' => 'ORGANIZATION', 'group' => 'GROUP'];
-        $toi = ['volunteerism' => 'VOLUNTEERISM', 'networking-contribution' => 'NETWORKING', 'out-reach-project' => 'OUTREACH'];
+        $toi = ['Volunteerism' => 'VOLUNTEERISM', 'Networking Make a Contribution' => 'NETWORKING', 'Outreach Project Collaboration' => 'OUTREACH'];
         $toiArr = ['VOLUNTEER' => 0, 'OUTREACH' => 0, 'NETWORKING' => 0];
         $ssh = VonOrgRepresentativeBackground::whereBetween('created_at', [$from, $to]);
         if ($request->toc != 0)
@@ -576,6 +600,7 @@ class ReportController extends Controller
         $vorb = $ssh->get()->toArray();
         if ($vorb) {
             foreach ($vorb as $k => $v) {
+                $result[$index]['No']=$index+1;
                 $result[$index]['Name'] = $v['name'];
                 $result[$index]['Type_of_Collaboration'] = $toc[$v['section']];
                 $result[$index]['Type_of_Involvement'] = $toi[$v['area_of_involvement']];
@@ -588,15 +613,15 @@ class ReportController extends Controller
                 $result[$index]['No_of_Participants'] = '-';
                 $result[$index]['Mentari'] = '-';
                 $result[$index]['Location'] = '-';
-                if ($v['area_of_involvement'] == 'out-reach-project') {
+                if ($v['area_of_involvement'] == 'Outreach Project Collaboration') {
                     $toiArr['OUTREACH'] = $toiArr['OUTREACH'] + 1;
                     $orp = OutReachProjects::where('parent_section_id', $v['id'])->get()->toArray();
                 }
-                if ($v['area_of_involvement'] == 'networking-contribution') {
+                if ($v['area_of_involvement'] == 'Networking Make a Contribution') {
                     $toiArr['NETWORKING'] = $toiArr['NETWORKING'] + 1;
                     $orp = NetworkingContribution::where('parent_section_id', $v['id'])->get()->toArray();
                 }
-                if ($v['area_of_involvement'] == 'volunteerism') {
+                if ($v['area_of_involvement'] == 'Volunteerism') {
                     $toiArr['VOLUNTEER'] = $toiArr['VOLUNTEER'] + 1;
                     $vol = Volunteerism::where('parent_section_id', $v['id'])->get()->toArray();
                 }
@@ -624,13 +649,13 @@ class ReportController extends Controller
                 if ($request->location == 'other') {
                     if ($result[$index]['Others'] != $request->location_value) {
                         unset($result[$index]);
-                        if ($v['area_of_involvement'] == 'out-reach-project') {
+                        if ($v['area_of_involvement'] == 'Outreach Project Collaboration') {
                             $toiArr['OUTREACH'] = $toiArr['OUTREACH'] - 1;
                         }
-                        if ($v['area_of_involvement'] == 'networking-contribution') {
+                        if ($v['area_of_involvement'] == 'Networking Make a Contribution') {
                             $toiArr['NETWORKING'] = $toiArr['NETWORKING'] - 1;
                         }
-                        if ($v['area_of_involvement'] == 'volunteerism') {
+                        if ($v['area_of_involvement'] == 'Volunteerism') {
                             $toiArr['VOLUNTEER'] = $toiArr['VOLUNTEER'] - 1;
                         }
                     }
@@ -642,17 +667,36 @@ class ReportController extends Controller
 
         if ($result) {
             $totalPatients = count($result);
+            $totalPatientsExl ='Total Patient:   '.count($result).'<br>';
             $diff = date_diff(date_create($request->fromDate), date_create($request->toDate));
+            $totalDaysExl = 'Total Days:  '.$diff->format("%a").'<br>';
             $totalDays = $diff->format("%a");
             $fromDate = $request->fromDate;
             $toDate = $request->toDate;
             $filePath = '';
+            $filename='';
+            $volunteer= 'Volunteer:  '.$toiArr['VOLUNTEER'].'<br>';
+            $outreach= 'Outreach:  '.$toiArr['OUTREACH'].'<br>';
+            $networking= 'Networking:  '.$toiArr['NETWORKING'].'<br>';
+            $periodofservice='Period of Services :'.$fromDate. ' To '. $toDate .'<br>';
+            $summary= '<b>'.'<h2>'.'REPORT OF VOLUNTEER, OUTREACH AND NETWORKING'.'</h2>'.'</b>'.$periodofservice.'<br>'.$totalDaysExl.'<br>'.$totalPatientsExl.'<br>'.$volunteer.'<br>'.$outreach.'<br>'.$networking.'<br>';
             if (isset($request->report_type) && $request->report_type == 'excel') {
-                $filePath = 'downloads/report/activity-von-report-' . time() . '.xlsx';
-                Excel::store(new VONActivityReportExport($result, $totalPatients, $totalDays, $fromDate, $toDate, $toiArr), $filePath, 'public');
-                return response()->json(["message" => "Activity VON Report", 'result' => $result, 'toiArr' => $toiArr, 'filepath' => env('APP_URL') . '/storage/app/public/' . $filePath, "code" => 200]);
+                //$filePath = 'downloads/report/activity-von-report-' . time() . '.xlsx';
+                $filename = 'VON-report-'.time().'.xls';
+                //Excel::store(new VONActivityReportExport($result, $totalPatients, $totalDays, $fromDate, $toDate, $toiArr), $filePath, 'public');
+                return response([
+                    'message' => 'Data successfully retrieved.',
+                    'result' => $result,
+                    'totalPatients' => $totalPatientsExl,
+                    'totalDays' =>  $totalDaysExl,
+                    'fromDate' => $fromDate,
+                    'toDate' =>  $toDate,
+                    'header' => $summary,
+                    'filename' => $filename,
+                    'code' => 200
+                ]);
             } else {
-                return response()->json(["message" => "Activity VON Report", 'result' => $result, 'toiArr' => $toiArr, 'filepath' => null, "code" => 200]);
+                return response()->json(["message" => "Activity VON Report", 'result' => $result, 'toiArr' => $toiArr, 'Total_Patient' => $totalPatients, 'Total_Days' => $totalDays, 'filepath' => null, "code" => 200]);
             }
         } else {
             return response()->json(["message" => "Activity VON Report", 'result' => [], 'toiArr' => [], 'filepath' => null, "code" => 200]);
@@ -805,9 +849,9 @@ class ReportController extends Controller
         // dd($result);
         if ($result) {
             $totalReports = count($result);
-            $filename = 'GeneralReport-'.time().'.pdf';
+            $filePath = '';
             if (isset($request->report_type) && $request->report_type == 'excel') {
-                
+                $filename = 'GeneralReport-'.time().'.xls';
                   return response([
                     'message' => 'Data successfully retrieved.',
                     'result' => $result,
@@ -815,7 +859,7 @@ class ReportController extends Controller
                     'filename' => $filename,
                     'code' => 200]);
             } else {
-
+                $filename = 'GeneralReport-'.time().'.pdf';
                 return response()->json(["message" => "General Report", 'result' => $result, 'filename' => $filename, "code" => 200]);
             }
         } else {
@@ -899,11 +943,26 @@ class ReportController extends Controller
         // dd($yearArray);
         // dd($result);
         if ($result) {
+            $headers = [
+                'Content-Type' => 'application/vnd.ms-excel',
+                'Access-Control-Allow-Origin'      => '*',
+                'Access-Control-Allow-Methods'     => 'POST, GET, OPTIONS',
+                'Access-Control-Allow-Credentials' => 'true',
+                'Access-Control-Max-Age'           => '86400',
+                'Access-Control-Allow-Headers'     => 'Content-Type, Authorization, X-Requested-With'
+            ];
             $filePath = '';
             if (isset($request->report_type) && $request->report_type == 'excel') {
-                $filePath = 'downloads/report/kpi-report-rg-'.time() . '.xlsx';
-                Excel::store(new KPIReportExport($result, $yearArray, $months), $filePath, 'public');
-                return response()->json(["message" => "KPI Report", 'result' => $result,  'filepath' => env('APP_URL') . '/storage/app/public/' . $filePath, "code" => 200]);
+                // $filePath = 'downloads/report/kpi-report-rg-'.time() . '.xlsx';
+                // Excel::store(new KPIReportExport($result, $yearArray, $months), $filePath, 'public');
+                // return response()->json(["message" => "KPI Report", 'result' => $result,  'filepath' => env('APP_URL') . '/storage/app/public/' . $filePath, "code" => 200]);
+                $filename = 'kpi-report-rg-'.time() . '.xlsx';
+                $filePath = 'downloads/report/'.$filename;
+                $KPIExcel = Excel::store(new KPIReportExport($result, $yearArray, $months), $filePath, 'public');
+                $pathToFile = Storage::url($filePath);
+                return response()->json(["message" => "KPI Report", 'result' => $result,  'filepath' => env('APP_URL') . $pathToFile, "code" => 200]);
+                // return response()->download($pathToFile,$filename,$headers);
+                // return response()->json(["message" => "KPI Report", 'filename' => $filePath,  'filepath' => null, "code" => 200])->download(storage_path().'/app/public/'.$filePath)->deleteFileAfterSend(true);;
             } else {
                 return response()->json(["message" => "KPI Report", 'result' => $result,  'filepath' => null, "code" => 200]);
             }

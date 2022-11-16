@@ -30,27 +30,36 @@ class RequestAppointmentReportController extends Controller
  
         $response = AppointmentRequest::select('name','nric_or_passportno','address','contact_no','email', 'created_at')
         ->whereBetween('created_at', [$request->fromDate, $request->toDate])
-        ->where('branch_id','=', $request->branch_id)
-        ->where('status', '1')->get()->toArray();
+            ->where('branch_id','=', $request->branch_id)
+        ->where('status', '1');
         
-        
-        $patient = [];
+        $ssh= $response->get()->toArray();
         $result = [];
-    
+        $index=0;
+        foreach ($ssh as $k => $v) {
+        $result[$index]['No']=$index+1;
+        $result[$index]['name']=$v['name'];
+        $result[$index]['nric_or_passportno']=$v['nric_or_passportno'];
+        $result[$index]['address']=$v['address'];
+        $result[$index]['contact_no']=$v['contact_no'];
+        $result[$index]['email']=$v['email'];
+        $result[$index]['created_at']=$v['created_at'];
+        $index++;
+        }
         if ($response) {
 
             if (isset($request->report_type) && $request->report_type == 'excel') {
                 $filename = 'RequestAppointmentReport-'.time().'.xls';
                 return response([
                     'message' => 'Data successfully retrieved.',
-                    'result' => $response,
+                    'result' => $result,
                     'header' => 'Request Appointment Report from '.$request->fromDate.' To '.$request->toDate,
                     'filename' => $filename,
                     'code' => 200]);
 
                 } else {
                     $filename = 'RequestAppointmentReport-'.time().'.pdf';
-                return response()->json(["message" => "Request Report",'result' => $response,'filename' => $filename, "code" => 200]);
+                return response()->json(["message" => "Request Report",'result' => $result,'filename' => $filename, "code" => 200]);
 
                 }
 
