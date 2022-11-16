@@ -200,7 +200,7 @@ class ScreenModuleController extends Controller
     {
         $validator = Validator::make($request->all(), ['screen_id' => 'required|integer']);
         if ($validator->fails()) return  response()->json(["message" => $validator->errors(), "code" => 422]);
-        $list = ScreenPageModule::select('id', 'screen_name','screen_route','screen_description','module_id','sub_module_id')->where('id', $request->screen_id)->get();
+        $list = ScreenPageModule::select('id', 'screen_name','screen_route','screen_description','module_id','sub_module_id','icon','index_val')->where('id', $request->screen_id)->get();
         return response()->json(["message" => "ScreenModule List", 'list' => $list, "code" => 200]);
     }
 
@@ -208,7 +208,7 @@ class ScreenModuleController extends Controller
     {
         $validator = Validator::make($request->all(), ['module_id' => 'required|integer', 'sub_module_id' => 'required|integer']);
         if ($validator->fails()) return  response()->json(["message" => $validator->errors(), "code" => 422]);
-        $list = ScreenPageModule::select('id', 'module_name', 'sub_module_name', 'screen_name', 'screen_description')->where(['module_id' => $request->module_id, 'sub_module_id' => $request->sub_module_id])->get();
+        $list = ScreenPageModule::select('id', 'module_name', 'sub_module_name', 'screen_name', 'screen_description','icon','index_val')->where(['module_id' => $request->module_id, 'sub_module_id' => $request->sub_module_id])->get();
         return response()->json(["message" => "Screen List", 'list' => $list, "code" => 200]);
     }
 
@@ -429,7 +429,9 @@ class ScreenModuleController extends Controller
            'screen_name' => 'required|string',
            'screen_route' => 'required|string',
            'screen_description' => 'required|string',
-           'id' => 'required|integer'
+           'id' => 'required|integer',
+           'icon' => 'required',
+           'index' => 'required|integer',
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -457,7 +459,9 @@ class ScreenModuleController extends Controller
                 'screen_name' => $request->screen_name,
                 'screen_route' => $request->screen_route,
                 'screen_description' => $request->screen_description,
-                'screen_status' => '1'
+                'icon' => $request->icon,
+                'index_val' => $request->index,
+                'screen_status' => 1
                 ]);
                 return response()->json(["message" => "Screen Module Updated Successfully!", "code" => 200]);
             }else{
@@ -472,7 +476,9 @@ class ScreenModuleController extends Controller
                 'screen_name' => $request->screen_name,
                 'screen_route' => $request->screen_route,
                 'screen_description' => $request->screen_description,
-                'screen_status' => '1'
+                'icon' => $request->icon,
+                'index_val' => $request->index,
+                'screen_status' => 1
                 ]);
                 return response()->json(["message" => "Screen Module Updated Successfully!", "code" => 200]);
             }

@@ -28,13 +28,24 @@ class AppointmentRequestController extends Controller
             'contact_no' =>  $request->contact_no,
             'address' =>  $request->address,
             'email' =>  $request->email,
-            'patient_mrn_id' =>  $request->patient_mrn_id,
+            'patient_mrn_id' =>  '',
             'nric_or_passportno' =>  $request->nric_or_passportno,
             'address1' =>  $request->address1,
             'ip_address' =>  $request->ip_address,
         ];
         try {
             $HOD = AppointmentRequest::firstOrCreate($appointmentrequest);
+
+            $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+            $notifi=[
+                'added_by' => $request->added_by,
+                'branch_id'=>$request->branch_id,
+                'role'=>'Admin/Clerk',
+                'patient_mrn' =>   '',
+                'url_route' => "/Modules/Patient/list-of-appointment",
+                'created_at' => $date->format('Y-m-d H:i:s'),
+                'message' =>  'Request for appointment(s)',
+            ];
         } catch (Exception $e) {
             return response()->json(["message" => $e->getMessage(), 'AppointmentRequest' => $appointmentrequest, "code" => 200]);
         }
