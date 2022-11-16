@@ -426,6 +426,7 @@ Route::group(['prefix' => 'patient-appointment-details'], function () {
     Route::post('/endappointmentDate', [PatientAppointmentDetailsController::class, 'endappointmentDate']);
     Route::post('/fetchPatientListByStaffId', [PatientAppointmentDetailsController::class, 'fetchPatientListByStaffId']);
     Route::post('/updatePatientListByStaffId', [PatientAppointmentDetailsController::class, 'updatePatientListByStaffId']);
+    Route::post('/deletePatientListByStaffId', [PatientAppointmentDetailsController::class, 'deletePatientListByStaffId']);
 });
 
 Route::group(['prefix' => 'patient-psychiatry-clerkingnote'], function () {
