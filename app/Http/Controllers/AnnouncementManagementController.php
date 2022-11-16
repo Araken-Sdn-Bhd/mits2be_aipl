@@ -70,6 +70,7 @@ class AnnouncementManagementController extends Controller
         $list = Announcement::select('id', 'title', DB::raw("DATE_FORMAT(start_date, '%d-%m-%Y') as start_date"), DB::raw("DATE_FORMAT(end_date, '%d-%m-%Y') as end_date"), 'status', DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as created"))
             ->where('status', '=', '1')
             ->orWhere('status', '=', '0')
+            ->orderBy('id','desc')
             ->get();
         return response()->json(["message" => "List", 'list' => $list, "code" => 200]);
     }
