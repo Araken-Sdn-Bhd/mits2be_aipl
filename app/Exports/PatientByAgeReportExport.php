@@ -15,12 +15,11 @@ class PatientByAgeReportExport implements FromView
     private $fromDate;
     private $toDate;
 
-    public function __construct($record, $fromDate, $toDate)
+    public function __construct($record)
     {
         $this->reportSet = $record;
         // $this->totalRecord = $totalRecords;
-        $this->fromDate = $fromDate;
-        $this->toDate = $toDate;
+
     }
 
     public function view(): View
@@ -28,8 +27,7 @@ class PatientByAgeReportExport implements FromView
         return view('patient_by_age',  [
             'shharpRecords' => $this->reportSet,
             // 'totalRecord' => $this->totalRecord,
-            'fromDate' => $this->fromDate,
-            'toDate' => $this->toDate
+
         ]);
     }
 }
