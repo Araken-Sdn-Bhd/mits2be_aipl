@@ -106,9 +106,7 @@ class AnnouncementManagementController extends Controller
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|string',
             'id' => 'required|integer',
-            // 'title' => 'required|string|unique:announcement_mgmt',
             'content' => 'required|string',
-            // 'document' => 'required|mimes:png,jpg,jpeg,pdf|max:10240',
             'start_date' => 'required|date',
             'end_date' => 'required|date',
             'branch_id' => 'required|integer',
@@ -118,8 +116,9 @@ class AnnouncementManagementController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-
+       
         $files = $request->file('document');
+        if ($request->file('document') != null || $request->file('document') != "" ){
         $isUploaded = upload_file($files, 'announcements');
         if ($isUploaded->getData()->code == 200) {
             Announcement::where(
@@ -136,9 +135,26 @@ class AnnouncementManagementController extends Controller
                 'status' => $request->status
             ]);
             return response()->json(["message" => "Announcement Management has updated successfully", "code" => 200]);
-        } else {
+        }else {
             return response()->json(["message" => "There is something wrong while saving the file. Please Try Again.", "code" => 500]);
         }
+    }else{
+        Announcement::where(
+            ['id' => $request->id]
+        )->update([
+            'added_by' => $request->added_by,
+            'title' => $request->title,
+            'content' => $request->content,
+            'start_date' => $request->start_date,
+            'end_date' => $request->end_date,
+            'branch_id' => $request->branch_id,
+            'audience_ids' => $request->audience_ids,
+            'status' => $request->status
+        ]);
+        return response()->json(["message" => "Announcement Management has updated successfully", "code" => 200]);
+
+    }
+            
     }
 
     public function remove(Request $request)
