@@ -10,6 +10,7 @@ class LASERAssesmenForm extends Model
     use HasFactory;
     protected $table = 'laser_assesmen_form';
     protected $fillable = [
+        'appointment_details_id',
         'added_by',
         'patient_id',
         'pre_contemplation',
@@ -24,6 +25,7 @@ class LASERAssesmenForm extends Model
         'icd_9_code',
         'icd_9_subcode',
         'medication_prescription',
-        'created_at'
+        'created_at',
+        'is_deleted'
     ];
 }
