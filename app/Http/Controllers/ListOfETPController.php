@@ -25,18 +25,19 @@ class ListOfETPController extends Controller
              'category_services' => 'required',
              'complexity_services' => '',
              'outcome' => '',
-             'medication_des' => ''
+             'medication_des' => '',
+             'appId' => '',
          ]);
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
- 
-        
+
+
             $listofetp = [
             'added_by' => $request->added_by,
             'patient_id' => $request->patient_id,
             'program' => $request->program,
-           
+
             'location_services' => $request->location_services,
             'services_id' => $request->services_id,
             'code_id' => $request->code_id,
@@ -46,11 +47,12 @@ class ListOfETPController extends Controller
             'complexity_services' => $request->complexity_services,
             'outcome' => $request->outcome,
             'medication_des' => $request->medication_des,
-            'status' => "1"
+            'status' => "1",
+            'appointment_details_id'=> $request->appId,
             ];
- 
+
             $validateListOfETP = [];
- 
+
          if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
              $validateListOfETP['services_id'] = 'required';
              $listofetp['services_id'] =  $request->services_id;
@@ -64,10 +66,10 @@ class ListOfETPController extends Controller
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
- 
-         ListOfETP::updateOrCreate( ['patient_id' => $request->patient_id], $listofetp); 
+
+         ListOfETP::updateOrCreate( ['patient_id' => $request->patient_id], $listofetp);
          return response()->json(["message" => "List Of ETP Created Successfully!", "code" => 200]);
-        
+
     }
 
 

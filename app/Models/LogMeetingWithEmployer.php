@@ -14,6 +14,8 @@ class LogMeetingWithEmployer extends Model
         'added_by',
         'patient_id',
         'date',
+        'appointment_details_id',
+        'is_deleted',
         'employee_name',
         'company_name',
         'purpose_of_meeting',
