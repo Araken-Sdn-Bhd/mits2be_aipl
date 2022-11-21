@@ -11,6 +11,7 @@ class JobEndReport extends Model
 
     protected $table = 'job_end_report';
     protected $fillable = [
+        'appointment_details_id',
         'added_by',
         'patient_id',
         'name',
@@ -37,6 +38,7 @@ class JobEndReport extends Model
         'icd_9_code',
         'icd_9_subcode',
         'medication_prescription',
-        'created_at'
+        'created_at',
+        'is_deleted'
     ];
 }

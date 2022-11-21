@@ -11,6 +11,7 @@ class JobTransitionReport extends Model
 
     protected $table = 'job_transition_report';
     protected $fillable = [
+        'appointment_details_id',
         'added_by',
         'patient_id',
         'future_plan',
@@ -61,6 +62,7 @@ class JobTransitionReport extends Model
         'icd_9_code',
         'icd_9_subcode',
         'medication_prescription',
-        'created_at'
+        'created_at',
+        'is_deleted'
     ];
 }
