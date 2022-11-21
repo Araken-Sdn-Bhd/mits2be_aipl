@@ -32,13 +32,14 @@ class LogMeetingWithEmployerController extends Controller
              'category_services' => 'required|string',
              'complexity_services' => '',
              'outcome' => '',
-             'medication_des' => ''
+             'medication_des' => '',
+             'appId'=> '',
          ]);
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
- 
-        
+
+
             $logmeetingwithemployer = [
             'added_by' => $request->get('added_by'),
             'patient_id' => $request->get('patient_id'),
@@ -49,7 +50,7 @@ class LogMeetingWithEmployerController extends Controller
             'discussion_start_time' => $request->get('discussion_start_time'),
             'discussion_end_time' => $request->get('discussion_end_time'),
             'staff_name' => $request->get('staff_name'),
-           
+
             'location_services' => $request->get('location_services'),
             'services_id' => $request->get('services_id'),
             'code_id' => $request->get('code_id'),
@@ -59,11 +60,12 @@ class LogMeetingWithEmployerController extends Controller
             'complexity_services' => $request->get('complexity_of_services'),
             'outcome' => $request->get('outcome'),
             'medication_des' => $request->get('medication_des'),
-            'status' => "1"
+            'status' => "1",
+            'appointment_details_id'=> $request->appId,
             ];
- 
+
             $validateLogMeetingWithEmployer = [];
- 
+
          if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
              $validateLogMeetingWithEmployer['services_id'] = 'required';
              $logmeetingwithemployer['services_id'] =  $request->services_id;
@@ -77,10 +79,10 @@ class LogMeetingWithEmployerController extends Controller
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
- 
-         LogMeetingWithEmployer::updateOrCreate( ['patient_id' => $request->patient_id], $logmeetingwithemployer);  
+
+         LogMeetingWithEmployer::updateOrCreate( ['patient_id' => $request->patient_id], $logmeetingwithemployer);
          return response()->json(["message" => "Log Meeting Employer Created Successfully!", "code" => 200]);
-        
+
     }
 
     public function GetEmployerList()

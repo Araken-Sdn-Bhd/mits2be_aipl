@@ -11,6 +11,7 @@ class JobSearchList extends Model
     protected $table = 'job_search_list';
     protected $fillable = [
         'list_of_job_search_id',
+        'appointment_details_id',
         'patient_id',
         'company_name',
         'job_applied',
