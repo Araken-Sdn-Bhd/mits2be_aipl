@@ -55,7 +55,8 @@ class PatientIndexFormController extends Controller
             'case_manager' => '',
             'specialist' => '',
             'date' => '',
-            'id' => ''
+            'id' => '',
+            'appointment_details_id' => '',
 
 
         ]);
@@ -115,10 +116,10 @@ class PatientIndexFormController extends Controller
                     'specialist' =>  $request->specialist,
                     'date' =>  $request->date,
                     'status' => "1",
-                    // 'created_at' => $date->format('Y-m-d H:i:s'),
-                    // 'updated_at' => $date->format('Y-m-d H:i:s'),
                     'created_at' => date("Y-m-d h:i:s"),
                     'updated_at' => date("Y-m-d h:i:s"),
+                    
+                    
                 ]; 
 
                 try {
@@ -182,7 +183,8 @@ class PatientIndexFormController extends Controller
                     'case_Manager' =>  $request->case_Manager,
                     'specialist' =>  $request->specialist,
                     'date' =>  $request->date,
-                    'status' => "1"
+                    'status' => "1",
+                    'appointment_details_id' => $request->appId,
                 ];
 
                 try {
@@ -309,7 +311,8 @@ class PatientIndexFormController extends Controller
                     'case_Manager' =>  $request->case_Manager,
                     'specialist' =>  $request->specialist,
                     'date' =>  $request->date,
-                    'status' => $request->status
+                    'status' => $request->status,
+                    'appointment_details_id' => $request->appId,
                 ];
 
                 try {
@@ -370,7 +373,8 @@ class PatientIndexFormController extends Controller
                     'case_Manager' =>  $request->case_Manager,
                     'specialist' =>  $request->specialist,
                     'date' =>  $request->date,
-                    'status' => $request->status
+                    'status' => $request->status,
+                    'appointment_details_id' => $request->appId,
                 ];
 
                 try {
@@ -440,7 +444,8 @@ class PatientIndexFormController extends Controller
                     'case_Manager' =>  $request->case_Manager,
                     'specialist' =>  $request->specialist,
                     'date' =>  $request->date,
-                    'status' => $request->status
+                    'status' => $request->status,
+                    'appointment_details_id' => $request->appId,
                 ];
 
                 try {

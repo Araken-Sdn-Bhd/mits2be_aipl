@@ -28,7 +28,8 @@ class PatientCounsellorClerkingNotesController extends Controller
             'complexity_services_id' => '',
             'outcome_id' => '',
             'medication_des' => '',
-            'id' => ''
+            'id' => '',
+            'appointment_details_id' => '',
 
         ]);
         if ($validator->fails()) {
@@ -60,14 +61,13 @@ class PatientCounsellorClerkingNotesController extends Controller
                     'outcome_id' =>  $request->outcome_id,
                     'medication_des' =>  $request->medication_des,
                     'status' => "1",
-                    'created_at' => $date->format('Y-m-d H:i:s'),
+                    'created_at' => $date->format('Y-m-d H:i:s')
                 ];
     
                 try {
                     PatientCounsellorClerkingNotes::where(
                         ['id' => $request->id]
                     )->update($psychiatryclerking);
-                    // $HOD = PatientCounsellorClerkingNotes::firstOrCreate($psychiatryclerking);
                 } catch (Exception $e) {
                     return response()->json(["message" => $e->getMessage(), 'Counsellclerking' => $psychiatryclerking, "code" => 200]);
                 }
@@ -101,6 +101,8 @@ class PatientCounsellorClerkingNotesController extends Controller
                     'medication_des' =>  $request->medication_des,
                     'status' => "1",
                     'created_at' => $date->format('Y-m-d H:i:s'),
+                    'appointment_details_id' => $request->appId,
+                    
                 ];
     
                 try {
@@ -115,7 +117,7 @@ class PatientCounsellorClerkingNotesController extends Controller
             }
 
         }else{
-
+        
             if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
                 $validator = Validator::make($request->all(), [
                     'services_id' => 'required'
@@ -126,6 +128,7 @@ class PatientCounsellorClerkingNotesController extends Controller
                 $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
                 $psychiatryclerking = [
                     'services_id' =>  $request->services_id,
+                    'appointment_details_id' => $request->appId,
                     'added_by' =>  $request->added_by,
                     'patient_mrn_id' =>  $request->patient_mrn_id,
                     'clinical_summary' =>  $request->clinical_summary,
@@ -141,15 +144,19 @@ class PatientCounsellorClerkingNotesController extends Controller
                     'medication_des' =>  $request->medication_des,
                     'status' => "1",
                     'created_at' => $date->format('Y-m-d H:i:s'),
+                    
                 ];
     
                 try {
-                    $HOD = PatientCounsellorClerkingNotes::firstOrCreate($psychiatryclerking);
+                   
+                    $HOD = PatientCounsellorClerkingNotes::Create($psychiatryclerking);
+                   
                 } catch (Exception $e) {
                     return response()->json(["message" => $e->getMessage(), 'Counsellclerking' => $psychiatryclerking, "code" => 200]);
                 }
                 return response()->json(["message" => "Counsellclerking clerking Successfully00", "code" => 200]);
             } else if ($request->category_services == 'clinical-work') {
+               
                 $validator = Validator::make($request->all(), [
                     'code_id' => 'required|integer',
                     'sub_code_id' => 'required|integer'
@@ -178,6 +185,7 @@ class PatientCounsellorClerkingNotesController extends Controller
                     'medication_des' =>  $request->medication_des,
                     'status' => "1",
                     'created_at' => $date->format('Y-m-d H:i:s'),
+                    'appointment_details_id' => $request->appId,
                 ];
     
                 try {
