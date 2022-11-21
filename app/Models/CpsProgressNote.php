@@ -9,7 +9,7 @@ class CpsProgressNote extends Model
 {
     use HasFactory;
     protected $table = 'cps_progress_note';
-    protected $fillable =  ['id', 'patient_mrn_id','added_by', 'cps_date', 'cps_time', 'cps_seen_by', 'cps_date_discussed',
+    protected $fillable =  ['id', 'appointment_details_id','is_deleted','patient_mrn_id','added_by', 'cps_date', 'cps_time', 'cps_seen_by', 'cps_date_discussed',
     'cps_time_discussed', 'cps_discussed_with', 'visit_date', 'visit_time', 'informants_name', 'informants_relationship',
     'informants_contact','case_manager','visited_by','visit_outcome','current_intervention','compliance_treatment',
     'medication_supervised_by','delusions','hallucination','behavior','blunted_affect','depression',

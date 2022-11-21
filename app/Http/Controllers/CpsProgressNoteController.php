@@ -86,14 +86,14 @@ class CpsProgressNoteController extends Controller
             'medication' => '',
             'staff_name' => 'required|string',
             'designation' => 'required|string',
-            'id' => ''
-
+            'id' => '',
+            'appId'=> '',
         ]);
 
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        
+
         if($request->id){
             if ($request->service_category == 'assisstance' || $request->service_category == 'external') {
                 $validator = Validator::make($request->all(), [
@@ -102,7 +102,7 @@ class CpsProgressNoteController extends Controller
                 if ($validator->fails()) {
                     return response()->json(["message" => $validator->errors(), "code" => 422]);
                 }
-    
+
                 $cpsprogressnote = [
                     'services_id' =>  $request->services_id,
                     'added_by' =>  $request->added_by,
@@ -170,9 +170,10 @@ class CpsProgressNoteController extends Controller
                     'medication' =>  $request->medication,
                     'staff_name' =>  $request->staff_name,
                     'designation' =>  $request->designation,
-                    'status' => "1"
+                    'status' => "1",
+                    'appointment_details_id' => $request->appId,
                 ];
-    
+
                 try {
                     CpsProgressNote::where(
                         ['id' => $request->id]
@@ -190,7 +191,7 @@ class CpsProgressNoteController extends Controller
                 if ($validator->fails()) {
                     return response()->json(["message" => $validator->errors(), "code" => 422]);
                 }
-    
+
                 $CpsProgress = [
                     'services_id' =>  $request->services_id,
                     'code_id' =>  $request->code_id,
@@ -262,7 +263,7 @@ class CpsProgressNoteController extends Controller
                     'designation' =>  $request->designation,
                     'status' => "1"
                 ];
-    
+
                 try {
                     CpsProgressNote::where(
                         ['id' => $request->id]
