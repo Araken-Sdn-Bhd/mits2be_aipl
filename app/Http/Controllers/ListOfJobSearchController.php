@@ -6,7 +6,7 @@ use Exception;
 use Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\ListOfJobSearch; 
+use App\Models\ListOfJobSearch;
 use App\Models\JobSearchList;
 
 class ListOfJobSearchController extends Controller
@@ -27,6 +27,7 @@ class ListOfJobSearchController extends Controller
              'outcome' => '',
              'medication_des' => '',
              'job_listed' =>'',
+             'appId'=>'',
          ]);
 
          if ($validator->fails()) {
@@ -47,11 +48,12 @@ class ListOfJobSearchController extends Controller
                 'complexity_services' => $request->complexity_services,
                 'outcome' => $request->outcome,
                 'medication_des' => $request->medication_des,
-                'status' => "1"
+                'status' => "1",
+                'appointment_details_id'=> $request->appId,
                 ];
-     
+
                 $validateListOfJobSearch = [];
-     
+
              if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
                  $validateListOfJobSearch['services_id'] = 'required';
                  $listofjobsearch['services_id'] =  $request->services_id;
@@ -65,20 +67,20 @@ class ListOfJobSearchController extends Controller
              if ($validator->fails()) {
                  return response()->json(["message" => $validator->errors(), "code" => 422]);
              }
-            
+
              $listofjobsearch=ListOfJobSearch::where(
                 ['id' => $request->id]
-            )->update($listofjobsearch); 
+            )->update($listofjobsearch);
              $listofjobsearchid=($request->id);
-             
+
              if(!empty($request->job_listed)){
                 JobSearchList::where('list_of_job_search_id', $request->id)->firstorfail()->delete();
                 foreach($request->job_listed as $key) {
                     $data = array('company_name' => $key['company_name'],'patient_id' =>$request->patient_id,'job_applied'=>$key['job_applied'],'application_date'=>$key['application_date'],'interview_date'=>$key['interview_date'],'list_of_job_search_id'=>$listofjobsearchid);
-                    JobSearchList::insert($data); 
+                    JobSearchList::insert($data);
                 }
              }
-            
+
              return response()->json(["message" => "Job Search List updated Successfully!", "code" => 200]);
 
          }else{
@@ -97,9 +99,9 @@ class ListOfJobSearchController extends Controller
             'medication_des' => $request->medication_des,
             'status' => "1"
             ];
- 
+
             $validateListOfJobSearch = [];
- 
+
          if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
              $validateListOfJobSearch['services_id'] = 'required';
              $listofjobsearch['services_id'] =  $request->services_id;
@@ -114,17 +116,17 @@ class ListOfJobSearchController extends Controller
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
 
-         $listofjobsearch=ListOfJobSearch::firstOrCreate($listofjobsearch); 
+         $listofjobsearch=ListOfJobSearch::firstOrCreate($listofjobsearch);
          $listofjobsearchid=($listofjobsearch->id);
          if(!empty($request->job_listed)){
             foreach($request->job_listed as $key) {
                 $data = array('company_name' => $key['company_name'],'patient_id' =>$request->patient_id,'job_applied'=>$key['job_applied'],'application_date'=>$key['application_date'],'interview_date'=>$key['interview_date'],'list_of_job_search_id'=>$listofjobsearchid);
-                JobSearchList::insert($data); 
+                JobSearchList::insert($data);
             }
          }
-        
+
          return response()->json(["message" => "Job Search List Created Successfully!", "code" => 200]);
-        
+
     }
 }
 

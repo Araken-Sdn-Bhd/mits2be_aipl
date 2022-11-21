@@ -13,6 +13,8 @@ class ListOfETP extends Model
         'added_by',
         'patient_id',
         'program',
+        'appointment_details_id',
+        'is_deleted',
         'location_services',
         'type_diagnosis_id',
         'category_services','services_id',
