@@ -55,7 +55,9 @@ class TriageFormController extends Controller
             'category_services' => 'required|string',
             'complexity_services_id' => '',
             'outcome_id' => '',
-            'medication_des' => ''
+            'medication_des' => '',
+            'id' => '',
+            'appointment_details_id' => '',
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -123,7 +125,8 @@ class TriageFormController extends Controller
                     'complexity_services_id' => $request->complexity_services_id,
                     'outcome_id' => $request->outcome_id,
                     'medication_des' => $request->medication_des,
-                    'status' => "1"
+                    'status' => "1",
+                    'appointment_details_id' => $request->appId,
                 ];
 
                 $validateTriageForm = [];
