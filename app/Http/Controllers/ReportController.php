@@ -35,6 +35,13 @@ use App\Models\OutReachProjects;
 use App\Models\Volunteerism;
 use App\Models\HospitalBranchManagement;
 use App\Models\SeProgressNote;
+use App\Models\EtpProgressNote;
+use App\Models\JobClubProgressNote;
+use App\Models\CpsProgressNote;
+use App\Models\ServiceRegister;
+use App\Models\ListOfJobSearch;
+use App\Models\LogMeetingWithEmployer;
+use App\Models\JobStartForm;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -747,16 +754,65 @@ class ReportController extends Controller
                 }
                 $notes = [];
                 $icd = [];
+                $job_search = [];
+                $job_visit = [];
+                $jv= 0;
+                $log_meeting = [];
+                $empStatus = [];
+                $jobStart = [];
+                $js = [];
+                $curr_interv = [];
+                
+
+                if($request->appointment_type == 1){
                 $notes = PatientCounsellorClerkingNotes::where('patient_mrn_id', $v['patient_mrn_id'])
-                    ->where('type_diagnosis_id', $request->diagnosis_id)
                     ->where(DB::raw("(STR_TO_DATE(created_at,'%Y-%m-%d'))"), $v['booking_date'])
                     ->get()->toArray();
                 if (count($notes) == 0) {
                     $notes = PsychiatryClerkingNote::where('patient_mrn_id', $v['patient_mrn_id'])
-                        ->where('type_diagnosis_id', $request->diagnosis_id)
                         ->where(DB::raw("(STR_TO_DATE(created_at,'%Y-%m-%d'))"), $v['booking_date'])
                         ->get()->toArray();
                 }
+                }elseif($request->appointment_type == 3){
+                    $notes = SeProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->get()->toArray();
+                
+                    $jobStart = JobStartForm::where('patient_id', $v['patient_mrn_id'])
+                                            ->where('is_deleted', 0)
+                                            ->get()->toArray();
+
+                    if(count($notes) != 0){
+                        $job_visit = GeneralSetting::where('id', $notes[0]['activity_type'])->get()->toArray();
+                        if($job_visit[0]['section_value'] == 'FASC (Follow Along Support For Client)' || $job_visit[0]['section_value'] == 'FASE (Follow Along Support For Employer)')
+                        {
+                            $jv += 1;
+                        }
+                        $empStatus = GeneralSetting::where('id', $notes[0]['employment_status'])->get()->toArray();
+                    }
+
+                
+                $log_meeting = LogMeetingWithEmployer::where(['patient_id' => $v['patient_mrn_id']])->get()->toArray();
+                if($log_meeting){
+                    $jv = $jv + count($log_meeting);
+                }
+                }
+                elseif($request->appointment_type == 4){
+                    $notes = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                    ->get()->toArray();
+                }elseif($request->appointment_type == 5){
+                    $notes = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                    ->get()->toArray();
+                }elseif($request->appointment_type == 6){
+                    $notes = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                    ->get()->toArray();
+                    if(count($notes) != 0){
+                        $curr_interv = GeneralSetting::where('id', $notes[0]['current_intervention'])->get()->toArray();
+                    }
+                }
+
+                $job_search = ListOfJobSearch::where('id', $v['patient_mrn_id'])
+                    ->whereBetween('created_at', [$request->fromDate, $request->toDate])
+                    ->get()->toArray();
 
                 $staff = StaffManagement::select('name')->where('id', $v['assign_team'])->get()->toArray();
                 $query = PatientRegistration::where('id', $v['patient_mrn_id']);
@@ -768,46 +824,76 @@ class ReportController extends Controller
                 if ($patientInfon) {
                     $patientInfo = $patientInfon[0];
                     $pc = GeneralSetting::where(['id' => $patientInfo['sex']])->get()->toArray();
-                    $st = PatientAppointmentType::where(['id' => $v['appointment_type']])->get()->toArray();
+                    $st = ServiceRegister::where(['id' => $v['appointment_type']])->get()->toArray();
                     $vt = PatientAppointmentVisit::where('id', $v['type_visit'])->get()->toArray();
                     $cp = PatientAppointmentCategory::where('id', $v['patient_category'])->get()->toArray();
                     $reftyp = GeneralSetting::where(['id' => $patientInfo['referral_type']])->get()->toArray();
+
                     if ($notes)
                         $icd = IcdCode::where('id', $notes[0]['code_id'])->get()->toArray();
-                    $nap = PatientAppointmentDetails::where('patient_mrn_id', $v['patient_mrn_id'])
-                        ->where('booking_date', '>', $v['booking_date'])->where('appointment_status', 0)->first();
+                        $nap = PatientAppointmentDetails::where('patient_mrn_id', $v['patient_mrn_id'])
+                            ->where('booking_date', '>', $v['booking_date'])->where('appointment_status', 0)->first();
                     $nxtAppointments = ($nap) ? $nap->toArray() : [];
                     $gender = ($pc) ? $pc[0]['section_value'] : 'NA';
-                    $appointment_type = ($st) ? $st[0]['appointment_type_name'] : 'NA';
+                    $appointment_type = ($st) ? $st[0]['service_name'] : 'NA';
                     $visit_type = ($vt) ? $vt[0]['appointment_visit_name'] : 'NA';
                     $category = ($cp) ? $cp[0]['appointment_category_name'] : 'NA';
                     $result[$index]['No']=$index+1;
                     $result[$index]['Next_visit'] = ($nxtAppointments) ? date('d/m/Y', strtotime($nxtAppointments['booking_date'])) : '-';
                     $result[$index]['time_registered'] = ($nxtAppointments) ? date('h:i:s A', strtotime($nxtAppointments['booking_time'])) : '-';
                     $result[$index]['time_seen'] = ($nxtAppointments) ? date('h:i:s A', strtotime($nxtAppointments['booking_time'])) : '-';
-                    $result[$index]['Procedure'] = ($icd) ? $icd['icd_name'] : 'NA';
+                    $result[$index]['Procedure'] = ($icd) ? $icd[0]['icd_name'] : 'NA';
                     // $result[$index]['Attendance_status'] = get_appointment_status($v['appointment_status']);
                     $result[$index]['Attendance_status'] = get_appointment_status($v['appointment_status']);
                     $result[$index]['Name'] = $patientInfo['name_asin_nric'];
                     $result[$index]['Attending_staff'] = ($staff) ? $staff[0]['name'] : 'NA';
-                    $result[$index]['IC_NO'] = '-';
+                    $result[$index]['IC_NO'] = $v['nric_or_passportno'];
                     $result[$index]['GENDER'] = $gender;
                     $result[$index]['APPOINTMENT_TYPE'] = $appointment_type;
                     $result[$index]['AGE'] = $patientInfo['age'];
-                    $result[$index]['DIAGNOSIS'] = ($icd) ? $icd['icd_name'] : 'NA';
-                    $result[$index]['MEDICATIONS'] = ($notes) ? $notes[0]['medication_des'] : "NA";
+                    $result[$index]['DIAGNOSIS'] = ($icd) ? $icd[0]['icd_name'] : 'NA';
+                    if($request->appointment_type == 3){
+                        $result[$index]['MEDICATIONS'] = ($notes) ? $notes[0]['medication'] : "NA";
+                        $result[$index]['EMPSTATUS'] = ($empStatus) ? $empStatus[0]['section_value'] : "NA";
+                        $result[$index]['EMPLOYER'] = ($jobStart) ? $jobStart[0]['name_of_employer'] : "NA";
+                        $result[$index]['JOBSTARTDATE'] = ($jobStart) ? $jobStart[0]['first_date_of_work'] : "NA";
+                        $result[$index]['ADDRESS'] = ($jobStart) ? $jobStart[0]['address'] : "NA";
+                    }
+                    elseif($request->appointment_type == 4 ){
+                        $result[$index]['MEDICATIONS'] = ($notes) ? $notes[0]['medication'] : "NA";
+                        $result[$index]['WORKREADY'] = ($notes) ? $notes[0]['work_readiness'] : "NA";
+                    }
+                    elseif($request->appointment_type == 5 ){
+                        $result[$index]['MEDICATIONS'] = ($notes) ? $notes[0]['medication'] : "NA";
+                        $result[$index]['WORKREADY'] = ($notes) ? $notes[0]['work_readiness'] : "NA";
+                    }
+                    elseif($request->appointment_type == 6 ){
+                        $result[$index]['MEDICATIONS'] = ($notes) ? $notes[0]['medication'] : "NA";
+                        $result[$index]['CURRENTINTERV'] = ($notes) ? $curr_interv[0]['section_value'] : "NA";
+                        $result[$index]['CONTACT'] = ($notes) ? $notes[0]['informants_contact'] : "NA";
+                    }
+                    else{
+                        $result[$index]['MEDICATIONS'] = ($notes) ? $notes[0]['medication_des'] : "NA";
+                    }
+
                     $result[$index]['CATEGORY_OF_PATIENTS'] = $category;
                     $result[$index]['TYPE_OF_Visit'] = $visit_type;
                     $result[$index]['TYPE_OF_Refferal'] = ($reftyp) ? $reftyp[0]['section_value'] : 'NA';
                     $result[$index]['app_no'] = 'C' . $apcount[$v['patient_mrn_id']];
+                    $result[$index]['app_no_se'] = 'SE' . $apcount[$v['patient_mrn_id']];
+                    $result[$index]['app_no_etp'] = 'ETP' . $apcount[$v['patient_mrn_id']];
+                    $result[$index]['app_no_jc'] = 'JC' . $apcount[$v['patient_mrn_id']];
+                    $result[$index]['app_no_cps'] = 'CPS' . $apcount[$v['patient_mrn_id']];
                     $attendanceStatus[$index] = $result[$index]['Attendance_status'];
-
+                    $result[$index]['no_job_search'] = ($job_search) ? count($job_search) : '0';
+                    $result[$index]['no_job_visit'] = ($jv) ? $jv : '0';
                     if($attendanceStatus[$index] == "Attend"){
                         $attend += 1;
                     }
                     elseif($attendanceStatus[$index] == "No Show"){
                         $noShow += 1;
                     };
+
                     $index++;
 
                 }
@@ -830,10 +916,46 @@ class ReportController extends Controller
             $periodofservice='Period of Services :'.$fromDate. ' To '. $toDate .'<br>';
             $Attend='Attend:   '.$attend.'<br>';
             $NoShow='No Show:   '.$noShow.'<br>';
-            $summary= $periodofservice.'<br>'.$totalDays.'<br>'.$totalPatients.'<br>'.$Attend.'<br>'.$NoShow.'<br>';
+
+            if($request->appointment_type == 1){
+                $summary= '<b>'.'<h2>'.'REPORT OF CONSULTATION CLINIC'.'</h2>'.'</b>'.$periodofservice.'<br>'.$totalDays.'<br>'.$totalPatients.'<br>'.$Attend.'<br>'.$NoShow.'<br>';
+            }
+            elseif($request->appointment_type == 3){
+                $summary= '<b>'.'<h2>'.'REPORT OF SUPPORTED EMPLOYMENT'.'</h2>'.'</b>'.$periodofservice.'<br>'.$totalDays.'<br>'.$totalPatients.'<br>'.$Attend.'<br>'.$NoShow.'<br>';
+            }
+            elseif($request->appointment_type == 4){
+                $summary= '<b>'.'<h2>'.'REPORT OF ETP'.'</h2>'.'</b>'.$periodofservice.'<br>'.$totalDays.'<br>'.$totalPatients.'<br>'.$Attend.'<br>'.$NoShow.'<br>';
+            }
+            elseif($request->appointment_type == 5){
+                $summary= '<b>'.'<h2>'.'REPORT OF JOB CLUB'.'</h2>'.'</b>'.$periodofservice.'<br>'.$totalDays.'<br>'.$totalPatients.'<br>'.$Attend.'<br>'.$NoShow.'<br>';
+            }
+            elseif($request->appointment_type == 6){
+                $summary= '<b>'.'<h2>'.'REPORT OF CPS'.'</h2>'.'</b>'.$periodofservice.'<br>'.$totalDays.'<br>'.$totalPatients.'<br>'.$Attend.'<br>'.$NoShow.'<br>';
+            }
+            else{
+                $summary= $periodofservice.'<br>'.$totalDays.'<br>'.$totalPatients.'<br>'.$Attend.'<br>'.$NoShow.'<br>';
+            }
+            
             if (isset($request->report_type) && $request->report_type == 'excel') {
                 // $filePath = 'downloads/report/activity-patient-report-' . time() . '.xlsx';
-                $filename = 'patient-report-'.time().'.xls';
+                if($request->appointment_type == 1){
+                    $filename = 'consultation-report-'.time().'.xls';
+                }
+                elseif($request->appointment_type == 3){
+                    $filename = 'se-report-'.time().'.xls';
+                }
+                elseif($request->appointment_type == 4){
+                    $filename = 'etp-report-'.time().'.xls';
+                }
+                elseif($request->appointment_type == 5){
+                    $filename = 'jobclub-report-'.time().'.xls';
+                }
+                elseif($request->appointment_type == 6){
+                    $filename = 'cps-report-'.time().'.xls';
+                }
+                else{
+                    $filename = 'patient-report-'.time().'.xls';
+                };
                 // // Excel::store(new PatientActivityReportExport($result, $totalPatients, $totalDays, $fromDate, $toDate), $filePath, 'public');
                 // return Excel::download(new PatientActivityReportExport($result, $totalPatients, $totalDays, $fromDate, $toDate),'activity-patient-report-' . time() . '.xlsx');
                 // return response()->json(["message"=>"Patient Activity Report", "excel"=>$excel]);
