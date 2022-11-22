@@ -23,7 +23,7 @@ class OcctReferralFormController extends Controller
              'referral_clinical_promotive_program' => '',
              'referral_name' => 'required|string',
              'referral_designation' => '',
- 
+
              'location_services' => 'required',
              'services_id' => '',
              'code_id' => '',
@@ -32,17 +32,19 @@ class OcctReferralFormController extends Controller
              'category_services' => 'required|string',
              'complexity_services' => '',
              'outcome' => '',
-             'medication_des' => ''
+             'medication_des' => '',
+             'id' => '',
+            'appointment_details_id' => '',
          ]);
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
- 
-        
+
+
             $occtform = [
             'added_by' => $request->added_by,
             'patient_mrn_id' => $request->patient_mrn_id,
- 
+
             'referral_location' => $request->referral_location,
             'date' => $request->date,
             'diagnosis_id' => $request->diagnosis_id,
@@ -53,7 +55,7 @@ class OcctReferralFormController extends Controller
             'referral_clinical_promotive_program' => $request->referral_clinical_promotive_program,
             'referral_name' => $request->referral_name,
             'referral_designation' => $request->referral_designation,
- 
+
             'location_services' => $request->location_services,
             'services_id' => $request->services_id,
             'code_id' => $request->code_id,
@@ -63,11 +65,12 @@ class OcctReferralFormController extends Controller
             'complexity_services' => $request->complexity_services,
             'outcome' => $request->outcome,
             'medication_des' => $request->medication_des,
-            'status' => "1"
+            'status' => "1",
+            'appointment_details_id' => $request->appId,
             ];
- 
+
             $validateOcctForm = [];
- 
+
          if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
              $validateOcctForm['services_id'] = 'required';
              $occtform['services_id'] =  $request->services_id;
@@ -81,9 +84,9 @@ class OcctReferralFormController extends Controller
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
- 
-         Occt_Referral_Form::firstOrCreate($occtform);  
+
+         Occt_Referral_Form::firstOrCreate($occtform);
          return response()->json(["message" => "Occt Form Created Successfully!", "code" => 200]);
-        
+
     }
 }
