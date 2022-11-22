@@ -32,17 +32,19 @@ class PsychologyReferralController extends Controller
              'category_services' => 'required|string',
              'complexity_services' => '',
              'outcome' => '',
-             'medication_des' => ''
+             'medication_des' => '',
+             'id' => '',
+            'appointment_details_id' => '',
          ]);
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
- 
-        
+
+
             $psychologyreferral = [
             'added_by' => $request->added_by,
             'patient_id' => $request->patient_id,
- 
+
             'diagnosis_id' => $request->diagnosis_id,
             'patient_acknowledged' => $request->patient_acknowledged,
             'reason_referral_assessment' => $request->reason_referral_assessment,
@@ -63,11 +65,12 @@ class PsychologyReferralController extends Controller
             'complexity_services' => $request->complexity_services,
             'outcome' => $request->outcome,
             'medication_des' => $request->medication_des,
-            'status' => "1"
+            'status' => "1",
+            'appointment_details_id' => $request->appId,
             ];
- 
+
             $validateConsultationDischarge = [];
- 
+
          if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
              $validateConsultationDischarge['services_id'] = 'required';
              $psychologyreferral['services_id'] =  $request->services_id;
@@ -81,9 +84,9 @@ class PsychologyReferralController extends Controller
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
- 
-         PsychologyReferral::firstOrCreate($psychologyreferral);  
+
+         PsychologyReferral::firstOrCreate($psychologyreferral);
          return response()->json(["message" => "Consultation Discharge Note Created Successfully!", "code" => 200]);
-        
+
     }
 }

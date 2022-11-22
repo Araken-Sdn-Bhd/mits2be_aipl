@@ -46,7 +46,7 @@ class JobInterestChecklistController extends Controller
              'note' => '',
              'planning' => '',
              'patient_consent_interested' => '',
- 
+
              'location_services' => 'required',
              'services_id' => '',
              'code_id' => '',
@@ -57,7 +57,8 @@ class JobInterestChecklistController extends Controller
              'outcome' => '',
              'medication_prescription' => '',
              'jobs' =>'',
-             'id' =>''
+             'id' => '',
+            'appointment_details_id' => '',
             //  $jobs=array(
             //     array('job' => 'job 1', 'duration'=>'1 month', 'reason'=>"work 1" ),
             //     array('job' => 'job 2', 'duration'=>'2 month', 'reason'=>"work 2" ),
@@ -67,15 +68,15 @@ class JobInterestChecklistController extends Controller
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
- 
-        
+
+
             $jobinterestchecklist = [
             'added_by' => $request->added_by,
             'patient_id' => $request->patient_id,
 
             'interest_to_work' => $request->interest_to_work,
             'agree_if_mentari_find_job_for_you' => $request->agree_if_mentari_find_job_for_you,
- 
+
             'clerk_job_interester' => $request->clerk_job_interester,
             'clerk_job_notes' => $request->clerk_job_notes,
             'factory_worker_job_interested' => $request->factory_worker_job_interested,
@@ -102,7 +103,7 @@ class JobInterestChecklistController extends Controller
             'note' => $request->note,
             'planning' => $request->planning,
             'patient_consent_interested' => $request->patient_consent_interested,
-           
+
             'location_services' => $request->location_services,
             'services_id' => $request->services_id,
             'code_id' => $request->code_id,
@@ -112,11 +113,14 @@ class JobInterestChecklistController extends Controller
             'complexity_services' => $request->complexity_services,
             'outcome' => $request->outcome,
             'medication_des' => $request->medication_prescription,
-            'status' => "1"
+            'status' => "1",
+            'appointment_details_id' => $request->appId,
+            'created_at' =>  date('Y-m-d H:i:s'),
+            'updated_at' =>  date('Y-m-d H:i:s'),
             ];
- 
+
             $validateJobInterestChecklist = [];
- 
+
          if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
              $validateJobInterestChecklist['services_id'] = 'required';
              $jobinterestchecklist['services_id'] =  $request->services_id;
@@ -130,7 +134,7 @@ class JobInterestChecklistController extends Controller
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
-        
+
          if($request->id){
             JobInterestChecklist::where(['id' =>$request->id])->update($jobinterestchecklist);
             //  dd($ab->id);
@@ -138,10 +142,10 @@ class JobInterestChecklistController extends Controller
              if(!empty($request->jobs)){
                 foreach($request->jobs as $key) {
                     $data = array('type_of_job' => $key['job'],'patient_id' =>$request->patient_id,'duration'=>$key['duration'],'termination_reason'=>$key['reason'],'job_interest_checklist_id'=>$request->id);
-                    JobInterestList::where(['job_interest_checklist_id' =>$request->id])->update($data);    
+                    JobInterestList::where(['job_interest_checklist_id' =>$request->id])->update($data);
                 }
              }
-            
+
              return response()->json(["message" => "Job Interest Checklist Created Successfully!", "code" => 200]);
          }else{
          $ab=JobInterestChecklist::firstOrCreate($jobinterestchecklist);
@@ -152,13 +156,13 @@ class JobInterestChecklistController extends Controller
                 if($key['job']){
                 $data = array('type_of_job' => $key['job'],'patient_id' =>$request->patient_id,'duration'=>$key['duration'],'termination_reason'=>$key['reason'],'job_interest_checklist_id'=>$jobintetestid);
                 JobInterestList::insert($data);
-            }    
+            }
             }
          }
-        
+
          return response()->json(["message" => "Job Interest Checklist Created Successfully!", "code" => 200]);
         }
-        
+
     }
 
 }

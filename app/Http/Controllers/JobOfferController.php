@@ -53,7 +53,9 @@ class JobOfferController extends Controller
             'branch_id' => 'required|integer',
             'job_availability' => 'required|integer',
             'position_location_2' => '',
-            'position_location_3' => ''
+            'position_location_3' => '',
+            'id' => '',
+            'appointment_details_id' => '',
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -75,7 +77,7 @@ class JobOfferController extends Controller
             'branch_id' => $request->branch_id,
             'job_availability' => $request->job_availability,
             'created_at' =>  date('Y-m-d H:i:s'),
-            'updated_at' =>  date('Y-m-d H:i:s')
+            'updated_at' =>  date('Y-m-d H:i:s'),
         ];
         if ($request->type == 'add') {
             try {
@@ -481,7 +483,8 @@ class JobOfferController extends Controller
                                 'created_at' =>  date('Y-m-d H:i:s'),
                                 'updated_at' =>  date('Y-m-d H:i:s'),
                                 'test_section_name' => $kk,
-                                'result' => $this->prepareLaserResult($vv)
+                                'result' => $this->prepareLaserResult($vv),
+                                'appointment_details_id' => $request->appId,
                             ];
                         // if ($request->test_name != 'bdi' && $request->test_name != 'bai' && $request->test_name != 'atq' && $request->test_name != 'psp' && $request->test_name != 'si') {
                             if ($request->test_name == 'laser') {
@@ -509,7 +512,8 @@ class JobOfferController extends Controller
                             'answer_id' => $v,
                             'user_ip_address' => $request->user_ip_address,
                             'created_at' =>  date('Y-m-d H:i:s'),
-                            'updated_at' =>  date('Y-m-d H:i:s')
+                            'updated_at' =>  date('Y-m-d H:i:s'),
+                            'appointment_details_id' => $request->appId,
                         ];
                         $i++;
                     }
@@ -540,6 +544,7 @@ class JobOfferController extends Controller
             'icd_9_subcode' => $request->icd_9_subcode,
             'medication_prescription' => $request->medication_prescription,
             'created_at' => date('Y-m-d H:i:s'),
+            'appointment_details_id' => $request->appId,
         ];
         if($request->id){
             LASERAssesmenForm::where(['id' => $request->id])->update($laserreferral);
@@ -915,7 +920,8 @@ class JobOfferController extends Controller
             'icd_9_code' => $request->icd_9_code,
             'icd_9_subcode' => $request->icd_9_subcode,
             'medication_prescription' => $request->medication_prescription,
-            'created_at' => date('Y-m-d H:i:s')
+            'created_at' => date('Y-m-d H:i:s'),
+            'appointment_details_id' => $request->appId,
         ];
         if($request->id){
             JobStartForm::where(['id' => $request->id])->update($jobstart);
@@ -955,7 +961,8 @@ class JobOfferController extends Controller
             'icd_9_code' => $request->icd_9_code,
             'icd_9_subcode' => $request->icd_9_subcode,
             'medication_prescription' => $request->medication_prescription,
-            'created_at' => date('Y-m-d H:i:s')
+            'created_at' => date('Y-m-d H:i:s'),
+            'appointment_details_id' => $request->appId,
         ];
         if($request->id){
             JobEndReport::where(['id' => $request->id])->update($jobend);
@@ -1019,7 +1026,8 @@ class JobOfferController extends Controller
             'icd_9_code' => $request->icd_9_code,
             'icd_9_subcode' => $request->icd_9_subcode,
             'medication_prescription' => $request->medication_prescription,
-            'created_at' => date('Y-m-d H:i:s')
+            'created_at' => date('Y-m-d H:i:s'),
+            'appointment_details_id' => $request->appId,
         ];
         if($request->patient_id){
             JobTransitionReport::updateOrCreate( ['patient_id' => $request->patient_id], $jobtransition); 

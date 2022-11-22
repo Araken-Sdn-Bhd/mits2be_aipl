@@ -11,6 +11,7 @@ class ListJobClub extends Model
 
     protected $table = 'list_job_club';
     protected $fillable = [
+        'appointment_details_id',
         'added_by',
         'patient_id',
         'job_club',
@@ -23,6 +24,7 @@ class ListJobClub extends Model
         'outcome',
         'medication_des',
         'status',
-        'created_at'
+        'created_at',
+        'is_deleted'
     ];
 }
