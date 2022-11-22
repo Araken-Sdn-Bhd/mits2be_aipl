@@ -9,6 +9,12 @@ use App\Models\RoleModules;
 class Roles extends Model
 {
     protected $table = 'roles';
+    protected $fillable = [
+        'role_name',
+        'status',
+        'requested_by',
+        'created_at'
+    ];
 
     public function users()
     {
