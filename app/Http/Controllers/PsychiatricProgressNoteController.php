@@ -58,7 +58,7 @@ class PsychiatricProgressNoteController extends Controller
                     'outcome_id' =>  $request->outcome_id,
                     'medication_des' =>  $request->medication_des,
                     'status' => "1",
-                    'created_at' => $date->format('Y-m-d H:i:s'),
+                    'created_at' => $date->format('Y-m-d H:i:s')
                 ];
     
                 try {
@@ -93,7 +93,8 @@ class PsychiatricProgressNoteController extends Controller
                     'complexity_services_id' =>  $request->complexity_services_id,
                     'outcome_id' =>  $request->outcome_id,
                     'medication_des' =>  $request->medication_des,
-                    'status' => "1"
+                    'status' => "1",
+                    'appointment_details_id' => $request->appId
                 ];
     
                 try {
@@ -133,6 +134,7 @@ class PsychiatricProgressNoteController extends Controller
                 'medication_des' =>  $request->medication_des,
                 'status' => "1",
                 'created_at' => $date->format('Y-m-d H:i:s'),
+                'appointment_details_id' => $request->appId
             ];
 
             try {
@@ -164,7 +166,8 @@ class PsychiatricProgressNoteController extends Controller
                 'complexity_services_id' =>  $request->complexity_services_id,
                 'outcome_id' =>  $request->outcome_id,
                 'medication_des' =>  $request->medication_des,
-                'status' => "1"
+                'status' => "1",
+                'appointment_details_id' => $request->appId
             ];
 
             try {
