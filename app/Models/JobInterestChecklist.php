@@ -50,6 +50,8 @@ class JobInterestChecklist extends Model
         'outcome',
         'medication_des',
         'status',
-        'created_at'
+        'created_at',
+        'appointment_details_id',
+        'is_deleted',
     ];
 }
