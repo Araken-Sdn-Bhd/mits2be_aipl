@@ -43,7 +43,8 @@ class SeProgressNoteController extends Controller
             'service_category' => 'required|string',
             'complexity_service' => 'required|integer',
             'outcome' => 'required|integer',
-            'medication' => ''
+            'medication' => '',
+            'appointment_details_id' => '',
 
 
         ]);
@@ -79,7 +80,8 @@ class SeProgressNoteController extends Controller
                 'complexity_service' =>  $request->complexity_service,
                 'outcome' =>  $request->outcome,
                 'medication' =>  $request->medication,
-                'status' => "1"
+                'status' => "1",
+                'appointment_details_id' => $request->appId
             ];
 
             try {
@@ -118,7 +120,8 @@ class SeProgressNoteController extends Controller
                 'complexity_service' =>  $request->complexity_service,
                 'outcome' =>  $request->outcome,
                 'medication' =>  $request->medication,
-                'status' => "1"
+                'status' => "1",
+                'appointment_details_id' => $request->appId
             ];
 
             try {
