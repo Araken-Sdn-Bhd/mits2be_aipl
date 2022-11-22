@@ -631,7 +631,7 @@ class ReportController extends Controller
                 $patientInfon = $query->get()->toArray();
                 if ($patientInfon) {
                     $patientInfo = $patientInfon[0];
-                    $pc = Postcode::where(['postcode' => $patientInfo['postcode']])->get()->toArray();
+                    $pc = Postcode::where(['id' => $patientInfo['postcode']])->get()->toArray();
                     $st = State::where(['id' => $patientInfo['state_id']])->get()->toArray();
                     $vt = PatientAppointmentVisit::where('id', $v['type_visit'])->get()->toArray();
                     $cp = PatientAppointmentCategory::where('id', $v['patient_category'])->get()->toArray();
