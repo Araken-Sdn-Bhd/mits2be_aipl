@@ -834,7 +834,7 @@ class VounteerIndividualApplicationFormController extends Controller
                 $result['is_voluneering_exp'] = $services[0]['is_voluneering_exp'];
                 $result['exp_details'] = $services[0]['exp_details'];
                 $result['is_mental_health_professional'] = $services[0]['is_mental_health_professional'];
-                $result['resume'] = $services[0]['health_professional_resume'];
+                $result['resume'] = $services[0]['resume'];
                 $result['mentari_services'] = $services[0]['mentari_services'];
                 $result['available_date'] = $services[0]['available_date'];
                 $result['available_time'] = $services[0]['available_time'];
