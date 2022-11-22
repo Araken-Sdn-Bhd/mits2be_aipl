@@ -31,7 +31,7 @@ class RehabReferralAndClinicalFormController extends Controller
              'age_first_started' => '',
              'heroin' => 'required|string',
              'cannabis' => 'required|string',
-             'ats' => 'required|string', 
+             'ats' => 'required|string',
              'inhalant' => 'required|string',
              'alcohol' => 'required|string',
              'tobacco' => 'required|string',
@@ -44,20 +44,22 @@ class RehabReferralAndClinicalFormController extends Controller
              'outcome' => '',
              'medication_des' => '',
              'referral_name' => '',
-             'designation' => ''
+             'designation' => '',
+             'id' => '',
+            'appointment_details_id' => '',
          ]);
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
- 
-        
+
+
             $rehabreferralandclinicalform = [
             'added_by' => $request->added_by,
             'patient_mrn_id' => $request->patient_mrn_id,
 
             'patient_referred_for' => $request->patient_referred_for,
             'diagnosis' => $request->diagnosis,
- 
+
             'date_onset' => $request->date_onset,
             'date_of_referral' => $request->date_of_referral,
             'no_of_admission' => $request->no_of_admission,
@@ -77,7 +79,7 @@ class RehabReferralAndClinicalFormController extends Controller
             'tobacco' => $request->tobacco,
             'others' => $request->others,
             'other_information' => $request->other_information,
-           
+
             'location_services' => $request->location_services,
             'services_id' => $request->services_id,
             'code_id' => $request->code_id,
@@ -89,11 +91,12 @@ class RehabReferralAndClinicalFormController extends Controller
             'medication_des' => $request->medication_des,
             'referral_name' => $request->referral_name,
             'designation' => $request->designation,
-            'status' => "1"
+            'status' => "1",
+            'appointment_details_id' => $request->appId,
             ];
- 
+
             $validateRehabReferralAndClinicalForm = [];
- 
+
          if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
              $validateRehabReferralAndClinicalForm['services_id'] = 'required';
              $rehabreferralandclinicalform['services_id'] =  $request->services_id;
@@ -107,10 +110,10 @@ class RehabReferralAndClinicalFormController extends Controller
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
- 
-         RehabReferralAndClinicalForm::firstOrCreate($rehabreferralandclinicalform);  
+
+         RehabReferralAndClinicalForm::firstOrCreate($rehabreferralandclinicalform);
          return response()->json(["message" => "Rehab Referral and Clinical Form Created Successfully!", "code" => 200]);
-        
+
     }
 
 }
