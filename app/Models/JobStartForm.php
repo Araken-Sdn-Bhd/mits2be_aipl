@@ -11,6 +11,7 @@ class JobStartForm extends Model
 
     protected $table = 'job_start_form';
     protected $fillable = [
+        'appointment_details_id',
         'added_by',
         'patient_id',
         'client',
@@ -35,6 +36,7 @@ class JobStartForm extends Model
         'icd_9_code',
         'icd_9_subcode',
         'medication_prescription',
-        'created_at'
+        'created_at',
+        'is_deleted'
     ];
 }

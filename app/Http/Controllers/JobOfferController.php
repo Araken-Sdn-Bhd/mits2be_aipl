@@ -961,7 +961,8 @@ class JobOfferController extends Controller
             'icd_9_code' => $request->icd_9_code,
             'icd_9_subcode' => $request->icd_9_subcode,
             'medication_prescription' => $request->medication_prescription,
-            'created_at' => date('Y-m-d H:i:s')
+            'created_at' => date('Y-m-d H:i:s'),
+            'appointment_details_id' => $request->appId,
         ];
         if($request->id){
             JobEndReport::where(['id' => $request->id])->update($jobend);
@@ -1025,7 +1026,8 @@ class JobOfferController extends Controller
             'icd_9_code' => $request->icd_9_code,
             'icd_9_subcode' => $request->icd_9_subcode,
             'medication_prescription' => $request->medication_prescription,
-            'created_at' => date('Y-m-d H:i:s')
+            'created_at' => date('Y-m-d H:i:s'),
+            'appointment_details_id' => $request->appId,
         ];
         if($request->patient_id){
             JobTransitionReport::updateOrCreate( ['patient_id' => $request->patient_id], $jobtransition); 

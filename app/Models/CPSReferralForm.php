@@ -27,6 +27,8 @@ class CPSReferralForm extends Model
         'medication_des',
         'medication_referrer_name',
         'medication_referrer_designation',
-        'created_at'
+        'created_at',
+        'appointment_details_id',
+        'is_deleted',
     ];
 }
