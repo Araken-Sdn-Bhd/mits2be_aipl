@@ -1038,4 +1038,16 @@ class ScreenModuleController extends Controller
         return response()->json(["message" => "Roles has been Updated successfully!", "code" => 200]);
     }
 
+    public function getScreenByModuleId(Request $request)
+    {
+        $list = DB::table('screens')
+            ->join('screen_modules', 'screens.module_id', '=', 'screen_modules.id')
+            ->join('screen_sub_modules', 'screens.sub_module_id', '=', 'screen_sub_modules.id')
+            ->select('screens.id as screen_id','screens.screen_name','screens.screen_route','screens.screen_description','screen_modules.module_name','screen_sub_modules.sub_module_name')
+            ->where('screens.module_id','=', $request->module_id)
+            ->where('screens.screen_status','=', '1')
+            ->get();
+        return response()->json(["message" => "Screen Page Module List", 'list' => $list, "code" => 200]);
+    }
+
 }
