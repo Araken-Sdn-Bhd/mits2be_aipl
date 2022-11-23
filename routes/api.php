@@ -131,6 +131,7 @@ Route::group(['prefix' => 'roles'], function () {
     Route::post('/update', [RolesController::class, 'update']);
     Route::post('/remove', [RolesController::class, 'delete']);
     Route::post('/assign', [RolesController::class, 'set_role']);
+    Route::post('/role-byId', [RolesController::class, 'role_byId']);
 });
 Route::group([ 'prefix' => 'modules'], function () {
     Route::get('/list', [ModulesController::class, 'index']);
@@ -199,6 +200,7 @@ Route::group(['prefix' => 'screen-module'], function () {
     Route::get('/getUserMatrixList', [ScreenModuleController::class, 'getUserMatrixList']);
     Route::post('/getUserMatrixListById', [ScreenModuleController::class, 'getUserMatrixListById']);
     Route::post('/updatescreenRole', [ScreenModuleController::class, 'UpdateScreenRole']);
+    Route::post('/getScreenByModuleId', [ScreenModuleController::class, 'getScreenByModuleId']);
 });
 Route::group(['prefix' => 'general-setting'], function () {
     Route::post('/add', [GeneralSettingController::class, 'add']);

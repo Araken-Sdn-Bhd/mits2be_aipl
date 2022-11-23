@@ -11,7 +11,8 @@ class RolesController extends Controller
 {
     public function index()
     {
-        return Roles::select('id', 'role_name', 'status')->get();
+        $list= Roles::select('id', 'role_name', 'status')->orderBy('role_name','asc')->get();
+        return response()->json(["message" => "List.", 'list' => $list, "code" => 200]);
     }
 
     public function check_point($role_name, $role_id)
@@ -27,17 +28,16 @@ class RolesController extends Controller
         $validator = Validator::make($request->all(), [
             'role_name' => 'required',
             'status' => 'required|integer',
-            'user_id' => 'required|integer'
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
         $roles = $this->check_point($request->role_name, 0);
         if ($roles > 0) {
-            return response()->json(["message" => "Role Already Exists.", "code" => 200]);
+            return response()->json(["message" => "Role is Existed.", "code" => 200]);
         }
         $role = new Roles;
-        $role->requested_by =  $request->user_id;
+        $role->requested_by =  $request->requested_by;
         $role->role_name = $request->role_name;
         $role->status = $request->status;
         $role->save();
@@ -47,7 +47,7 @@ class RolesController extends Controller
     public function update(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|integer',
+            'requested_by' => 'required',
             'role_id' => 'required|integer',
             'role_name' => 'required',
             'status' => 'required|integer',
@@ -60,11 +60,11 @@ class RolesController extends Controller
             return response()->json(["message" => "Role Already Exists.", "code" => 200]);
         }
         $role = Roles::find($request->role_id);
-        $role->requested_by =  $request->user_id;
+        $role->requested_by =  $request->requested_by;
         $role->role_name = $request->role_name;
         $role->status = $request->status;
         $role->save();
-        return response()->json(["message" => "A role has been updated", "code" => 200]);
+        return response()->json(["message" => "Role has been updated", "code" => 200]);
     }
 
     public function delete(Request $request)
@@ -95,5 +95,10 @@ class RolesController extends Controller
         }
         DB::table('role_user')->updateOrInsert(['user_id' => $request->input('user_id')], ['role_id' => $request->input('role_id'), 'role_assigned_by' => $request->input('assigned_by')]);
         return response()->json("Role has been assigned to user", 200);
+    }
+    public function role_byId(Request $request)
+    {
+        $list = Roles::where('id', $request->id)->get();
+        return response()->json(["message" => "List", 'list' => $list, "code" => 200]);
     }
 }
