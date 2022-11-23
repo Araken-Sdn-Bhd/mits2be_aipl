@@ -123,7 +123,7 @@ class ScreenModuleController extends Controller
     {
         $list = ScreensModule::select('id', 'module_name','module_code','module_short_name','module_order')
         ->where('module_status','=', '1')
-        ->orderBy('module_order', 'ASC')
+        ->orderBy('module_name', 'ASC')
         ->get();
         return response()->json(["message" => "Module List", 'list' => $list, "code" => 200]);
     }
@@ -1043,11 +1043,14 @@ class ScreenModuleController extends Controller
         $list = DB::table('screens')
             ->join('screen_modules', 'screens.module_id', '=', 'screen_modules.id')
             ->join('screen_sub_modules', 'screens.sub_module_id', '=', 'screen_sub_modules.id')
-            ->select('screens.id as screen_id','screens.screen_name','screens.screen_route','screens.screen_description','screen_modules.module_name','screen_sub_modules.sub_module_name')
+            ->select('screens.sub_module_id as submodule_id','screens.id as screen_id','screens.screen_name','screens.screen_route','screens.screen_description','screen_modules.module_name','screen_sub_modules.sub_module_name')
             ->where('screens.module_id','=', $request->module_id)
             ->where('screens.screen_status','=', '1')
             ->get();
         return response()->json(["message" => "Screen Page Module List", 'list' => $list, "code" => 200]);
     }
+
+   
+
 
 }
