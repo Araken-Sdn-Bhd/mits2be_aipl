@@ -37,7 +37,8 @@ class CpsDischargeNoteController extends Controller
             'specialist_name' => 'required|string',
             'verification_date' => 'required|date',
             'case_manager' => 'required|string',
-            'date' => 'required|date'
+            'date' => 'required|date',
+            'appointment_details_id' => '',
 
 
         ]);
@@ -81,7 +82,8 @@ class CpsDischargeNoteController extends Controller
                     'verification_date' =>  $request->verification_date,
                     'case_manager' =>  $request->case_manager,
                     'date' =>  $request->date,
-                    'status' => "1"
+                    'status' => "1",
+                    'appointment_details_id' => $request->appId,
                 ];
     
                 try {
@@ -128,7 +130,8 @@ class CpsDischargeNoteController extends Controller
                     'verification_date' =>  $request->verification_date,
                     'case_manager' =>  $request->case_manager,
                     'date' =>  $request->date,
-                    'status' => "1"
+                    'status' => "1",
+                    'appointment_details_id' => $request->appId,
                 ];
     
                 try {
@@ -175,7 +178,8 @@ class CpsDischargeNoteController extends Controller
                 'verification_date' =>  $request->verification_date,
                 'case_manager' =>  $request->case_manager,
                 'date' =>  $request->date,
-                'status' => "1"
+                'status' => "1",
+                'appointment_details_id' => $request->appId,
             ];
 
             try {
@@ -222,7 +226,8 @@ class CpsDischargeNoteController extends Controller
                 'verification_date' =>  $request->verification_date,
                 'case_manager' =>  $request->case_manager,
                 'date' =>  $request->date,
-                'status' => "1"
+                'status' => "1",
+                'appointment_details_id' => $request->appId,
             ];
 
             try {

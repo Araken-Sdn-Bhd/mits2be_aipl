@@ -11,6 +11,7 @@ class PatientCarePaln extends Model
 
     protected $table = 'patient_care_paln';
     protected $fillable = [
+        'appointment_details_id',
         'added_by',
         'patient_id',
         'plan_date',

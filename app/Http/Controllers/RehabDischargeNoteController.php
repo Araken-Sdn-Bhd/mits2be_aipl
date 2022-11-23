@@ -39,7 +39,8 @@ class RehabDischargeNoteController extends Controller
              'case_manager' => '',
              'verification_date_1' => '',
              'verification_date_2' => '',
-             'id' => ''
+             'id' => '',
+             'appointment_details_id' => '',
          ]);
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -71,7 +72,9 @@ class RehabDischargeNoteController extends Controller
             'case_manager' => $request->case_manager,
             'verification_date_1' => $request->verification_date_1,
             'verification_date_2' => $request->verification_date_2,
-            'status' => "1"
+            'status' => "1",
+            'appointment_details_id' => $request->appId,
+
             ];
  
             $validateRehabDischarge = [];
