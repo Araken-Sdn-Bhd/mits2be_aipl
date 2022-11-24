@@ -29,7 +29,8 @@ class JobClubProgressNoteController extends Controller
             'complexity_service' => 'required|integer',
             'outcome' => 'required|integer',
             'medication' => 'required|string',
-            'id' => ''
+            'id' => '',
+            'appointment_details_id' => '',
 
 
         ]);
@@ -66,7 +67,8 @@ class JobClubProgressNoteController extends Controller
                     'complexity_service' =>  $request->complexity_service,
                     'outcome' =>  $request->outcome,
                     'medication' =>  $request->medication,
-                    'status' => "1"
+                    'status' => "1",
+                    'appointment_details_id' => $request->appId,
                 ];
                 // dd($JobClubProgressNote);
                 try {
@@ -78,7 +80,7 @@ class JobClubProgressNoteController extends Controller
                     return response()->json(["message" => $e->getMessage(), 'JobClubProgress' => $jobclubprogressnote, "code" => 200]);
                 }
                 return response()->json(["message" => "Job Club Progress Note Successfully00", "code" => 200]);
-            } else if ($request->category_services == 'clinical-work') {
+            } else if ($request->service_category == 'clinical-work') {
                 $validator = Validator::make($request->all(), [
                     'code_id' => 'required|integer',
                     'sub_code_id' => 'required|integer'
@@ -107,7 +109,8 @@ class JobClubProgressNoteController extends Controller
                     'complexity_service' =>  $request->complexity_service,
                     'outcome' =>  $request->outcome,
                     'medication' =>  $request->medication,
-                    'status' => "1"
+                    'status' => "1",
+                    'appointment_details_id' => $request->appId,
                 ];
     
                 try {
@@ -148,7 +151,8 @@ class JobClubProgressNoteController extends Controller
                 'complexity_service' =>  $request->complexity_service,
                 'outcome' =>  $request->outcome,
                 'medication' =>  $request->medication,
-                'status' => "1"
+                'status' => "1",
+                'appointment_details_id' => $request->appId,
             ];
             // dd($JobClubProgressNote);
             try {
@@ -157,7 +161,7 @@ class JobClubProgressNoteController extends Controller
                 return response()->json(["message" => $e->getMessage(), 'JobClubProgress' => $jobclubprogressnote, "code" => 200]);
             }
             return response()->json(["message" => "Job Club Progress Note Successfully00", "code" => 200]);
-        } else if ($request->category_services == 'clinical-work') {
+        } else if ($request->service_category == 'clinical-work') {
             $validator = Validator::make($request->all(), [
                 'code_id' => 'required|integer',
                 'sub_code_id' => 'required|integer'
@@ -186,7 +190,8 @@ class JobClubProgressNoteController extends Controller
                 'complexity_service' =>  $request->complexity_service,
                 'outcome' =>  $request->outcome,
                 'medication' =>  $request->medication,
-                'status' => "1"
+                'status' => "1",
+                'appointment_details_id' => $request->appId,
             ];
 
             try {
@@ -194,7 +199,7 @@ class JobClubProgressNoteController extends Controller
             } catch (Exception $e) {
                 return response()->json(["message" => $e->getMessage(), 'JobClubProgress' => $JobClubProgress, "code" => 200]);
             }
-            return response()->json(["message" => "Job Club Progress Note Successfully11", "code" => 200]);
+            return response()->json(["message" => "Job Club Progress Note Successfully", "code" => 200]);
         }
     }
     }
