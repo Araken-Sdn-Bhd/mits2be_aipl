@@ -91,6 +91,8 @@ use App\Http\Controllers\MailController;
 use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\JobController;
+use App\Http\Controllers\DefaultRoleAccessController;
+use App\Models\DefaultRoleAccess;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Mail;
 
@@ -201,6 +203,7 @@ Route::group(['prefix' => 'screen-module'], function () {
     Route::post('/getUserMatrixListById', [ScreenModuleController::class, 'getUserMatrixListById']);
     Route::post('/updatescreenRole', [ScreenModuleController::class, 'UpdateScreenRole']);
     Route::post('/getScreenByModuleId', [ScreenModuleController::class, 'getScreenByModuleId']);
+    Route::post('/assign-screen-byRoleId', [ScreenModuleController::class, 'addScreenByRolesId']);
 });
 Route::group(['prefix' => 'general-setting'], function () {
     Route::post('/add', [GeneralSettingController::class, 'add']);
@@ -752,6 +755,26 @@ Route::group(['prefix' => 'access'], function () {
 Route::group(['prefix' => 'shharp-patient-list'], function () {
     Route::post('/list', [PatientDetailsController::class, 'getSharrpPatientList']);
 });
+
+Route::group(['prefix' => 'employer-job'], function () {
+    Route::post('/add', [JobController::class, 'store']);
+    Route::post('/repeat', [JobController::class, 'repeat']);
+    Route::post('/update', [JobController::class, 'update']);
+    Route::post('/list', [JobController::class, 'JobListByCompany']);
+    Route::post('/repeat-list', [JobController::class, 'RepeatList']);
+    Route::post('/pending-approval', [JobController::class, 'getPendingApprovalList']);
+    Route::get('/job-list', [JobController::class, 'JobList']);
+    Route::post('/setAvailable', [JobController::class, 'setStatus']);
+    Route::post('/view-detail', [JobController::class, 'ViewJobDetails']);
+});
+
+Route::group(['prefix' => 'default-role-access'], function () {
+    Route::post('/add', [DefaultRoleAccessController::class, 'store']);
+    Route::post('/listbyId', [DefaultRoleAccessController::class, 'listbyId']);
+    Route::post('/{id}/delete', [DefaultRoleAccessController::class, 'delete']);
+});
+
+
 //----------------------------------//////////////////////////////////////////////////-----------------
 Route::group(['prefix' => 'systemadmin'], function () {
 
@@ -794,14 +817,4 @@ Route::group(['prefix' => 'staffDesignatioDetail'], function () {
     Route::post('/staffInchargeDetail', [PatientDetailsController::class, 'staffInchargeDetail']);
  });
 
- Route::group(['prefix' => 'employer-job'], function () {
-    Route::post('/add', [JobController::class, 'store']);
-    Route::post('/repeat', [JobController::class, 'repeat']);
-    Route::post('/update', [JobController::class, 'update']);
-    Route::post('/list', [JobController::class, 'JobListByCompany']);
-    Route::post('/repeat-list', [JobController::class, 'RepeatList']);
-    Route::post('/pending-approval', [JobController::class, 'getPendingApprovalList']);
-    Route::get('/job-list', [JobController::class, 'JobList']);
-    Route::post('/setAvailable', [JobController::class, 'setStatus']);
-    Route::post('/view-detail', [JobController::class, 'ViewJobDetails']);
-});
+ 
