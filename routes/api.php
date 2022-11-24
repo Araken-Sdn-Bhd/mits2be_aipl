@@ -770,6 +770,7 @@ Route::group(['prefix' => 'employer-job'], function () {
 
 Route::group(['prefix' => 'default-role-access'], function () {
     Route::post('/add', [DefaultRoleAccessController::class, 'store']);
+    Route::post('/listbyId', [DefaultRoleAccessController::class, 'listbyId']);
 });
 
 

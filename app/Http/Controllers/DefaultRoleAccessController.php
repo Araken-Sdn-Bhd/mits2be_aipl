@@ -62,4 +62,14 @@ class DefaultRoleAccessController extends Controller
         }
        
     }
+
+    public function listbyId()
+    {
+        $list = DB::table('default_role_access')
+        ->select('default_role_access.id','screens.module_name','screens.screen_name','screens.screen_route','screens.screen_description')
+        ->join('screens','screens.id','=','default_role_access.screen_id')
+        ->get();
+
+        return response()->json(["message" => "List.", 'list' => $list, "code" => 200]);
+    }
 }
