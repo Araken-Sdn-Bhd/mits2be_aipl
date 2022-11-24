@@ -63,13 +63,28 @@ class DefaultRoleAccessController extends Controller
        
     }
 
-    public function listbyId()
+    public function listbyId(Request $request)
     {
         $list = DB::table('default_role_access')
         ->select('default_role_access.id','screens.module_name','screens.screen_name','screens.screen_route','screens.screen_description')
         ->join('screens','screens.id','=','default_role_access.screen_id')
+        ->where('role_id',$request->role_id)
         ->get();
 
         return response()->json(["message" => "List.", 'list' => $list, "code" => 200]);
+    }
+    public function delete(Request $request, $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+        $del = DefaultRoleAccess::where(
+            ['id' => $id]
+        );
+        $del->delete();
+        return response()->json(["message" => "Deleted Successfully.", "code" => 200]);
     }
 }
