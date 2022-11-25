@@ -10,7 +10,7 @@ class ScreenPageModule extends Model
 {
     use HasFactory;
     protected $table = 'screens';
-    protected $fillable = ['added_by', 'module_id', 'module_name', 'sub_module_id', 'sub_module_name', 'screen_name', 'screen_route', 'screen_description','icon','index_val'];
+    protected $fillable = ['added_by', 'module_id', 'module_name', 'sub_module_id', 'sub_module_name', 'screen_name', 'screen_route', 'screen_route_alt', 'screen_description','icon','index_val'];
 
     public function roles()
     {
