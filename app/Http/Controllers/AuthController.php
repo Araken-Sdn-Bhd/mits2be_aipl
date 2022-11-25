@@ -107,7 +107,7 @@ class AuthController extends Controller
             $join->on('h.id', '=', 'b.hospital_id');
         })
         ->where('s.email', $request->email)->first();
-       
+
         $systemattempt = SystemSetting::select('variable_value')->where('section', 'login-attempt')->pluck('variable_value');
         $blocktime = SystemSetting::select('variable_value')->where('section', 'system-block-duration')->pluck('variable_value');
         $no_of_attempts = UserBlock::select('no_of_attempts')->where('user_id', $id)->pluck('no_of_attempts');
@@ -133,7 +133,7 @@ class AuthController extends Controller
                 ]);
                 if (!$request->type == "Von") {
                     $screenroute = DB::table('screen_access_roles')
-                        ->select(DB::raw('screens.screen_route'))
+                        ->select(DB::raw('screens.screen_route','screens.screen_route_alt'))
                         ->join('screens', function ($join) {
                             $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
                         })
@@ -143,18 +143,19 @@ class AuthController extends Controller
                         ->where('screen_access_roles.status', '=', '1')
                         ->get();
 
-                   
+
 
                     if (!empty($screenroute[0])) {
                         $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
-                        return $this->createNewToken($token, $tmp, $branch);
+                        $tmp_alt = json_decode(json_encode($screenroute[0]), true)['screen_route_alt'];
+                        return $this->createNewToken($token, $tmp,$tmp_alt, $branch);
                     } else {
                         $tmp = "";
                         return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
                     }
                 }else{
                     $screenroute = DB::table('screen_access_roles')
-                    ->select(DB::raw('screens.screen_route'))
+                    ->select(DB::raw('screens.screen_route','screens,screen_route_alt'))
                     ->join('screens', function ($join) {
                         $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
                     })
@@ -165,7 +166,8 @@ class AuthController extends Controller
 
                 if (!empty($screenroute[0])) {
                     $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
-                    return $this->createNewToken($token, $tmp, $branch);
+                    $tmp_alt = json_decode(json_encode($screenroute[0]), true)['screen_route_alt'];
+                    return $this->createNewToken($token, $tmp,$tmp_alt, $branch);
                 } else {
                     $tmp = "";
                     return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
@@ -198,17 +200,32 @@ class AuthController extends Controller
                 ->where('screen_access_roles.status', '=', '1')
                 ->get();
 
+            $screenroutealt = DB::table('screen_access_roles')
+                ->select(DB::raw('screens.screen_route_alt'))
+                ->join('screens', function ($join) {
+                    $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
+                })
+                ->where('screens.screen_route_alt', 'like', '%Mod%')
+                ->where('screen_access_roles.staff_id', '=', $id)
+                ->orWhere('screen_access_roles.user_type', '=', $useradmin)
+                ->where('screen_access_roles.status', '=', '1')
+                ->get();
+
                 // dd($screenroute);
             if (!empty($screenroute[0])) {
                 $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
-                return $this->createNewToken($token, $tmp, $branch);
+                $tmp_alt = json_decode(json_encode($screenroutealt[0]), true)['screen_route_alt'];
+                // $tmp_alt = json_decode(json_encode($screenroute[0]), true)['screen_route_alt'];
+                // dd($tmp_alt);
+
+                return $this->createNewToken($token, $tmp,$tmp_alt, $branch);
             } else {
                 $tmp = "";
                 return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
             }
         }else{
             $screenroute = DB::table('screen_access_roles')
-                    ->select(DB::raw('screens.screen_route'))
+                    ->select(DB::raw('screens.screen_route','screens,screen_route_alt'))
                     ->join('screens', function ($join) {
                         $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
                     })
@@ -219,7 +236,8 @@ class AuthController extends Controller
 
                 if (!empty($screenroute[0])) {
                     $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
-                    return $this->createNewToken($token, $tmp, $branch);
+                    $tmp_alt = json_decode(json_encode($screenroute[0]), true)['screen_route_alt'];
+                    return $this->createNewToken($token, $tmp,$tmp_alt, $branch);
                 } else {
                     $tmp = "";
                     return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
@@ -230,7 +248,7 @@ class AuthController extends Controller
 
     public function loginEmployer(Request $request)
     {
-       
+
         app('log')->debug($request->all());
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
@@ -239,10 +257,10 @@ class AuthController extends Controller
         if ($validator->fails()) {
             return response()->json(['message' => 'Invalid Credential', 'code' => '400'], 401);
         }
-       
+
         if (!$token = auth()->attempt($validator->validated())) {
             $id = User::select('id')->where('email', $request->email)->pluck('id');
-        
+
             $systemattempt = SystemSetting::select('variable_value')->where('section', 'login-attempt')->pluck('variable_value');
             $blocktime = SystemSetting::select('variable_value')->where('section', 'system-block-duration')->pluck('variable_value');
             $no_of_attempts = UserBlock::select('no_of_attempts')->where('user_id', $id)->pluck('no_of_attempts');
@@ -251,15 +269,15 @@ class AuthController extends Controller
             $date = new DateTime('now', new DateTimeZone('Asia/Kolkata'));
             $newDate = $date->format('Y-m-d H:i:s');
             if (!empty($systemattempt[0]) == !empty($no_of_attempts[0])) {
-              
+
                 $currentdatetime = date('Y-m-d H:i:s', strtotime($newDate . '+' . $blocktime[0] . 'hours'));
             } else {
-                
+
                 $currentdatetime = $date->format('Y-m-d H:i:s');
             }
-         
+
             if (count($id_block_user) == 0) {
-              
+
                 $data = [
                     'user_id' => $id[0],
                     'no_of_attempts' => "1",
@@ -270,16 +288,16 @@ class AuthController extends Controller
                 UserBlock::insert($data);
                 return response()->json(["message" => "Incorrect password", "code" => 401]);
             } else {
-              
+
                 if ($systemattempt[0] <= $no_of_attempts[0]) {
                     return response()->json(['message' => 'Account has been blocked for next ' . $blocktime[0] . ' hour', 'code' => 201], 201);
                 } else {
                     $count = number_format($no_of_attempts[0]) + 1;
-                    
+
                     UserBlock::where(
                         ['id' => $id_block_user]
                     )->update([
-                        
+
                         'no_of_attempts' => $count,
                         'block_untill' => $currentdatetime
                     ]);
@@ -288,28 +306,29 @@ class AuthController extends Controller
             }
             return response()->json(['message' => 'Unauthorized', "code" => 401], 401);
         }
-      
+
         $useradmin = User::select('role')->where('email', $request->email)->pluck('role');
         $id = User::select('id')->where('email', $request->email)->pluck('id');
         $id_block_user = UserBlock::select('id')->where('user_id', $id)->pluck('id');
         $branch= "";
-        $tmp = "/Modules/Dashboard/high-level-employer";
-       
+        $tmp = "/app/Modules/Dashboard/high-level-employer";
+        $tmp_alt = "/Modules/Dashboard/high-level-employer";
+
         $systemattempt = SystemSetting::select('variable_value')->where('section', 'login-attempt')->pluck('variable_value');
         $blocktime = SystemSetting::select('variable_value')->where('section', 'system-block-duration')->pluck('variable_value');
         $no_of_attempts = UserBlock::select('no_of_attempts')->where('user_id', $id)->pluck('no_of_attempts');
         $block_untill = UserBlock::select('block_untill')->where('user_id', $id)->pluck('block_untill');
-       
+
         $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
         $newDate = $date->format('Y-m-d H:i:s');
         $currentdatetime = date('Y-m-d H:i:s', strtotime($newDate . '+' . 'hours'));
-      
+
         if (!empty($no_of_attempts[0])) {
         } else {
             $no_of_attempts = "0";
         }
         if (($systemattempt[0]) <= ($no_of_attempts[0])) {
-           
+
             if ($block_untill[0] < $newDate) {
                 UserBlock::where(
                     ['id' => $id_block_user]
@@ -318,8 +337,8 @@ class AuthController extends Controller
                     'no_of_attempts' => "0",
                     'block_untill' => $currentdatetime
                 ]);
-            
-                return $this->createNewToken($token, $tmp, $branch);   
+
+                return $this->createNewToken($token, $tmp,$tmp_alt, $branch);
             } else {
                 return response()->json(['message' => 'Account has been blocked for next ' . $blocktime[0] . ' hour'], 401);
             }
@@ -335,12 +354,12 @@ class AuthController extends Controller
             } catch (\Throwable $th) {
                 //throw $th;
             }
-            return $this->createNewToken($token, $tmp, $branch);  
+            return $this->createNewToken($token, $tmp,$tmp_alt, $branch);
         }
     }
 
 
-   
+
     /**
      * Register a User.
      *
@@ -401,7 +420,7 @@ class AuthController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    protected function createNewToken($token, $tmp, $branch)
+    protected function createNewToken($token, $tmp, $tmp_alt, $branch)
     {
         return response()->json([
             'access_token' => $token,
@@ -410,6 +429,7 @@ class AuthController extends Controller
             'user' => auth()->user(),
             'branch' => $branch,
             'route' => $tmp,
+            'route_alt' => $tmp_alt,
             'code' => '200'
         ]);
     }
