@@ -100,38 +100,6 @@ class StaffManagementController extends Controller
                 $staff=StaffManagement::create($staffadd);
                 $role = Roles::select('role_name')->where('id', $request->role_id)->first();
 
-                $defaultAcc = DB::table('default_role_access')
-                ->select('default_role_access.id as role_id','screens.id as screen_id','screens.sub_module_id as sub_module_id','screens.module_id as module_id')
-                ->join('screens','screens.id','=','default_role_access.screen_id')
-                ->where('default_role_access.role_id',$request->role_id)
-                ->get();
-
-                $hospital = HospitalBranchManagement::where('id',$request->branch_id)->first();
-                
-                
-                if ($defaultAcc) {
-                    foreach ($defaultAcc as $key) {
-                        $screen = [
-                            'module_id' => $key->module_id,
-                            'sub_module_id' => $key->sub_module_id,
-                            'screen_id' => $key->screen_id,
-                            'hospital_id' => $hospital->hospital_id,
-                            'branch_id' => $request->branch_id,
-                            'team_id' => $request->team_id,
-                            'staff_id' => $staff->id,
-                            'access_screen' => '1',
-                            'read_writes' => '1',
-                            'read_only' => '0',
-            
-                        ];
-
-                        if (ScreenAccessRoles::where($screen)->count() == 0) {
-                            $screen['added_by'] = $request->added_by;
-                            ScreenAccessRoles::Create($screen);
-                        }
-
-                    }}
-
                 $default_pass = SystemSetting::select('variable_value')
                 ->where('section', "=", 'default-password')
                 ->where('status', "=", '1')
@@ -139,9 +107,46 @@ class StaffManagementController extends Controller
 
                 if($default_pass->variable_value =="true"){
                     // dd('if');
-                    User::create(
+                    $user = User::create(
                         ['name' => $request->name, 'email' => $request->email, 'role' => $role->role_name, 'password' => bcrypt('password@123')]
                     );
+
+                    $defaultAcc = DB::table('default_role_access')
+                    ->select('default_role_access.id as role_id','screens.id as screen_id','screens.sub_module_id as sub_module_id','screens.module_id as module_id')
+                    ->join('screens','screens.id','=','default_role_access.screen_id')
+                    ->where('default_role_access.role_id',$request->role_id)
+                    ->get();
+    
+                    $hospital = HospitalBranchManagement::where('id',$request->branch_id)->first();
+                    
+                    
+                    if ($defaultAcc) {
+                        foreach ($defaultAcc as $key) {
+                            $screen = [
+                                'module_id' => $key->module_id,
+                                'sub_module_id' => $key->sub_module_id,
+                                'screen_id' => $key->screen_id,
+                                'hospital_id' => $hospital->hospital_id,
+                                'branch_id' => $request->branch_id,
+                                'team_id' => $request->team_id,
+                                'staff_id' => $user->id,
+                                'access_screen' => '1',
+                                'read_writes' => '1',
+                                'read_only' => '0',
+                
+                            ];
+    
+                            if (ScreenAccessRoles::where($screen)->count() == 0) {
+                                $screen['added_by'] = $request->added_by;
+                                ScreenAccessRoles::Create($screen);
+                            }
+    
+                        }}
+
+
+
+
+                    //email
                     $toEmail    =   $request->email;
                     $data       =   ['name' => $request->name,'user_id' => $toEmail, 'password' =>'password@123'];
 
