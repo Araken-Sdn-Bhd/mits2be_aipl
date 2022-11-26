@@ -33,6 +33,7 @@ class DesignationController extends Controller
     {
        $list =Designation::select('id', 'designation_name','designation_order')
        ->where('designation_status','=', '1')
+       ->orderBy('designation_name','asc')
        ->get();
        return response()->json(["message" => "Designation List", 'list' => $list, "code" => 200]);
     }
