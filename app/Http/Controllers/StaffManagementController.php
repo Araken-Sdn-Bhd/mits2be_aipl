@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use App\Models\DefaultRoleAccess;
 use App\Models\ScreenAccessRoles;
+use App\Models\HospitalBranchManagement;
 
 class StaffManagementController extends Controller
 {
@@ -104,17 +105,17 @@ class StaffManagementController extends Controller
                 ->join('screens','screens.id','=','default_role_access.screen_id')
                 ->where('default_role_access.role_id',$request->role_id)
                 ->get();
-                //->toArray();
+
+                $hospital = HospitalBranchManagement::where('id',$request->branch_id)->first();
+                
                 
                 if ($defaultAcc) {
                     foreach ($defaultAcc as $key) {
-                        dd($key);
                         $screen = [
-                            $moduleid = $key['module_id'];
-                            'module_id' => substr($moduleid]),
-                            'sub_module_id' => $key['sub_module_id'],
-                            'screen_id' => $key['screen_id'],
-                            'hospital_id' => $request->hospital_id,
+                            'module_id' => $key->module_id,
+                            'sub_module_id' => $key->sub_module_id,
+                            'screen_id' => $key->screen_id,
+                            'hospital_id' => $hospital->hospital_id,
                             'branch_id' => $request->branch_id,
                             'team_id' => $request->team_id,
                             'staff_id' => $staff->id,
@@ -139,7 +140,7 @@ class StaffManagementController extends Controller
                 if($default_pass->variable_value =="true"){
                     // dd('if');
                     User::create(
-                        ['name' => $request->name, 'email' => $request->email, 'role' => $role[0]['role_name'], 'password' => bcrypt('password@123')]
+                        ['name' => $request->name, 'email' => $request->email, 'role' => $role->role_name, 'password' => bcrypt('password@123')]
                     );
                     $toEmail    =   $request->email;
                     $data       =   ['name' => $request->name,'user_id' => $toEmail, 'password' =>'password@123'];
