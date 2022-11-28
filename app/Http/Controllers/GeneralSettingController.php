@@ -48,7 +48,8 @@ class GeneralSettingController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        $list = GeneralSetting::select('id', 'section', 'section_value', 'section_order','code', 'status')->where('section', $request->section)->where('status', '1')->orderBy('section_order', 'asc')->get();
+        $list = GeneralSetting::select('id', 'section', 'section_value', 'section_order','code', 'status')
+        ->where('section', $request->section)->where('status', '1')->orderBy('section_value', 'asc')->get();
         return response()->json(["message" => $request->section . " List", 'list' => $list, "code" => 200]);
     }
 

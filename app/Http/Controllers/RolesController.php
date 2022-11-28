@@ -15,6 +15,12 @@ class RolesController extends Controller
         return response()->json(["message" => "List.", 'list' => $list, "code" => 200]);
     }
 
+    public function branch_view_list()
+    {
+        $list= Roles::select('id', 'role_name', 'status')->where('role_name','!=','System Admin')->orderBy('role_name','asc')->get();
+        return response()->json(["message" => "List.", 'list' => $list, "code" => 200]);
+    }
+
     public function check_point($role_name, $role_id)
     {
         if ($role_id == 0)
