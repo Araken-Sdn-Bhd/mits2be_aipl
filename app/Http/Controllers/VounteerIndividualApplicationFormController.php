@@ -14,9 +14,12 @@ use App\Models\VonAppointment;
 use App\Models\VonGroupApplication;
 use App\Models\State;
 use App\Models\Postcode;
+use App\Models\HospitalBranchManagement;
 use Exception;
 use Validator;
 use DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\VONApplicationMail as VonApplicationMail;
 
 class VounteerIndividualApplicationFormController extends Controller
 {
@@ -1297,6 +1300,44 @@ class VounteerIndividualApplicationFormController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
         VonOrgRepresentativeBackground::where('id', $request->id)->update(['status' => $request->status]);
+
+        //EMAIL
+        $von_app = VonOrgRepresentativeBackground::where('id', $request->id)
+                    ->select('name', 'email', 'branch_id')->get();
+        
+        if($von_app){
+            $hospital_branch = HospitalBranchManagement::where('id', $von_app[0]['branch_id'])
+                            ->select('hospital_branch_name')->get(); 
+
+                if($request->status){
+                    $statusid = $request->status;
+                    if($statusid == 1){
+                        $status = "approved";
+                    }
+                    else{
+                        $status = "rejected";
+                    }
+                }
+            $data = array(
+                'name' => $von_app[0]['name'],
+                'branch' => ucwords(strtolower($hospital_branch[0]['hospital_branch_name'])),
+                'status' => $status,
+                'email' => $von_app[0]['email'],
+            );
+
+            try{
+                Mail::to($data['email'])->send(new VONApplicationMail($data));
+            } catch (\Exception $err) {
+                var_dump($err);
+
+                return response([
+                    'message' => 'Error In Email Configuration: ' . $err,
+                    'code' => 500
+                ]);
+            }
+        }
+
+
         return response()->json(["message" => "Application Status Updated Successfully", "code" => 200]);
     }
 

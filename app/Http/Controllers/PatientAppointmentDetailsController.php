@@ -54,12 +54,16 @@ use App\Models\StaffManagement;
 use App\Models\TriageForm;
 use App\Models\WorkAnalysisForm;
 use App\Models\WorkAnalysisJobSpecification;
+use App\Models\AppointmentRequest;
+use App\Models\HospitalBranchManagement;
 use Exception;
 use Validator;
 use DateTime;
 use App\Models\TransactionLog;
 use DateTimeZone;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AppointmentRequestMail as AppointmentRequestMail;
 
 class PatientAppointmentDetailsController extends Controller
 {
@@ -127,6 +131,38 @@ class PatientAppointmentDetailsController extends Controller
                 ];
                 $HOD = Notifications::insert($notifi);
 
+                // EMAIL
+                $app_request = AppointmentRequest::where('nric_or_passportno', $nric_or_passportno)
+                                ->select('name','email')->get();
+                
+                $hospital_branch = HospitalBranchManagement::where('id', $request->branch_id)
+                                ->select('hospital_branch_name')->get();
+                if($app_request)
+                {
+                    $bookingDate = date( 'd M Y', strtotime($request->booking_date));
+                    $bookingTime = date("h:i A", strtotime($request->booking_time));
+                    $data = array(
+                        'name' => $app_request[0]['name'],
+                        'branch' => ucwords(strtolower($hospital_branch[0]['hospital_branch_name'])),
+                        'email' => $app_request[0]['email'],
+                        'date' => $bookingDate,
+                        'time' => $bookingTime,
+                    );
+                    
+                    try{
+                        Mail::to($data['email'])->send(new AppointmentRequestMail($data));
+                    } catch (\Exception $err) {
+                        var_dump($err);
+        
+                        return response([
+                            'message' => 'Error In Email Configuration: ' . $err,
+                            'code' => 500
+                        ]);
+                    }
+                };
+                
+                
+
                 return response()->json(["message" => "Patient Appointment Created Successfully!", "code" => 200]);
             } else {
                 return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
@@ -192,6 +228,36 @@ class PatientAppointmentDetailsController extends Controller
                     'message' =>  'Request for appointment(s)',
                 ];
                 $HOD = Notifications::insert($notifi);
+                
+                //EMAIL
+                $app_request = AppointmentRequest::where('nric_or_passportno', $getPatientIC[0])
+                                ->select('name','email')->get();
+                
+                $hospital_branch = HospitalBranchManagement::where('id', $request->branch_id)
+                                ->select('hospital_branch_name')->get();
+                if($app_request)
+                {
+                    $bookingDate = date( 'd M Y', strtotime($request->booking_date));
+                    $bookingTime = date("h:i A", strtotime($request->booking_time));
+                    $data = array(
+                        'name' => $app_request[0]['name'],
+                        'branch' => ucwords(strtolower($hospital_branch[0]['hospital_branch_name'])),
+                        'email' => $app_request[0]['email'],
+                        'date' => $bookingDate,
+                        'time' => $bookingTime,
+                    );
+                    
+                    try{
+                        Mail::to($data['email'])->send(new AppointmentRequestMail($data));
+                    } catch (\Exception $err) {
+                        var_dump($err);
+        
+                        return response([
+                            'message' => 'Error In Email Configuration: ' . $err,
+                            'code' => 500
+                        ]);
+                    }
+                };
 
                 return response()->json(["message" => "Patient Appointment Created Successfully!", "code" => 200]);
             } else {
