@@ -129,6 +129,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
 });
 Route::group(['prefix' => 'roles'], function () {
     Route::get('/list', [RolesController::class, 'index']);
+    Route::get('/branch-viewlist', [RolesController::class, 'branch_view_list']);
     Route::post('/add', [RolesController::class, 'store']);
     Route::post('/update', [RolesController::class, 'update']);
     Route::post('/remove', [RolesController::class, 'delete']);

@@ -17,6 +17,9 @@ use App\Models\SystemSetting;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
+use App\Models\DefaultRoleAccess;
+use App\Models\ScreenAccessRoles;
+use App\Models\HospitalBranchManagement;
 
 class StaffManagementController extends Controller
 {
@@ -36,7 +39,6 @@ class StaffManagementController extends Controller
             'is_incharge' => '',
             'designation_period_start_date' => 'required',
             'designation_period_end_date' => 'required',
-            // 'mentari_location' => 'required|integer',
             'start_date' => 'required',
             'end_date' => 'required',
             'document' => '',
@@ -62,7 +64,6 @@ class StaffManagementController extends Controller
                 'is_incharge' =>  $request->is_incharge,
                 'designation_period_start_date' =>  $request->designation_period_start_date,
                 'designation_period_end_date' =>  $request->designation_period_end_date,
-               // 'mentari_location' =>  $request->branch_id,
                 'start_date' =>  $request->start_date,
                 'end_date' =>  $request->end_date,
                 'document' =>  $request->document,
@@ -86,20 +87,18 @@ class StaffManagementController extends Controller
                 'is_incharge' =>  $request->is_incharge,
                 'designation_period_start_date' =>  $request->designation_period_start_date,
                 'designation_period_end_date' =>  $request->designation_period_end_date,
-                //'mentari_location' => $request->branch_id,
                 'start_date' =>  $request->start_date,
                 'end_date' =>  $request->end_date,
                 'document' =>  $isUploaded->getData()->path,
                 'status' => "1"
             ];
         }
-//dd($staffadd);
         try {
             $check = StaffManagement::where('email', $request->email)->count();
 
             if ($check == 0) {
-                StaffManagement::create($staffadd);
-                $role = Roles::select('role_name')->where('id', $request->role_id)->get();
+                $staff=StaffManagement::create($staffadd);
+                $role = Roles::select('role_name')->where('id', $request->role_id)->first();
 
                 $default_pass = SystemSetting::select('variable_value')
                 ->where('section', "=", 'default-password')
@@ -108,15 +107,51 @@ class StaffManagementController extends Controller
 
                 if($default_pass->variable_value =="true"){
                     // dd('if');
-                    User::create(
-                        ['name' => $request->name, 'email' => $request->email, 'role' => $role[0]['role_name'], 'password' => bcrypt('password@123')]
+                    $user = User::create(
+                        ['name' => $request->name, 'email' => $request->email, 'role' => $role->role_name, 'password' => bcrypt('password@123')]
                     );
+
+                    $defaultAcc = DB::table('default_role_access')
+                    ->select('default_role_access.id as role_id','screens.id as screen_id','screens.sub_module_id as sub_module_id','screens.module_id as module_id')
+                    ->join('screens','screens.id','=','default_role_access.screen_id')
+                    ->where('default_role_access.role_id',$request->role_id)
+                    ->get();
+    
+                    $hospital = HospitalBranchManagement::where('id',$request->branch_id)->first();
+                    
+                    
+                    if ($defaultAcc) {
+                        foreach ($defaultAcc as $key) {
+                            $screen = [
+                                'module_id' => $key->module_id,
+                                'sub_module_id' => $key->sub_module_id,
+                                'screen_id' => $key->screen_id,
+                                'hospital_id' => $hospital->hospital_id,
+                                'branch_id' => $request->branch_id,
+                                'team_id' => $request->team_id,
+                                'staff_id' => $user->id,
+                                'access_screen' => '1',
+                                'read_writes' => '1',
+                                'read_only' => '0',
+                
+                            ];
+    
+                            if (ScreenAccessRoles::where($screen)->count() == 0) {
+                                $screen['added_by'] = $request->added_by;
+                                ScreenAccessRoles::Create($screen);
+                            }
+    
+                        }}
+
+
+
+
+                    //email
                     $toEmail    =   $request->email;
                     $data       =   ['name' => $request->name,'user_id' => $toEmail, 'password' =>'password@123'];
 
                     try {
                         Mail::to($toEmail)->send(new StaffReceiveMail($data));
-                        // return response()->json(["message" => 'Email Sent', "code" => 200]);
                         return response()->json(["message" => "Record Created Successfully", "code" => 200]);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), "code" => 500]);
@@ -129,7 +164,6 @@ class StaffManagementController extends Controller
                     $data       =   ['name' => $request->name,'user_id' => $toEmail, 'password' =>$default_pass->variable_value];
                     try {
                         Mail::to($toEmail)->send(new StaffReceiveMail($data));
-                        // return response()->json(["message" => 'Email Sent', "code" => 200]);
                         return response()->json(["message" => "Record Created Successfully!", "code" => 200]);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), "code" => 500]);
