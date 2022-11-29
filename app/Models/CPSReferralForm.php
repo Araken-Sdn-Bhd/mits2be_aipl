@@ -30,5 +30,8 @@ class CPSReferralForm extends Model
         'created_at',
         'appointment_details_id',
         'is_deleted',
+        'status',
+        'id',
+        'appointment_details_id',
     ];
 }

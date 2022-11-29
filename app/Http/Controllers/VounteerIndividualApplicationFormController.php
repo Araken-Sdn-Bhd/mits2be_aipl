@@ -18,6 +18,9 @@ use App\Models\HospitalBranchManagement;
 use Exception;
 use Validator;
 use DB;
+use DateTime;
+use DateTimeZone;
+use App\Models\Notifications;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VONApplicationMail as VonApplicationMail;
 
@@ -187,6 +190,18 @@ class VounteerIndividualApplicationFormController extends Controller
             'created_at' => date('Y-m-d H:i:s')
         ];
         $vorbId = VonOrgRepresentativeBackground::create($orgRepBackground);
+        $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+        $Org_id = VonOrgRepresentativeBackground::latest()->first();
+        $notifi=[
+            'added_by' => $request->added_by,
+            'branch_id'=>$request->branch_id,
+            'role'=>'Admin/Clerk ',
+            'patient_mrn' =>   $Org_id['id'],
+            'url_route' => "/Modules/Von/view-organization?id=".$Org_id['id'],
+            'created_at' => $date->format('Y-m-d H:i:s'),
+            'message' =>  'New organization application for VON collaboration',
+        ];
+        $HOD = Notifications::insert($notifi);
         if ($request->area_of_involvement == 'Volunteerism') {
             $volunteerism = [
                 'added_by' => $request->added_by,
@@ -269,6 +284,7 @@ class VounteerIndividualApplicationFormController extends Controller
         }
     }
 
+    
     public function addIndividual($request)
     {
         $validation = [
@@ -312,6 +328,18 @@ class VounteerIndividualApplicationFormController extends Controller
             'created_at' => date('Y-m-d H:i:s')
         ];
         $vorbId = VonOrgRepresentativeBackground::create($orgRepBackground);
+        $Org_id = VonOrgRepresentativeBackground::latest()->first();
+        $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+        $notifi=[
+            'added_by' => $request->added_by,
+            'branch_id'=>$request->branch_id,
+            'role'=>'Admin/Clerk ',
+            'patient_mrn' =>   $Org_id['id'],
+            'url_route' => "/Modules/Von/view-individual?id=".$Org_id['id'],
+            'created_at' => $date->format('Y-m-d H:i:s'),
+            'message' =>  'New individual application for VON collaboration',
+        ];
+        $HOD = Notifications::insert($notifi);
         if ($request->area_of_involvement == 'Volunteerism') {
             $volunteerism = [
                 'added_by' => $request->added_by,
@@ -439,6 +467,18 @@ class VounteerIndividualApplicationFormController extends Controller
                 'created_at' => date('Y-m-d H:i:s')
             ];
             $vorbId = VonOrgRepresentativeBackground::create($orgRepBackground);
+            $Org_id = VonOrgRepresentativeBackground::latest()->first();
+            $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+            $notifi=[
+                'added_by' => $request->added_by,
+                'branch_id'=>$request->branch_id,
+                'role'=>'Admin/Clerk ',
+                'patient_mrn' =>   $Org_id['id'],
+                'url_route' => "/Modules/Von/view-group?id=".$Org_id['id'],
+                'created_at' => $date->format('Y-m-d H:i:s'),
+                'message' =>  'New group application for VON collaboration',
+            ];
+            $HOD = Notifications::insert($notifi);
             // $this->areaOfInvolvement($request, $vorbId);Volunteerism
             if ($request->area_of_involvement == 'Volunteerism') {
                 $volunteerism = [

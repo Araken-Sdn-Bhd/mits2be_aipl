@@ -436,26 +436,84 @@ class JobOfferController extends Controller
 
     public function setCPSReferralForm(Request $request)
     {
-        CPSReferralForm::create([
-            'patient_id' => $request->patient_id,
-            'added_by' => $request->added_by,
-            'treatment_needs_individual' => $request->treatment_needs_individual,
-            'treatment_needs_medication' => $request->treatment_needs_medication,
-            'treatment_needs_support' => $request->treatment_needs_support,
-            'location_of_service' => $request->location_of_service,
-            'type_of_diagnosis' => $request->type_of_diagnosis,
-            'category_of_services' => $request->category_of_services,
-            'services' => $request->services,
-            'complexity_of_services' => $request->complexity_of_services,
-            'outcome' => $request->outcome,
-            'icd_9_code' => $request->icd_9_code,
-            'icd_9_subcode' => $request->icd_9_subcode,
-            'medication_des' => $request->medication,
-            'medication_referrer_name' => $request->medication_referrer_name,
-            'medication_referrer_designation' => $request->medication_referrer_designation,
-            'created_at' => date('Y-m-d H:i:s')
-        ]);
-        return response()->json(["message" => "Created", "code" => 200]);
+        if($request->status == '0'){
+            $cpsreferralform = [
+                'patient_id' => $request->patient_id,
+                'added_by' => $request->added_by,
+                'treatment_needs_individual' => $request->treatment_needs_individual,
+                'treatment_needs_medication' => $request->treatment_needs_medication,
+                'treatment_needs_support' => $request->treatment_needs_support,
+                'location_of_service' => $request->location_of_service,
+                'type_of_diagnosis' => $request->type_of_diagnosis,
+                'category_of_services' => $request->category_of_services,
+                'services' => $request->services,
+                'complexity_of_services' => $request->complexity_of_services,
+                'outcome' => $request->outcome,
+                'icd_9_code' => $request->icd_9_code,
+                'icd_9_subcode' => $request->icd_9_subcode,
+                'medication_des' => $request->medication,
+                'medication_referrer_name' => $request->medication_referrer_name,
+                'medication_referrer_designation' => $request->medication_referrer_designation,
+                'created_at' => date('Y-m-d H:i:s'),
+                'status' => "0",
+                'appointment_details_id' => $request->appId,
+            ];
+            $validateCPSReferralForm = [];
+                if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
+                $validateCPSReferralForm['services_id'] = 'required';
+                $cpsreferralform['services_id'] =  $request->services_id;
+            } else if ($request->category_services == 'clinical-work') {
+                $validateCPSReferralForm['code_id'] = 'required';
+                $cpsreferralform['code_id'] =  $request->code_id;
+                $validateCPSReferralForm['sub_code_id'] = 'required';
+                $cpsreferralform['sub_code_id'] =  $request->sub_code_id;
+            }
+            $validator = Validator::make($request->all(), $validateCPSReferralForm);
+            if ($validator->fails()) {
+                return response()->json(["message" => $validator->errors(), "code" => 422]);
+            }
+
+            CPSReferralForm::firstOrCreate($cpsreferralform);
+            return response()->json(["message" => "CPS Referral Form successfully created!", "code" => 200]);
+        } else if($request->status == '1'){
+            $cpsreferralform = [
+                'patient_id' => $request->patient_id,
+                'added_by' => $request->added_by,
+                'treatment_needs_individual' => $request->treatment_needs_individual,
+                'treatment_needs_medication' => $request->treatment_needs_medication,
+                'treatment_needs_support' => $request->treatment_needs_support,
+                'location_of_service' => $request->location_of_service,
+                'type_of_diagnosis' => $request->type_of_diagnosis,
+                'category_of_services' => $request->category_of_services,
+                'services' => $request->services,
+                'complexity_of_services' => $request->complexity_of_services,
+                'outcome' => $request->outcome,
+                'icd_9_code' => $request->icd_9_code,
+                'icd_9_subcode' => $request->icd_9_subcode,
+                'medication_des' => $request->medication,
+                'medication_referrer_name' => $request->medication_referrer_name,
+                'medication_referrer_designation' => $request->medication_referrer_designation,
+                'created_at' => date('Y-m-d H:i:s'),
+                'status' => "1",
+                'appointment_details_id' => $request->appId,
+            ];
+            $validateCPSReferralForm = [];
+                if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
+                $validateCPSReferralForm['services_id'] = 'required';
+                $cpsreferralform['services_id'] =  $request->services_id;
+            } else if ($request->category_services == 'clinical-work') {
+                $validateCPSReferralForm['code_id'] = 'required';
+                $cpsreferralform['code_id'] =  $request->code_id;
+                $validateCPSReferralForm['sub_code_id'] = 'required';
+                $cpsreferralform['sub_code_id'] =  $request->sub_code_id;
+            }
+            $validator = Validator::make($request->all(), $validateCPSReferralForm);
+            if ($validator->fails()) {
+                return response()->json(["message" => $validator->errors(), "code" => 422]);
+            }
+            CPSReferralForm::firstOrCreate($cpsreferralform);
+            return response()->json(["message" => "CPS Referral Form successfully created!", "code" => 200]);
+        }
     }
 
     public function setLASERReferralForm(Request $request)
