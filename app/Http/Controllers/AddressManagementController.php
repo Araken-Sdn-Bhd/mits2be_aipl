@@ -425,7 +425,7 @@ class AddressManagementController extends Controller
     {
         $city = DB::table('state')
             ->join('postcode', 'postcode.state_id', '=', 'state.id')
-            ->select('postcode.city_name')
+            ->select('postcode.city_name', 'state.id', 'postcode.id as post_id')
             ->groupBy('postcode.city_name')
             ->orderBy('postcode.city_name', 'ASC')
             ->get();
