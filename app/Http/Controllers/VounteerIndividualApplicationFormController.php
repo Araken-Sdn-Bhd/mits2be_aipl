@@ -262,6 +262,19 @@ class VounteerIndividualApplicationFormController extends Controller
             ];
             try {
                 NetworkingContribution::insert($NetworkingContribution);
+
+                $Org_id = VonOrgRepresentativeBackground::latest()->first();
+                $notifi=[
+                    'added_by' => $request->added_by,
+                    'branch_id'=>$request->branch_id,
+                    'role'=>'Admin/Clerk ',
+                    'patient_mrn' =>   $Org_id['id'],
+                    'url_route' => "/Modules/Von/view-organization?id=".$Org_id['id'],
+                    'created_at' => $date->format('Y-m-d H:i:s'),
+                    'message' =>  'New organization application for VON collaboration',
+                ];
+                $HOD = Notifications::insert($notifi);
+
                 return response()->json(["message" => "Application Submitted Successfully", "code" => 200]);
             } catch (Exception $e) {
                 return response()->json(["message" => $e->getMessage(), 'Volunteer' => $NetworkingContribution, "code" => 500]);
@@ -269,6 +282,7 @@ class VounteerIndividualApplicationFormController extends Controller
         }
     }
 
+    
     public function addIndividual($request)
     {
         $validation = [
@@ -387,6 +401,18 @@ class VounteerIndividualApplicationFormController extends Controller
             ];
             try {
                 NetworkingContribution::create($NetworkingContribution);
+                $Org_id = VonOrgRepresentativeBackground::latest()->first();
+                $notifi=[
+                    'added_by' => $request->added_by,
+                    'branch_id'=>$request->branch_id,
+                    'role'=>'Admin/Clerk ',
+                    'patient_mrn' =>   $Org_id['id'],
+                    'url_route' => "/Modules/Von/view-individual?id=".$Org_id['id'],
+                    'created_at' => $date->format('Y-m-d H:i:s'),
+                    'message' =>  'New individual application for VON collaboration',
+                ];
+                $HOD = Notifications::insert($notifi);
+
                 return response()->json(["message" => "Application Submitted Successfully", "code" => 200]);
             } catch (Exception $e) {
                 return response()->json(["message" => $e->getMessage(), 'Volunteer' => $NetworkingContribution, "code" => 500]);
@@ -515,6 +541,17 @@ class VounteerIndividualApplicationFormController extends Controller
                 ];
                 try {
                     NetworkingContribution::insert($NetworkingContribution);
+                    $Org_id = VonOrgRepresentativeBackground::latest()->first();
+                    $notifi=[
+                        'added_by' => $request->added_by,
+                        'branch_id'=>$request->branch_id,
+                        'role'=>'Admin/Clerk ',
+                        'patient_mrn' =>   $Org_id['id'],
+                        'url_route' => "/Modules/Von/view-group?id=".$Org_id['id'],
+                        'created_at' => $date->format('Y-m-d H:i:s'),
+                        'message' =>  'New group application for VON collaboration',
+                    ];
+                    $HOD = Notifications::insert($notifi);
                     return response()->json(["message" => "Application Submitted Successfully", "code" => 200]);
                 } catch (Exception $e) {
                     return response()->json(["message" => $e->getMessage(), 'Volunteer' => $NetworkingContribution, "code" => 500]);
