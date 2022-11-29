@@ -9,7 +9,7 @@ class WorkAnalysisForm extends Model
 {
     use HasFactory;
     protected $table = "work_analysis_forms";
-    protected $fillable = ["added_by", "patient_id", 'appointment_details_id',
+    protected $fillable = ["added_by", "patient_id", 'appointment_details_id', 'id',
     'is_deleted', "company_name","company_address1","company_address2","company_address3", "state_id", "city_id","postcode_id",
     "supervisor_name", "email", "position","job_position","client_name","current_wage","wage_specify","wage_change_occur",
     "change_in_rate","from","to","on_date","works_hour_week","work_schedule","no_of_current_employee","no_of_other_employee","during_same_shift",

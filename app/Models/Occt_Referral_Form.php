@@ -9,7 +9,7 @@ class Occt_Referral_Form extends Model
 {
     use HasFactory;
     protected $table = 'occt_referral_form';
-    protected $fillable = ['added_by', 'patient_mrn_id','appointment_details_id',
+    protected $fillable = ['id', 'appointment_details_id','added_by', 'patient_mrn_id','appointment_details_id',
     'is_deleted', 'referral_location','date','diagnosis_id',
     'referral_clinical_assessment','referral_clinical_assessment_other','referral_clinical_intervention',
     'referral_clinical_intervention_other', 'referral_clinical_promotive_program', 'referral_name', 'referral_designation',
