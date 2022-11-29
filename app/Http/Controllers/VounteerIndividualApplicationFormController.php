@@ -187,7 +187,7 @@ class VounteerIndividualApplicationFormController extends Controller
             'created_at' => date('Y-m-d H:i:s')
         ];
         $vorbId = VonOrgRepresentativeBackground::create($orgRepBackground);
-        
+        $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
         $Org_id = VonOrgRepresentativeBackground::latest()->first();
         $notifi=[
             'added_by' => $request->added_by,
@@ -326,6 +326,7 @@ class VounteerIndividualApplicationFormController extends Controller
         ];
         $vorbId = VonOrgRepresentativeBackground::create($orgRepBackground);
         $Org_id = VonOrgRepresentativeBackground::latest()->first();
+        $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
         $notifi=[
             'added_by' => $request->added_by,
             'branch_id'=>$request->branch_id,
@@ -464,6 +465,7 @@ class VounteerIndividualApplicationFormController extends Controller
             ];
             $vorbId = VonOrgRepresentativeBackground::create($orgRepBackground);
             $Org_id = VonOrgRepresentativeBackground::latest()->first();
+            $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
             $notifi=[
                 'added_by' => $request->added_by,
                 'branch_id'=>$request->branch_id,
