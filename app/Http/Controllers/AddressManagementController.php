@@ -182,7 +182,7 @@ class AddressManagementController extends Controller
             ->join('country', 'postcode.country_id', '=', 'country.id')
             ->select('postcode.id', 'postcode.city_name', 'postcode.postcode', 'postcode.postcode_order', 'country.country_name', 'state.state_name')
             ->where('postcode.postcode_status', '=', '1')
-            ->WHERE('postcode.state_id','=',$request->state)
+            ->WHERE('postcode.state_id', '=', $request->state)
             ->get();
         return response()->json(["message" => "Post Code List", 'list' => $users, "code" => 200]);
     }
@@ -377,7 +377,7 @@ class AddressManagementController extends Controller
         return response()->json(["message" => "Post Code Details", 'list' => $users, "code" => 200]);
     }
 
-    public function stateWisePostcodeList(Request $request,$id)
+    public function stateWisePostcodeList(Request $request, $id)
     {
         $users = DB::table('state')
             ->join('postcode', 'postcode.state_id', '=', 'state.id')
@@ -391,38 +391,44 @@ class AddressManagementController extends Controller
         $list = Postcode::select('id', 'state_id', 'country_id', 'state_name', 'city_name')
             ->where('postcode', '=', $request->postcode)
             ->get();
-            // dd($list);
-            if(count($list)>0){
-                return response()->json(["message" => "Postcode List", 'list' => $list, "code" => 200]);
-            }else{
-                return response()->json(["message" => "No Data Found", "code" => 400]);
-            }
-
+        // dd($list);
+        if (count($list) > 0) {
+            return response()->json(["message" => "Postcode List", 'list' => $list, "code" => 200]);
+        } else {
+            return response()->json(["message" => "No Data Found", "code" => 400]);
+        }
     }
 
-    public function getCityList(Request $request,$id)
+    public function getCityList(Request $request, $id)
     {
         $city = DB::table('state')
             ->join('postcode', 'postcode.state_id', '=', 'state.id')
             ->select('postcode.city_name')
             ->where('state.id', '=', $id)
             ->groupBy('postcode.city_name')
-            ->orderBy('postcode.city_name','ASC')
+            ->orderBy('postcode.city_name', 'ASC')
             ->get();
         return response()->json(["message" => "city List", 'list' => $city, "code" => 200]);
     }
 
-    public function getPostcodeListById(Request $request,$id)
+    public function getPostcodeListById(Request $request, $id)
     {
         $postcode = DB::table('postcode')
-            ->select('id','postcode')
+            ->select('id', 'postcode')
             ->where('city_name', '=', $id)
-            ->orderBy('postcode','ASC')
+            ->orderBy('postcode', 'ASC')
             ->get();
         return response()->json(["message" => "postcode List", 'list' => $postcode, "code" => 200]);
-    
-   }
+    }
 
-  
-
+    public function getAllCityList()
+    {
+        $city = DB::table('state')
+            ->join('postcode', 'postcode.state_id', '=', 'state.id')
+            ->select('postcode.city_name', 'state.id', 'postcode.id as post_id')
+            ->groupBy('postcode.city_name')
+            ->orderBy('postcode.city_name', 'ASC')
+            ->get();
+        return response()->json(["message" => "city List", 'list' => $city, "code" => 200]);
+    }
 }

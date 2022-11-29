@@ -69,6 +69,11 @@ class WorkAnalysisFormController extends Controller
                 $WorkAnalysisForm['code_id'] =  $request->code_id;
                 $validateWorkAnalysisForm['sub_code_id'] = 'required';
                 $WorkAnalysisForm['sub_code_id'] =  $request->sub_code_id;
+            } elseif ($request->category_services == 'clinical') {
+                $validateWorkAnalysisForm['code_id'] = 'required';
+                $WorkAnalysisForm['code_id'] =  $request->code_id;
+                $validateWorkAnalysisForm['sub_code_id'] = 'required';
+                $WorkAnalysisForm['sub_code_id'] =  $request->sub_code_id;
             }
             // if ($request->wage_change_occur == 'yes') {
             //     $validateWorkAnalysisForm['change_in_rate'] = 'required';
@@ -195,6 +200,11 @@ class WorkAnalysisFormController extends Controller
                 $validateWorkAnalysisForm['services_id'] = 'required';
                 $WorkAnalysisForm['services_id'] =  $request->services_id;
             } elseif ($request->category_services == 'clinical-work') {
+                $validateWorkAnalysisForm['code_id'] = 'required';
+                $WorkAnalysisForm['code_id'] =  $request->code_id;
+                $validateWorkAnalysisForm['sub_code_id'] = 'required';
+                $WorkAnalysisForm['sub_code_id'] =  $request->sub_code_id;
+            } elseif ($request->category_services == 'clinical') {
                 $validateWorkAnalysisForm['code_id'] = 'required';
                 $WorkAnalysisForm['code_id'] =  $request->code_id;
                 $validateWorkAnalysisForm['sub_code_id'] = 'required';
