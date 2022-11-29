@@ -14,6 +14,7 @@ class TriageFormController extends Controller
 {
     public function store(Request $request)
     {
+        dd($request->status);
         if ($request->status == 1) {
             $validator = Validator::make($request->all(), [
                 'added_by' => 'required|integer',
@@ -157,6 +158,7 @@ class TriageFormController extends Controller
                 }
             }
         } else if ($request->status == 0) {
+            
             $validator = Validator::make($request->all(), [
                 'added_by' => 'required|integer',
                 'patient_mrn_id' => 'required|integer',
