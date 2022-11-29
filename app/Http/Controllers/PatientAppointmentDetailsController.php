@@ -137,7 +137,7 @@ class PatientAppointmentDetailsController extends Controller
                 
                 $hospital_branch = HospitalBranchManagement::where('id', $request->branch_id)
                                 ->select('hospital_branch_name')->get();
-                if($app_request)
+                if($app_request->count() != 0)
                 {
                     $bookingDate = date( 'd M Y', strtotime($request->booking_date));
                     $bookingTime = date("h:i A", strtotime($request->booking_time));
@@ -235,7 +235,7 @@ class PatientAppointmentDetailsController extends Controller
                 
                 $hospital_branch = HospitalBranchManagement::where('id', $request->branch_id)
                                 ->select('hospital_branch_name')->get();
-                if($app_request)
+                if($app_request->count() != 0)
                 {
                     $bookingDate = date( 'd M Y', strtotime($request->booking_date));
                     $bookingTime = date("h:i A", strtotime($request->booking_time));
