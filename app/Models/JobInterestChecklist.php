@@ -12,6 +12,8 @@ class JobInterestChecklist extends Model
     protected $fillable = [
         'added_by',
         'patient_id',
+        'id',
+        'appointment_details_id',
         'interest_to_work',
         'agree_if_mentari_find_job_for_you',
         'client_job_preferences',
