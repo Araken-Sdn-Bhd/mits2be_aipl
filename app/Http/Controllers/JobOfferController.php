@@ -1121,7 +1121,7 @@ class JobOfferController extends Controller
 
     public function setJobTransitionReport(Request $request)
     {
-        if ($request->status == 1){
+        if ($request->status == '1'){
             $jobtransition=[
                 'patient_id' => $request->patient_id,
                 'added_by' => $request->added_by,
@@ -1185,7 +1185,7 @@ class JobOfferController extends Controller
             return response()->json(["message" => "Created", "code" => 200]);
             }
 
-        } else if ($request->status == 0){
+        } else if ($request->status == '0'){
             $jobtransition=[
                 'patient_id' => $request->patient_id,
                 'added_by' => $request->added_by,
