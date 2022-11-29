@@ -217,7 +217,7 @@ class IcdSettingManagementController extends Controller
         $users = DB::table('icd_type')
             // ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
             ->join('icd_category', 'icd_type.id', '=', 'icd_category.icd_type_id')
-            ->select('icd_category.icd_category_code','icd_category.id','icd_category.icd_category_name')
+            ->select('icd_category.icd_category_code','icd_category.id','icd_category.icd_category_name','icd_category.icd_category_name as section_value')
             ->where('icd_category_status', '=', '1')
             ->where('icd_category.icd_type_id', '=', $checkicdtype9id[0])
             ->get();
