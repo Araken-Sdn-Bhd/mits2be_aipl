@@ -237,7 +237,8 @@ Route::group(['prefix' => 'address'], function () {
     Route::get('/stateWisePostcodeList_', [AddressManagementController::class, 'stateWisePostcodeList']);
     Route::post('/{id}/getCityList', [AddressManagementController::class, 'getCityList']);
     Route::post('/{id}/getPostcodeListById', [AddressManagementController::class, 'getPostcodeListById']);
-  
+    Route::get('/getAllCityList', [AddressManagementController::class, 'getAllCityList']);
+
 });
 
 Route::group(['prefix' => 'service'], function () {
@@ -324,7 +325,7 @@ Route::get('/storage/{folder}/{filename}', function ($folder, $filename) {
     $response = Response::make($file, 200);
     $response->header("Content-Type", $type);
 
-    return $response;
+    return ;
 });
 
 Route::group(['prefix' => 'designation'], function () {
@@ -811,11 +812,11 @@ Route::group(['prefix' => 'Notification'], function () {
 
     Route::post('get', [NotificationController::class, 'getNotification']);
     Route::post('delete', [NotificationController::class, 'deleteNotification']);
-    
+
 });
 Route::group(['prefix' => 'staffDesignatioDetail'], function () {
     Route::post('/get', [PatientDetailsController::class, 'staffDesignatioDetail']);
     Route::post('/staffInchargeDetail', [PatientDetailsController::class, 'staffInchargeDetail']);
  });
 
- 
+
