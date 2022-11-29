@@ -20,6 +20,7 @@ use Validator;
 use DB;
 use DateTime;
 use DateTimeZone;
+use App\Models\Notifications;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VONApplicationMail as VonApplicationMail;
 
