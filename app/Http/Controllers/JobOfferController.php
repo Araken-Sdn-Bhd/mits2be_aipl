@@ -954,146 +954,301 @@ class JobOfferController extends Controller
     }
     public function setJobStartForm(Request $request)
     {
-        $jobstart=[
-            'patient_id' => $request->patient_id,
-            'added_by' => $request->added_by,
-            'client' => $request->client,
-            'employment_specialist' => $request->employment_specialist,
-            'case_manager' => $request->case_manager,
-            'first_date_of_work' => $request->first_date_of_work,
-            'job_title' => $request->job_title,
-            'duties_field' => $request->duties_field,
-            'rate_of_pay' => $request->rate_of_pay,
-            'benefits_field' => $request->benefits_field,
-            'work_schedule' => $request->work_schedule,
-            'disclosure' => $request->disclosure,
-            'name_of_employer' => $request->name_of_employer,
-            'name_of_superviser' => $request->name_of_superviser,
-            'address' => $request->address,
-            'location_of_service' => $request->location_of_service,
-            'type_of_diagnosis' => $request->type_of_diagnosis,
-            'category_of_services' => $request->category_of_services,
-            'services' => $request->services,
-            'complexity_of_services' => $request->complexity_of_services,
-            'outcome' => $request->outcome,
-            'icd_9_code' => $request->icd_9_code,
-            'icd_9_subcode' => $request->icd_9_subcode,
-            'medication_prescription' => $request->medication_prescription,
-            'created_at' => date('Y-m-d H:i:s'),
-            'appointment_details_id' => $request->appId,
-        ];
-        if($request->id){
-            JobStartForm::where(['id' => $request->id])->update($jobstart);
-            return response()->json(["message" => "Updated", "code" => 200]);
-        }else{
-        JobStartForm::create($jobstart);
-        return response()->json(["message" => "Created", "code" => 200]);
+        if ($request->status == 1){
+            $jobstart=[
+                'patient_id' => $request->patient_id,
+                'added_by' => $request->added_by,
+                'client' => $request->client,
+                'employment_specialist' => $request->employment_specialist,
+                'case_manager' => $request->case_manager,
+                'first_date_of_work' => $request->first_date_of_work,
+                'job_title' => $request->job_title,
+                'duties_field' => $request->duties_field,
+                'rate_of_pay' => $request->rate_of_pay,
+                'benefits_field' => $request->benefits_field,
+                'work_schedule' => $request->work_schedule,
+                'disclosure' => $request->disclosure,
+                'name_of_employer' => $request->name_of_employer,
+                'name_of_superviser' => $request->name_of_superviser,
+                'address' => $request->address,
+                'location_of_service' => $request->location_of_service,
+                'type_of_diagnosis' => $request->type_of_diagnosis,
+                'category_of_services' => $request->category_of_services,
+                'services' => $request->services,
+                'complexity_of_services' => $request->complexity_of_services,
+                'outcome' => $request->outcome,
+                'icd_9_code' => $request->icd_9_code,
+                'icd_9_subcode' => $request->icd_9_subcode,
+                'medication_prescription' => $request->medication_prescription,
+                'created_at' => date('Y-m-d H:i:s'),
+                'appointment_details_id' => $request->appId,
+                'status' => "1",
+                'appointment_details_id' => $request->appId,
+            ];
+            if($request->id){
+                JobStartForm::where(['id' => $request->id])->update($jobstart);
+                return response()->json(["message" => "Updated", "code" => 200]);
+            }else{
+            JobStartForm::create($jobstart);
+            return response()->json(["message" => "Created", "code" => 200]);
+            }
+        } else if ($request->status == 0){
+            $jobstart=[
+                'patient_id' => $request->patient_id,
+                'added_by' => $request->added_by,
+                'client' => $request->client,
+                'employment_specialist' => $request->employment_specialist,
+                'case_manager' => $request->case_manager,
+                'first_date_of_work' => $request->first_date_of_work,
+                'job_title' => $request->job_title,
+                'duties_field' => $request->duties_field,
+                'rate_of_pay' => $request->rate_of_pay,
+                'benefits_field' => $request->benefits_field,
+                'work_schedule' => $request->work_schedule,
+                'disclosure' => $request->disclosure,
+                'name_of_employer' => $request->name_of_employer,
+                'name_of_superviser' => $request->name_of_superviser,
+                'address' => $request->address,
+                'location_of_service' => $request->location_of_service,
+                'type_of_diagnosis' => $request->type_of_diagnosis,
+                'category_of_services' => $request->category_of_services,
+                'services' => $request->services,
+                'complexity_of_services' => $request->complexity_of_services,
+                'outcome' => $request->outcome,
+                'icd_9_code' => $request->icd_9_code,
+                'icd_9_subcode' => $request->icd_9_subcode,
+                'medication_prescription' => $request->medication_prescription,
+                'created_at' => date('Y-m-d H:i:s'),
+                'appointment_details_id' => $request->appId,
+                'status' => "0",
+                'appointment_details_id' => $request->appId,
+            ];
+            if($request->id){
+                JobStartForm::where(['id' => $request->id])->update($jobstart);
+                return response()->json(["message" => "Updated", "code" => 200]);
+            }else{
+            JobStartForm::create($jobstart);
+            return response()->json(["message" => "Created", "code" => 200]);
+            }
         }
     }
+    
 
     public function setJobEndReport(Request $request)
     {
-        $jobend=[
-            'patient_id' => $request->patient_id,
-            'added_by' => $request->added_by,
-            'name' => $request->name,
-            'job_title' => $request->job_title,
-            'employer_name' => $request->employer_name,
-            'job_start_date' => $request->job_start_date,
-            'job_end_date' => $request->job_end_date,
-            'changes_in_job_duties' => $request->changes_in_job_duties,
-            'reason_for_job_end' => $request->reason_for_job_end,
-            'clients_perspective' => $request->clients_perspective,
-            'staff_comments_regarding_job' => $request->staff_comments_regarding_job,
-            'employer_comments' => $request->employer_comments,
-            'type_of_support' => $request->type_of_support,
-            'person_wish_for_another_job' => $request->person_wish_for_another_job,
-            'clients_preferences' => $request->clients_preferences,
-            'staff_name' => $request->staff_name,
-            'date' => $request->date,
-            'location_of_service' => $request->location_services_id,
-            'type_of_diagnosis' => $request->type_of_diagnosis,
-            'category_of_services' => $request->category_of_services,
-            'services' => $request->services,
-            'complexity_of_services' => $request->complexity_of_services,
-            'outcome' => $request->outcome,
-            'icd_9_code' => $request->icd_9_code,
-            'icd_9_subcode' => $request->icd_9_subcode,
-            'medication_prescription' => $request->medication_prescription,
-            'created_at' => date('Y-m-d H:i:s'),
-            'appointment_details_id' => $request->appId,
-        ];
-        if($request->id){
-            JobEndReport::where(['id' => $request->id])->update($jobend);
-            return response()->json(["message" => "Updated", "code" => 200]);
-        }else{
-            JobEndReport::create($jobend);
-        return response()->json(["message" => "Created", "code" => 200]);
+        if ($request->status == 1){
+            $jobend=[
+                'patient_id' => $request->patient_id,
+                'added_by' => $request->added_by,
+                'name' => $request->name,
+                'job_title' => $request->job_title,
+                'employer_name' => $request->employer_name,
+                'job_start_date' => $request->job_start_date,
+                'job_end_date' => $request->job_end_date,
+                'changes_in_job_duties' => $request->changes_in_job_duties,
+                'reason_for_job_end' => $request->reason_for_job_end,
+                'clients_perspective' => $request->clients_perspective,
+                'staff_comments_regarding_job' => $request->staff_comments_regarding_job,
+                'employer_comments' => $request->employer_comments,
+                'type_of_support' => $request->type_of_support,
+                'person_wish_for_another_job' => $request->person_wish_for_another_job,
+                'clients_preferences' => $request->clients_preferences,
+                'staff_name' => $request->staff_name,
+                'date' => $request->date,
+                'location_of_service' => $request->location_services_id,
+                'type_of_diagnosis' => $request->type_of_diagnosis,
+                'category_of_services' => $request->category_of_services,
+                'services' => $request->services,
+                'complexity_of_services' => $request->complexity_of_services,
+                'outcome' => $request->outcome,
+                'icd_9_code' => $request->icd_9_code,
+                'icd_9_subcode' => $request->icd_9_subcode,
+                'medication_prescription' => $request->medication_prescription,
+                'created_at' => date('Y-m-d H:i:s'),
+                'status' => "1",
+                'appointment_details_id' => $request->appId,
+            ];
+            if($request->id){
+                JobEndReport::where(['id' => $request->id])->update($jobend);
+                return response()->json(["message" => "Updated", "code" => 200]);
+            }else{
+                JobEndReport::create($jobend);
+            return response()->json(["message" => "Created", "code" => 200]);
+            }
+
+        } else if ($request->status == 0) {
+            $jobend=[
+                'patient_id' => $request->patient_id,
+                'added_by' => $request->added_by,
+                'name' => $request->name,
+                'job_title' => $request->job_title,
+                'employer_name' => $request->employer_name,
+                'job_start_date' => $request->job_start_date,
+                'job_end_date' => $request->job_end_date,
+                'changes_in_job_duties' => $request->changes_in_job_duties,
+                'reason_for_job_end' => $request->reason_for_job_end,
+                'clients_perspective' => $request->clients_perspective,
+                'staff_comments_regarding_job' => $request->staff_comments_regarding_job,
+                'employer_comments' => $request->employer_comments,
+                'type_of_support' => $request->type_of_support,
+                'person_wish_for_another_job' => $request->person_wish_for_another_job,
+                'clients_preferences' => $request->clients_preferences,
+                'staff_name' => $request->staff_name,
+                'date' => $request->date,
+                'location_of_service' => $request->location_services_id,
+                'type_of_diagnosis' => $request->type_of_diagnosis,
+                'category_of_services' => $request->category_of_services,
+                'services' => $request->services,
+                'complexity_of_services' => $request->complexity_of_services,
+                'outcome' => $request->outcome,
+                'icd_9_code' => $request->icd_9_code,
+                'icd_9_subcode' => $request->icd_9_subcode,
+                'medication_prescription' => $request->medication_prescription,
+                'created_at' => date('Y-m-d H:i:s'),
+                'status' => "0",
+                'appointment_details_id' => $request->appId,
+            ];
+            if($request->id){
+                JobEndReport::where(['id' => $request->id])->update($jobend);
+                return response()->json(["message" => "Updated", "code" => 200]);
+            }else{
+                JobEndReport::create($jobend);
+            return response()->json(["message" => "Created", "code" => 200]);
+            }
+
         }
     }
 
     public function setJobTransitionReport(Request $request)
     {
-        $jobtransition=[
-            'patient_id' => $request->patient_id,
-            'added_by' => $request->added_by,
-            'future_plan' => $request->future_plan,
-            'short_term_goal' => $request->short_term_goal,
-            'long_term_goal' => $request->long_term_goal,
-            'who_have_you_called_past' => $request->who_have_you_called_past,
-            'my_case_manager_yes_no' => $request->my_case_manager_yes_no,
-            'my_case_manager_name' => $request->my_case_manager_name,
-            'my_case_manager_contact' => $request->my_case_manager_contact,
-            'my_therapist_yes_no' => $request->my_therapist_yes_no,
-            'my_therapist_name' => $request->my_therapist_name,
-            'my_therapist_contact' => $request->my_therapist_contact,
-            'my_family_yes_no' => $request->my_family_yes_no,
-            'my_family_name' => $request->my_family_name,
-            'my_family_contact' => $request->my_family_contact,
-            'my_friend_yes_no' => $request->my_friend_yes_no,
-            'my_friend_name' => $request->my_friend_name,
-            'my_friend_contact' => $request->my_friend_contact,
-            'my_significant_other_yes_no' => $request->my_significant_other_yes_no,
-            'my_significant_other_name' => $request->my_significant_other_name,
-            'my_significant_other_contact' => $request->my_significant_other_contact,
-            'clergy_yes_no' => $request->clergy_yes_no,
-            'clergy_name' => $request->clergy_name,
-            'clergy_contact' => $request->clergy_contact,
-            'benefit_planner_yes_no' => $request->benefit_planner_yes_no,
-            'benefit_planner_name' => $request->benefit_planner_name,
-            'benefit_planner_contact' => $request->benefit_planner_contact,
-            'other_yes_no' => $request->other_yes_no,
-            'other_name' => $request->other_name,
-            'other_contact' => $request->other_contact,
-            'schedule_meeting_discuss_for_transition' => $request->schedule_meeting_discuss_for_transition,
-            'who_check_in_with_you' => $request->who_check_in_with_you,
-            'who_contact_you' => $request->who_contact_you,
-            'how_would_like_to_contacted' => $request->how_would_like_to_contacted,
-            'coping_strategies' => $request->coping_strategies,
-            'dissatisfied_with_your_job' => $request->dissatisfied_with_your_job,
-            'reasons_to_re_connect_to_ips' => $request->reasons_to_re_connect_to_ips,
-            'patient_name' => $request->patient_name,
-            'doctor_name' => $request->doctor_name,
-            'transition_report_date' => $request->transition_report_date,
-            'date' => $request->date,
-            'location_of_service' => $request->location_of_service,
-            'type_of_diagnosis' => $request->type_of_diagnosis,
-            'category_of_services' => $request->category_of_services,
-            'services' => $request->services,
-            'complexity_of_services' => $request->complexity_of_services,
-            'outcome' => $request->outcome,
-            'icd_9_code' => $request->icd_9_code,
-            'icd_9_subcode' => $request->icd_9_subcode,
-            'medication_prescription' => $request->medication_prescription,
-            'created_at' => date('Y-m-d H:i:s'),
-            'appointment_details_id' => $request->appId,
-        ];
-        if($request->patient_id){
-            JobTransitionReport::updateOrCreate( ['patient_id' => $request->patient_id], $jobtransition);
-            return response()->json(["message" => "Updated", "code" => 200]);
-        }else{
-            JobTransitionReport::create($jobtransition);
-        return response()->json(["message" => "Created", "code" => 200]);
+        if ($request->status == '1'){
+            $jobtransition=[
+                'patient_id' => $request->patient_id,
+                'added_by' => $request->added_by,
+                'future_plan' => $request->future_plan,
+                'short_term_goal' => $request->short_term_goal,
+                'long_term_goal' => $request->long_term_goal,
+                'who_have_you_called_past' => $request->who_have_you_called_past,
+                'my_case_manager_yes_no' => $request->my_case_manager_yes_no,
+                'my_case_manager_name' => $request->my_case_manager_name,
+                'my_case_manager_contact' => $request->my_case_manager_contact,
+                'my_therapist_yes_no' => $request->my_therapist_yes_no,
+                'my_therapist_name' => $request->my_therapist_name,
+                'my_therapist_contact' => $request->my_therapist_contact,
+                'my_family_yes_no' => $request->my_family_yes_no,
+                'my_family_name' => $request->my_family_name,
+                'my_family_contact' => $request->my_family_contact,
+                'my_friend_yes_no' => $request->my_friend_yes_no,
+                'my_friend_name' => $request->my_friend_name,
+                'my_friend_contact' => $request->my_friend_contact,
+                'my_significant_other_yes_no' => $request->my_significant_other_yes_no,
+                'my_significant_other_name' => $request->my_significant_other_name,
+                'my_significant_other_contact' => $request->my_significant_other_contact,
+                'clergy_yes_no' => $request->clergy_yes_no,
+                'clergy_name' => $request->clergy_name,
+                'clergy_contact' => $request->clergy_contact,
+                'benefit_planner_yes_no' => $request->benefit_planner_yes_no,
+                'benefit_planner_name' => $request->benefit_planner_name,
+                'benefit_planner_contact' => $request->benefit_planner_contact,
+                'other_yes_no' => $request->other_yes_no,
+                'other_name' => $request->other_name,
+                'other_contact' => $request->other_contact,
+                'schedule_meeting_discuss_for_transition' => $request->schedule_meeting_discuss_for_transition,
+                'who_check_in_with_you' => $request->who_check_in_with_you,
+                'who_contact_you' => $request->who_contact_you,
+                'how_would_like_to_contacted' => $request->how_would_like_to_contacted,
+                'coping_strategies' => $request->coping_strategies,
+                'dissatisfied_with_your_job' => $request->dissatisfied_with_your_job,
+                'reasons_to_re_connect_to_ips' => $request->reasons_to_re_connect_to_ips,
+                'patient_name' => $request->patient_name,
+                'doctor_name' => $request->doctor_name,
+                'transition_report_date' => $request->transition_report_date,
+                'date' => $request->date,
+                'location_of_service' => $request->location_of_service,
+                'type_of_diagnosis' => $request->type_of_diagnosis,
+                'category_of_services' => $request->category_of_services,
+                'services' => $request->services,
+                'complexity_of_services' => $request->complexity_of_services,
+                'outcome' => $request->outcome,
+                'icd_9_code' => $request->icd_9_code,
+                'icd_9_subcode' => $request->icd_9_subcode,
+                'medication_prescription' => $request->medication_prescription,
+                'created_at' => date('Y-m-d H:i:s'),
+                'status' => "1",
+                'appointment_details_id' => $request->appId,
+            ];
+            if($request->patient_id){
+                JobTransitionReport::updateOrCreate( ['patient_id' => $request->patient_id], $jobtransition); 
+                return response()->json(["message" => "Updated", "code" => 200]);
+            }else{
+                JobTransitionReport::create($jobtransition);
+            return response()->json(["message" => "Created", "code" => 200]);
+            }
+
+        } else if ($request->status == '0'){
+            $jobtransition=[
+                'patient_id' => $request->patient_id,
+                'added_by' => $request->added_by,
+                'future_plan' => $request->future_plan,
+                'short_term_goal' => $request->short_term_goal,
+                'long_term_goal' => $request->long_term_goal,
+                'who_have_you_called_past' => $request->who_have_you_called_past,
+                'my_case_manager_yes_no' => $request->my_case_manager_yes_no,
+                'my_case_manager_name' => $request->my_case_manager_name,
+                'my_case_manager_contact' => $request->my_case_manager_contact,
+                'my_therapist_yes_no' => $request->my_therapist_yes_no,
+                'my_therapist_name' => $request->my_therapist_name,
+                'my_therapist_contact' => $request->my_therapist_contact,
+                'my_family_yes_no' => $request->my_family_yes_no,
+                'my_family_name' => $request->my_family_name,
+                'my_family_contact' => $request->my_family_contact,
+                'my_friend_yes_no' => $request->my_friend_yes_no,
+                'my_friend_name' => $request->my_friend_name,
+                'my_friend_contact' => $request->my_friend_contact,
+                'my_significant_other_yes_no' => $request->my_significant_other_yes_no,
+                'my_significant_other_name' => $request->my_significant_other_name,
+                'my_significant_other_contact' => $request->my_significant_other_contact,
+                'clergy_yes_no' => $request->clergy_yes_no,
+                'clergy_name' => $request->clergy_name,
+                'clergy_contact' => $request->clergy_contact,
+                'benefit_planner_yes_no' => $request->benefit_planner_yes_no,
+                'benefit_planner_name' => $request->benefit_planner_name,
+                'benefit_planner_contact' => $request->benefit_planner_contact,
+                'other_yes_no' => $request->other_yes_no,
+                'other_name' => $request->other_name,
+                'other_contact' => $request->other_contact,
+                'schedule_meeting_discuss_for_transition' => $request->schedule_meeting_discuss_for_transition,
+                'who_check_in_with_you' => $request->who_check_in_with_you,
+                'who_contact_you' => $request->who_contact_you,
+                'how_would_like_to_contacted' => $request->how_would_like_to_contacted,
+                'coping_strategies' => $request->coping_strategies,
+                'dissatisfied_with_your_job' => $request->dissatisfied_with_your_job,
+                'reasons_to_re_connect_to_ips' => $request->reasons_to_re_connect_to_ips,
+                'patient_name' => $request->patient_name,
+                'doctor_name' => $request->doctor_name,
+                'transition_report_date' => $request->transition_report_date,
+                'date' => $request->date,
+                'location_of_service' => $request->location_of_service,
+                'type_of_diagnosis' => $request->type_of_diagnosis,
+                'category_of_services' => $request->category_of_services,
+                'services' => $request->services,
+                'complexity_of_services' => $request->complexity_of_services,
+                'outcome' => $request->outcome,
+                'icd_9_code' => $request->icd_9_code,
+                'icd_9_subcode' => $request->icd_9_subcode,
+                'medication_prescription' => $request->medication_prescription,
+                'created_at' => date('Y-m-d H:i:s'),
+                'status' => "0",
+                'appointment_details_id' => $request->appId,
+            ];
+            if($request->patient_id){
+                JobTransitionReport::updateOrCreate( ['patient_id' => $request->patient_id], $jobtransition); 
+                return response()->json(["message" => "Updated", "code" => 200]);
+            }else{
+                JobTransitionReport::create($jobtransition);
+            return response()->json(["message" => "Created", "code" => 200]);
+            }
+
         }
     }
     public function GetJobStartList()
@@ -1105,6 +1260,7 @@ class JobOfferController extends Controller
     {
        $list =JobStartForm::select('id', 'case_manager', 'name_of_employer')->get();
        return response()->json(["message" => "Job Start Form", 'list' => $list, "code" => 200]);
+
     }
     public function postCpsHomevisitForm(Request $request)
     {
