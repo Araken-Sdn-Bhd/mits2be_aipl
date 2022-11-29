@@ -264,7 +264,6 @@ Route::group(['prefix' => 'icd-setting'], function () {
     Route::post('/{id}/removeIcdType', [IcdSettingManagementController::class, 'removeIcdType']);
     Route::post('/{id}/removeIcdCategory', [IcdSettingManagementController::class, 'removeIcdCategory']);
     Route::post('/{id}/removeIcdCode', [IcdSettingManagementController::class, 'removeIcdCode']);
-    Route::get('/getIcd10codeList2', [IcdSettingManagementController::class, 'getIcd10codeList2']);
 });
 
 Route::group(['prefix' => 'etp'], function () {
