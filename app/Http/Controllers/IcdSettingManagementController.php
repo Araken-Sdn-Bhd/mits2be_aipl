@@ -193,18 +193,16 @@ class IcdSettingManagementController extends Controller
             ->where('icd_type_code', "ICD-10")
             ->pluck('id');
             // dd($checkicdtype10id);
-            $users = DB::table('icd_type')
-            // ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
-            ->join('icd_category', 'icd_type.id', '=', 'icd_category.icd_type_id')
-            ->select('icd_category.icd_category_code', 'icd_category.id','icd_category.icd_category_name')
-            ->where('icd_category_status', '=', '1')
-            ->where('icd_category.icd_type_id', '=', $checkicdtype10id[0])
+            $users = DB::table('icd_code')
+            ->select('icd_code.icd_code as icd_code','icd_code.id','icd_code.icd_name')
+            ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
+            ->where('icd_code.icd_type_id', '=', $checkicdtype10id[0])
             ->get();
             // dd($users);
             $ab=[];
             foreach ($users as $key => $value) {
                 // dd($value);
-                $ab[$key]['section_value'] =$value->icd_category_code." ".$value->icd_category_name;
+                $ab[$key]['section_value'] =$value->icd_code." ".$value->icd_name;
                 $ab[$key]['id'] =$value->id;
             }
         return response()->json(["message" => "Icd-10 Code List", 'list' => $ab, "code" => 200]);
@@ -219,7 +217,7 @@ class IcdSettingManagementController extends Controller
         $users = DB::table('icd_type')
             // ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
             ->join('icd_category', 'icd_type.id', '=', 'icd_category.icd_type_id')
-            ->select('icd_category.icd_category_code','icd_category.id','icd_category.icd_category_name')
+            ->select('icd_category.icd_category_code','icd_category.id','icd_category.icd_category_name','icd_category.icd_category_name as section_value')
             ->where('icd_category_status', '=', '1')
             ->where('icd_category.icd_type_id', '=', $checkicdtype9id[0])
             ->get();
@@ -280,24 +278,34 @@ class IcdSettingManagementController extends Controller
         // if ($validator->fails()) {
         //     return response()->json($validator->errors(), 422);
         // }
-        $users = DB::table('icd_code')
-            ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
-            ->join('icd_category', 'icd_code.icd_category_id', '=', 'icd_category.id')
-            ->select('icd_type.icd_type_code','icd_category.id as cat_id', 'icd_category.icd_category_code', 'icd_code.id', 'icd_code.icd_code', 'icd_code.icd_name', 'icd_code.icd_description', 'icd_code.icd_order','icd_code.icd_name')
-            ->where('icd_status', '=', '1')
-            // ->where('icd_code.icd_category_id', '=', $request->icd_category_code)
-            // ->where('icd_code.icd_type_id', '=', $request->icd_category_code)
+        $checkicdtype9id = IcdType::select('id')
+            ->where('icd_type_code', "ICD-9CM")
+            ->pluck('id');
+            // dd($checkicdtype10id);
+        $users = DB::table('icd_type')
+            // ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
+            ->join('icd_category', 'icd_type.id', '=', 'icd_category.icd_type_id')
+            ->select('icd_category.id as cat_id','icd_category.icd_category_code','icd_category.id','icd_category.icd_category_name')
+            ->where('icd_category_status', '=', '1')
+            // ->where('icd_category.icd_type_id', '=', $checkicdtype9id[0])
             ->get();
+        // $users = DB::table('icd_code')
+        //     ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
+        //     ->join('icd_category', 'icd_code.icd_category_id', '=', 'icd_category.id')
+        //     ->select('icd_type.icd_type_code','icd_category.id as cat_id', 'icd_category.icd_category_code', 'icd_code.id', 'icd_code.icd_code', 'icd_code.icd_name', 'icd_code.icd_description', 'icd_code.icd_order','icd_code.icd_name')
+        //     ->where('icd_status', '=', '1')
+        //     ->get();
             // dd($users);
             $ab=[];
             foreach ($users as $key => $value) {
                 // dd($value);
-                $ab[$key]['section_value'] =$value->icd_code.$value->icd_name;
+                $ab[$key]['section_value'] =$value->icd_category_code.$value->icd_category_name;
                 $ab[$key]['id'] =$value->id;
                 $ab[$key]['icd_category_code'] =$value->cat_id;
             }
         return response()->json(["message" => "ICD-9CM Code List", 'list' => $ab, "code" => 200]);
     }
+
 
     public function updateIcd_type(Request $request, $id)
     {
