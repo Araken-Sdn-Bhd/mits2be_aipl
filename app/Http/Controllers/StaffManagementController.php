@@ -556,26 +556,33 @@ class StaffManagementController extends Controller
 
     public function setSystemAdmin(Request $request)
     {
-        dd(1);
         $validator = Validator::make($request->all(), [
-            'staffid' => 'required|integer',
+            'id' => 'required|integer',
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
 
-        $defaultAcc = DB::table('default_role_access')
-        ->select('default_role_access.id as role_id','screens.id as screen_id','screens.sub_module_id as sub_module_id','screens.module_id as module_id')
-        ->join('screens','screens.id','=','default_role_access.screen_id')
-        ->join('roles','roles.id','=','default_role_access.role_id')
-        ->where('roles.code','=','superadmin')
-        ->get();
-        
-        $user = StaffManagement::where('id',$request->id)->first();
+       
+    
+        $user= DB::table('staff_management')
+        ->select('staff_management.email','staff_management.branch_id','staff_management.team_id','hospital_branch__details.hospital_id')
+        ->join('hospital_branch__details','staff_management.branch_id','=','hospital_branch__details.id')
+        ->where('staff_management.id',$request->id)->first();
 
         $userId= DB::table('users')
         ->select('id')
         ->where('email',$user->email)->first();
+
+        $role = roles::where('code','superadmin')->first();
+        StaffManagement::where('id', $request->id)->update(['role_id' => $role->id]);
+
+        $defaultAcc = DB::table('default_role_access')
+                    ->select('default_role_access.id as role_id','screens.id as screen_id','screens.sub_module_id as sub_module_id','screens.module_id as module_id')
+                    ->join('screens','screens.id','=','default_role_access.screen_id')
+                    ->where('default_role_access.role_id',$role->id)
+                    ->get();
+    
 
         if ($defaultAcc) {
             foreach ($defaultAcc as $key) {
@@ -590,20 +597,32 @@ class StaffManagementController extends Controller
                     'access_screen' => '1',
                     'read_writes' => '1',
                     'read_only' => '0',
+                    'added_by' => $request->added_by,
     
                 ];
 
                 if (ScreenAccessRoles::where($screen)->count() == 0) {
-                    $screen['added_by'] = $request->added_by;
                     ScreenAccessRoles::Create($screen);
-
-                    return response()->json(["message" => "Role Assigned Successfully", "code" => 200]);
                 }
-
             }
+            return response()->json(["message" => "Role Assigned Successfully", "code" => 200]);
         }
         
+    }
 
-        
+    public function removeUserAccess(Request $request)
+    {
+        $user= DB::table('staff_management')
+        ->select('email')
+        ->where('id',$request->id)->first();
+
+        $userId= DB::table('users')
+        ->select('id')
+        ->where('email',$user->email)->first();
+
+        ScreenAccessRoles::where('staff_id',$userId->id)->delete();
+        StaffManagement::where('id', $request->id)->update(['role_id' => '']);
+
+        return response()->json(["message" => "User Access successfully removed", "code" => 200]);
     }
 }
