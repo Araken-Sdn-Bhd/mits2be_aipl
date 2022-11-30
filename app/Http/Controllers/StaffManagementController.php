@@ -556,6 +556,7 @@ class StaffManagementController extends Controller
 
     public function setSystemAdmin(Request $request)
     {
+        dd(1);
         $validator = Validator::make($request->all(), [
             'staffid' => 'required|integer',
         ]);
@@ -566,8 +567,15 @@ class StaffManagementController extends Controller
         $defaultAcc = DB::table('default_role_access')
         ->select('default_role_access.id as role_id','screens.id as screen_id','screens.sub_module_id as sub_module_id','screens.module_id as module_id')
         ->join('screens','screens.id','=','default_role_access.screen_id')
-        ->where('default_role_access.role_id',$request->role_id)
+        ->join('roles','roles.id','=','default_role_access.role_id')
+        ->where('roles.code','=','superadmin')
         ->get();
+        
+        $user = StaffManagement::where('id',$request->id)->first();
+
+        $userId= DB::table('users')
+        ->select('id')
+        ->where('email',$user->email)->first();
 
         if ($defaultAcc) {
             foreach ($defaultAcc as $key) {
@@ -575,10 +583,10 @@ class StaffManagementController extends Controller
                     'module_id' => $key->module_id,
                     'sub_module_id' => $key->sub_module_id,
                     'screen_id' => $key->screen_id,
-                    'hospital_id' => $request->hospital_id,
-                    'branch_id' => $request->branch_id,
-                    'team_id' => $request->team_id,
-                    'staff_id' => $request->staffid,
+                    'hospital_id' => $user->hospital_id,
+                    'branch_id' => $user->branch_id,
+                    'team_id' => $user->team_id,
+                    'staff_id' => $userId->id,
                     'access_screen' => '1',
                     'read_writes' => '1',
                     'read_only' => '0',
