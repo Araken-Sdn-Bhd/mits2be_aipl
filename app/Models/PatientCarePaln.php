@@ -39,6 +39,7 @@ class PatientCarePaln extends Model
         'icd_9_code',
         'icd_9_subcode',
         'medication_prescription',
-        'created_at'
+        'created_at',
+        'status'
     ];
 }

@@ -15,30 +15,7 @@ class CpsDischargeNoteController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
-            'name' => 'required|string',
             'mrn' => 'required|string',
-            'cps_discharge_date' => 'required|date',
-            'time' => '',
-            'staff_name' => 'required|string',
-            'diagnosis' => 'required',
-            'post_intervention' => 'required|string',
-            'psychopathology' => 'required|string',
-            'psychosocial' => 'required|string',
-            'potential_risk' => 'required|string',
-            'category_of_discharge' => 'required|string',
-            'discharge_diagnosis' => 'required',
-            'outcome_medication' => 'required|string',
-            'location_service' => 'required|integer',
-            'diagnosis_type' => 'required|integer',
-            'service_category' => 'required|string',
-            'complexity_services' => 'required|integer',
-            'outcome' => 'required|integer',
-            'medication' => 'required',
-            'specialist_name' => 'required|string',
-            'verification_date' => 'required|date',
-            'case_manager' => 'required|string',
-            'date' => 'required|date',
-            'appointment_details_id' => '',
 
 
         ]);
@@ -82,7 +59,7 @@ class CpsDischargeNoteController extends Controller
                     'verification_date' =>  $request->verification_date,
                     'case_manager' =>  $request->case_manager,
                     'date' =>  $request->date,
-                    'status' => "1",
+                    'status' => $request->status,
                     'appointment_details_id' => $request->appId,
                 ];
     
@@ -130,7 +107,7 @@ class CpsDischargeNoteController extends Controller
                     'verification_date' =>  $request->verification_date,
                     'case_manager' =>  $request->case_manager,
                     'date' =>  $request->date,
-                    'status' => "1",
+                    'status' => $request->status,
                     'appointment_details_id' => $request->appId,
                 ];
     
@@ -178,7 +155,7 @@ class CpsDischargeNoteController extends Controller
                 'verification_date' =>  $request->verification_date,
                 'case_manager' =>  $request->case_manager,
                 'date' =>  $request->date,
-                'status' => "1",
+                'status' => $request->status,
                 'appointment_details_id' => $request->appId,
             ];
 
@@ -226,7 +203,7 @@ class CpsDischargeNoteController extends Controller
                 'verification_date' =>  $request->verification_date,
                 'case_manager' =>  $request->case_manager,
                 'date' =>  $request->date,
-                'status' => "1",
+                'status' => $request->status,
                 'appointment_details_id' => $request->appId,
             ];
 
