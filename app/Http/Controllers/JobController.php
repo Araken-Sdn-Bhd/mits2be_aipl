@@ -5,6 +5,9 @@ use App\Models\Job;
 use App\Models\JobOffers;
 use App\Models\EmployeeRegistration;
 use Validator;
+use DateTime;
+use App\Models\Notifications;
+use DateTimeZone;
 use DB;
 
 use Illuminate\Http\Request;
@@ -35,7 +38,7 @@ class JobController extends Controller
         }
  
        
-        $company = DB::table('employee_registration')->select('id')->where('user_id', '=', $request->user_id)->first();
+        $company = DB::table('employee_registration')->select('id','company_name')->where('user_id', '=', $request->user_id)->first();
 
         try {
         $job =[
@@ -71,6 +74,17 @@ class JobController extends Controller
         ];
                 
                 JobOffers::create($jobOffer);
+                $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+                $notifi=[
+                    'added_by' => $request->user_id ,
+                    'branch_id'=>$request->branch_id,
+                    'role'=>'Admin/Clerk',
+                    'patient_mrn' =>   $company->id,
+                    'url_route' => "/Modules/Intervention/company-job-approval-request?id=".$company->id.'&'.'company='.$company->company_name,
+                    'created_at' => $date->format('Y-m-d H:i:s'),
+                    'message' =>  'New job approval request',
+                ];
+                $HOD = Notifications::insert($notifi);
 
                 return response()->json(["message" => "Job Created", "result" => $job, "code" => 200]);
             } catch (Exception $e) {
@@ -122,9 +136,19 @@ class JobController extends Controller
             'created_at' =>  date('Y-m-d H:i:s'),
             'updated_at' =>  date('Y-m-d H:i:s')
         ];
-                
+        $company = DB::table('employee_registration')->select('id','company_name')->where('user_id', '=', $request->user_id)->first();
                 JobOffers::create($jobOffer);
-
+                $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+                $notifi=[
+                    'added_by' => $request->user_id ,
+                    'branch_id'=>$request->branch_id,
+                    'role'=>'Admin/Clerk',
+                    'patient_mrn' =>   $company->id,
+                    'url_route' => "/Modules/Intervention/company-job-approval-request?id=".$company->id.'&'.'company='.$company->company_name,
+                    'created_at' => $date->format('Y-m-d H:i:s'),
+                    'message' =>  'New job approval request',
+                ];
+                $HOD = Notifications::insert($notifi);
                 return response()->json(["message" => "Job Created", "result" => $jobOffer, "code" => 200]);
             } catch (Exception $e) {
                 return response()->json(["message" => $e->getMessage(), "code" => 200]);
