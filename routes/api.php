@@ -125,6 +125,8 @@ Route::group(['middleware' => ['jwt.verify']], function () {
 });
 Route::group(['prefix' => 'roles'], function () {
     Route::get('/list', [RolesController::class, 'index']);
+    Route::get('/branch-viewlist', [RolesController::class, 'branch_view_list']);
+    Route::get('/system-admin-role', [RolesController::class, 'system_admin_role']);
     Route::post('/add', [RolesController::class, 'store']);
     Route::post('/update', [RolesController::class, 'update']);
     Route::post('/remove', [RolesController::class, 'delete']);
@@ -348,6 +350,8 @@ Route::group(['prefix' => 'staff-management'], function () {
     Route::get('/getStaffManagementListOrById_', [StaffManagementController::class, 'getStaffManagementListOrById']);
     Route::get('/getListBy', [StaffManagementController::class, 'getStaffManagementList']);
     Route::get('/getStaffDetailById',[StaffManagementController::class,'getStaffDetailById']);
+    Route::post('/getAdminList', [StaffManagementController::class, 'getAdminList']);
+    Route::post('/setSystemAdmin', [StaffManagementController::class, 'setSystemAdmin']);
 });
 
 Route::group(['prefix' => 'calendar-management'], function () {
