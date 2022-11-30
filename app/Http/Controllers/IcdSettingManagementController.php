@@ -282,24 +282,39 @@ class IcdSettingManagementController extends Controller
             ->where('icd_type_code', "ICD-9CM")
             ->pluck('id');
             // dd($checkicdtype10id);
-        $users = DB::table('icd_type')
+        //$users = DB::table('icd_type')
+        //    // ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
+        //    ->join('icd_category', 'icd_type.id', '=', 'icd_category.icd_type_id')
+        //    ->select('icd_category.id as cat_id','icd_category.icd_category_code','icd_category.id','icd_category.icd_category_name')
+        //    ->where('icd_category_status', '=', '1')
+        //    // ->where('icd_category.icd_type_id', '=', $checkicdtype9id[0])
+        //    ->get();
+
+            // $users = DB::table('icd_code')
             // ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
-            ->join('icd_category', 'icd_type.id', '=', 'icd_category.icd_type_id')
-            ->select('icd_category.id as cat_id','icd_category.icd_category_code','icd_category.id','icd_category.icd_category_name')
-            ->where('icd_category_status', '=', '1')
-            // ->where('icd_category.icd_type_id', '=', $checkicdtype9id[0])
-            ->get();
+            // ->join('icd_category', 'icd_code.icd_category_id', '=', 'icd_category.id')
+            // //->select('icd_type.icd_type_code', 'icd_category.icd_category_code', 'icd_code.id', 'icd_code.icd_code', 'icd_code.icd_name', 'icd_code.icd_description', 'icd_code.icd_order','icd_code.icd_name')
+            // ->select('icd_category.id as cat_id','icd_category.icd_category_code','icd_category.id','icd_category.icd_category_name')
+            // ->get();
         // $users = DB::table('icd_code')
         //     ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
         //     ->join('icd_category', 'icd_code.icd_category_id', '=', 'icd_category.id')
         //     ->select('icd_type.icd_type_code','icd_category.id as cat_id', 'icd_category.icd_category_code', 'icd_code.id', 'icd_code.icd_code', 'icd_code.icd_name', 'icd_code.icd_description', 'icd_code.icd_order','icd_code.icd_name')
         //     ->where('icd_status', '=', '1')
         //     ->get();
+            $users = DB::table('icd_code')
+            ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
+            ->join('icd_category', 'icd_code.icd_category_id', '=', 'icd_category.id')
+            ->select('icd_type.icd_type_code', 'icd_category.icd_category_code as cat_id', 'icd_code.id', 'icd_code.icd_code', 'icd_code.icd_name', 'icd_code.icd_description', 'icd_code.icd_order','icd_code.icd_name')
+            ->where('icd_status', '=', '1')
+            // ->where('icd_code.id','=',$request->id)
+            // ->where('icd_code.icd_type_id', '=', $request->icd_category_code)
+            ->get();
             // dd($users);
             $ab=[];
             foreach ($users as $key => $value) {
                 // dd($value);
-                $ab[$key]['section_value'] =$value->icd_category_code.$value->icd_category_name;
+                $ab[$key]['section_value'] =$value->icd_code.$value->icd_name;
                 $ab[$key]['id'] =$value->id;
                 $ab[$key]['icd_category_code'] =$value->cat_id;
             }

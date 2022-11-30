@@ -790,6 +790,7 @@ class PatientAppointmentDetailsController extends Controller
         return response()->json(["message" => "Appointment List!", 'result' => $result, "code" => 200]);
     }
 
+
     public function updateTeamDoctor(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -809,9 +810,19 @@ class PatientAppointmentDetailsController extends Controller
         } else{
             $status = '4';
         }
-        //} else if ($request->service == "Community Psychiatric Service (CPS)"){
-        //    $status = '4';
-        //}
+            $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+            $patient_id = PatientAppointmentDetails::where('id','=',$request->appointment_id)->first();
+            $notifi=[
+                'added_by' => $request->added_by,
+                'staff_id' => $request->assign_team,
+                'branch_id'=>$request->branch_id,
+                'role'=>'',
+                'patient_mrn' =>   $patient_id ['patient_mrn_id'],
+                'url_route' => "/Modules/Patient/attendance-record",
+                'created_at' => $date->format('Y-m-d H:i:s'),
+                'message' =>  'New assigned patient',
+            ];
+            $HOD = Notifications::insert($notifi);
 
         $patientAppointmentDetails = $patientAppointmentDetails->update([
             'appointment_status' => $status,
@@ -821,6 +832,9 @@ class PatientAppointmentDetailsController extends Controller
 
         return response()->json(["message" => "Assigned Team has been update Successfully!", "code" => 200]);
     }
+
+
+
     public function fetchViewHistoryList(Request $request)
     {
         $validator = Validator::make($request->all(), [

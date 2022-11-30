@@ -537,4 +537,92 @@ class StaffManagementController extends Controller
         }
         return response()->json(["message" => "Transfer Successfully!", "code" => 200]);
     }
+
+    public function getAdminList()
+    {
+        $users = DB::table('staff_management')
+            ->select('roles.role_name','staff_management.id', 'staff_management.name', 'general_setting.section_value as designation_name', 
+            'hospital_branch_team_details.hospital_branch_name','users.id as staffId')
+            ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
+            ->join('hospital_branch_team_details', 'staff_management.team_id', '=', 'hospital_branch_team_details.id')
+            ->join('roles','staff_management.role_id','=','roles.id')
+            ->join('users','staff_management.email','=','users.email')
+            ->where('staff_management.status', '=', '1')
+            ->where('roles.code','!=','null')
+            ->orderBy('staff_management.name','asc')
+            ->get();
+        return response()->json(["message" => "Staff Management List", 'list' => $users, "code" => 200]);
+    }
+
+    public function setSystemAdmin(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer',
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+
+       
+    
+        $user= DB::table('staff_management')
+        ->select('staff_management.email','staff_management.branch_id','staff_management.team_id','hospital_branch__details.hospital_id')
+        ->join('hospital_branch__details','staff_management.branch_id','=','hospital_branch__details.id')
+        ->where('staff_management.id',$request->id)->first();
+
+        $userId= DB::table('users')
+        ->select('id')
+        ->where('email',$user->email)->first();
+
+        $role = roles::where('code','superadmin')->first();
+        StaffManagement::where('id', $request->id)->update(['role_id' => $role->id]);
+
+        $defaultAcc = DB::table('default_role_access')
+                    ->select('default_role_access.id as role_id','screens.id as screen_id','screens.sub_module_id as sub_module_id','screens.module_id as module_id')
+                    ->join('screens','screens.id','=','default_role_access.screen_id')
+                    ->where('default_role_access.role_id',$role->id)
+                    ->get();
+    
+
+        if ($defaultAcc) {
+            foreach ($defaultAcc as $key) {
+                $screen = [
+                    'module_id' => $key->module_id,
+                    'sub_module_id' => $key->sub_module_id,
+                    'screen_id' => $key->screen_id,
+                    'hospital_id' => $user->hospital_id,
+                    'branch_id' => $user->branch_id,
+                    'team_id' => $user->team_id,
+                    'staff_id' => $userId->id,
+                    'access_screen' => '1',
+                    'read_writes' => '1',
+                    'read_only' => '0',
+                    'added_by' => $request->added_by,
+    
+                ];
+
+                if (ScreenAccessRoles::where($screen)->count() == 0) {
+                    ScreenAccessRoles::Create($screen);
+                }
+            }
+            return response()->json(["message" => "Role Assigned Successfully", "code" => 200]);
+        }
+        
+    }
+
+    public function removeUserAccess(Request $request)
+    {
+        $user= DB::table('staff_management')
+        ->select('email')
+        ->where('id',$request->id)->first();
+
+        $userId= DB::table('users')
+        ->select('id')
+        ->where('email',$user->email)->first();
+
+        ScreenAccessRoles::where('staff_id',$userId->id)->delete();
+        StaffManagement::where('id', $request->id)->update(['role_id' => '']);
+
+        return response()->json(["message" => "User Access successfully removed", "code" => 200]);
+    }
 }

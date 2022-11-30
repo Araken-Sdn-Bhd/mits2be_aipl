@@ -139,7 +139,7 @@ class AuthController extends Controller
                         })
                         ->where('screens.screen_route', 'like', '%Dash%')
                         ->where('screen_access_roles.staff_id', '=', $id)
-                        ->orWhere('screen_access_roles.user_type', '=', $useradmin)
+                        //->orWhere('screen_access_roles.user_type', '=', $useradmin)
                         ->where('screen_access_roles.status', '=', '1')
                         ->get();
 
