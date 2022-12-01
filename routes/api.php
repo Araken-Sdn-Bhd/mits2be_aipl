@@ -393,6 +393,7 @@ Route::group(['prefix' => 'patient-registration'], function () {
     Route::post('/getTransactionlog', [PatientRegistrationController::class, 'getTransactionlog']);
     Route::post('/getPatientRegistrationByIdShortDetails', [PatientRegistrationController::class, 'getPatientRegistrationByIdShortDetails']);
     Route::get('/getPatientRegistrationListMobile', [PatientRegistrationController::class, 'getPatientRegistrationListMobile']);
+    Route::post('/getPatientRegistrationListbyBranch', [PatientRegistrationController::class, 'getPatientRegistrationListbyBranch']);
 });
 Route::group(['prefix' => 'patient-clinicalinfo'], function () {
     Route::post('/add', [PatientClinicalInfoController::class, 'store']);
