@@ -1032,14 +1032,21 @@ class JobOfferController extends Controller
                 'appointment_details_id' => $request->appId,
                 'status' => "1",
             ];
-           $check=JobStartForm::where(['patient_id' => $request->patient_id])->first();
-            if($check!= null){
-                JobStartForm::where(['patient_id' => $request->patient_id])->update($jobstart);
+            if($request->id) {
+                JobStartForm::where(['id' => $request->id])->update($jobstart);
                 return response()->json(["message" => "Updated", "code" => 200]);
-            }else{
-            JobStartForm::create($jobstart);
-            return response()->json(["message" => "Created", "code" => 200]);
+            } else {
+                JobStartForm::create($jobstart);
+                return response()->json(["message" => "Created", "code" => 200]);
             }
+        //    $check=JobStartForm::where(['id' => $request->id])->first();
+        //     if($check!= null){
+        //         JobStartForm::where(['id' => $request->id])->update($jobstart);
+        //         return response()->json(["message" => "Updated", "code" => 200]);
+        //     } else {
+        //     JobStartForm::create($jobstart);
+        //     return response()->json(["message" => "Created", "code" => 200]);
+        //     }
         } else if ($request->status == '0') {
             $jobstart=[
                 'patient_id' => $request->patient_id,
@@ -1069,17 +1076,23 @@ class JobOfferController extends Controller
                 'created_at' => date('Y-m-d H:i:s'),
                 'appointment_details_id' => $request->appId,
                 'status' => "0",
-                'appointment_details_id' => $request->appId,
             ];
-            $check=JobStartForm::where(['patient_id' => $request->patient_id])->first();
-            if($check!= null){
-            // if($request->patient_id){
-                JobStartForm::where(['id' => $request->patient_id])->update($jobstart);
-                return response()->json(["message1" => "Updated", "code" => 200]);
+            if($request->id) {
+                JobStartForm::where(['id' => $request->id])->update($jobstart);
+                return response()->json(["message" => "Updated", "code" => 200]);
             } else {
-            JobStartForm::create($jobstart);
-            return response()->json(["message2" => "Created", "code" => 200]);
+                JobStartForm::create($jobstart);
+                return response()->json(["message" => "Created", "code" => 200]);
             }
+            // $check=JobStartForm::where(['id' => $request->id])->first();
+            // if($check!= null){
+            // // if($request->id){
+            //     JobStartForm::where(['id' => $request->id])->update($jobstart);
+            //     return response()->json(["message1" => "Updated", "code" => 200]);
+            // } else {
+            // JobStartForm::create($jobstart);
+            // return response()->json(["message2" => "Created", "code" => 200]);
+            // }
         }
     }
     
@@ -1115,18 +1128,26 @@ class JobOfferController extends Controller
                 'icd_9_subcode' => $request->icd_9_subcode,
                 'medication_prescription' => $request->medication_prescription,
                 'created_at' => date('Y-m-d H:i:s'),
-                'status' => "1",
                 'appointment_details_id' => $request->appId,
+                'status' => "1",
+                
             ];
-            $check=JobEndReport::where(['patient_id' => $request->patient_id])->first();
-            if($check!= null){
-            //  if($request->id){
-                JobEndReport::where(['patient_id' => $request->patient_id])->update($jobend);
+            if($request->id) {
+                JobEndReport::where(['id' => $request->id])->update($jobend);
                 return response()->json(["message" => "Updated", "code" => 200]);
             } else {
                 JobEndReport::create($jobend);
-            return response()->json(["message" => "Created", "code" => 200]);
+                return response()->json(["message" => "Created", "code" => 200]);
             }
+            // $check=JobEndReport::where(['patient_id' => $request->patient_id])->first();
+            // if($check!= null){
+            // //  if($request->id){
+            //     JobEndReport::where(['patient_id' => $request->patient_id])->update($jobend);
+            //     return response()->json(["message" => "Updated", "code" => 200]);
+            // } else {
+            //     JobEndReport::create($jobend);
+            // return response()->json(["message" => "Created", "code" => 200]);
+            // }
 
         } else if ($request->status == '0') {
             
@@ -1158,18 +1179,26 @@ class JobOfferController extends Controller
                 'icd_9_subcode' => $request->icd_9_subcode,
                 'medication_prescription' => $request->medication_prescription,
                 'created_at' => date('Y-m-d H:i:s'),
-                'status' => "0",
                 'appointment_details_id' => $request->appId,
+                'status' => "0",
+                
             ];
-            $check=JobEndReport::where(['patient_id' => $request->patient_id])->first();
-            if($check!= null){
-            //  if($request->id){
-                JobEndReport::where(['patient_id' => $request->patient_id])->update($jobend);
+            if($request->id) {
+                JobEndReport::where(['id' => $request->id])->update($jobend);
                 return response()->json(["message" => "Updated", "code" => 200]);
             } else {
                 JobEndReport::create($jobend);
-            return response()->json(["message" => "Created", "code" => 200]);
+                return response()->json(["message" => "Created", "code" => 200]);
             }
+            // $check=JobEndReport::where(['patient_id' => $request->patient_id])->first();
+            // if($check!= null){
+            // //  if($request->id){
+            //     JobEndReport::where(['patient_id' => $request->patient_id])->update($jobend);
+            //     return response()->json(["message" => "Updated", "code" => 200]);
+            // } else {
+            //     JobEndReport::create($jobend);
+            // return response()->json(["message" => "Created", "code" => 200]);
+            // }
         
 
         }
@@ -1233,10 +1262,14 @@ class JobOfferController extends Controller
                 'status' => "1",
                 'appointment_details_id' => $request->appId,
             ];
-            if($request->patient_id){
-                JobTransitionReport::updateOrCreate( ['patient_id' => $request->patient_id], $jobtransition); 
+            
+            // if($request->id){
+            //     JobTransitionReport::updateOrCreate( ['id' => $request->id], $jobtransition); 
+            //     return response()->json(["message" => "Updated", "code" => 200]);
+            if($request->id) {
+                JobTransitionReport::where(['id' => $request->id])->update($jobtransition);
                 return response()->json(["message" => "Updated", "code" => 200]);
-            }else{
+            } else {
                 JobTransitionReport::create($jobtransition);
             return response()->json(["message" => "Created", "code" => 200]);
             }
@@ -1297,10 +1330,13 @@ class JobOfferController extends Controller
                 'status' => "0",
                 'appointment_details_id' => $request->appId,
             ];
-            if($request->patient_id){
-                JobTransitionReport::updateOrCreate( ['patient_id' => $request->patient_id], $jobtransition); 
+            // if($request->id){
+            //     JobTransitionReport::updateOrCreate( ['id' => $request->id], $jobtransition); 
+            //     return response()->json(["message" => "Updated", "code" => 200]);
+            if($request->id) {
+                JobTransitionReport::where(['id' => $request->id])->update($jobtransition);
                 return response()->json(["message" => "Updated", "code" => 200]);
-            }else{
+            } else {
                 JobTransitionReport::create($jobtransition);
             return response()->json(["message" => "Created", "code" => 200]);
             }

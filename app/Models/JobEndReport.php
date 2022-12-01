@@ -38,6 +38,7 @@ class JobEndReport extends Model
         'icd_9_code',
         'icd_9_subcode',
         'medication_prescription',
+        'status',
         'created_at',
         'is_deleted'
     ];
