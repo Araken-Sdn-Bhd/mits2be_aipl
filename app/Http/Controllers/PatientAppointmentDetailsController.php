@@ -1301,7 +1301,8 @@ class PatientAppointmentDetailsController extends Controller
             ELSE DATE_FORMAT(job_transition_report.created_at, '%h:%i PM')
        END)  as time"),
                 DB::raw("DATE_FORMAT(job_transition_report.created_at, '%d-%m-%Y') as date"),
-                DB::raw("'1' as status"),
+                // DB::raw("'1' as status"),
+                'job_transition_report.status',
                 'job_transition_report.id',
                 'users.name',
                 DB::raw("'JobTransitionReport' as type"),
