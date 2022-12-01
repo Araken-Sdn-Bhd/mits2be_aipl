@@ -9,7 +9,7 @@ class CounsellingProgressNote extends Model
 {
     use HasFactory;
     protected $table = 'counselling_progress_note';
-    protected $fillable = ['id', 'added_by','patient_mrn_id','therapy_date', 'therapy_time', 
+    protected $fillable = ['id', 'added_by','appointment_details_id','patient_mrn_id','therapy_date', 'therapy_time',
     'diagnosis_id','frequency_session','frequency_session_other','model_therapy','model_therapy_other',
     'mode_therapy','mode_therapy_other','comment_therapy_session','patent_condition','patent_condition_other',
     'comment_patent_condition','session_details','session_issues','conduct_session','outcome_session',
