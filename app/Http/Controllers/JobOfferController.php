@@ -640,54 +640,102 @@ class JobOfferController extends Controller
 
     public function setPatientCarePlan(Request $request)
     {
-        $patientcarepln=[
-            'patient_id' => $request->patient_id,
-            'added_by' => $request->added_by,
-            'plan_date' => $request->plan_date,
-            'reason_of_review' => $request->reason_of_review,
-            'diagnosis' => $request->diagnosis,
-            'medication_oral' => $request->medication_oral,
-            'medication_depot' => $request->medication_depot,
-            'medication_im' => $request->medication_im,
-            'background_history' => $request->background_history,
-            'staff_incharge_dr' => $request->staff_incharge_dr,
-            'treatment_plan' => $request->treatment_plan,
-            'next_review_date' => $request->next_review_date,
-            'case_manager_date' => $request->case_manager_date,
-            'case_manager_name' => $request->case_manager_name,
-            'case_manager_designation' => $request->case_manager_designation,
-            'specialist_incharge_date' => $request->specialist_incharge_date,
-            'specialist_incharge_name' => $request->specialist_incharge_name,
-            'specialist_incharge_designation' => $request->specialist_incharge_designation,
-            'location_of_service' => $request->location_of_service,
-            'type_of_diagnosis' => $request->type_of_diagnosis,
-            'category_of_services' => $request->category_of_services,
-            'services' => $request->services,
-            'complexity_of_services' => $request->complexity_of_services,
-            'outcome' => $request->outcome,
-            'icd_9_code' => $request->icd_9_code,
-            'icd_9_subcode' => $request->icd_9_subcode,
-            'medication_prescription' => $request->medication_prescription,
-            'created_at' => date('Y-m-d H:i:s'),
-            'appointment_details_id' => $request->appId,
-        ];
-        // PatientCarePaln::create()
-        if($request->id){
-            PatientCarePaln::where(['id' => $request->id])->update($patientcarepln);
-            // RehabDischargeNote::firstOrCreate($rehabdischarge);
-            return response()->json(["message" => "Updated", "code" => 200]);
-         }else{
-            $HOD=PatientCarePaln::create($patientcarepln);
-            $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-            $notifi=[
-                'added_by' => $HOD['added_by'],
-                'patient_mrn' =>   $HOD['patient_id'],
-                'created_at' => $date->format('Y-m-d H:i:s'),    //$date->format
-                'message' =>  'upcoming review for Patient Care Plan',
+        if ($request->status == '0') {
+            $patientcarepln=[
+                'patient_id' => $request->patient_id,
+                'added_by' => $request->added_by,
+                'plan_date' => $request->plan_date,
+                'reason_of_review' => $request->reason_of_review,
+                'diagnosis' => $request->diagnosis,
+                'medication_oral' => $request->medication_oral,
+                'medication_depot' => $request->medication_depot,
+                'medication_im' => $request->medication_im,
+                'background_history' => $request->background_history,
+                'staff_incharge_dr' => $request->staff_incharge_dr,
+                'treatment_plan' => $request->treatment_plan,
+                'next_review_date' => $request->next_review_date,
+                'case_manager_date' => $request->case_manager_date,
+                'case_manager_name' => $request->case_manager_name,
+                'case_manager_designation' => $request->case_manager_designation,
+                'specialist_incharge_date' => $request->specialist_incharge_date,
+                'specialist_incharge_name' => $request->specialist_incharge_name,
+                'specialist_incharge_designation' => $request->specialist_incharge_designation,
+                'location_of_service' => $request->location_of_service,
+                'type_of_diagnosis' => $request->type_of_diagnosis,
+                'category_of_services' => $request->category_of_services,
+                'services' => $request->services,
+                'complexity_of_services' => $request->complexity_of_services,
+                'outcome' => $request->outcome,
+                'icd_9_code' => $request->icd_9_code,
+                'icd_9_subcode' => $request->icd_9_subcode,
+                'medication_prescription' => $request->medication_prescription,
+                'created_at' => date('Y-m-d H:i:s'),
+                'appointment_details_id' => $request->appId,
+                'status' => "0",
             ];
-            $HOD1 = Notifications::insert($notifi);
-         return response()->json(["message" => "Created", "code" => 200]);
-         }
+        
+            // PatientCarePaln::create()
+            if($request->id){
+                PatientCarePaln::where(['id' => $request->id])->update($patientcarepln);
+                // RehabDischargeNote::firstOrCreate($rehabdischarge);
+                return response()->json(["message" => "Updated", "code" => 200]);
+            }else{
+                $HOD=PatientCarePaln::create($patientcarepln);
+
+            return response()->json(["message" => "Created", "code" => 200]);
+            }
+        }elseif($request->status == '1'){
+            $patientcarepln=[
+                'patient_id' => $request->patient_id,
+                'added_by' => $request->added_by,
+                'plan_date' => $request->plan_date,
+                'reason_of_review' => $request->reason_of_review,
+                'diagnosis' => $request->diagnosis,
+                'medication_oral' => $request->medication_oral,
+                'medication_depot' => $request->medication_depot,
+                'medication_im' => $request->medication_im,
+                'background_history' => $request->background_history,
+                'staff_incharge_dr' => $request->staff_incharge_dr,
+                'treatment_plan' => $request->treatment_plan,
+                'next_review_date' => $request->next_review_date,
+                'case_manager_date' => $request->case_manager_date,
+                'case_manager_name' => $request->case_manager_name,
+                'case_manager_designation' => $request->case_manager_designation,
+                'specialist_incharge_date' => $request->specialist_incharge_date,
+                'specialist_incharge_name' => $request->specialist_incharge_name,
+                'specialist_incharge_designation' => $request->specialist_incharge_designation,
+                'location_of_service' => $request->location_of_service,
+                'type_of_diagnosis' => $request->type_of_diagnosis,
+                'category_of_services' => $request->category_of_services,
+                'services' => $request->services,
+                'complexity_of_services' => $request->complexity_of_services,
+                'outcome' => $request->outcome,
+                'icd_9_code' => $request->icd_9_code,
+                'icd_9_subcode' => $request->icd_9_subcode,
+                'medication_prescription' => $request->medication_prescription,
+                'created_at' => date('Y-m-d H:i:s'),
+                'appointment_details_id' => $request->appId,
+                'status' => "1",
+            ];
+        
+            // PatientCarePaln::create()
+            if($request->id){
+                PatientCarePaln::where(['id' => $request->id])->update($patientcarepln);
+                // RehabDischargeNote::firstOrCreate($rehabdischarge);
+                return response()->json(["message" => "Updated", "code" => 200]);
+            }else{
+                $HOD=PatientCarePaln::create($patientcarepln);
+                $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+                $notifi=[
+                    'added_by' => $HOD['added_by'],
+                    'patient_mrn' =>   $HOD['patient_id'],
+                    'created_at' => $date->format('Y-m-d H:i:s'),    //$date->format
+                    'message' =>  'upcoming review for Patient Care Plan',
+                ];
+                $HOD1 = Notifications::insert($notifi);
+            return response()->json(["message" => "Created", "code" => 200]);
+            }
+        }
 
     }
 
