@@ -1116,7 +1116,9 @@ class ReportController extends Controller
 
     public function getGeneralReport(Request $request)
     {
-        $appointments = PatientAppointmentDetails::whereBetween('booking_date', [$request->fromDate, $request->toDate]);
+        
+        $appointments = PatientAppointmentDetails::whereBetween('booking_date', [$request->fromDate, $request->toDate])
+        ->where('appointment_status','!=',0);
         if ($request->type_visit != 0)
             $ssh = $appointments->where('type_visit', $request->type_visit);
         if ($request->patient_category != 0)
@@ -1127,12 +1129,18 @@ class ReportController extends Controller
         $ssh = $appointments->get()->toArray();
 
         $demo = [];
+        $age=[];
         $result = [];
         if ($request->name) {
             $demo['name_asin_nric'] = $request->name;
         }
         if ($request->citizenship) {
             $demo['citizenship'] = $request->citizenship;
+        }
+        if ($request->Age) {
+            $age = GeneralSetting::where('id', $request->Age)->first();
+            $age['agemin']=$age['min_age'];
+            $age['agemax']=$age['max_age'];
         }
         if ($request->gender) {
             $demo['sex'] = $request->gender;
@@ -1148,6 +1156,10 @@ class ReportController extends Controller
         }
         if ($request->education_level) {
             $demo['education_level'] = $request->education_level;
+        }
+        if ($request->accommodation_id) {
+            $demo['accomodation_id'] = $request->accommodation_id;
+            
         }
         if ($request->occupation_status) {
             $demo['occupation_status'] = $request->occupation_status;
@@ -1173,12 +1185,21 @@ class ReportController extends Controller
                         ->where('type_diagnosis_id', $request->diagnosis_id)
                         ->where(DB::raw("(STR_TO_DATE(created_at,'%Y-%m-%d'))"), $v['booking_date'])
                         ->get()->toArray();
+
                 }
 
                 $staff = StaffManagement::select('name')->where('id', $v['assign_team'])->get()->toArray();
                 $query = PatientRegistration::where('id', $v['patient_mrn_id']);
                 if ($demo)
                     $query->where($demo);
+                if ($age)
+                    if($age['agemin'] && $age['agemax']!=NULL){
+                    $query->whereBetween('age',[$age['agemin'],$age['agemax']]);
+                    }else if($age['agemin']==NULL) {
+                        $query->where('age','<=',$age['agemax']);
+                    }else if($age['agemax']==NULL) {
+                        $query->where('age','>=',$age['agemin']);
+                    }
                 if ($request->referral_type != 0)
                     $query->where('referral_type', $request->referral_type);
 
@@ -1194,9 +1215,11 @@ class ReportController extends Controller
                     $marital = GeneralSetting::where(['id' => $patientInfo['marital_id']])->get()->toArray();
                     $accomodation = GeneralSetting::where(['id' => $patientInfo['accomodation_id']])->get()->toArray();
                     $education_level = GeneralSetting::where(['id' => $patientInfo['education_level']])->get()->toArray();
-                    $occupation_status = GeneralSetting::where(['id' => $patientInfo['occupation_status']])->get()->toArray();
                     $fee_exemption_status = GeneralSetting::where(['id' => $patientInfo['fee_exemption_status']])->get()->toArray();
+
+                    $occupation_status = GeneralSetting::where(['id' => $patientInfo['occupation_status']])->get()->toArray();
                     $occupation_sector = GeneralSetting::where(['id' => $patientInfo['occupation_sector']])->get()->toArray();
+                    
                     $reftyp = GeneralSetting::where(['id' => $patientInfo['referral_type']])->get()->toArray();
                     $city_name = ($pc) ? $pc[0]['city_name'] : 'NA';
                     $state_name = ($st) ? $st[0]['state_name'] : 'NA';
@@ -1211,18 +1234,23 @@ class ReportController extends Controller
                     $occupation_statusValue = ($occupation_status) ? $occupation_status[0]['section_value'] : 'NA';
                     $fee_exemption_statusValue = ($fee_exemption_status) ? $fee_exemption_status[0]['section_value'] : 'NA';
                     $occupation_sectorValue = ($occupation_sector) ? $occupation_sector[0]['section_value'] : 'NA';
-                    $apt = PatientAppointmentType::where(['id' => $v['appointment_type']])->get()->toArray();
+                    $apt = ServiceRegister::where(['id' => $v['appointment_type']])->get()->toArray();
                     $vt = PatientAppointmentVisit::where('id', $v['type_visit'])->get()->toArray();
                     $cp = PatientAppointmentCategory::where('id', $v['patient_category'])->get()->toArray();
+                    
                     if ($notes)
                         $icd = IcdCode::where('id', $notes[0]['code_id'])->get()->toArray();
-                    $appointment_type = ($apt) ? $apt[0]['appointment_type_name'] : 'NA';
+                    $appointment_type = ($apt) ? $apt[0]['service_name'] : 'NA';
                     $visit_type = ($vt) ? $vt[0]['appointment_visit_name'] : 'NA';
                     $category = ($cp) ? $cp[0]['appointment_category_name'] : 'NA';
                     $result[$index]['No']=$index+1;
                     $result[$index]['Registration_date'] = date('d/m/Y', strtotime($patientInfo['created_at']));
                     $result[$index]['Registration_Time'] = date('h:i:s A', strtotime($patientInfo['created_at']));
-                    $result[$index]['nric_no'] = $patientInfo['nric_no'];
+                    if($patientInfo['nric_no']==NULL){
+                        $result[$index]['nric_no'] = $patientInfo['passport_no'];
+                    }else{
+                        $result[$index]['nric_no'] = $patientInfo['nric_no'];
+                    }
                     $result[$index]['Name'] = $patientInfo['name_asin_nric'];
                     $result[$index]['Attendance_status'] = $v['appointment_status'];
                     // $result[$index]['Attendance_status'] = get_appointment_status($v['appointment_status']);
@@ -1257,7 +1285,7 @@ class ReportController extends Controller
                 }
             }
         }
-        // dd($result);
+        //  dd($result);
         if ($result) {
             $totalReports = count($result);
             $filePath = '';
