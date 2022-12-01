@@ -1357,7 +1357,7 @@ class PatientAppointmentDetailsController extends Controller
             ELSE DATE_FORMAT(job_interest_checklist.created_at, '%h:%i PM')
        END)  as time"),
                 DB::raw("DATE_FORMAT(job_interest_checklist.created_at, '%d-%m-%Y') as date"),
-                DB::raw("'1' as status"),
+                DB::raw('job_interest_checklist.status'),
                 'job_interest_checklist.id',
                 'users.name',
                 DB::raw("'JobInterestCheckList' as type"),
@@ -1529,7 +1529,7 @@ class PatientAppointmentDetailsController extends Controller
             ELSE DATE_FORMAT(cps_referral_form.created_at, '%h:%i PM')
        END)  as time"),
                 DB::raw("DATE_FORMAT(cps_referral_form.created_at, '%d-%m-%Y') as date"),
-                DB::raw("'1' as status"),
+                DB::raw('cps_referral_form.status'),
                 'cps_referral_form.id',
                 'users.name',
                 DB::raw("'CpsRefferalForm' as type"),
@@ -1567,7 +1567,7 @@ class PatientAppointmentDetailsController extends Controller
             ELSE DATE_FORMAT(psychology_referral.created_at, '%h:%i PM')
        END)  as time"),
                 DB::raw("DATE_FORMAT(psychology_referral.created_at, '%d-%m-%Y') as date"),
-                DB::raw("'1' as status"),
+                DB::raw('psychology_referral.status'),
                 'psychology_referral.id',
                 'users.name',
                 DB::raw("'PsychologyRefferalForm' as type"),
