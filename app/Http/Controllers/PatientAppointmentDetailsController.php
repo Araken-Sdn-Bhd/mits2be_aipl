@@ -1244,6 +1244,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("'1' as status"),
                 'patient_care_paln.id',
                 'users.name',
+                'patient_care_paln.status',
                 DB::raw("'PatientCarePlanAndCaseReviewForm' as type"),
                 DB::raw("'Patient Care Plan And Case Review Form' as section_name"),
                 "patient_care_paln.created_at"

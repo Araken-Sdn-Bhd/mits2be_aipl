@@ -235,7 +235,7 @@ Route::group(['prefix' => 'address'], function () {
     Route::post('/{id}/countryWiseStateList', [AddressManagementController::class, 'countryWiseStateList']);
     Route::post('/{id}/stateWisePostcodeList', [AddressManagementController::class, 'stateWisePostcodeList']);
     Route::post('/getStateCityByPostcode', [AddressManagementController::class, 'getStateCityByPostcode']);
-    Route::get('/stateWisePostcodeList_', [AddressManagementController::class, 'stateWisePostcodeList']);
+    Route::get('/stateWisePostcodeList_', [AddressManagementController::class, 'stateWisePostcodeList_']);
     Route::post('/{id}/getCityList', [AddressManagementController::class, 'getCityList']);
     Route::post('/{id}/getPostcodeListById', [AddressManagementController::class, 'getPostcodeListById']);
     Route::get('/getAllCityList', [AddressManagementController::class, 'getAllCityList']);
