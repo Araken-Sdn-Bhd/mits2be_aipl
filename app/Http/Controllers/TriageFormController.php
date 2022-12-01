@@ -14,8 +14,8 @@ class TriageFormController extends Controller
 {
     public function store(Request $request)
     {
-        dd($request->status);
-        if ($request->status == 1) {
+
+        if ($request->status == '1') {
             $validator = Validator::make($request->all(), [
                 'added_by' => 'required|integer',
                 'patient_mrn_id' => 'required|integer',
@@ -157,7 +157,7 @@ class TriageFormController extends Controller
                     return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
                 }
             }
-        } else if ($request->status == 0) {
+        } else if ($request->status == '0') {
             
             $validator = Validator::make($request->all(), [
                 'added_by' => 'required|integer',
@@ -273,22 +273,7 @@ class TriageFormController extends Controller
                         'status' => "0",
                         'appointment_details_id' => $request->appId,
                     ];
-    
-                    $validateTriageForm = [];
-    
-                    if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
-                        $validateTriageForm['services_id'] = 'required';
-                        $triageform['services_id'] =  $request->services_id;
-                    } else if ($request->category_services == 'clinical-work') {
-                        $validateTriageForm['code_id'] = 'required';
-                        $triageform['code_id'] =  $request->code_id;
-                        $validateTriageForm['sub_code_id'] = 'required';
-                        $triageform['sub_code_id'] =  $request->sub_code_id;
-                    }
-                    $validator = Validator::make($request->all(), $validateTriageForm);
-                    if ($validator->fails()) {
-                        return response()->json(["message" => $validator->errors(), "code" => 422]);
-                    }
+
                     if($request->id){
                         TriageForm::where(['id' => $request->id])->update($triageform);
                         return response()->json(["message" => "Triage Updated Successfully!", "code" => 200]);
