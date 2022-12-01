@@ -134,7 +134,7 @@ class PatientAppointmentDetailsController extends Controller
                 // EMAIL
                 $app_request = AppointmentRequest::where('nric_or_passportno', $nric_or_passportno)
                                 ->select('name','email')->get();
-                
+
                 $hospital_branch = HospitalBranchManagement::where('id', $request->branch_id)
                                 ->select('hospital_branch_name')->get();
                 if($app_request->count() != 0)
@@ -148,20 +148,20 @@ class PatientAppointmentDetailsController extends Controller
                         'date' => $bookingDate,
                         'time' => $bookingTime,
                     );
-                    
+
                     try{
                         Mail::to($data['email'])->send(new AppointmentRequestMail($data));
                     } catch (\Exception $err) {
                         var_dump($err);
-        
+
                         return response([
                             'message' => 'Error In Email Configuration: ' . $err,
                             'code' => 500
                         ]);
                     }
                 };
-                
-                
+
+
 
                 return response()->json(["message" => "Patient Appointment Created Successfully!", "code" => 200]);
             } else {
@@ -228,11 +228,11 @@ class PatientAppointmentDetailsController extends Controller
                     'message' =>  'Request for appointment(s)',
                 ];
                 $HOD = Notifications::insert($notifi);
-                
+
                 //EMAIL
                 $app_request = AppointmentRequest::where('nric_or_passportno', $getPatientIC[0])
                                 ->select('name','email')->get();
-                
+
                 $hospital_branch = HospitalBranchManagement::where('id', $request->branch_id)
                                 ->select('hospital_branch_name')->get();
                 if($app_request->count() != 0)
@@ -246,12 +246,12 @@ class PatientAppointmentDetailsController extends Controller
                         'date' => $bookingDate,
                         'time' => $bookingTime,
                     );
-                    
+
                     try{
                         Mail::to($data['email'])->send(new AppointmentRequestMail($data));
                     } catch (\Exception $err) {
                         var_dump($err);
-        
+
                         return response([
                             'message' => 'Error In Email Configuration: ' . $err,
                             'code' => 500
@@ -1357,7 +1357,7 @@ class PatientAppointmentDetailsController extends Controller
             ELSE DATE_FORMAT(job_interest_checklist.created_at, '%h:%i PM')
        END)  as time"),
                 DB::raw("DATE_FORMAT(job_interest_checklist.created_at, '%d-%m-%Y') as date"),
-                DB::raw("'1' as status"),
+                DB::raw('job_interest_checklist.status'),
                 'job_interest_checklist.id',
                 'users.name',
                 DB::raw("'JobInterestCheckList' as type"),
@@ -1529,7 +1529,7 @@ class PatientAppointmentDetailsController extends Controller
             ELSE DATE_FORMAT(cps_referral_form.created_at, '%h:%i PM')
        END)  as time"),
                 DB::raw("DATE_FORMAT(cps_referral_form.created_at, '%d-%m-%Y') as date"),
-                DB::raw("'1' as status"),
+                DB::raw('cps_referral_form.status'),
                 'cps_referral_form.id',
                 'users.name',
                 DB::raw("'CpsRefferalForm' as type"),
@@ -1567,7 +1567,7 @@ class PatientAppointmentDetailsController extends Controller
             ELSE DATE_FORMAT(psychology_referral.created_at, '%h:%i PM')
        END)  as time"),
                 DB::raw("DATE_FORMAT(psychology_referral.created_at, '%d-%m-%Y') as date"),
-                DB::raw("'1' as status"),
+                DB::raw('psychology_referral.status'),
                 'psychology_referral.id',
                 'users.name',
                 DB::raw("'PsychologyRefferalForm' as type"),
@@ -3839,7 +3839,7 @@ class PatientAppointmentDetailsController extends Controller
 
     public function fetchPatientStaffById(Request $request)
     {
-       
+
         $validator = Validator::make($request->all(), [
             'patient_id' => 'required|integer'  //patient_id is treated as staff id
         ]);
@@ -3862,12 +3862,12 @@ class PatientAppointmentDetailsController extends Controller
         }
         //dd($qry);
 
-        $qry2 = "select d.id patient_appointment_id, pac.appointment_category_name ,csr.section_value csr_ , oc.section_value oc_ , 
+        $qry2 = "select d.id patient_appointment_id, pac.appointment_category_name ,csr.section_value csr_ , oc.section_value oc_ ,
         ls.section_value ls_ , d.*,c.* from (select distinct(b.patient_mrn_id) as patient, b.* from (select * from ($qry) a) b) c
-        left join (select * from patient_appointment_details order by patient_mrn_id ,created_at desc) d on c.appointment_details_id=d.id 
+        left join (select * from patient_appointment_details order by patient_mrn_id ,created_at desc) d on c.appointment_details_id=d.id
         left join patient_appointment_category pac on d.patient_category=pac.id
-        left join general_setting csr on c.csr=csr.id 
-        left join general_setting oc on c.oc=oc.id 
+        left join general_setting csr on c.csr=csr.id
+        left join general_setting oc on c.oc=oc.id
         left join general_setting ls on c.ls=ls.id
         order by c.patient_mrn_id , DATE_FORMAT(c.created_at ,'%Y%m%d%h%i%s') desc LIMIT 18446744073709551615";
 
@@ -3879,20 +3879,20 @@ class PatientAppointmentDetailsController extends Controller
         //    select * from patient_appointment_details order by patient_mrn_id ,created_at desc
         //) d on c.pad_id=d.id left join general_setting csr on c.csr=csr.id left join general_setting oc on c.oc=oc.id left join general_setting ls on c.ls=ls.id
         //left join patient_appointment_category pac on d.patient_category=pac.id;";
-    
-      
+
+
          //$staff_patient_list  = DB::select(DB::raw($qry2));
 
          $staff_patient_list= DB::select( DB::raw($qry2));
-        
-       
+
+
         return response()->json(["message" => "List", 'Data' => $staff_patient_list, "code" => 200]);
-      
+
     }
 
      public function fetchPatientListByStaffId(Request $request)
     {
-        
+
         $validator = Validator::make($request->all(), [
             'apid' => 'required|integer',
             'type' => 'required|string',
@@ -3925,7 +3925,7 @@ class PatientAppointmentDetailsController extends Controller
             ->get();
         }
         if ($request->type == "CounsellorClerkingNote") {
-            
+
             $list = DB::table('patient_counsellor_clerking_notes')
             ->join('users', 'patient_counsellor_clerking_notes.added_by', '=', 'users.id')
             ->join('patient_appointment_details', 'patient_counsellor_clerking_notes.appointment_details_id', '=', 'patient_appointment_details.id')
@@ -3946,7 +3946,7 @@ class PatientAppointmentDetailsController extends Controller
             ->where('patient_counsellor_clerking_notes.id', $request->tbid)
             ->where('patient_appointment_details.id', $request->apid)
             ->get();
-            
+
         }
         if ($request->type == "PatientIndexForm") {
             $list= DB::table('patient_index_form')
@@ -3971,7 +3971,7 @@ class PatientAppointmentDetailsController extends Controller
             ->where('patient_appointment_details.id', $request->apid)
             ->get();
         }
-       
+
         if ($request->type == "PsychiatricProgressNote") {
             $list  = DB::table('psychiatric_progress_note')
             ->join('users', 'psychiatric_progress_note.added_by', '=', 'users.id')
@@ -5090,10 +5090,10 @@ class PatientAppointmentDetailsController extends Controller
     public function deletePatientListByStaffId(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            
+
             'type' => 'required',
             'tbid' => 'required',
-           
+
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -5110,27 +5110,27 @@ class PatientAppointmentDetailsController extends Controller
         else if ($request->type == "PatientIndexForm") {
 
             PatientIndexForm::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-           
+
         }
 
         else if ($request->type == "PsychiatricProgressNote") {
 
             PsychiatricProgressNote::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-           
+
         }
         else if ($request->type == "CPSProgressNote") {
 
             CpsProgressNote::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-          
+
         }
         else if ($request->type == "SEProgressNote") {
             CpsProgressNote::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-          
+
 
         }
         else if ($request->type == "CounsellingProgressNote") {
             CounsellingProgressNote::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-          
+
 
         }
         else if ($request->type == "EtpProgressNote") {
@@ -5138,93 +5138,93 @@ class PatientAppointmentDetailsController extends Controller
         }
         else  if ($request->type == "JobClubProgressNote") {
             JobClubProgressNote::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-          
+
         }
         else  if ($request->type == "ConsultationDischargeNote") {
             ConsultationDischargeNote::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-          
+
         }
         else  if ($request->type == "RehabDischargeNote") {
             RehabDischargeNote::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-          
+
         }
         else if ($request->type == "CpsDischargeNote") {
             CpsDischargeNote::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-          
+
         }
 
         else  if ($request->type == "PatientCarePlanAndCaseReviewForm") {
             PatientCarePaln::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-           
+
         }
         else  if ($request->type == "JobStartReport") {
             JobStartForm::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-          
+
         }
         else  if ($request->type == "JobEndReport") {
             JobStartForm::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-        
+
         }
         else  if ($request->type == "JobTransitionReport") {
 
             JobTransitionReport::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-           
+
         }
         else  if ($request->type == "LaserAssessment") {
             LASERAssesmenForm::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-          
+
         }
         else  if ($request->type == "TriageForm") {
             TriageForm::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-          
+
         }
         else if ($request->type == "JobInterestCheckList") {
             JobInterestChecklist::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-         
+
         }
         else if ($request->type == "WorkAnalysisForm") {
 
             WorkAnalysisForm::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-          
+
         }
         else if ($request->type == "ListOfJobClub") {
             ListJobClub::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-          
+
         }
         else  if ($request->type == "ListofEtp") {
             ListOfETP::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-         
+
         }
         else if ($request->type == "ListofJobSearch") {
 
             ListOfJobSearch::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-           
+
 
         }
         else if ($request->type == "LogMeetingWithEmployer") {
 
             LogMeetingWithEmployer::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-           
+
 
         }
         else if ($request->type == "ListofPreviousCurrentJob") {
 
             ListPreviousCurrentJob::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-           
+
 
         }
         else if ($request->type == "InternalReferralForm") {
             InternalReferralForm::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-           
+
 
         }
         else if ($request->type == "ExternalReferralForm") {
             ExternalReferralForm::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-         
+
         }
         else  if ($request->type == "CpsRefferalForm") {
             CPSReferralForm::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
-        
+
         }
         else if ($request->type == "OcctRefferalForm") {
             Occt_Referral_Form::where(['id' => $request->tbid])->update(['is_deleted' => 1 ]);
