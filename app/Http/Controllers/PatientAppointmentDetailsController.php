@@ -1879,7 +1879,7 @@ class PatientAppointmentDetailsController extends Controller
         }
         if ($request->type == "JobTransitionReport") {
             $list = JobTransitionReport::select('*')
-                ->where('patient_id', '=', $request->id)
+                ->where('id', '=', $request->id)
                 // ->where('status', '1')
                 ->get();
         }
