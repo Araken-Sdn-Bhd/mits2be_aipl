@@ -293,7 +293,6 @@ class PatientAppointmentDetailsController extends Controller
             'id' => 'required|integer',
             'nric_or_passportno' => 'required|string',
             'booking_date' => 'required',
-            'patient_mrn_id' => 'required',
             'booking_time' => 'required',
             'duration' => 'required|integer',
             'appointment_type' => 'required|integer',
