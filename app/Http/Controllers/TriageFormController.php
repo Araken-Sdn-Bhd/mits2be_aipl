@@ -159,75 +159,75 @@ class TriageFormController extends Controller
             }
         } else if ($request->status == '0') {
             
-            $validator = Validator::make($request->all(), [
-                'added_by' => 'required|integer',
-                'patient_mrn_id' => 'required|integer',
-                'risk_history_assressive' => '',
-                'risk_history_criminal' => '',
-                'risk_history_detereotation' => '',
-                'risk_history_neglect' => '',
-                'risk_history_suicidal_idea' => '',
-                'risk_history_suicidal_attempt' => '',
-                'risk_history_homicidal_idea' => '',
-                'risk_history_homicidal_attempt' => '',
-                'risk_history_aggressive_idea' => '',
-                'risk_history_aggressive_attempt' => '',
-                'risk_social_has_no_family' => '',
-                'risk_homeless' => '',
-                'capacity_cannot_give_commitment' => '',
-                'capacity_showed_no_interest' => '',
-                'treatment_checked' => '',
-                'treatment_given_appointment' => '',
-                'treatment_given_regular' => '',
-                'placement_referred' => '',
-                'placement_discharge' => '',
-                'screening_id' => '',
-                'score' => '',
+            // $validator = Validator::make($request->all(), [
+            //     'added_by' => 'required|integer',
+            //     'patient_mrn_id' => 'required|integer',
+            //     'risk_history_assressive' => '',
+            //     'risk_history_criminal' => '',
+            //     'risk_history_detereotation' => '',
+            //     'risk_history_neglect' => '',
+            //     'risk_history_suicidal_idea' => '',
+            //     'risk_history_suicidal_attempt' => '',
+            //     'risk_history_homicidal_idea' => '',
+            //     'risk_history_homicidal_attempt' => '',
+            //     'risk_history_aggressive_idea' => '',
+            //     'risk_history_aggressive_attempt' => '',
+            //     'risk_social_has_no_family' => '',
+            //     'risk_homeless' => '',
+            //     'capacity_cannot_give_commitment' => '',
+            //     'capacity_showed_no_interest' => '',
+            //     'treatment_checked' => '',
+            //     'treatment_given_appointment' => '',
+            //     'treatment_given_regular' => '',
+            //     'placement_referred' => '',
+            //     'placement_discharge' => '',
+            //     'screening_id' => '',
+            //     'score' => '',
     
-                'appointment_date' => 'required',
-                'appointment_time' => 'required',
-                'appointment_duration' => 'required|integer',
-                'appointment_type' => 'required|integer',
-                'appointment_type_visit' => 'required|integer',
-                'appointment_patient_category' => 'required|integer',
-                'appointment_assign_team' => 'required',
+            //     'appointment_date' => 'required',
+            //     'appointment_time' => 'required',
+            //     'appointment_duration' => 'required|integer',
+            //     'appointment_type' => 'required|integer',
+            //     'appointment_type_visit' => 'required|integer',
+            //     'appointment_patient_category' => 'required|integer',
+            //     'appointment_assign_team' => 'required',
     
-                'location_services_id' => 'required|integer',
-                'services_id' => '',
-                'code_id' => '',
-                'sub_code_id' => '',
-                'type_diagnosis_id' => 'required|integer',
-                'category_services' => 'required|string',
-                'complexity_services_id' => '',
-                'outcome_id' => '',
-                'medication_des' => '',
-                'id' => '',
-                'appointment_details_id' => '',
-            ]);
-            if ($validator->fails()) {
-                return response()->json(["message" => $validator->errors(), "code" => 422]);
-            }
+            //     'location_services_id' => 'required|integer',
+            //     'services_id' => '',
+            //     'code_id' => '',
+            //     'sub_code_id' => '',
+            //     'type_diagnosis_id' => 'required|integer',
+            //     'category_services' => 'required|string',
+            //     'complexity_services_id' => '',
+            //     'outcome_id' => '',
+            //     'medication_des' => '',
+            //     'id' => '',
+            //     'appointment_details_id' => '',
+            // ]);
+            // if ($validator->fails()) {
+            //     return response()->json(["message" => $validator->errors(), "code" => 422]);
+            // }
     
-            $patient_mrn_id = $request->patient_mrn_id;
-            $chkPoint1 =  PatientRegistration::where(function ($query) use ($patient_mrn_id) {
-                $query->where('id', '=', $patient_mrn_id);
-            })->where('status', '1')->get();
+            // $patient_mrn_id = $request->patient_mrn_id;
+            // $chkPoint1 =  PatientRegistration::where(function ($query) use ($patient_mrn_id) {
+            //     $query->where('id', '=', $patient_mrn_id);
+            // })->where('status', '1')->get();
             
-            if ($chkPoint1->count() == 0) {
-                return response()->json(["message" => "This user is not registered", "code" => 401]);
-            } else {
-                $appointment_date = $request->appointment_date;
-                $appointment_time = $request->appointment_time;
-                $appointment_assign_team = $request->appointment_assign_team;
-                $chkPoint =  PatientAppointmentDetails::where(function ($query) use ($appointment_date, $appointment_time, $appointment_assign_team) {
-                    $query->where('booking_date', '=', $appointment_date)->where('booking_time', '=', $appointment_time)->where('assign_team', '=', $appointment_assign_team);
-                })->where('status', '1')->get();
+            // if ($chkPoint1->count() == 0) {
+            //     return response()->json(["message" => "This user is not registered", "code" => 401]);
+            // } else {
+            //     $appointment_date = $request->appointment_date;
+            //     $appointment_time = $request->appointment_time;
+            //     $appointment_assign_team = $request->appointment_assign_team;
+            //     $chkPoint =  PatientAppointmentDetails::where(function ($query) use ($appointment_date, $appointment_time, $appointment_assign_team) {
+            //         $query->where('booking_date', '=', $appointment_date)->where('booking_time', '=', $appointment_time)->where('assign_team', '=', $appointment_assign_team);
+            //     })->where('status', '1')->get();
     
-                $chkPointfortriage =  TriageForm::where(function ($query) use ($appointment_date, $appointment_time, $appointment_assign_team) {
-                    $query->where('appointment_date', '=', $appointment_date)->where('appointment_time', '=', $appointment_time)->where('appointment_assign_team', '=', $appointment_assign_team);
-                })->where('status', '1')->get();
+            //     $chkPointfortriage =  TriageForm::where(function ($query) use ($appointment_date, $appointment_time, $appointment_assign_team) {
+            //         $query->where('appointment_date', '=', $appointment_date)->where('appointment_time', '=', $appointment_time)->where('appointment_assign_team', '=', $appointment_assign_team);
+            //     })->where('status', '1')->get();
     
-                if ($chkPoint->count() == 0 && $chkPointfortriage->count() == 0) {
+            //     if ($chkPoint->count() == 0 && $chkPointfortriage->count() == 0) {
                     $triageform = [
                         'added_by' => $request->added_by,
                         'patient_mrn_id' => $request->patient_mrn_id,
@@ -281,10 +281,11 @@ class TriageFormController extends Controller
                     TriageForm::firstOrCreate($triageform);
                     return response()->json(["message" => "Triage Created Successfully!", "code" => 200]);
                     }
-                } else {
-                    return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
-                }
-            }
-        }
+                 } 
+                //  else {
+                //     return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
+                // }
+            // }
+        // }
     }
 }
