@@ -388,7 +388,7 @@ Route::group(['prefix' => 'patient-registration'], function () {
     Route::post('/getPatientRegistrationById', [PatientRegistrationController::class, 'getPatientRegistrationById']);
     Route::post('/update', [PatientRegistrationController::class, 'updatePatientRegistration']);
     Route::get('/getPatientRegistrationList', [PatientRegistrationController::class, 'getPatientRegistrationList']);
-    Route::get('/getPatientRegistrationListByScreening', [PatientRegistrationController::class, 'getPatientRegistrationListByScreening']);
+    Route::post('/getPatientRegistrationListByScreening', [PatientRegistrationController::class, 'getPatientRegistrationListByScreening']);
     Route::get('/validatePatientNric',[PatientRegistrationController::class, 'validatePatientNric']);
     Route::post('/getTransactionlog', [PatientRegistrationController::class, 'getTransactionlog']);
     Route::post('/getPatientRegistrationByIdShortDetails', [PatientRegistrationController::class, 'getPatientRegistrationByIdShortDetails']);
@@ -421,7 +421,7 @@ Route::group(['prefix' => 'patient-appointment-details'], function () {
     Route::post('/add', [PatientAppointmentDetailsController::class, 'store']);
     Route::post('/addByPID', [PatientAppointmentDetailsController::class, 'storeByPID']);
     Route::get('/list', [PatientAppointmentDetailsController::class, 'getPatientAppointmentDetailsList']);
-    Route::get('/todaylist', [PatientAppointmentDetailsController::class, 'getPatientAppointmentDetailsTodayList']);
+    Route::post('/todaylist', [PatientAppointmentDetailsController::class, 'getPatientAppointmentDetailsTodayList']);
     Route::post('/update', [PatientAppointmentDetailsController::class, 'update']);
     Route::post('/remove', [PatientAppointmentDetailsController::class, 'remove']);
     Route::post('/getPatientAppointmentDetailsListById', [PatientAppointmentDetailsController::class, 'getPatientAppointmentDetailsListById']);
@@ -470,7 +470,7 @@ Route::group(['prefix' => 'patient-suicidal-risk-assessment'], function () {
 });
 Route::group(['prefix' => 'appointment-request'], function () {
     Route::post('/add', [AppointmentRequestController::class, 'addRequest']);
-    Route::get('/get', [AppointmentRequestController::class, 'getRequestList']);
+    Route::post('/get', [AppointmentRequestController::class, 'getRequestList']);
 });
 
 Route::group(['prefix' => 'occt-referral'], function () {
