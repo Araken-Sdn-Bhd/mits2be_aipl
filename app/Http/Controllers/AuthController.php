@@ -248,7 +248,6 @@ class AuthController extends Controller
 
     public function loginEmployer(Request $request)
     {
-
         app('log')->debug($request->all());
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
@@ -259,6 +258,7 @@ class AuthController extends Controller
         }
 
         if (!$token = auth()->attempt($validator->validated())) {
+           
             $id = User::select('id')->where('email', $request->email)->pluck('id');
 
             $systemattempt = SystemSetting::select('variable_value')->where('section', 'login-attempt')->pluck('variable_value');
@@ -306,9 +306,8 @@ class AuthController extends Controller
             }
             return response()->json(['message' => 'Unauthorized', "code" => 401], 401);
         }
-
-        $useradmin = User::select('role')->where('email', $request->email)->pluck('role');
-        $id = User::select('id')->where('email', $request->email)->pluck('id');
+        
+        $id = User::select('id')->where('email', $request->email)->where('role','employer')->pluck('id');
         $id_block_user = UserBlock::select('id')->where('user_id', $id)->pluck('id');
         $branch= "";
         $tmp = "/app/Modules/Dashboard/high-level-employer";
