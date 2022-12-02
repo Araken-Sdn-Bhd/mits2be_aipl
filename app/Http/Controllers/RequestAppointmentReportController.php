@@ -28,7 +28,7 @@ class RequestAppointmentReportController extends Controller
     public function getRequestAppointmentReport(Request $request)
     {
  
-        $response = AppointmentRequest::select('name','nric_or_passportno','address','contact_no','email', 'created_at')
+        $response = AppointmentRequest::select('*')
         ->whereBetween('created_at', [$request->fromDate, $request->toDate])
             ->where('branch_id','=', $request->branch_id)
         ->where('status', '1');
@@ -39,8 +39,23 @@ class RequestAppointmentReportController extends Controller
         foreach ($ssh as $k => $v) {
         $result[$index]['No']=$index+1;
         $result[$index]['name']=$v['name'];
-        $result[$index]['nric_or_passportno']=$v['nric_or_passportno'];
-        $result[$index]['address']=$v['address'];
+
+        if($v['nric_or_passportno']==NULL){
+            $result[$index]['nric_or_passportno']='NA';
+        }else{
+            $result[$index]['nric_or_passportno']=$v['nric_or_passportno'];
+        }
+
+     
+        
+        if($v['address']==NULL && $v['address1']==NULL){
+            $result[$index]['address']='NA';
+        }else if($v['address']==NULL||$v['address1']==NULL){  
+            $result[$index]['address']=$v['address'].$v['address1'];
+        }else{
+            $result[$index]['address']=$v['address'].', '.$v['address1'];
+        }
+
         $result[$index]['contact_no']=$v['contact_no'];
         $result[$index]['email']=$v['email'];
         $result[$index]['created_at']=$v['created_at'];
