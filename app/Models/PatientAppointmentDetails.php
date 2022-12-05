@@ -16,7 +16,7 @@ class PatientAppointmentDetails extends Model
 
     public function patient()
     {
-        return $this->belongsTo(PatientRegistration::class, "patient_mrn_id", "id")->select('id', 'name_asin_nric', 'salutation_id', 'nric_no', 'patient_mrn');
+        return $this->belongsTo(PatientRegistration::class, "patient_mrn_id", "id")->select('id', 'name_asin_nric', 'salutation_id', 'nric_no', 'patient_mrn','branch_id');
     }
 
     public function service()

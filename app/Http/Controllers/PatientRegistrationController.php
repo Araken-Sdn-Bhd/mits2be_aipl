@@ -415,14 +415,30 @@ class PatientRegistrationController extends Controller
         return response()->json(["message" => "Patients List", 'list' => $result, "code" => 200]);
     }
 
-    public function getPatientRegistrationListByScreening()
+    public function getPatientRegistrationListByScreening(Request $request)
     {
+        $role = DB::table('staff_management')
+        ->select('roles.code')
+        ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+        ->where('staff_management.email', '=', $request->email)
+        ->first();
+
+        if($role->code == 'superadmin'){
         $list = PatientRegistration::where('status', '=', '1')->where('patient_need_triage_screening', '=', '1')
             ->with('salutation:section_value,id')->with('service:service_name,id')
             ->with('appointments', function ($query) {
                 $query->where('appointment_status', '=', '1');
             })
             ->get()->toArray();
+        }else{
+            $list = PatientRegistration::where('status', '=', '1')->where('branch_id',$request->branch_id)->where('patient_need_triage_screening', '=', '1')
+            ->with('salutation:section_value,id')->with('service:service_name,id')
+            ->with('appointments', function ($query) {
+                $query->where('appointment_status', '=', '1');
+            })
+            ->get()->toArray();
+
+        }
         $result = [];
         foreach ($list as $key => $val) {
             $result[$key]['patient_mrn'] = $val['patient_mrn'] ?? 'NA';
