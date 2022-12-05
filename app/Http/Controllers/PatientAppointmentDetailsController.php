@@ -453,7 +453,7 @@ class PatientAppointmentDetailsController extends Controller
             ->toArray();
         }else{
         $resultSet= DB::table('patient_appointment_details as pad')
-        ->select('pad.id','pad.added_by', 'pad.nric_or_passportno', 'pad.patient_mrn_id', 'pad.booking_date', 'pad.booking_time', 
+        ->select('pad.id','pad.added_by', 'pad.nric_or_passportno', 'pad.patient_mrn_id', 'pad.booking_date', 'pad.booking_time',
         'pad.duration', 'pad.appointment_type','pad.type_visit', 'pad.patient_category', 'pad.assign_team','pad.staff_id', 'pad.appointment_status')
         ->join('service_register','pad.appointment_type','=','service_register.id')
         ->join('patient_registration','pad.patient_mrn_id','=','patient_registration.id')
@@ -570,18 +570,18 @@ class PatientAppointmentDetailsController extends Controller
 
             $query= DB::table('patient_appointment_details as pad')
                 ->select('pad.id as appointment_id','pad.added_by', 'pad.nric_or_passportno', 'pad.patient_mrn_id', 'pad.booking_date as appointment_date',
-                 'pad.booking_time as appointment_time', 
-                'pad.duration', 'pad.appointment_type','pad.type_visit', 'pad.patient_category', 'pad.assign_team','pad.staff_id', 
+                 'pad.booking_time as appointment_time',
+                'pad.duration', 'pad.appointment_type','pad.type_visit', 'pad.patient_category', 'pad.assign_team','pad.staff_id',
                 'pad.appointment_status','service_register.service_name as service','hospital_branch_team_details.team_name','staff_management.name as staffname',
                 'patient_registration.*')
                 ->join('service_register','pad.appointment_type','=','service_register.id')
                 ->join('patient_registration','pad.patient_mrn_id','=','patient_registration.id')
                 ->join('hospital_branch_team_details','pad.assign_team','=','hospital_branch_team_details.id')
                 ->join('staff_management','pad.staff_id','=','staff_management.id')
-                ->where('pad.status','!=','0'); 
+                ->where('pad.status','!=','0');
 
                         if($role->code != 'superadmin'){
-                           
+
                             $query->where('patient_registration.branch_id',$request->branch_id);
                         }
                         if ($request->service_id != '0') {
@@ -596,8 +596,8 @@ class PatientAppointmentDetailsController extends Controller
                             ->orWhere('patient_registration.name_asin_nric', 'LIKE', '%' . $searchWord . '%')
                             ->orWhere('patient_registration.nric_no', 'LIKE', '%' . $searchWord . '%')
                             ->orWhere('patient_registration.passport_no', 'LIKE', '%' . $searchWord . '%');
-                        } 
-                
+                        }
+
                 $resultSet=$query->get();
                 foreach ($resultSet as $key){
                    $key->patient_mrn = $key->patient_mrn ??  'NA';
@@ -613,7 +613,7 @@ class PatientAppointmentDetailsController extends Controller
                    $key->team_name = $key->team_name ?? 'NA';
                    $key->staffname = $key->staffname ?? 'NA';
                 }
-        
+
         return response()->json(["message" => "Appointment List.", 'list' => $resultSet, "code" => 200]);
     }
 
@@ -2088,7 +2088,7 @@ class PatientAppointmentDetailsController extends Controller
         }
         if ($request->type == "LogMeetingWithEmployer") {
             $list = LogMeetingWithEmployer::select('*')
-                ->where('patient_id', '=', $request->id)
+                ->where('id', '=', $request->id)
                 // ->where('status', '1')
                 ->get();
         }
