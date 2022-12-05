@@ -45,74 +45,311 @@ use App\Models\JobStartForm;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+use App\Models\PatientCounsellingClerkingNote;
+use App\Models\PsychiatricProgressNote;
+use App\Models\PatientIndexForm;
+use App\Models\CounsellingProgressNote;
+use App\Models\ConsultationDischargeNote;
+use App\Models\RehabDischargeNote;
+use App\Models\CpsDischargeNote;
+use App\Models\PatientCarePlan;
+use App\Models\JobEndReport;
+use App\Models\JobTransitionReport;
+use App\Models\LaserAssesmentForm;
+use App\Models\TriageForm;
+use App\Models\JobInterestChecklist;
+use App\Models\WorkAnalysisForm;
+use App\Models\ListJobClub;
+use App\Models\ListOfETP;
+use App\Models\ListPreviousCurrentJob;
+use App\Models\InternalReferralForm;
+use App\Models\ExternalReferralForm;
+use App\Models\CPSReferralForm;
+use App\Models\Occt_Referral_Form;
+use App\Models\PsychologyReferral;
+use App\Models\RehabReferralAndClinicalForm;
+
+
 
 class ReportController extends Controller
 {
     public function getSharpReport(Request $request)
     {
 
+        $age=[];
+            $demo = [];
+            if ($request->name) {
+                $demo['name_asin_nric'] = $request->name;
+            }
+            if ($request->citizenship) {
+                $demo['citizenship'] = $request->citizenship;
+            }
+            if ($request->Age) {
+                $age = GeneralSetting::where('id', $request->Age)->first();
+                $age['agemin']=$age['min_age'];
+                $age['agemax']=$age['max_age'];
+            }
+            if ($request->gender) {
+                $demo['sex'] = $request->gender;
+            }
+            if ($request->race) {
+                $demo['race_id'] = $request->race;
+            }
+            if ($request->religion) {
+                $demo['religion_id'] = $request->religion;
+            }
+            if ($request->marital_status) {
+                $demo['marital_id'] = $request->marital_status;
+            }
+            if ($request->education_level) {
+                $demo['education_level'] = $request->education_level;
+            }
+            if ($request->accommodation_id) {
+                $demo['accomodation_id'] = $request->accommodation_id;
+                
+            }
+            if ($request->occupation_status) {
+                $demo['occupation_status'] = $request->occupation_status;
+            }
+            if ($request->fee_exemption_status) {
+                $demo['fee_exemption_status'] = $request->fee_exemption_status;
+            }
+            if ($request->occupation_sector) {
+                $demo['occupation_sector'] = $request->occupation_sector;
+            }
 
-//             $patientArray = array_unique($patient);
-
-//             $demo = [];
-//             if ($request->name) {
-//                 $demo['name_asin_nric'] = $request->name;
-//             }
-//             if ($request->citizenship) {
-//                 $demo['citizenship'] = $request->citizenship;
-//             }
-//             if ($request->gender) {
-//                 $demo['sex'] = $request->gender;
-//             }
-//             if ($request->race) {
-//                 $demo['race_id'] = $request->race;
-//             }
-//             if ($request->religion) {
-//                 $demo['religion_id'] = $request->religion;
-//             }
-//             if ($request->marital_status) {
-//                 $demo['marital_id'] = $request->marital_status;
-//             }
-//             if ($request->accomodation) {
-//                 $demo['accomodation_id'] = $request->accomodation;
-//             }
-//             if ($request->education_level) {
-//                 $demo['education_level'] = $request->education_level;
-//             }
-//             if ($request->occupation_status) {
-//                 $demo['occupation_status'] = $request->occupation_status;
-//             }
-//             if ($request->fee_exemption_status) {
-//                 $demo['fee_exemption_status'] = $request->fee_exemption_status;
-//             }
-//             if ($request->occupation_sector) {
-//                 $demo['occupation_sector'] = $request->occupation_sector;
-//             }
 
 
 
                 $query = DB::table('sharp_registraion_final_step as srfs')
-                ->select('srfs.patient_id','p.name_asin_nric','p.address1','p.city_id','p.nric_no','p.state_id','p.postcode','p.mobile_no','p.birth_date','srfs.harm_date','srfs.harm_time')
+                ->select('srfs.id','srfs.risk','srfs.protective','srfs.self_harm','srfs.patient_id','p.name_asin_nric','p.address1','p.city_id','p.nric_no','p.state_id','p.postcode','p.mobile_no','p.birth_date','srfs.harm_date','srfs.harm_time')
                 ->leftjoin('patient_registration as p', function($join) {
                     $join->on('srfs.patient_id', '=', 'p.id');
-                })     
+                })
+                ->leftjoin('patient_risk_protective_answers as prpa', function($join) {
+                    $join->on('srfs.patient_id', '=', 'prpa.id');
+                })       
                 ->whereBetween('harm_date', [$request->fromDate, $request->toDate])
                 ->where('srfs.hospital_mgmt', '!=','')
                 ->where('srfs.status', '=','1');
+                if ($demo)
+                $query->where($demo);
+                
+                if ($age){
+                    
+                    
+                    if($age['agemin'] && $age['agemax']!=NULL){
+                    $query->whereBetween('age',[$age['agemin'],$age['agemax']]);
+                    }
+                    else if($age['agemin']==NULL) {
+                        $query->where('age','<=',$age['agemax']);
+                    }else if($age['agemax']==NULL) {
+                        $query->where('age','>=',$age['agemin']);
+                    }
+                }
                 $run_query = $query->get()->toArray();
                 $response  = json_decode(json_encode($run_query), true);
 
                 
                 $index = 0;
                 $result = [];
-                foreach ($response as $k => $v) {
-                    
-                    $sh=SharpRegistrationSelfHarmResult::select('section_value')
-                    ->where('patient_id','=',$v['patient_id'])
-                    ->where('section','=','Method of Self-Harm')->first();
                 
-  
-                    $method_self_harm1=str_contains($sh['section_value'],'Overdose\/Poisoning":true');
+                foreach ($response as $k => $v) {
+
+                    if($request->protective_factor!=NULL){
+                        $protective=$v['protective'];
+                        $count=0;
+
+                            foreach (explode('^',$protective) as $p) {
+                                $protectives[$count]['protectives']=$p;
+                                $count++;
+                            }
+
+                        if($request->protective_factor==13){
+                        $prpa=PatientRiskProtectiveAnswer::select('Answer')
+                        ->where('id','=',$protectives[0]['protectives']) 
+                        ->where('Answer','=','Yes')
+                        ->where('factor_type','=','protective')->first();
+                        }
+                        if($request->protective_factor==14){
+                        $prpa=PatientRiskProtectiveAnswer::select('Answer')
+                        ->where('id','=',$protectives[1]['protectives'])
+                        ->where('Answer','=','Yes')
+                        ->where('factor_type','=','protective')->first();
+                         }
+                        if($request->protective_factor==15){
+                        $prpa=PatientRiskProtectiveAnswer::select('Answer')
+                        ->where('id','=',$protectives[2]['protectives'])
+                        ->where('Answer','=','Yes') 
+                        ->where('factor_type','=','protective')->first();
+                        }
+                        if($request->protective_factor==16){
+                        $prpa=PatientRiskProtectiveAnswer::select('Answer')
+                        ->where('id','=',$protectives[3]['protectives'])
+                        ->where('Answer','=','Yes')
+                        ->where('Answer','=','Yes') 
+                        ->where('factor_type','=','protective')->first();
+                        }
+                        if($request->protective_factor==17){
+                        $prpa=PatientRiskProtectiveAnswer::select('Answer')
+                        ->where('id','=',$protectives[4]['protectives'])
+                        ->where('Answer','=','Yes') 
+                        ->where('factor_type','=','protective')->first();
+                        }
+                        if($request->protective_factor==18){
+                        $prpa=PatientRiskProtectiveAnswer::select('Answer')
+                        ->where('id','=',$protectives[5]['protectives'])
+                        ->where('Answer','=','Yes') 
+                        ->where('factor_type','=','protective')->first();
+                        }
+                        if(empty($prpa)){
+                        continue;
+                        }
+                
+                    }
+
+                    if($request->risk_factor!=NULL){
+                            $risk=$v['risk'];
+                            $count=0;
+                            foreach (explode('^',$risk) as $r) {
+                                $risks[$count]['risks']=$r; 
+                                $count++;
+                            } 
+                    
+                            if($request->risk_factor==1){
+                                $prpa2=PatientRiskProtectiveAnswer::select('Answer')
+                                ->where('id','=',$risks[0]['risks']) 
+                                ->where('Answer','=','Yes')
+                                ->where('factor_type','=','risk')->first();
+                                }
+                            if($request->risk_factor==2){
+                                $prpa2=PatientRiskProtectiveAnswer::select('Answer')
+                                ->where('id','=',$risks[1]['risks']) 
+                                ->where('Answer','=','Yes')
+                                ->where('factor_type','=','risk')->first();
+                                }
+                            if($request->risk_factor==3){
+                                $prpa2=PatientRiskProtectiveAnswer::select('Answer')
+                                ->where('id','=',$risks[2]['risks']) 
+                                ->where('Answer','=','Yes')
+                                ->where('factor_type','=','risk')->first();
+                                }
+                            if($request->risk_factor==4){
+                                $prpa2=PatientRiskProtectiveAnswer::select('Answer')
+                                ->where('id','=',$risks[3]['risks']) 
+                                ->where('Answer','=','Yes')
+                                ->where('factor_type','=','risk')->first();
+                                }
+                            if($request->risk_factor==5){
+                                $prpa2=PatientRiskProtectiveAnswer::select('Answer')
+                                ->where('id','=',$risks[4]['risks']) 
+                                ->where('Answer','=','Yes')
+                                ->where('factor_type','=','risk')->first();
+                                } 
+                            if($request->risk_factor==6){
+                                $prpa2=PatientRiskProtectiveAnswer::select('Answer')
+                                ->where('id','=',$risks[5]['risks']) 
+                                ->where('Answer','=','Yes')
+                                ->where('factor_type','=','risk')->first();
+                                } 
+                            if($request->risk_factor==7){
+                                 $prpa2=PatientRiskProtectiveAnswer::select('Answer')
+                                ->where('id','=',$risks[6]['risks']) 
+                                ->where('Answer','=','Yes')
+                                ->where('factor_type','=','risk')->first();
+                                } 
+                            if($request->risk_factor==8){
+                                $prpa2=PatientRiskProtectiveAnswer::select('Answer')
+                                ->where('id','=',$risks[7]['risks']) 
+                                ->where('Answer','=','Yes')
+                                ->where('factor_type','=','risk')->first();
+                                 } 
+                            if($request->risk_factor==9){
+                                $prpa2=PatientRiskProtectiveAnswer::select('Answer')
+                                ->where('id','=',$risks[8]['risks']) 
+                                ->where('Answer','=','Yes')
+                                ->where('factor_type','=','risk')->first();
+                                } 
+                            if($request->risk_factor==10){
+                                $prpa2=PatientRiskProtectiveAnswer::select('Answer')
+                                ->where('id','=',$risks[9]['risks']) 
+                                ->where('Answer','=','Yes')
+                                ->where('factor_type','=','risk')->first();
+                                }
+                            if($request->risk_factor==11){
+                                $prpa2=PatientRiskProtectiveAnswer::select('Answer')
+                                ->where('id','=',$risks[10]['risks']) 
+                                ->where('Answer','=','Yes')
+                                ->where('factor_type','=','risk')->first();
+                                }                              
+                            if($request->risk_factor==12){
+                                $prpa2=PatientRiskProtectiveAnswer::select('Answer')
+                                ->where('id','=',$risks[11]['risks']) 
+                                ->where('Answer','=','Yes')
+                                ->where('factor_type','=','risk')->first();
+                                } 
+                                if(empty($prpa2)){
+                                    continue;
+                                    }   
+                                            
+                    }
+                
+                    
+                
+                    $self_harm=$v['self_harm'];
+                    $count=0;
+                    foreach (explode('^',$self_harm) as $sh) {
+                        $self_harms[$count]['self_harms']=$sh;
+                        $query_protective[$count]=PatientRiskProtectiveAnswer::select('Answer')
+                        ->where('id','=',$self_harms[$count]['self_harms'])->first();     
+                        $count++;
+                    }
+                    $ssh=SharpRegistrationSelfHarmResult::select('section_value')
+                    ->where('id','=',$self_harms[1]['self_harms'])
+                    ->where('section','=','Method of Self-Harm');
+
+                    if($request->self_harm!=NULL){
+                        if($request->self_harm=='Overdose/Poisoning'){  
+                            $sh=$ssh->where('section_value','LIKE','%Poisoning":true%');
+
+                        }elseif($request->self_harm=='Hanging/Suffocation'){
+                            
+                            $sh=$ssh->where('section_value','LIKE','%Suffocation":true%');
+                            
+                        }elseif($request->self_harm=='Drowning'){
+                            $sh=$ssh->where('section_value','LIKE','%"Drowning":true%');
+                            
+                        }
+                        elseif($request->self_harm=='Firearms or explosives'){
+                            $sh=$ssh->where('section_value','LIKE','%"Firearms or explosives":true%');
+                        
+                        }
+                        elseif($request->self_harm=='Fire/flames'){
+                            $sh=$ssh->where('section_value','LIKE','%flames":true%');
+                            
+                        }
+                        elseif($request->self_harm=='Cutting or Piercing'){
+                            $sh=$ssh->where('section_value','LIKE','%"Cutting or Piercing":true%');
+                            
+                        }
+                        elseif($request->self_harm=='Jumping from height'){
+                            $sh=$ssh->where('section_value','LIKE','%"Jumping from height":true%');
+                            
+                        }
+                        elseif($request->self_harm=='Other'){
+                            $sh=$ssh->where('section_value','LIKE','%"Other":true%');
+                            
+                        }
+                    }
+
+
+                    $sh=$ssh->first();
+
+                    if(empty($sh)){
+                    continue;
+                    }
+                    
+                    $method_self_harm1=str_contains($sh['section_value'],'"Overdose\/Poisoning":true');
                     $method_self_harm2=str_contains($sh['section_value'],'"Hanging\/Suffocation":true');
                     $method_self_harm3=str_contains($sh['section_value'],'"Drowning":true');
                     $method_self_harm4=str_contains($sh['section_value'],'"Firearms or explosives":true');
@@ -171,12 +408,35 @@ class ReportController extends Controller
                     }else{
                         $msh8['METHOD_OF_SELF_HARM']='';
                     }
-
-                    $im=SharpRegistrationSelfHarmResult::select('section_value')
-                    ->where('patient_id','=',$v['patient_id'])
-                    ->where('section','=','How did Patient Get Idea about Method')->first();
                 
-  
+                    $imm=SharpRegistrationSelfHarmResult::select('section_value')
+                    ->where('id','=',$self_harms[2]['self_harms'])
+                    ->where('section','=','How did Patient Get Idea about Method');
+
+                    if($request->idea_about_method!=NULL){
+                        if($request->idea_about_method=='Family, friends, peer group'){  
+                            $im=$imm->where('section_value','LIKE','%"Family, friends, peer group":true%');
+
+                        }elseif($request->idea_about_method=='Internet (website, social media platform, app, blogs, forum, video/photosharing)'){
+                            
+                            $im=$imm->where('section_value','LIKE','%photosharing)":true%');
+                            
+                        }elseif($request->idea_about_method=='Printed media (newspaper, books, magazine, etc)'){
+                            $im=$imm->where('section_value','LIKE','%"Printed media (newspaper, books, magazine, etc)":true%');
+                            
+                        }elseif($request->idea_about_method=='Broadcast media (television, radio)'){
+                            $im=$imm->where('section_value','LIKE','%"Broadcast media (television, radio)":true%');
+                            
+                        }elseif($request->idea_about_method=='Specify patient actual words'){
+                            $im=$imm->where('section_value','LIKE','%"Specify patient actual words":true%');
+                            
+                        }                         
+                    }               
+                    $im=$imm->first();
+
+                    if(empty($im)){
+                        continue;
+                    }
                     $idea_method1=str_contains($im['section_value'],'"Family, friends, peer group":true');
                     $idea_method2=str_contains($im['section_value'],'"Internet (website, social media platform, app, blogs, forum, video\/photosharing)":true');
                     $idea_method3=str_contains($im['section_value'],'"Printed media (newspaper, books, magazine, etc)":true');
@@ -216,12 +476,32 @@ class ReportController extends Controller
                         $im5['IDEA_METHOD']='';
                     }
 
-                    $si=SharpRegistrationSelfHarmResult::select('section_value')
-                    ->where('patient_id','=',$v['patient_id'])
-                    ->where('section','=','Suicidal Intent')->first();
+                    $ssi=SharpRegistrationSelfHarmResult::select('section_value')
+                    ->where('id','=',$self_harms[3]['self_harms'])
+                    ->where('section','=','Suicidal Intent');
                 
-  
-                    $suicidal_intent1=str_contains($si['section_value'],'"intent":"Yes"');
+                    if($request->suicidal_intent!=NULL){ 
+                        if($request->suicidal_intent=='Yes'){  
+                            $si=$ssi->where('section_value','LIKE','%"intent":"intent-yes%');
+
+                        }elseif($request->suicidal_intent=='No'){
+                            
+                            $si=$ssi->where('section_value','LIKE','%"intent":"no"%');
+                            
+                        }elseif($request->suicidal_intent=='Undetermined'){
+                            $si=$ssi->where('section_value','LIKE','%"intent":"Undetermined"%');
+                            
+                        }
+                        
+                    }
+                    
+                    $si=$ssi->first();
+
+                    if(empty($si)){
+                    continue;
+                    }
+
+                    $suicidal_intent1=str_contains($si['section_value'],'"intent":"intent-yes');
                     $suicidal_intent2=str_contains($si['section_value'],'"intent":"Undetermined"');
                     $suicidal_intent3=str_contains($si['section_value'],'"intent":"no"');
 
@@ -244,34 +524,41 @@ class ReportController extends Controller
                     }else{
                         $si3['SUCIDAL_INTENT']='';
                     }
+                
 
 ///////////////////RiskAnswer////////////////////////////////////////////////////////////
-              
-                    $PatientRiskProtectiveAnswer1=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',1)
-                    ->where('factor_type','=','risk')->first();
+                                    
+                        $risk=$v['risk'];
+                        $count=0;
+                        foreach (explode('^',$risk) as $r) {
+                             $risks[$count]['risks']=$r; 
+                        $count++;
+                        } 
 
-                    if($PatientRiskProtectiveAnswer1['Answer']=='YES'){
+                    $PatientRiskProtectiveAnswer1=PatientRiskProtectiveAnswer::select('Answer')
+                    ->where('id','=',$risks[0]['risks'])
+                    ->where('factor_type','=','risk')->first();
+                                      
+
+                    if($PatientRiskProtectiveAnswer1['Answer']=='Yes'){
                         $prpa1['RISK_ANSWER'] = 'Presence of psychiatric disorder';
                     }else{
                         $prpa1['RISK_ANSWER']='';
                     }
 
                     $PatientRiskProtectiveAnswer2=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',2)
+                    ->where('id','=',$risks[1]['risks'])
                     ->where('factor_type','=','risk')->first();
-
+                    
                     if($PatientRiskProtectiveAnswer2['Answer']=='Yes'){
                         $prpa2['RISK_ANSWER'] = 'Hopelessness or despair';
+
                     }else{
                         $prpa2['RISK_ANSWER']='';
                     }
 
                     $PatientRiskProtectiveAnswer3=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',3)
+                    ->where('id','=',$risks[2]['risks'])
                     ->where('factor_type','=','risk')->first();
 
                     if($PatientRiskProtectiveAnswer3['Answer']=='Yes'){
@@ -281,8 +568,7 @@ class ReportController extends Controller
                     }
 
                     $PatientRiskProtectiveAnswer4=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',4)
+                    ->where('id','=',$risks[3]['risks'])
                     ->where('factor_type','=','risk')->first();
 
                     if($PatientRiskProtectiveAnswer4['Answer']=='Yes'){
@@ -292,8 +578,7 @@ class ReportController extends Controller
                     }
 
                     $PatientRiskProtectiveAnswer5=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',5)
+                    ->where('id','=',$risks[4]['risks'])
                     ->where('factor_type','=','risk')->first();
 
                     if($PatientRiskProtectiveAnswer5['Answer']=='Yes'){
@@ -303,8 +588,7 @@ class ReportController extends Controller
                     }
 
                     $PatientRiskProtectiveAnswer6=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',6)
+                    ->where('id','=',$risks[5]['risks'])
                     ->where('factor_type','=','risk')->first();
 
                     if($PatientRiskProtectiveAnswer6['Answer']=='Yes'){
@@ -314,8 +598,7 @@ class ReportController extends Controller
                     }
 
                     $PatientRiskProtectiveAnswer7=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',7)
+                    ->where('id','=',$risks[6]['risks'])
                     ->where('factor_type','=','risk')->first();
 
                     if($PatientRiskProtectiveAnswer7['Answer']=='Yes'){
@@ -325,8 +608,7 @@ class ReportController extends Controller
                     }
 
                     $PatientRiskProtectiveAnswer8=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',8)
+                    ->where('id','=',$risks[7]['risks'])
                     ->where('factor_type','=','risk')->first();
 
                     if($PatientRiskProtectiveAnswer8['Answer']=='Yes'){
@@ -336,8 +618,7 @@ class ReportController extends Controller
                     }
 
                     $PatientRiskProtectiveAnswer9=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',9)
+                    ->where('id','=',$risks[8]['risks'])
                     ->where('factor_type','=','risk')->first();
 
                     if($PatientRiskProtectiveAnswer9['Answer']=='Yes'){
@@ -347,8 +628,7 @@ class ReportController extends Controller
                     }
 
                     $PatientRiskProtectiveAnswer10=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',10)
+                    ->where('id','=',$risks[9]['risks'])
                     ->where('factor_type','=','risk')->first();
 
                     if($PatientRiskProtectiveAnswer10['Answer']=='Yes'){
@@ -358,8 +638,7 @@ class ReportController extends Controller
                     }
 
                     $PatientRiskProtectiveAnswer11=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',11)
+                    ->where('id','=',$risks[10]['risks'])
                     ->where('factor_type','=','risk')->first();
 
                     if($PatientRiskProtectiveAnswer11['Answer']=='Yes'){
@@ -369,8 +648,7 @@ class ReportController extends Controller
                     }
 
                     $PatientRiskProtectiveAnswer12=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',12)
+                    ->where('id','=',$risks[11]['risks'])
                     ->where('factor_type','=','risk')->first();
 
                     if($PatientRiskProtectiveAnswer12['Answer']=='Yes'){
@@ -378,10 +656,18 @@ class ReportController extends Controller
                     }else{
                         $prpa12['RISK_ANSWER']='';
                     }
-///////////////////ProtectiveFactorAnswer////////////////////////////////////////////////////////////                  
+                    
+///////////////////ProtectiveFactorAnswer////////////////////////////////////////////////////////////  
+                
+                    $protective=$v['protective'];
+                    $count=0;
+                    foreach (explode('^',$protective) as $p) {
+                         $protectives[$count]['protectives']=$p;    
+                    $count++;
+                    }
+                
                     $PatientRiskProtectiveAnswer13=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',13)
+                    ->where('id','=',$protectives[0]['protectives'])
                     ->where('factor_type','=','protective')->first();
 
                     if($PatientRiskProtectiveAnswer13['Answer']=='Yes'){
@@ -391,8 +677,7 @@ class ReportController extends Controller
                     }
 
                     $PatientRiskProtectiveAnswer14=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',14)
+                    ->where('id','=',$protectives[1]['protectives'])
                     ->where('factor_type','=','protective')->first();
 
                     if($PatientRiskProtectiveAnswer14['Answer']=='Yes'){
@@ -402,8 +687,7 @@ class ReportController extends Controller
                     }
 
                     $PatientRiskProtectiveAnswer15=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',15)
+                    ->where('id','=',$protectives[2]['protectives'])
                     ->where('factor_type','=','protective')->first();
 
                     if($PatientRiskProtectiveAnswer15['Answer']=='Yes'){
@@ -413,8 +697,7 @@ class ReportController extends Controller
                     }
 
                     $PatientRiskProtectiveAnswer16=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',16)
+                    ->where('id','=',$protectives[3]['protectives'])
                     ->where('factor_type','=','protective')->first();
 
                     if($PatientRiskProtectiveAnswer16['Answer']=='Yes'){
@@ -424,8 +707,7 @@ class ReportController extends Controller
                     }
 
                     $PatientRiskProtectiveAnswer17=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',17)
+                    ->where('id','=',$protectives[4]['protectives'])
                     ->where('factor_type','=','protective')->first();
 
                     if($PatientRiskProtectiveAnswer17['Answer']=='Yes'){
@@ -435,8 +717,7 @@ class ReportController extends Controller
                     }
 
                     $PatientRiskProtectiveAnswer18=PatientRiskProtectiveAnswer::select('Answer')
-                    ->where('patient_mrn_id','=',$v['patient_id'])
-                    ->where('QuestionId','=',18)
+                    ->where('id','=',$protectives[5]['protectives'])
                     ->where('factor_type','=','protective')->first();
 
                     if($PatientRiskProtectiveAnswer18['Answer']=='Yes'){
@@ -444,7 +725,10 @@ class ReportController extends Controller
                     }else{
                         $prpa18['PROTECTIVE_FACTORS']='';
                     }
-
+                
+                
+            
+                
                 //////////////////////City///////////////////////
                 $city=Postcode::select('city_name')
                 ->where('id','=',$v['city_id'])->first();
@@ -481,10 +765,6 @@ class ReportController extends Controller
                     $result[$index]['TIME'] = $v['harm_time'];
                     $result[$index]['NRIC_NO_PASSPORT_NO'] = $v['nric_no'];
                     $result[$index]['NAME'] = $v['name_asin_nric'];
-                    // $result[$index]['ADDRESS'] = $v['address1'];
-                    // $result[$index]['CITY'] = $city['city_name'];
-                    // $result[$index]['STATE'] = $state['state_name'];
-                    // $result[$index]['POSTCODE'] = $postcode['postcode'];
                     $result[$index]['PHONE_NUMBER'] = $v['mobile_no'];
                     $result[$index]['DATE_OF_BIRTH'] = $v['birth_date'];
 
@@ -500,15 +780,16 @@ class ReportController extends Controller
                     $result[$index]['RISK_FACTOR10'] = $prpa10['RISK_ANSWER'];
                     $result[$index]['RISK_FACTOR11'] = $prpa11['RISK_ANSWER'];
                     $result[$index]['RISK_FACTOR12'] = $prpa12['RISK_ANSWER'];
-                    
-                    
+                  
+
+
                     $result[$index]['PROTECTIVE_FACTOR13'] =  $prpa13['PROTECTIVE_FACTORS'];
                     $result[$index]['PROTECTIVE_FACTOR14'] =  $prpa14['PROTECTIVE_FACTORS'];
                     $result[$index]['PROTECTIVE_FACTOR15'] =  $prpa15['PROTECTIVE_FACTORS'];
                     $result[$index]['PROTECTIVE_FACTOR16'] =  $prpa16['PROTECTIVE_FACTORS'];
                     $result[$index]['PROTECTIVE_FACTOR17'] =  $prpa17['PROTECTIVE_FACTORS'];
                     $result[$index]['PROTECTIVE_FACTOR18'] =  $prpa18['PROTECTIVE_FACTORS'];
-                    
+                 
                     
                     $result[$index]['METHOD_OF_SELF_HARM1'] = $msh1['METHOD_OF_SELF_HARM'];
                     $result[$index]['METHOD_OF_SELF_HARM2'] = $msh2['METHOD_OF_SELF_HARM'];
@@ -533,12 +814,14 @@ class ReportController extends Controller
                     $result[$index]['SUCIDAL_INTENT3'] = $si3['SUCIDAL_INTENT'];                   
 
 ////////////////////For Excel//////////////////////////////////////////////
+
                     $result[$index]['RISK_FACTOR'] =    $prpa1['RISK_ANSWER'].'<br>'.$prpa2['RISK_ANSWER'].'<br>'.
                                                         $prpa3['RISK_ANSWER'].'<br>'.$prpa4['RISK_ANSWER'].'<br>'.
                                                         $prpa5['RISK_ANSWER'].'<br>'.$prpa6['RISK_ANSWER'].'<br>'.
                                                         $prpa7['RISK_ANSWER'].'<br>'.$prpa8['RISK_ANSWER'].'<br>'.
                                                         $prpa9['RISK_ANSWER'].'<br>'.$prpa10['RISK_ANSWER'].'<br>'.
                                                         $prpa11['RISK_ANSWER'].'<br>'.$prpa12['RISK_ANSWER'];
+
 
                     $result[$index]['PROTECTIVE_FACTOR'] =  $prpa13['PROTECTIVE_FACTORS'].'<br>'.$prpa14['PROTECTIVE_FACTORS'].'<br>'.
                                                             $prpa15['PROTECTIVE_FACTORS'].'<br>'.$prpa16['PROTECTIVE_FACTORS'].'<br>'.
@@ -561,8 +844,14 @@ class ReportController extends Controller
 
                     $index++;
                     $totalReports =  $index;                  
-                }      
-                 
+                
+            
+            
+
+            
+        
+            }    
+            
                 
                     if ($result) {
                         
@@ -1176,7 +1465,7 @@ class ReportController extends Controller
             foreach ($ssh as $k => $v) {
                 $notes = [];
                 $icd = [];
-                $notes = PatientCounsellorClerkingNotes::where('patient_mrn_id', $v['patient_mrn_id'])
+                $diagnosis = PatientCounsellorClerkingNotes::where('patient_mrn_id', $v['patient_mrn_id'])
                     ->where('type_diagnosis_id', $request->diagnosis_id)
                     ->where(DB::raw("(STR_TO_DATE(created_at,'%Y-%m-%d'))"), $v['booking_date'])
                     ->get()->toArray();
