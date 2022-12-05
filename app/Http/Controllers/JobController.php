@@ -208,14 +208,34 @@ class JobController extends Controller
     }
     public function JobList(Request $request)
     {
-        return  DB::table('job_offers')
-        ->select('job_offers.id as jobofferId','job_offers.*','jobs.*','employee_registration.*')
-       
-        ->join('jobs', 'jobs.id', '=', 'job_offers.job_id')
-        ->join('employee_registration', 'jobs.company_id', '=', 'employee_registration.id')
-        ->orderBy('job_offers.id','desc')
-        ->where('job_offers.approval_status',2)
-        ->get();
+      
+        $role = DB::table('staff_management')
+        ->select('roles.code')
+        ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+        ->where('staff_management.email', '=', $request->email)
+        ->first();
+        
+
+        if($role->code == 'superadmin'){
+                return  DB::table('job_offers')
+                ->select('job_offers.id as jobofferId','job_offers.*','jobs.*','employee_registration.*')
+            
+                ->join('jobs', 'jobs.id', '=', 'job_offers.job_id')
+                ->join('employee_registration', 'jobs.company_id', '=', 'employee_registration.id')
+                ->orderBy('job_offers.id','desc')
+                ->where('job_offers.approval_status',2)
+                ->get();
+            }else{
+                return  DB::table('job_offers')
+                ->select('job_offers.id as jobofferId','job_offers.*','jobs.*','employee_registration.*')
+                ->join('jobs', 'jobs.id', '=', 'job_offers.job_id')
+                ->join('employee_registration', 'jobs.company_id', '=', 'employee_registration.id')
+                ->orderBy('job_offers.id','desc')
+                ->where('job_offers.approval_status',2)
+                ->where('branch_id',$request->branch_id)
+                ->get();
+
+            }
     }
 
     public function setStatus(Request $request)
