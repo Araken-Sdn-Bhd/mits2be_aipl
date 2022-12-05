@@ -386,7 +386,6 @@ class PatientRegistrationController extends Controller
                 $query->where('appointment_status', '=', '1');
             })
             ->get()->toArray();
-        // dd($list[0]['service']);
         $result = [];
         foreach ($list as $key => $val) {
             $result[$key]['patient_mrn'] = $val['patient_mrn'] ?? 'NA';
@@ -395,7 +394,6 @@ class PatientRegistrationController extends Controller
             $result[$key]['age'] = date_diff(date_create($val['birth_date']), date_create('today'))->y ?? 'NA';
             $result[$key]['nric_no'] = $val['nric_no'] ?? 'NA';
             $result[$key]['passport_no'] = $val['passport_no'] ?? 'NA';
-            // dd( $val['salutation'][0]['section_value']);
             $result[$key]['salutation'] = $val['salutation'][0]['section_value'] ?? 'NA';
 
             if ($val['service'] != null) {
@@ -404,34 +402,43 @@ class PatientRegistrationController extends Controller
                 $result[$key]['service'] = 'NA';
             }
             if ($val['appointments'] != null) {
-                // if ($val['service'] != null) {
-                //     $result[$key]['service'] = $val['service']['service_name'];
-                // } else {
-                //     $result[$key]['service'] = 'NA';
-                // }
+                
                 $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
                 $team_id = $val['appointments'][0]['assign_team'];
                 $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get();
                 $result[$key]['team_name'] = $teamName[0]['team_name'];
             } else {
-                // $result[$key]['service'] = 'NA';
                 $result[$key]['appointments'] = 'NA';
                 $result[$key]['team_name'] = 'NA';
             }
-            //  dd($result);
         }
         return response()->json(["message" => "Patients List", 'list' => $result, "code" => 200]);
     }
 
-    public function getPatientRegistrationListByScreening()
+    public function getPatientRegistrationListByScreening(Request $request)
     {
+        $role = DB::table('staff_management')
+        ->select('roles.code')
+        ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+        ->where('staff_management.email', '=', $request->email)
+        ->first();
+
+        if($role->code == 'superadmin'){
         $list = PatientRegistration::where('status', '=', '1')->where('patient_need_triage_screening', '=', '1')
             ->with('salutation:section_value,id')->with('service:service_name,id')
             ->with('appointments', function ($query) {
                 $query->where('appointment_status', '=', '1');
             })
             ->get()->toArray();
-        // dd($list[0]['service']);
+        }else{
+            $list = PatientRegistration::where('status', '=', '1')->where('branch_id',$request->branch_id)->where('patient_need_triage_screening', '=', '1')
+            ->with('salutation:section_value,id')->with('service:service_name,id')
+            ->with('appointments', function ($query) {
+                $query->where('appointment_status', '=', '1');
+            })
+            ->get()->toArray();
+
+        }
         $result = [];
         foreach ($list as $key => $val) {
             $result[$key]['patient_mrn'] = $val['patient_mrn'] ?? 'NA';
@@ -440,8 +447,6 @@ class PatientRegistrationController extends Controller
             $result[$key]['age'] = date_diff(date_create($val['birth_date']), date_create('today'))->y ?? 'NA';
             $result[$key]['nric_no'] = $val['nric_no'] ?? 'NA';
             $result[$key]['passport_no'] = $val['passport_no'] ?? 'NA';
-            // dd( $val['salutation'][0]['section_value']);
-            // $result[$key]['salutation'] = $val['salutation'][0]['section_value'] ?? 'NA';
 
             if ($val['nric_no'] != null){
                 $result[$key]['nric_id'] = $val['nric_no'];
@@ -472,21 +477,14 @@ class PatientRegistrationController extends Controller
                 $result[$key]['service'] = 'NA';
             }
             if ($val['appointments'] != null) {
-                // if ($val['service'] != null) {
-                //     $result[$key]['service'] = $val['service']['service_name'];
-                // } else {
-                //     $result[$key]['service'] = 'NA';
-                // }
                 $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
                 $team_id = $val['appointments'][0]['assign_team'];
                 $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get();
                 $result[$key]['team_name'] = $teamName[0]['team_name'];
             } else {
-                // $result[$key]['service'] = 'NA';
                 $result[$key]['appointments'] = 'NA';
                 $result[$key]['team_name'] = 'NA';
             }
-            //  dd($result);
         }
         return response()->json(["message" => "Patients List", 'list' => $result, "code" => 200]);
     }
@@ -517,8 +515,6 @@ class PatientRegistrationController extends Controller
             'other_allergy' => '',
             'id' => 'required',
             'branch_id' =>'',
-            //'household_income' =>'',
-            //'employment_status' =>'',
             'other_race' =>'',
             'other_religion' =>'',
             'other_accommodation' =>'',
@@ -580,12 +576,9 @@ class PatientRegistrationController extends Controller
             'status' => "1",
             'updated_at' =>  $request->update_at,
             'branch_id' =>$request->branch_id,
-            //'household_income' =>$request->household_income,
-            //'employment_status' =>$request->employment_status,
             'other_race' => $request->other_race,
             'other_religion' => $request->other_religion,
             'other_accommodation' => $request->other_accommodation,
-            //'other_marritalList' => $request->other_maritalList,
             'other_feeExemptionStatus' => $request->other_feeExemptionStatus,
             'other_occupationStatus' => $request->other_occupationStatus,
         ];
@@ -594,14 +587,12 @@ class PatientRegistrationController extends Controller
 
         if ($request->citizentype == 'Malaysian') {
             $validateCitizenship['nric_type'] = 'required';
-            // $validateCitizenship['nric_no'] = 'required';
             $patientregistration['nric_type'] =  $request->nric_type;
             $patientregistration['nric_no'] =  $request->nric_no;
             if (!$this->checkIFPatientExists('nric_no', $request->nric_no, $request->id)) {
                 return response()->json(["message" => "Patient NRIC NO already exists", "code" => 422]);
             }
         } else if ($request->citizentype == 'Permanent Resident') {
-            // $validateCitizenship['nric_no'] = 'required';
             $patientregistration['nric_no'] =  $request->nric_no1;
             if (!$this->checkIFPatientExists('nric_no', $request->nric_no1, $request->id)) {
                 return response()->json(["message" => "Patient NRIC NO already exists", "code" => 422]);
@@ -630,14 +621,7 @@ class PatientRegistrationController extends Controller
             $patientregistration['referral_letter'] = '';
         }
 
-        // if ($request->referral_letter) {
-        //     $files = $request->file('referral_letter');
-        //     $isUploaded = upload_file($files, 'PatientRegistration');
-        //     $patientregistration['referral_letter'] =  $isUploaded->getData()->path;
-        // } else {
-        //     $patientregistration['referral_letter'] = '';
-        // }
-
+     
         PatientRegistration::where(
             ['id' => $request->id]
         )->update($patientregistration);
@@ -655,18 +639,13 @@ class PatientRegistrationController extends Controller
     public function validatePatientNric(Request $request)
     {
         $runByIC = PatientRegistration::where('nric_no',$request->ic)->count();
-        // dd($runByIC);
-        // $runByPassport = PatientRegistration::where('nric_no',$request->passport)->count();
-
+    
             if ($runByIC!=0) {
                 return response()->json(["message" => "Patient NRIC NO already exists", "code" => 422]);
             } else {
                 return response()->json(["message" => "New Patient", "code" => 200]);
             }
 
-            // if (!$this->checkIFPatientExists('passport_no', $request->passport_no, $request->id)) {
-            //     return response()->json(["message" => "Patient Passort NO already exists", "code" => 422]);
-            // }
     }
 
     public function checkIFPatientExists($columnName, $columnValue, $id)
@@ -678,12 +657,8 @@ class PatientRegistrationController extends Controller
     {
         $list = DB::table('transaction_log')
             ->leftjoin('users', 'transaction_log.added_by', '=', 'users.id')
-    //         ->select(DB::raw("DATE_FORMAT(transaction_log.date, '%d-%m-%Y') as date"),'transaction_log.activity','users.name',
-    //         DB::raw("(CASE WHEN TIME(transaction_log.time) BETWEEN '00:00:00' AND '11:59:59' THEN DATE_FORMAT(transaction_log.time, '%h:%i AM')
-    //         ELSE DATE_FORMAT(transaction_log.time, '%h:%i PM')
-    //    END) as time"),)
        ->select(DB::raw("DATE_FORMAT(transaction_log.date, '%d-%m-%Y') as date"),'transaction_log.activity','users.name',
-        //    'transaction_log.time as time')
+       
            DB::raw("DATE_FORMAT(transaction_log.time, '%h:%i %p') as time"))
         ->where('transaction_log.patient_id', '=', $request->patient_id)
             ->get();
@@ -708,18 +683,6 @@ class PatientRegistrationController extends Controller
             'mobile_no' => 'required',
             'house_no' => '',
             'branch_id' =>'',
-
-            // 'services_type' => 'required',
-            // 'referral_type' => 'required',
-            // 'referral_letter' => 'max:10240',
-            // 'address1' => 'required',
-            // 'kin_name_asin_nric' => '',
-            // 'kin_relationship_id' => '',
-            // 'kin_mobile_no' => '',
-            // 'kin_address1' => '',
-            // 'drug_allergy' => 'required',
-            // 'traditional_medication' => 'required',
-            // 'other_allergy' => 'required'
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -737,40 +700,12 @@ class PatientRegistrationController extends Controller
             'house_no' =>  $request->house_no,
             'hospital_mrn_no' =>  $request->hospital_mrn_no,
             'mintari_mrn_no' =>  $request->mintari_mrn_no,
-            // 'services_type' =>  $request->services_type,
-            // 'referral_type' =>  $request->referral_type,
-            // 'referral_letter' =>  $request->referral_letter,
-            // 'address1' =>  $request->address1,
-            // 'address2' =>  $request->address2,
-            // 'address3' =>  $request->address3,
-            // 'state_id' =>  $request->state_id,
-            // 'city_id' =>  $request->city_id,
-            // 'postcode' =>  $request->postcode,
             'race_id' =>  $request->race_id,
             'religion_id' =>  $request->religion_id,
             'marital_id' =>  $request->marital_id,
-            // 'accomodation_id' => $request->accomodation_id,
             'education_level' => $request->education_level,
             'branch_id' =>  $request->branch_id,
-            // 'occupation_status' => $request->occupation_status,
-            // 'fee_exemption_status' => $request->fee_exemption_status,
-            // 'occupation_sector' => $request->occupation_sector,
-            // 'kin_name_asin_nric' => $request->kin_name_asin_nric,
-            // 'kin_relationship_id' => $request->kin_relationship_id,
-            // 'kin_mobile_no' => $request->kin_mobile_no,
-            // 'kin_house_no' => $request->kin_house_no,
-            // 'kin_address1' => $request->kin_address1,
-            // 'kin_address2' => $request->kin_address2,
-            // 'kin_address3' => $request->kin_address3,
-            // 'kin_state_id' => $request->kin_state_id,
-            // 'kin_city_id' => $request->kin_city_id,
-            // 'kin_postcode' => $request->kin_postcode,
-            // 'drug_allergy' => $request->drug_allergy,
-            // 'drug_allergy_description' => $request->drug_allergy_description,
-            // 'traditional_medication' => $request->traditional_medication,
-            // 'traditional_description' => $request->traditional_description,
-            // 'other_allergy' => $request->other_allergy,
-            // 'other_description' => $request->other_description,
+          
             'status' => "1"
             
         ];
@@ -824,5 +759,63 @@ class PatientRegistrationController extends Controller
             return response()->json(["message" => $e->getMessage(), 'Patient Registration' => $patientregistration, "code" => 200]);
         }
         return response()->json(["message" => "Patient Registration has been done successfully!", "code" => 200]);
+    }
+
+    public function getPatientRegistrationListbyBranch(Request $request)
+    {
+        if($request->branch_id != 0){
+        $list = PatientRegistration::where('status', '=', '1')
+        ->where('sharp', '=', '0')
+        ->where('branch_id',$request->branch_id)
+            ->with('salutation:section_value,id')->with('service:service_name,id')
+            ->with('appointments', function ($query) {
+                $query->where('appointment_status', '=', '1');
+            })
+            ->get()->toArray();
+        }else if($request->branch_id == 0){
+                $list = PatientRegistration::where('status', '=', '1')
+                ->where('sharp', '=', '0')
+                    ->with('salutation:section_value,id')->with('service:service_name,id')
+                    ->with('appointments', function ($query) {
+                        $query->where('appointment_status', '=', '1');
+                    })
+                    ->get()->toArray();
+
+        }
+        $result = [];
+        foreach ($list as $key => $val) {
+            $result[$key]['patient_mrn'] = $val['patient_mrn'] ?? 'NA';
+            $result[$key]['name_asin_nric'] = $val['name_asin_nric'] ?? 'NA';
+            $result[$key]['id'] = $val['id'];
+            $result[$key]['age'] = date_diff(date_create($val['birth_date']), date_create('today'))->y ?? 'NA';
+            if ($val['nric_no'] != null){
+                $result[$key]['nric_id'] = $val['nric_no'];
+            }
+            if ($val['passport_no'] != null){
+                $result[$key]['nric_id'] = $val['passport_no'];
+            }
+
+            if ($val['nric_no'] == null && $val['passport_no'] == null ){
+                $result[$key]['nric_id'] = 'NA';
+            }
+            $result[$key]['salutation'] = $val['salutation'][0]['section_value'] ?? 'NA';
+
+            if ($val['service'] != null) {
+                $result[$key]['service'] = $val['service']['service_name'];
+            } else {
+                $result[$key]['service'] = 'NA';
+            }
+            if ($val['appointments'] != null) {
+                $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
+                $team_id = $val['appointments'][0]['assign_team'];
+                $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get();
+                $result[$key]['team_name'] = $teamName[0]['team_name'];
+            } else {
+                $result[$key]['appointments'] = 'NA';
+                $result[$key]['team_name'] = 'NA';
+            }
+            //  dd($result);
+        }
+        return response()->json(["message" => "Patients List", 'list' => $result, "code" => 200]);
     }
 }
