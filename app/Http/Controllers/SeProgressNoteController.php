@@ -64,13 +64,14 @@ class SeProgressNoteController extends Controller
                         'complexity_service' =>  $request->complexity_service,
                         'outcome' =>  $request->outcome,
                         'medication' =>  $request->medication,
-                        'status' => "1"
+                        'status' => "1",
+                        'appointment_details_id' => $request->appId,
                     ];
 
                     try {
                         $HOD = SeProgressNote::where(
                             ['id' => $request->id]
-                        )->update($SeProgress);
+                        )->update($seprogressnote);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'SeProgress' => $seprogressnote, "code" => 200]);
                     }
@@ -105,7 +106,8 @@ class SeProgressNoteController extends Controller
                         'complexity_service' =>  $request->complexity_service,
                         'outcome' =>  $request->outcome,
                         'medication' =>  $request->medication,
-                        'status' => "1"
+                        'status' => "1",
+                        'appointment_details_id' => $request->appId,
                     ];
 
                     try {
@@ -146,7 +148,8 @@ class SeProgressNoteController extends Controller
                         'complexity_service' =>  $request->complexity_service,
                         'outcome' =>  $request->outcome,
                         'medication' =>  $request->medication,
-                        'status' => "1"
+                        'status' => "1",
+                        'appointment_details_id' => $request->appId,
                     ];
 
                     try {
@@ -187,7 +190,8 @@ class SeProgressNoteController extends Controller
                         'complexity_service' =>  $request->complexity_service,
                         'outcome' =>  $request->outcome,
                         'medication' =>  $request->medication,
-                        'status' => "1"
+                        'status' => "1",
+                        'appointment_details_id' => $request->appId,
                     ];
 
                     try {
@@ -226,7 +230,8 @@ class SeProgressNoteController extends Controller
                         'complexity_service' =>  $request->complexity_service,
                         'outcome' =>  $request->outcome,
                         'medication' =>  $request->medication,
-                        'status' => "1"
+                        'status' => "1",
+                        'appointment_details_id' => $request->appId,
                     ];
 
                     try {
@@ -265,7 +270,8 @@ class SeProgressNoteController extends Controller
                         'complexity_service' =>  $request->complexity_service,
                         'outcome' =>  $request->outcome,
                         'medication' =>  $request->medication,
-                        'status' => "1"
+                        'status' => "1",
+                        'appointment_details_id' => $request->appId,
                     ];
 
                     try {
@@ -306,13 +312,14 @@ class SeProgressNoteController extends Controller
                         'complexity_service' =>  $request->complexity_service,
                         'outcome' =>  $request->outcome,
                         'medication' =>  $request->medication,
-                        'status' => "0"
+                        'status' => "0",
+                        'appointment_details_id' => $request->appId,
                     ];
 
                     try {
                         $HOD = SeProgressNote::where(
                             ['id' => $request->id]
-                        )->update($SeProgress);
+                        )->update($seprogressnote);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'SeProgress' => $seprogressnote, "code" => 200]);
                     }
@@ -347,7 +354,8 @@ class SeProgressNoteController extends Controller
                         'complexity_service' =>  $request->complexity_service,
                         'outcome' =>  $request->outcome,
                         'medication' =>  $request->medication,
-                        'status' => "0"
+                        'status' => "0",
+                        'appointment_details_id' => $request->appId,
                     ];
 
                     try {
@@ -388,7 +396,8 @@ class SeProgressNoteController extends Controller
                         'complexity_service' =>  $request->complexity_service,
                         'outcome' =>  $request->outcome,
                         'medication' =>  $request->medication,
-                        'status' => "0"
+                        'status' => "0",
+                        'appointment_details_id' => $request->appId,
                     ];
 
                     try {
@@ -423,7 +432,8 @@ class SeProgressNoteController extends Controller
                         'complexity_service' =>  $request->complexity_service,
                         'outcome' =>  $request->outcome,
                         'medication' =>  $request->medication,
-                        'status' => "0"
+                        'status' => "0",
+                        'appointment_details_id' => $request->appId,
                     ];
 
                     try {
@@ -455,7 +465,8 @@ class SeProgressNoteController extends Controller
                         'complexity_service' =>  $request->complexity_service,
                         'outcome' =>  $request->outcome,
                         'medication' =>  $request->medication,
-                        'status' => "0"
+                        'status' => "0",
+                        'appointment_details_id' => $request->appId,
                     ];
 
                     try {
@@ -487,7 +498,8 @@ class SeProgressNoteController extends Controller
                         'complexity_service' =>  $request->complexity_service,
                         'outcome' =>  $request->outcome,
                         'medication' =>  $request->medication,
-                        'status' => "0"
+                        'status' => "0",
+                        'appointment_details_id' => $request->appId,
                     ];
 
                     try {
@@ -518,7 +530,8 @@ class SeProgressNoteController extends Controller
                         'complexity_service' =>  $request->complexity_service,
                         'outcome' =>  $request->outcome,
                         'medication' =>  $request->medication,
-                        'status' => "0"
+                        'status' => "0",
+                        'appointment_details_id' => $request->appId,
                     ];
 
                     try {
