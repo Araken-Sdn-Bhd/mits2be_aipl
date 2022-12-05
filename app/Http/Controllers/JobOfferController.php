@@ -473,9 +473,16 @@ class JobOfferController extends Controller
                 return response()->json(["message" => $validator->errors(), "code" => 422]);
             }
 
-            CPSReferralForm::firstOrCreate($cpsreferralform);
-            return response()->json(["message" => "CPS Referral Form successfully created!", "code" => 200]);
+            if ($request->id) {
+                CPSReferralForm::where(['id' => $request->id])->update($cpsreferralform);
+                return response()->json(["message" => "Successfully updated", "code" => 200]);
+            } else {
+                $HOD=CPSReferralForm::create($cpsreferralform);
+
+                return response()->json(["message" => "CPS Referral Form Created Successfully!", "code" => 200]);
+            }
         } else if($request->status == '1'){
+
             $cpsreferralform = [
                 'patient_id' => $request->patient_id,
                 'added_by' => $request->added_by,
@@ -511,8 +518,14 @@ class JobOfferController extends Controller
             if ($validator->fails()) {
                 return response()->json(["message" => $validator->errors(), "code" => 422]);
             }
-            CPSReferralForm::firstOrCreate($cpsreferralform);
-            return response()->json(["message" => "CPS Referral Form successfully created!", "code" => 200]);
+            if ($request->id) {
+                CPSReferralForm::where(['id' => $request->id])->update($cpsreferralform);
+                return response()->json(["message" => "Successfully updated", "code" => 200]);
+            } else {
+                $HOD=CPSReferralForm::create($cpsreferralform);
+
+                return response()->json(["message" => "CPS Referral Form Created Successfully!", "code" => 200]);
+            }
         }
     }
 
@@ -673,7 +686,7 @@ class JobOfferController extends Controller
                 'appointment_details_id' => $request->appId,
                 'status' => "0",
             ];
-        
+
             // PatientCarePaln::create()
             if($request->id){
                 PatientCarePaln::where(['id' => $request->id])->update($patientcarepln);
@@ -717,7 +730,7 @@ class JobOfferController extends Controller
                 'appointment_details_id' => $request->appId,
                 'status' => "1",
             ];
-        
+
             // PatientCarePaln::create()
             if($request->id){
                 PatientCarePaln::where(['id' => $request->id])->update($patientcarepln);
@@ -1095,7 +1108,7 @@ class JobOfferController extends Controller
             // }
         }
     }
-    
+
 
     public function setJobEndReport(Request $request)
     {
@@ -1130,7 +1143,7 @@ class JobOfferController extends Controller
                 'created_at' => date('Y-m-d H:i:s'),
                 'appointment_details_id' => $request->appId,
                 'status' => "1",
-                
+
             ];
             if($request->id) {
                 JobEndReport::where(['id' => $request->id])->update($jobend);
@@ -1150,7 +1163,7 @@ class JobOfferController extends Controller
             // }
 
         } else if ($request->status == '0') {
-            
+
             $jobend=[
                 'patient_id' => $request->patient_id,
                 'added_by' => $request->added_by,
@@ -1181,7 +1194,7 @@ class JobOfferController extends Controller
                 'created_at' => date('Y-m-d H:i:s'),
                 'appointment_details_id' => $request->appId,
                 'status' => "0",
-                
+
             ];
             if($request->id) {
                 JobEndReport::where(['id' => $request->id])->update($jobend);
@@ -1190,16 +1203,6 @@ class JobOfferController extends Controller
                 JobEndReport::create($jobend);
                 return response()->json(["message" => "Created", "code" => 200]);
             }
-            // $check=JobEndReport::where(['patient_id' => $request->patient_id])->first();
-            // if($check!= null){
-            // //  if($request->id){
-            //     JobEndReport::where(['patient_id' => $request->patient_id])->update($jobend);
-            //     return response()->json(["message" => "Updated", "code" => 200]);
-            // } else {
-            //     JobEndReport::create($jobend);
-            // return response()->json(["message" => "Created", "code" => 200]);
-            // }
-        
 
         }
     }
@@ -1262,12 +1265,8 @@ class JobOfferController extends Controller
                 'status' => "1",
                 'appointment_details_id' => $request->appId,
             ];
-            
-            // if($request->id){
-            //     JobTransitionReport::updateOrCreate( ['id' => $request->id], $jobtransition); 
-            //     return response()->json(["message" => "Updated", "code" => 200]);
-            if($request->id) {
-                JobTransitionReport::where(['id' => $request->id])->update($jobtransition);
+            if($request->patient_id){
+                JobTransitionReport::updateOrCreate( ['patient_id' => $request->patient_id], $jobtransition);
                 return response()->json(["message" => "Updated", "code" => 200]);
             } else {
                 JobTransitionReport::create($jobtransition);
@@ -1330,11 +1329,8 @@ class JobOfferController extends Controller
                 'status' => "0",
                 'appointment_details_id' => $request->appId,
             ];
-            // if($request->id){
-            //     JobTransitionReport::updateOrCreate( ['id' => $request->id], $jobtransition); 
-            //     return response()->json(["message" => "Updated", "code" => 200]);
-            if($request->id) {
-                JobTransitionReport::where(['id' => $request->id])->update($jobtransition);
+            if($request->patient_id){
+                JobTransitionReport::updateOrCreate( ['patient_id' => $request->patient_id], $jobtransition);
                 return response()->json(["message" => "Updated", "code" => 200]);
             } else {
                 JobTransitionReport::create($jobtransition);
