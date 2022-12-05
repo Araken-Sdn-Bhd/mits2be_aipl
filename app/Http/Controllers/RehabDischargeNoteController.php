@@ -16,7 +16,6 @@ class RehabDischargeNoteController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
-            'patient_mrn_id' => 'required|integer',
             'id' => '',
             'appId' => '',
         ]);
@@ -118,10 +117,6 @@ class RehabDischargeNoteController extends Controller
                 $Rehabdischarge['code_id'] =  $request->code_id;
                 $validateRehabDischarge['sub_code_id'] = 'required';
                 $Rehabdischarge['sub_code_id'] =  $request->sub_code_id;
-            }
-            $validator = Validator::make($request->all(), $validateRehabDischarge);
-            if ($validator->fails()) {
-                return response()->json(["message" => $validator->errors(), "code" => 422]);
             }
             if ($request->id) {
                 RehabDischargeNote::where(['id' => $request->id])->update($rehabdischarge);
