@@ -155,10 +155,6 @@ class CounsellingProgressNoteController extends Controller
                 $validateCounsellingprogress['sub_code_id'] = 'required';
                 $counsellingprogess['sub_code_id'] =  $request->sub_code_id;
             }
-            $validator = Validator::make($request->all(), $validateCounsellingprogress);
-            if ($validator->fails()) {
-                return response()->json(["message" => $validator->errors(), "code" => 422]);
-            }
 
 
             // if ($request->referral_letter) {
