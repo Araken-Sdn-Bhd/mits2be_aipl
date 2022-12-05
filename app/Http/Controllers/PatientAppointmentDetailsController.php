@@ -172,6 +172,7 @@ class PatientAppointmentDetailsController extends Controller
 
     public function storeByPID(Request $request)
     {
+        // if ($request->status == '1') {
         // patient_mrn_id is treated as patient_id
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
@@ -182,7 +183,7 @@ class PatientAppointmentDetailsController extends Controller
             'appointment_type' => 'required|integer',
             'type_visit' => 'required|integer',
             'patient_category' => 'required|integer',
-            'assign_team' => 'required'
+            'assign_team' => 'required',
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -214,7 +215,8 @@ class PatientAppointmentDetailsController extends Controller
                     'appointment_type' => $request->appointment_type,
                     'type_visit' => $request->type_visit,
                     'patient_category' => $request->patient_category,
-                    'assign_team' => $request->assign_team
+                    'assign_team' => $request->assign_team,
+                    'status' => "1",
                 ];
                 $patient = PatientAppointmentDetails::create($service);
                 $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
@@ -264,6 +266,29 @@ class PatientAppointmentDetailsController extends Controller
                 return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
             }
         }
+        // } else if ($request->status == '0') {
+        //     $service = [
+        //         'added_by' => $request->added_by,
+        //         'nric_or_passportno' => $getPatientIC[0],
+        //         'booking_date' => $request->booking_date,
+        //         'booking_time' => $request->booking_time,
+        //         'patient_mrn_id' =>$request->patient_mrn_id,
+        //         'duration' => $request->duration,
+        //         'appointment_type' => $request->appointment_type,
+        //         'type_visit' => $request->type_visit,
+        //         'patient_category' => $request->patient_category,
+        //         'assign_team' => $request->assign_team,
+        //         'appointment_details_id' => $request->appId,
+        //         'status' => "0",
+        //     ];
+        //     if($request->id) {
+        //         PatientAppointmentDetails::where(['id' => $request->id])->update($service);
+        //         return response()->json(["message" => "Updated", "code" => 200]);
+        //     } else {
+        //         PatientAppointmentDetails::create($service);
+        //         return response()->json(["message" => "Created", "code" => 200]);
+        //     }
+        // }
     }
 
     public function checkNricNoORPassport(Request $request)
@@ -1339,7 +1364,8 @@ class PatientAppointmentDetailsController extends Controller
             ELSE DATE_FORMAT(triage_form.created_at, '%h:%i PM')
        END)  as time"),
                 DB::raw("DATE_FORMAT(triage_form.created_at, '%d-%m-%Y') as date"),
-                DB::raw("'1' as status"),
+                // DB::raw("'1' as status"),
+                'triage_form.status',
                 'triage_form.id',
                 'users.name',
                 DB::raw("'TriageForm' as type"),
