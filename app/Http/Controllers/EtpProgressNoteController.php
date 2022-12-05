@@ -186,13 +186,6 @@ class EtpProgressNoteController extends Controller
         } else if ($request->status == 0) {
             if ($request->id) {
                 if ($request->service_category == 'assisstance' || $request->service_category == 'external') {
-                    $validator = Validator::make($request->all(), [
-                        'services_id' => 'required'
-                    ]);
-                    if ($validator->fails()) {
-                        return response()->json(["message" => $validator->errors(), "code" => 422]);
-                    }
-
                     $etpprogressnote = [
                         'services_id' =>  $request->services_id,
                         'added_by' =>  $request->added_by,
@@ -225,14 +218,6 @@ class EtpProgressNoteController extends Controller
                     }
                     return response()->json(["message" => "ETP Progress Form Successfully00", "code" => 200]);
                 } else if ($request->service_category == 'clinical-work') {
-                    $validator = Validator::make($request->all(), [
-                        'code_id' => 'required|integer',
-                        'sub_code_id' => 'required|integer'
-                    ]);
-                    if ($validator->fails()) {
-                        return response()->json(["message" => $validator->errors(), "code" => 422]);
-                    }
-
                     $EtpProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
@@ -269,13 +254,6 @@ class EtpProgressNoteController extends Controller
                 }
             } else {
                 if ($request->service_category == 'assisstance' || $request->service_category == 'external') {
-                    $validator = Validator::make($request->all(), [
-                        'services_id' => 'required'
-                    ]);
-                    if ($validator->fails()) {
-                        return response()->json(["message" => $validator->errors(), "code" => 422]);
-                    }
-
                     $etpprogressnote = [
                         'services_id' =>  $request->services_id,
                         'added_by' =>  $request->added_by,
@@ -305,14 +283,6 @@ class EtpProgressNoteController extends Controller
                     }
                     return response()->json(["message" => "ETP Progress Form Successfully00", "code" => 200]);
                 } else if ($request->service_category == 'clinical-work') {
-                    $validator = Validator::make($request->all(), [
-                        'code_id' => 'required|integer',
-                        'sub_code_id' => 'required|integer'
-                    ]);
-                    if ($validator->fails()) {
-                        return response()->json(["message" => $validator->errors(), "code" => 422]);
-                    }
-
                     $EtpProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
