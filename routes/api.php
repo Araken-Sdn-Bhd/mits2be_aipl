@@ -106,7 +106,6 @@ use Illuminate\Support\Facades\Mail;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-// Route::get('/test',function(){dd('check');});
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/loginEmployer', [AuthController::class, 'loginEmployer']);

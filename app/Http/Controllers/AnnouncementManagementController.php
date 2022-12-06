@@ -28,7 +28,7 @@ class AnnouncementManagementController extends Controller
         }
         $files = $request->file('document');
         $isUploaded = upload_file($files, 'announcements');
-        if ($request->id != null){
+        if ($request->id != null) {
             if ($isUploaded->getData()->code == 200) {
                 $announcement = [
                     'added_by' => $request->added_by,
@@ -41,7 +41,7 @@ class AnnouncementManagementController extends Controller
                     'audience_ids' => $request->audience_ids,
                     'status' => $request->status
                 ];
-                Announcement::where('id',$request->id)
+                Announcement::where('id', $request->id)
                 ->update($announcement);
 
                 return response()->json(["message" => "Announcement Created Successfully!", "code" => 200]);
@@ -116,7 +116,7 @@ class AnnouncementManagementController extends Controller
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
-       
+
         $files = $request->file('document');
         if ($request->file('document') != null || $request->file('document') != "" ){
         $isUploaded = upload_file($files, 'announcements');
@@ -154,7 +154,7 @@ class AnnouncementManagementController extends Controller
         return response()->json(["message" => "Announcement Management has updated successfully", "code" => 200]);
 
     }
-            
+
     }
 
     public function remove(Request $request)
