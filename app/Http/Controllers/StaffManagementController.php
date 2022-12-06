@@ -47,7 +47,7 @@ class StaffManagementController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        //dd($request->document);
+ 
         if (($request->document =="null") || empty($request->document)) {
 
             $staffadd = [
@@ -106,7 +106,7 @@ class StaffManagementController extends Controller
                 ->first();
 
                 if($default_pass->variable_value =="true"){
-                    // dd('if');
+                   
                     $user = User::create(
                         ['name' => $request->name, 'email' => $request->email, 'role' => $role->role_name, 'password' => bcrypt('password@123')]
                     );
@@ -229,7 +229,8 @@ class StaffManagementController extends Controller
                 ->join('users', 'users.email', '=', 'staff_management.email')
                 ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
                 ->join('roles','staff_management.role_id','=','roles.id')
-                ->select('roles.role_name','staff_management.id','users.id as users_id', 'staff_management.name', 'general_setting.section_value as designation_name', 'hospital_branch__details.hospital_branch_name')
+                ->select('roles.role_name','staff_management.id','users.id as users_id', 'staff_management.name', 
+                'general_setting.section_value as designation_name', 'hospital_branch__details.hospital_branch_name')
                 ->where('staff_management.status', '=', '1')
                 ->get();
 
@@ -240,7 +241,9 @@ class StaffManagementController extends Controller
                 ->join('users', 'staff_management.email', '=', 'users.email')
                 ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
                 ->join('roles','staff_management.role_id','=','roles.id')
-                ->select('roles.role_name','staff_management.id','users.id as users_id', 'staff_management.name', 'general_setting.section_value as designation_name', 'hospital_branch__details.hospital_branch_name')
+                ->join('service_register','staff_management.team_id','=','service_register.id')
+                ->select('roles.role_name','staff_management.id','users.id as users_id', 'staff_management.name', 
+                'general_setting.section_value as designation_name', 'hospital_branch__details.hospital_branch_name','service_register.service_name')
                 ->where('staff_management.status', '=', '1')
                 ->where('staff_management.branch_id', '=', $request->branch_id)
                 ->get();

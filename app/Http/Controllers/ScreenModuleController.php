@@ -516,19 +516,24 @@ class ScreenModuleController extends Controller
         return response()->json(["message" => "Team List", 'list' => $list, "code" => 200]);
     }
 
-    public function getUserMatrixList()
+    public function getUserMatrixList(Request $request)
     {
-        //staff_id refers to the user table usersid
+       
         $list = DB::table('screen_access_roles')
             ->join('users', 'screen_access_roles.staff_id', '=', 'users.id')
             ->join('hospital_branch_team_details', 'screen_access_roles.team_id', '=', 'hospital_branch_team_details.id')
-            ->select('hospital_branch_team_details.team_name','users.name','screen_access_roles.hospital_id','screen_access_roles.team_id','screen_access_roles.branch_id',DB::raw("'Active' as status"),'users.id')
-            ->where('screen_access_roles.status','=', '1')->distinct('screen_access_roles.staff_id','screen_access_roles.team_id','users.name')
+            ->select('hospital_branch_team_details.team_name','users.name','screen_access_roles.hospital_id',
+            'screen_access_roles.team_id','screen_access_roles.branch_id',DB::raw("'Active' as status"),'users.id')
+            ->where('screen_access_roles.status','=', '1')
+            ->distinct('screen_access_roles.staff_id','screen_access_roles.team_id','users.name')
             ->get();
+       
         return response()->json(["message" => "User Matrix List", 'list' => $list, "code" => 200]);
     }
     public function getUserMatrixListById(Request $request)
     {
+       
+
         $list = DB::table('screen_access_roles')
             ->join('users', 'screen_access_roles.staff_id', '=', 'users.id')
             ->join('hospital_branch_team_details', 'screen_access_roles.team_id', '=', 'hospital_branch_team_details.id')
@@ -536,10 +541,10 @@ class ScreenModuleController extends Controller
             ->select('hospital_branch_team_details.team_name','users.name',
             DB::raw("'Active' as status"))
             ->where('screen_access_roles.status','=', '1')
-            ->where('screen_access_roles.team_id','=', $request->team_id)
+            //->where('screen_access_roles.team_id','=', $request->team_id) //comment ni jangan remove lagi
             ->where('screen_access_roles.staff_id','=', $request->staff_id)
             ->first();
-            // dd($list);
+        
             $list1 = DB::table('screen_access_roles')
             ->join('staff_management', 'screen_access_roles.staff_id', '=', 'staff_management.id')
             ->join('hospital_branch_team_details', 'screen_access_roles.team_id', '=', 'hospital_branch_team_details.id')
@@ -547,17 +552,13 @@ class ScreenModuleController extends Controller
             ->select('screen_access_roles.id','screen_access_roles.hospital_id','screen_access_roles.team_id','screen_access_roles.branch_id','screen_access_roles.module_id','screen_access_roles.sub_module_id',
             DB::raw("'Active' as status"),'screens.screen_name','screens.screen_description','screen_access_roles.screen_id',
             'screen_access_roles.access_screen','screen_access_roles.read_writes','screen_access_roles.read_only',)
-            // ->where('screen_access_roles.status','=', '1')
-            // ->where('screen_access_roles.status','=', 0)
-            ->where('screen_access_roles.team_id','=', $request->team_id)
+            //->where('screen_access_roles.team_id','=', $request->team_id) //comment ni jangan remove lagi
             ->where('screen_access_roles.staff_id','=', $request->staff_id) //staff_id refers to the user table usersid
             ->get();
             $result1 = (array) json_decode($list1,true);
-            // dd($result1);
             $result=[];
             if (count($result1) > 0) {
                 foreach ($result1 as $key => $val) {
-                    // dd( $val['access_screen']);
                     $result[$key]['access_screen'] = $val['access_screen'] ??  'NA';
                     $result[$key]['branch_id'] = $val['branch_id'] ??  'NA';
                     $result[$key]['hospital_id'] = $val['hospital_id'] ??  'NA';
