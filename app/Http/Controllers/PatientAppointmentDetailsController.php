@@ -544,7 +544,7 @@ class PatientAppointmentDetailsController extends Controller
                 ->where('pad.status','!=','0'); 
 
                         if($role->code != 'superadmin'){
-                           
+
                             $query->where('patient_registration.branch_id',$request->branch_id);
                         }
                         if ($request->service_id != '0') {
@@ -559,8 +559,8 @@ class PatientAppointmentDetailsController extends Controller
                             ->orWhere('patient_registration.name_asin_nric', 'LIKE', '%' . $searchWord . '%')
                             ->orWhere('patient_registration.nric_no', 'LIKE', '%' . $searchWord . '%')
                             ->orWhere('patient_registration.passport_no', 'LIKE', '%' . $searchWord . '%');
-                        } 
-                
+                        }
+
                 $resultSet=$query->get();
                 foreach ($resultSet as $key){
                    $key->patient_mrn = $key->patient_mrn ??  'NA';
@@ -581,7 +581,7 @@ class PatientAppointmentDetailsController extends Controller
                     $key->staffname =  'NA';
                  }
                 }
-        
+
         return response()->json(["message" => "Appointment List.", 'list' => $resultSet, "code" => 200]);
     }
 
@@ -2056,7 +2056,7 @@ class PatientAppointmentDetailsController extends Controller
         }
         if ($request->type == "LogMeetingWithEmployer") {
             $list = LogMeetingWithEmployer::select('*')
-                ->where('patient_id', '=', $request->id)
+                ->where('id', '=', $request->id)
                 // ->where('status', '1')
                 ->get();
         }
