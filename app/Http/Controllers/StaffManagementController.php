@@ -243,7 +243,8 @@ class StaffManagementController extends Controller
                 ->join('roles','staff_management.role_id','=','roles.id')
                 ->join('service_register','staff_management.team_id','=','service_register.id')
                 ->select('roles.role_name','staff_management.id','users.id as users_id', 'staff_management.name', 
-                'general_setting.section_value as designation_name', 'hospital_branch__details.hospital_branch_name','service_register.service_name')
+                'general_setting.section_value as designation_name', 'hospital_branch__details.hospital_branch_name','service_register.service_name',
+                'staff_management.status','staff_management.team_id')
                 ->where('staff_management.status', '=', '1')
                 ->where('staff_management.branch_id', '=', $request->branch_id)
                 ->get();
@@ -254,7 +255,9 @@ class StaffManagementController extends Controller
                 ->leftjoin('users', 'staff_management.email', '=', 'users.email')
                 ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
                 ->join('roles','staff_management.role_id','=','roles.id')
-                ->select('roles.role_name','staff_management.id','users.id as users_id', 'staff_management.name', 'general_setting.section_value as designation_name', 'hospital_branch__details.hospital_branch_name')
+                ->join('service_register','staff_management.team_id','=','service_register.id')
+                ->select('roles.role_name','staff_management.id','users.id as users_id', 'staff_management.name', 'general_setting.section_value as designation_name',
+                 'hospital_branch__details.hospital_branch_name','service_register.service_name','staff_management.status','staff_management.team_id')
                 ->where('staff_management.status', '=', '1')
                 ->where('staff_management.name', 'LIKE', "%{$request->name}%", '=', $request->name)
                 ->orderBy('staff_management.name', 'asc')
@@ -266,7 +269,9 @@ class StaffManagementController extends Controller
                 ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
                 ->join('users', 'staff_management.email', '=', 'users.email')
                 ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
-                ->select('staff_management.id','users.id as users_id', 'staff_management.name', 'general_setting.section_value as designation_name', 'hospital_branch__details.hospital_branch_name')
+                ->join('service_register','staff_management.team_id','=','service_register.id')
+                ->select('staff_management.id','users.id as users_id', 'staff_management.name', 'general_setting.section_value as designation_name', 
+                'hospital_branch__details.hospital_branch_name','service_register.service_name','staff_management.status','staff_management.team_id')
                 ->where('staff_management.branch_id', '=', $request->branch_id)
                 ->where('staff_management.name', 'LIKE', "%{$request->name}%")
                 ->orderBy('staff_management.name', 'asc')
