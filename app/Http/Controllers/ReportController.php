@@ -1051,7 +1051,7 @@ class ReportController extends Controller
         $attendanceStatus = [];
         $attend = 0;
         $noShow = 0;
-        dd($ssh);
+
         if ($ssh) {
             $index = 0;
             foreach ($ssh as $k => $v) {
