@@ -80,11 +80,11 @@ class JobInterestChecklistController extends Controller
 
                 return response()->json(["message" => "Job Interest Checklist Created Successfully!", "code" => 200]);
             } else {
-                JobInterestChecklist::create($jobinterestchecklist);
+                $jobInterestChecklist = JobInterestChecklist::create($jobinterestchecklist);
                 if (!empty($request->jobs)) {
                     foreach ($request->jobs as $key) {
                         if ($key['job']) {
-                            $data = array('type_of_job' => $key['job'], 'patient_id' => $request->patient_id, 'duration' => $key['duration'], 'termination_reason' => $key['reason'], 'job_interest_checklist_id' => $jobintetestid);
+                            $data = array('type_of_job' => $key['job'], 'patient_id' => $request->patient_id, 'duration' => $key['duration'], 'termination_reason' => $key['reason'], 'job_interest_checklist_id' => $jobInterestChecklist['id']);
                             JobInterestList::insert($data);
                         }
                     }
@@ -92,7 +92,7 @@ class JobInterestChecklistController extends Controller
 
                 return response()->json(["message" => "Job Interest Checklist Created Successfully!", "code" => 200]);
             }
-        } else if ($request->status == '1') {
+        } elseif ($request->status == '1') {
             $validator = Validator::make($request->all(), [
                 'added_by' => 'required|integer',
                 'patient_id' => 'required|integer',
@@ -215,8 +215,6 @@ class JobInterestChecklistController extends Controller
 
             if ($request->id) {
                 JobInterestChecklist::where(['id' => $request->id])->update($jobinterestchecklist);
-                //  dd($ab->id);
-                //  $jobintetestid=($ab->id);
                 if (!empty($request->jobs)) {
                     foreach ($request->jobs as $key) {
                         $data = array('type_of_job' => $key['job'], 'patient_id' => $request->patient_id, 'duration' => $key['duration'], 'termination_reason' => $key['reason'], 'job_interest_checklist_id' => $request->id);
@@ -226,11 +224,11 @@ class JobInterestChecklistController extends Controller
 
                 return response()->json(["message" => "Job Interest Checklist Created Successfully!", "code" => 200]);
             } else {
-                JobInterestChecklist::create($jobinterestchecklist);
+                $jobInterestChecklist = JobInterestChecklist::create($jobinterestchecklist);
                 if (!empty($request->jobs)) {
                     foreach ($request->jobs as $key) {
                         if ($key['job']) {
-                            $data = array('type_of_job' => $key['job'], 'patient_id' => $request->patient_id, 'duration' => $key['duration'], 'termination_reason' => $key['reason'], 'job_interest_checklist_id' => $jobintetestid);
+                            $data = array('type_of_job' => $key['job'], 'patient_id' => $request->patient_id, 'duration' => $key['duration'], 'termination_reason' => $key['reason'], 'job_interest_checklist_id' => $jobInterestChecklist['id']);
                             JobInterestList::insert($data);
                         }
                     }

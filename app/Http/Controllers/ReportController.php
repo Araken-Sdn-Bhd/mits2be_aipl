@@ -1404,29 +1404,70 @@ class ReportController extends Controller
         $result = [];
         $index = 0;
         $toc = ['individual' => 'INDIVIDUAL', 'org' => 'ORGANIZATION', 'group' => 'GROUP'];
-        $toi = ['Volunteerism' => 'VOLUNTEERISM', 'Networking Make a Contribution' => 'NETWORKING', 'Outreach Project Collaboration' => 'OUTREACH'];
+        $toi = ['Volunteerism' => 'VOLUNTEERISM', 'Networking - Make a Contribution' => 'NETWORKING', 'Outreach - Project Collaboration' => 'OUTREACH'];
         $toiArr = ['VOLUNTEER' => 0, 'OUTREACH' => 0, 'NETWORKING' => 0];
         $ssh = VonOrgRepresentativeBackground::whereBetween('created_at', [$from, $to]);
-        if ($request->toc != 0)
+        if ($request->toc != NULL){
             $ssh->where('section', $request->toc);
-        if ($request->aoi != 0)
-            $ssh->where('area_of_involvement', $request->aoi);
-        if ($request->screening != 2)
-            $ssh->where('screening_mode', $request->screening);
-        if ($request->event != 'no-event')
-            $ssh->where('name', $request->event);
-        if ($request->location == 'mentari') {
-            $ssh->where('branch_id', $request->location_value);
         }
+        if ($request->aoi != NULL){
 
-        $vorb = $ssh->get()->toArray();
+            $ssh->where('area_of_involvement', $request->aoi);
+        }
+        if ($request->screening != NULL){
+            $ssh->where('screening_mode', $request->screening);
+        }
+        $response = $ssh->get()->toArray();
+        $vorb  = json_decode(json_encode($response), true);
         if ($vorb) {
             foreach ($vorb as $k => $v) {
+                if ($request->location == NULL) {
+                    
+                        $location_value1=OutReachProjects::where('parent_section_id', $v['id'])
+                        ->where('project_loaction','mentari')
+                        ->where('project_loaction_value', $request->branch_name)->first();
+    
+                        $location_value2=NetworkingContribution::where('parent_section_id', $v['id'])
+                        ->where('project_loaction','project-location-mentari')
+                        ->where('project_loaction_value', $request->branch_name)->first();
+
+                            if(empty($location_value1) && empty($location_value2)){
+                                continue;
+                            }                 
+                 }
+                if ($request->event != NULL){
+                    $event=OutReachProjects::where('parent_section_id', $v['id'])
+                    ->where('project_name','LIKE','%'.$request->event.'%')->first();
+
+                    if(empty($event)){
+                        continue;
+                    }
+                }
+                if ($request->other_value != NULL) {
+                    $location_value_other=OutReachProjects::where('parent_section_id', $v['id'])
+                    ->where('project_loaction','=','project-location-others')
+                    ->where('project_loaction_value','LIKE','%'.$request->other_value.'%')->first();
+
+                    if(empty($location_value_other)){
+                        continue;
+                    }
+                }
+                if ($request->location_value != NULL) {
+
+                    $location_value=OutReachProjects::where('parent_section_id', $v['id'])
+                    ->where('project_loaction','mentari')
+                    ->where('project_loaction_value', $request->location_value)->first();
+
+                    if(empty($location_value)){
+                        continue;
+                    }                   
+                        
+                }
                 $result[$index]['No']=$index+1;
                 $result[$index]['Name'] = $v['name'];
                 $result[$index]['Type_of_Collaboration'] = $toc[$v['section']];
                 $result[$index]['Type_of_Involvement'] = $toi[$v['area_of_involvement']];
-                $result[$index]['Screening_Done'] = ($v['screening_mode'] === 1) ? 'YES' : 'NO';
+                $result[$index]['Screening_Done'] = ($v['screening_mode'] == 1) ? 'YES' : 'NO';
                 $result[$index]['Contact_Number'] = $v['phone_number'];
                 $orp = [];
                 $vol = [];
@@ -1435,11 +1476,11 @@ class ReportController extends Controller
                 $result[$index]['No_of_Participants'] = '-';
                 $result[$index]['Mentari'] = '-';
                 $result[$index]['Location'] = '-';
-                if ($v['area_of_involvement'] == 'Outreach Project Collaboration') {
+                if ($v['area_of_involvement'] == 'Outreach - Project Collaboration') {
                     $toiArr['OUTREACH'] = $toiArr['OUTREACH'] + 1;
                     $orp = OutReachProjects::where('parent_section_id', $v['id'])->get()->toArray();
                 }
-                if ($v['area_of_involvement'] == 'Networking Make a Contribution') {
+                if ($v['area_of_involvement'] == 'Networking - Make a Contribution') {
                     $toiArr['NETWORKING'] = $toiArr['NETWORKING'] + 1;
                     $orp = NetworkingContribution::where('parent_section_id', $v['id'])->get()->toArray();
                 }
@@ -1471,10 +1512,10 @@ class ReportController extends Controller
                 if ($request->location == 'other') {
                     if ($result[$index]['Others'] != $request->location_value) {
                         unset($result[$index]);
-                        if ($v['area_of_involvement'] == 'Outreach Project Collaboration') {
+                        if ($v['area_of_involvement'] == 'Outreach - Project Collaboration') {
                             $toiArr['OUTREACH'] = $toiArr['OUTREACH'] - 1;
                         }
-                        if ($v['area_of_involvement'] == 'Networking Make a Contribution') {
+                        if ($v['area_of_involvement'] == 'Networking - Make a Contribution') {
                             $toiArr['NETWORKING'] = $toiArr['NETWORKING'] - 1;
                         }
                         if ($v['area_of_involvement'] == 'Volunteerism') {
