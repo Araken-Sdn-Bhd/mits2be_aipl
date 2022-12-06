@@ -40,20 +40,20 @@ class TriageFormController extends Controller
                 'screening_id' => '',
                 'score' => '',
     
-                'appointment_date' => 'required',
-                'appointment_time' => 'required',
-                'appointment_duration' => 'required|integer',
-                'appointment_type' => 'required|integer',
-                'appointment_type_visit' => 'required|integer',
-                'appointment_patient_category' => 'required|integer',
-                'appointment_assign_team' => 'required',
+                'appointment_date' => '',
+                'appointment_time' => '',
+                'appointment_duration' => '',
+                'appointment_type' => '',
+                'appointment_type_visit' => '',
+                'appointment_patient_category' => '',
+                'appointment_assign_team' => '',
     
-                'location_services_id' => 'required|integer',
+                'location_services_id' => '',
                 'services_id' => '',
                 'code_id' => '',
                 'sub_code_id' => '',
-                'type_diagnosis_id' => 'required|integer',
-                'category_services' => 'required|string',
+                'type_diagnosis_id' => '',
+                'category_services' => '',
                 'complexity_services_id' => '',
                 'outcome_id' => '',
                 'medication_des' => '',
@@ -202,19 +202,19 @@ class TriageFormController extends Controller
                         'status' => "0",
                         'appointment_details_id' => $request->appId,
                     ];
-
                     if($request->id){
                         TriageForm::where(['id' => $request->id])->update($triageform);
                         return response()->json(["message" => "Triage Updated Successfully!", "code" => 200]);
-                    }else{
-                    TriageForm::firstOrCreate($triageform);
+                    } else {
+                    TriageForm::create($triageform);
                     return response()->json(["message" => "Triage Created Successfully!", "code" => 200]);
                     }
-                 } 
+                 
                 //  else {
+                
                 //     return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
                 // }
             // }
-        // }
+        }
     }
 }
