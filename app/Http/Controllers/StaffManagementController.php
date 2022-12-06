@@ -47,7 +47,7 @@ class StaffManagementController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
- 
+
         if (($request->document =="null") || empty($request->document)) {
 
             $staffadd = [
@@ -106,7 +106,7 @@ class StaffManagementController extends Controller
                 ->first();
 
                 if($default_pass->variable_value =="true"){
-                   
+
                     $user = User::create(
                         ['name' => $request->name, 'email' => $request->email, 'role' => $role->role_name, 'password' => bcrypt('password@123')]
                     );
@@ -116,10 +116,10 @@ class StaffManagementController extends Controller
                     ->join('screens','screens.id','=','default_role_access.screen_id')
                     ->where('default_role_access.role_id',$request->role_id)
                     ->get();
-    
+
                     $hospital = HospitalBranchManagement::where('id',$request->branch_id)->first();
-                    
-                    
+
+
                     if ($defaultAcc) {
                         foreach ($defaultAcc as $key) {
                             $screen = [
@@ -133,14 +133,14 @@ class StaffManagementController extends Controller
                                 'access_screen' => '1',
                                 'read_writes' => '1',
                                 'read_only' => '0',
-                
+
                             ];
-    
+
                             if (ScreenAccessRoles::where($screen)->count() == 0) {
                                 $screen['added_by'] = $request->added_by;
                                 ScreenAccessRoles::Create($screen);
                             }
-    
+
                         }}
 
 
@@ -229,7 +229,7 @@ class StaffManagementController extends Controller
                 ->join('users', 'users.email', '=', 'staff_management.email')
                 ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
                 ->join('roles','staff_management.role_id','=','roles.id')
-                ->select('roles.role_name','staff_management.id','users.id as users_id', 'staff_management.name', 
+                ->select('roles.role_name','staff_management.id','users.id as users_id', 'staff_management.name',
                 'general_setting.section_value as designation_name', 'hospital_branch__details.hospital_branch_name')
                 ->where('staff_management.status', '=', '1')
                 ->get();
@@ -245,6 +245,7 @@ class StaffManagementController extends Controller
                 ->select('roles.role_name','staff_management.id','users.id as users_id', 'staff_management.name', 
                 'general_setting.section_value as designation_name', 'hospital_branch__details.hospital_branch_name','service_register.service_name',
                 'staff_management.status','staff_management.team_id')
+
                 ->where('staff_management.status', '=', '1')
                 ->where('staff_management.branch_id', '=', $request->branch_id)
                 ->get();
@@ -341,7 +342,7 @@ class StaffManagementController extends Controller
         }
 
         $role = StaffManagement::where('staff_management.id',$request->id)->first();
-        
+
         if ($role->role_id !=0){
             $users = DB::table('staff_management')
             ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
@@ -357,11 +358,11 @@ class StaffManagementController extends Controller
             ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
             ->join('service_register', 'staff_management.team_id', '=', 'service_register.id')
             ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
-            ->select('staff_management.id as Staff_managementId', 'staff_management.name', 'staff_management.nric_no', 
+            ->select('staff_management.id as Staff_managementId', 'staff_management.name', 'staff_management.nric_no',
             'general_setting.section_value as designation_name', 'staff_management.designation_period_start_date',
-             'staff_management.designation_period_end_date', 'staff_management.registration_no', 
-             'service_register.service_name', 'staff_management.branch_id', 'staff_management.is_incharge', 'staff_management.contact_no', 
-             'staff_management.email', 'staff_management.status', 'staff_management.start_date', 'staff_management.end_date', 
+             'staff_management.designation_period_end_date', 'staff_management.registration_no',
+             'service_register.service_name', 'staff_management.branch_id', 'staff_management.is_incharge', 'staff_management.contact_no',
+             'staff_management.email', 'staff_management.status', 'staff_management.start_date', 'staff_management.end_date',
              'hospital_branch__details.hospital_branch_name')
             ->where('staff_management.id', '=', $request->id)
             ->get();
@@ -380,7 +381,7 @@ class StaffManagementController extends Controller
         }
 
         $role = StaffManagement::where('id',$request->id)->first();
-        
+
         if ($role->role_id !=0){
         $users = DB::table('staff_management')
             ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
@@ -389,10 +390,10 @@ class StaffManagementController extends Controller
             ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
             ->select('staff_management.id as Staff_managementId', 'staff_management.name', 'staff_management.role_id',
              'staff_management.team_id', 'staff_management.nric_no', 'staff_management.branch_id',
-              'general_setting.section_value as designation_name', 'general_setting.id as designation_id', 
+              'general_setting.section_value as designation_name', 'general_setting.id as designation_id',
               'staff_management.designation_period_start_date', 'staff_management.designation_period_end_date',
                'staff_management.registration_no','roles.code','roles.role_name', 'service_register.service_name', 'hospital_branch__details.hospital_branch_name',
-                'staff_management.branch_id', 'staff_management.is_incharge', 'staff_management.contact_no', 'staff_management.email', 
+                'staff_management.branch_id', 'staff_management.is_incharge', 'staff_management.contact_no', 'staff_management.email',
                 'staff_management.status', 'staff_management.start_date', 'staff_management.end_date')
             ->where('staff_management.id', '=', $request->id)
             ->get();
@@ -402,9 +403,9 @@ class StaffManagementController extends Controller
             ->join('service_register', 'staff_management.team_id', '=', 'service_register.id')
             ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
             ->select('staff_management.id as Staff_managementId', 'staff_management.name', 'staff_management.role_id',
-             'staff_management.team_id', 'staff_management.nric_no', 'staff_management.branch_id', 'general_setting.section_value as designation_name', 
+             'staff_management.team_id', 'staff_management.nric_no', 'staff_management.branch_id', 'general_setting.section_value as designation_name',
              'general_setting.id as designation_id', 'staff_management.designation_period_start_date', 'staff_management.designation_period_end_date',
-             'staff_management.registration_no', 'service_register.service_name', 'hospital_branch__details.hospital_branch_name', 
+             'staff_management.registration_no', 'service_register.service_name', 'hospital_branch__details.hospital_branch_name',
              'staff_management.branch_id', 'staff_management.is_incharge', 'staff_management.contact_no', 'staff_management.email', 'staff_management.status',
              'staff_management.start_date', 'staff_management.end_date')
             ->where('staff_management.id', '=', $request->id)
@@ -432,6 +433,7 @@ class StaffManagementController extends Controller
             'designation_period_end_date' => 'required',
             'start_date' => 'required',
             'end_date' => 'required',
+            'account_status' => 'required',
             'document' => 'mimes:png,jpg,jpeg,pdf|max:10240'
         ]);
         if ($validator->fails()) {
@@ -459,13 +461,13 @@ class StaffManagementController extends Controller
                     'start_date' =>  $request->start_date,
                     'end_date' =>  $request->end_date,
                     'document' =>  $request->document,
-                    'status' => "1"
+                    'status' => $request->account_status
                 ]);
 
                 $userId= DB::table('users')
                 ->select('id')
                 ->where('email',$request->email)->first();
-        
+
                 ScreenAccessRoles::where('staff_id',$userId->id)->delete();
 
                 $defaultAcc = DB::table('default_role_access')
@@ -490,7 +492,7 @@ class StaffManagementController extends Controller
                             'read_writes' => '1',
                             'read_only' => '0',
                             'added_by' => $request->added_by,
-            
+
                         ];
                         if (ScreenAccessRoles::where($screen)->count() == 0) {
                             ScreenAccessRoles::Create($screen);
@@ -499,7 +501,7 @@ class StaffManagementController extends Controller
                     }}
 
                 return response()->json(["message" => "Staff Management has updated successfully", "code" => 200]);
-            
+
         } else {
             $files = $request->file('document');
             $isUploaded = upload_file($files, 'StaffManagement');
@@ -524,13 +526,13 @@ class StaffManagementController extends Controller
                     'start_date' =>  $request->start_date,
                     'end_date' =>  $request->end_date,
                     'document' =>   $isUploaded->getData()->path,
-                    'status' => "1"
+                    'status' => $request->account_status
                 ]);
 
                 $userId= DB::table('users')
                 ->select('id')
                 ->where('email',$request->email)->first();
-        
+
                 ScreenAccessRoles::where('staff_id',$userId->id)->delete();
 
                 $hospital = HospitalBranchManagement::where('id',$request->branch_id)->first();
@@ -555,7 +557,7 @@ class StaffManagementController extends Controller
                             'read_writes' => '1',
                             'read_only' => '0',
                             'added_by' => $request->added_by,
-            
+
                         ];
                         if (ScreenAccessRoles::where($screen)->count() == 0) {
                             ScreenAccessRoles::Create($screen);
@@ -563,10 +565,10 @@ class StaffManagementController extends Controller
 
                     }}
 
-               
+
 
                 return response()->json(["message" => "Staff Management has updated successfully", "code" => 200]);
-            
+
         }
     }
 
@@ -649,7 +651,7 @@ class StaffManagementController extends Controller
     public function getAdminList()
     {
         $users = DB::table('staff_management')
-            ->select('roles.role_name','staff_management.id', 'staff_management.name', 'general_setting.section_value as designation_name', 
+            ->select('roles.role_name','staff_management.id', 'staff_management.name', 'general_setting.section_value as designation_name',
             'hospital_branch_team_details.hospital_branch_name','users.id as staffId')
             ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
             ->join('hospital_branch_team_details', 'staff_management.team_id', '=', 'hospital_branch_team_details.id')
@@ -671,8 +673,8 @@ class StaffManagementController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
 
-       
-    
+
+
         $user= DB::table('staff_management')
         ->select('staff_management.email','staff_management.branch_id','staff_management.team_id','hospital_branch__details.hospital_id')
         ->join('hospital_branch__details','staff_management.branch_id','=','hospital_branch__details.id')
@@ -690,7 +692,7 @@ class StaffManagementController extends Controller
                     ->join('screens','screens.id','=','default_role_access.screen_id')
                     ->where('default_role_access.role_id',$role->id)
                     ->get();
-    
+
 
         if ($defaultAcc) {
             foreach ($defaultAcc as $key) {
@@ -706,7 +708,7 @@ class StaffManagementController extends Controller
                     'read_writes' => '1',
                     'read_only' => '0',
                     'added_by' => $request->added_by,
-    
+
                 ];
 
                 if (ScreenAccessRoles::where($screen)->count() == 0) {
@@ -715,7 +717,7 @@ class StaffManagementController extends Controller
             }
             return response()->json(["message" => "Role Assigned Successfully", "code" => 200]);
         }
-        
+
     }
 
     public function removeUserAccess(Request $request)
@@ -741,7 +743,7 @@ class StaffManagementController extends Controller
             ->join('roles', 'staff_management.role_id', '=', 'roles.id')
             ->where('staff_management.email', '=', $request->email)
             ->first();
-       
+
         return response()->json(["message" => "Staff Management Details", 'list' => $users, "code" => 200]);
     }
 }
