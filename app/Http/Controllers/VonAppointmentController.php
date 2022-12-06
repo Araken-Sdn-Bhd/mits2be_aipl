@@ -131,6 +131,12 @@ class VonAppointmentController extends Controller
     public function listAppointment(Request $request)
     {
 
+        $role = DB::table('staff_management')
+        ->select('roles.code')
+        ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+        ->where('staff_management.email', '=', $request->email)
+        ->first();
+
         $search = [];
         if ($request->date) {
             $search['booking_date'] = $request->date;
@@ -149,7 +155,7 @@ class VonAppointmentController extends Controller
                 $sql = $sql->where('services_type','=', $request->service);
             }
             $records = $sql->get();
-            // $records->get();
+           
         }else{
             $sql = VonAppointment::query();
             $sql = $sql->where('status','=','0');
