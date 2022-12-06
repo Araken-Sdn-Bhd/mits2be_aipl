@@ -771,7 +771,7 @@ Route::group(['prefix' => 'employer-job'], function () {
     Route::post('/list', [JobController::class, 'JobListByCompany']);
     Route::post('/repeat-list', [JobController::class, 'RepeatList']);
     Route::post('/pending-approval', [JobController::class, 'getPendingApprovalList']);
-    Route::get('/job-list', [JobController::class, 'JobList']);
+    Route::post('/job-list', [JobController::class, 'JobList']);
     Route::post('/setAvailable', [JobController::class, 'setStatus']);
     Route::post('/view-detail', [JobController::class, 'ViewJobDetails']);
 });
