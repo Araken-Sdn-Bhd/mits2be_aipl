@@ -23,7 +23,6 @@ class PatientAttachmentController extends Controller
         }
         $files = $request->file('uploaded_path');
         $isUploaded = upload_file($files, 'PatientAttachment');
-        // dd($files->getClientOriginalName());
         if ($isUploaded->getData()->code == 200) {
             $atientattachment = [
                 'added_by' => $request->added_by,
