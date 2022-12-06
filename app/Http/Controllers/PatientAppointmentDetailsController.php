@@ -74,7 +74,6 @@ class PatientAppointmentDetailsController extends Controller
             'added_by' => 'required|integer',
             'nric_or_passportno' => 'required|string',
             'booking_date' => 'required',
-            // 'patient_mrn_id' => 'required',
             'booking_time' => 'required',
             'duration' => 'required|integer',
             'appointment_type' => 'required|integer',
@@ -98,7 +97,6 @@ class PatientAppointmentDetailsController extends Controller
             $booking_date = $request->booking_date;
             $booking_time = $request->booking_time;
             $assign_team = $request->assign_team;
-            // $startTime = date("H:i", strtotime('0 minutes', $booking_time));
             $endTime = date("H:i", strtotime('+30 minutes', strtotime($booking_time)));
 
             $chkPoint =  PatientAppointmentDetails::where(function ($query) use ($booking_date, $booking_time, $assign_team, $endTime) {
@@ -469,82 +467,48 @@ class PatientAppointmentDetailsController extends Controller
             ->where('staff_management.email', '=', $request->email)
             ->first();
 
-        if($role->code == 'superadmin'){
-            $resultSet = PatientAppointmentDetails::select('id','added_by', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team','staff_id', 'appointment_status')
-            ->with('service:service_name,id')
-            ->where('status', '1')
-            ->where('booking_date', date('Y-m-d'))
-            ->get()
-            ->toArray();
-        }else{
-        $resultSet= DB::table('patient_appointment_details as pad')
-        ->select('pad.id','pad.added_by', 'pad.nric_or_passportno', 'pad.patient_mrn_id', 'pad.booking_date', 'pad.booking_time', 
-        'pad.duration', 'pad.appointment_type','pad.type_visit', 'pad.patient_category', 'pad.assign_team','pad.staff_id', 'pad.appointment_status')
-        ->join('service_register','pad.appointment_type','=','service_register.id')
-        ->join('patient_registration','pad.patient_mrn_id','=','patient_registration.id')
-        ->where('pad.status', '1')
-        ->where('pad.booking_date', date('Y-m-d'))
-        ->where('patient_registration.branch_id',$request->branch_id)
-        ->get()
-        ->toArray();
-        }
+            $query= DB::table('patient_appointment_details as pad')
+            ->select('pad.id as appointment_id','pad.added_by', 'pad.nric_or_passportno', 'pad.patient_mrn_id', 'pad.booking_date as appointment_date',
+             'pad.booking_time as appointment_time', 
+            'pad.duration', 'pad.appointment_type','pad.type_visit', 'pad.patient_category', 'pad.assign_team','pad.staff_id', 
+            'pad.appointment_status','service_register.service_name as service','hospital_branch_team_details.team_name',
+             'patient_registration.*')
+            ->join('service_register','pad.appointment_type','=','service_register.id')
+            ->join('patient_registration','pad.patient_mrn_id','=','patient_registration.id')
+            ->join('hospital_branch_team_details','pad.assign_team','=','hospital_branch_team_details.id')
+            ->where('pad.status','!=','0')
+            ->where('pad.booking_date', date('Y-m-d')); 
 
-        $result = [];
-        $list123 = HospitalBranchTeamManagement::select('id', 'hospital_branch_name', 'team_name', 'hospital_code')->where('status', '=', '1')->get();
-        if (count($resultSet) > 0) {
-            foreach ($resultSet as $key => $val) {
-                $patient = [];
-                $patient =  PatientRegistration::select('id','added_by', 'patient_mrn', 'name_asin_nric', 'passport_no', 'nric_no', 'salutation_id')
-                    ->where('id', $val['patient_mrn_id'])
-                    ->with('salutation:section_value,id')
-                    ->get()
-                    ->toArray();
-                if (($patient)) {
-                    $resultChunk = [];
-                    $resultChunk['patient_id'] = $patient[0]['id'] ?: 'NA';
-                    $resultChunk['patient_mrn'] = $patient[0]['patient_mrn'] ?: 'NA';
-                    $resultChunk['name_asin_nric'] = $patient[0]['name_asin_nric'];
-                    $resultChunk['nric_no'] = $patient[0]['nric_no'] ?: '';
-                    $resultChunk['passport_no'] = $patient[0]['passport_no'] ?: '';
-                    // $resultChunk['salutation'] = $patient[0]['salutation'][0]['section_value'] ?: 'NA';
-
-                    if ($patient[0]['salutation']  != null) {
-                        $resultChunk['salutation'] = $patient[0]['salutation'][0]['section_value'] ?: 'NA';
-                    } else {
-                        $resultChunk['salutation'] = 'NA';
+                    if($role->code != 'superadmin'){
+                       
+                        $query->where('patient_registration.branch_id',$request->branch_id);
                     }
-                    if ($val['service'] != null) {
-                        $resultChunk['service'] = $val['service']['service_name'];
-                    } else {
-                        $resultChunk['service'] = 'NA';
-                    }
-                    $resultChunk['added_by'] = $val['added_by'] ?: 'NA';
-                    $resultChunk['appointment_id'] = $val['id'] ?: 'NA';
-                    $resultChunk['appointment_date'] = $val['booking_date'] ?: 'NA';
-                    $resultChunk['appointment_time'] = date('H:i', strtotime($val['booking_time'])) ?: 'NA';
-                    $resultChunk['appointment_status'] = $val['appointment_status'] ?: 'NA';
-                    $staff_id = $val['staff_id'] ?: 'NA';
-                    // dd($val['staff_id']);
-                    $team_id = $val['assign_team'] ?: 'NA';
-                    if($val['staff_id']){
-                        // dd('if');
-                        $staffName = StaffManagement::where('id', $staff_id)->get()->pluck('name');
-                        //  print_r($staffName);
-                        $resultChunk['team_name'] = (count($staffName) > 0) ? $staffName[0] : 'NA';
-                    }
-                    else{
-                        $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get()->pluck('team_name');
-                        //  print_r($teamName);
-                        $resultChunk['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
-                    }
-                    $resultChunk['team_id'] = $team_id ? : 'NA';
-
-                    $result[] = $resultChunk;
-                }
+                  
+            $resultSet=$query->get();
+            
+            foreach ($resultSet as $key){
+               $key->patient_mrn = $key->patient_mrn ??  'NA';
+               $key->name_asin_nric = $key->name_asin_nric ?? 'NA';
+               $key->nric_no = $key->nric_no ?? 'NA';
+               $key->service = $key->service ?? 'NA';
+               $key->passport_no= $key->passport_no ?? 'NA';
+               $key->salutation = $key->salutation ?? 'NA';
+               $key->service_name = $key->service_name ?? 'NA';
+               $key->appointment_id = $key->appointment_id ?? 'NA';
+               $key->appointment_time= date('H:i', strtotime($key->appointment_time)) ?? 'NA';
+               $key->appointment_status = $key->appointment_status ?? 'NA';
+               $key->team_name = $key->team_name ?? 'NA';
+               if ($key->staff_id != null || $key->staff_id !=""){
+                  $staffName = StaffManagement::where('id', $key->staff_id)->get()->pluck('name');
+                  $key->staffname = $staffName[0] ?? 'NA';
+               }else{
+                  $key->staffname =  'NA';
+               }
             }
-        }
 
-        return response()->json(["message" => "Appointment List.", 'list' => $result, "code" => 200]);
+        
+
+        return response()->json(["message" => "Appointment List.", 'list' => $resultSet, "code" => 200]);
     }
 
     public function getPatientAppointmentDetailsListById(Request $request)
@@ -597,16 +561,15 @@ class PatientAppointmentDetailsController extends Controller
                 ->select('pad.id as appointment_id','pad.added_by', 'pad.nric_or_passportno', 'pad.patient_mrn_id', 'pad.booking_date as appointment_date',
                  'pad.booking_time as appointment_time', 
                 'pad.duration', 'pad.appointment_type','pad.type_visit', 'pad.patient_category', 'pad.assign_team','pad.staff_id', 
-                'pad.appointment_status','service_register.service_name as service','hospital_branch_team_details.team_name','staff_management.name as staffname',
-                'patient_registration.*')
+                'pad.appointment_status','service_register.service_name as service','hospital_branch_team_details.team_name',
+                 'patient_registration.*')
                 ->join('service_register','pad.appointment_type','=','service_register.id')
                 ->join('patient_registration','pad.patient_mrn_id','=','patient_registration.id')
                 ->join('hospital_branch_team_details','pad.assign_team','=','hospital_branch_team_details.id')
-                ->join('staff_management','pad.staff_id','=','staff_management.id')
                 ->where('pad.status','!=','0'); 
 
                         if($role->code != 'superadmin'){
-                           
+
                             $query->where('patient_registration.branch_id',$request->branch_id);
                         }
                         if ($request->service_id != '0') {
@@ -621,8 +584,8 @@ class PatientAppointmentDetailsController extends Controller
                             ->orWhere('patient_registration.name_asin_nric', 'LIKE', '%' . $searchWord . '%')
                             ->orWhere('patient_registration.nric_no', 'LIKE', '%' . $searchWord . '%')
                             ->orWhere('patient_registration.passport_no', 'LIKE', '%' . $searchWord . '%');
-                        } 
-                
+                        }
+
                 $resultSet=$query->get();
                 foreach ($resultSet as $key){
                    $key->patient_mrn = $key->patient_mrn ??  'NA';
@@ -636,9 +599,14 @@ class PatientAppointmentDetailsController extends Controller
                    $key->appointment_time= date('H:i', strtotime($key->appointment_time)) ?? 'NA';
                    $key->appointment_status = $key->appointment_status ?? 'NA';
                    $key->team_name = $key->team_name ?? 'NA';
-                   $key->staffname = $key->staffname ?? 'NA';
+                   if ($key->staff_id != null || $key->staff_id !=""){
+                    $staffName = StaffManagement::where('id', $key->staff_id)->get()->pluck('name');
+                    $key->staffname = $staffName[0] ?? 'NA';
+                 }else{
+                    $key->staffname =  'NA';
+                 }
                 }
-        
+
         return response()->json(["message" => "Appointment List.", 'list' => $resultSet, "code" => 200]);
     }
 
@@ -2114,7 +2082,7 @@ class PatientAppointmentDetailsController extends Controller
         }
         if ($request->type == "LogMeetingWithEmployer") {
             $list = LogMeetingWithEmployer::select('*')
-                ->where('patient_id', '=', $request->id)
+                ->where('id', '=', $request->id)
                 // ->where('status', '1')
                 ->get();
         }
