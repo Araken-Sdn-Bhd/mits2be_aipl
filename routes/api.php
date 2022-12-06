@@ -106,6 +106,7 @@ use Illuminate\Support\Facades\Mail;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+
 Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/loginEmployer', [AuthController::class, 'loginEmployer']);
@@ -325,7 +326,7 @@ Route::get('/storage/{folder}/{filename}', function ($folder, $filename) {
     $response = Response::make($file, 200);
     $response->header("Content-Type", $type);
 
-    return ;
+    return;
 });
 
 Route::group(['prefix' => 'designation'], function () {
@@ -388,7 +389,7 @@ Route::group(['prefix' => 'patient-registration'], function () {
     Route::post('/update', [PatientRegistrationController::class, 'updatePatientRegistration']);
     Route::get('/getPatientRegistrationList', [PatientRegistrationController::class, 'getPatientRegistrationList']);
     Route::post('/getPatientRegistrationListByScreening', [PatientRegistrationController::class, 'getPatientRegistrationListByScreening']);
-    Route::get('/validatePatientNric',[PatientRegistrationController::class, 'validatePatientNric']);
+    Route::get('/validatePatientNric', [PatientRegistrationController::class, 'validatePatientNric']);
     Route::post('/getTransactionlog', [PatientRegistrationController::class, 'getTransactionlog']);
     Route::post('/getPatientRegistrationByIdShortDetails', [PatientRegistrationController::class, 'getPatientRegistrationByIdShortDetails']);
     Route::get('/getPatientRegistrationListMobile', [PatientRegistrationController::class, 'getPatientRegistrationListMobile']);
