@@ -45,7 +45,6 @@ class PatientShharpRegistrationHospitalManagementController extends Controller
             if ($self_harm[0] != '')
                 $riskArray = $self_harm[0];
         }
-        //dd($riskArray);
         $module = [];
         if ($riskArray == 0) {
             $module = [

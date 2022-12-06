@@ -114,13 +114,11 @@ class PatientRegistrationController extends Controller
             'patient_need_triage_screening' => $request->patient_need_triage_screening,
             'employment_status' => $request->employment_status,
             'household_income' => $request->household_income,
-            // 'ethnic_group' =>$request->ethnic_group,patient_need_triage_screening
             'status' => "1",
             'sharp' => $request->Sharp, //1 represents for sharp registration patient list
             'other_race' => $request->other_race,
             'other_religion' => $request->other_religion,
             'other_accommodation' => $request->other_accommodation,
-            //'other_marritalList' => $request->other_maritalList,
             'other_feeExemptionStatus' => $request->other_feeExemptionStatus,
             'other_occupationStatus' => $request->other_occupationStatus,
         ];
@@ -157,7 +155,6 @@ class PatientRegistrationController extends Controller
             $patientregistration['referral_letter'] =  $filePath;
             $fileData = [
                 'added_by' =>  $request->added_by,
-                // 'patient_id' =>
                 'file_name' => $fileName,
                 'uploaded_path' => $filePath,
             ];
@@ -197,14 +194,6 @@ class PatientRegistrationController extends Controller
                 ];
                 $HOD = Notifications::insert($notifi);
             }
-            // $notifi12=[
-            //     'added_by' => $Patient['added_by'],
-            //     'patient_id' =>   $Patient['id'],
-            //     'created_at' => $date->format('Y-m-d H:i:s'),
-            //     'message' =>  'Patient Registration',
-            // ];
-            // $HOD = Notifications::insert($notifi12);
-
         } catch (Exception $e) {
             return response()->json(["message" => $e->getMessage(), 'Patient Registration' => $patientregistration, "code" => 200]);
         }
@@ -237,7 +226,6 @@ class PatientRegistrationController extends Controller
             ->get();
         $result = [];
         foreach ($list as $key => $val) {
-            // dd($list);
             $result[$key]['patient_mrn'] = $val['patient_mrn'] ?? 'NA';
             $result[$key]['name_asin_nric'] = $val['name_asin_nric'] ?? 'NA';
             $result[$key]['id'] = $val['id'];
@@ -258,7 +246,6 @@ class PatientRegistrationController extends Controller
             if (!empty($val['maritialstatus'][0])) {
                 $result[$key]['maritialstatus'] = $val['maritialstatus'][0]['section_value'] ?? 'NA';
             } else {
-                // $a = array('dd' => 'ok' );
                 $result[$key]['maritialstatus'] = 'NA';
             }
             if ($val['citizenships'] != null) {
@@ -273,15 +260,12 @@ class PatientRegistrationController extends Controller
             } else {
                 $result[$key]['service'] = 'NA';
             }
-            //$result[$key]['mobile_no'] = $val['mobile_no'] ?? 'NA';
             $result[$key]['birth_date'] = $val['birth_date'] ?? 'NA';
             $result[$key]['drug_allergy_description'] = $val['drug_allergy_description'] ?? 'NA';
 
 
 
-            //  dd($result);
         }
-        // dd($result);
         return response()->json(["message" => "Patients List", 'list' => $list, "code" => 200]);
     }
 
@@ -293,7 +277,6 @@ class PatientRegistrationController extends Controller
             ->with('citizenships:section_value,id')->get();
         $result = [];
         foreach ($list as $key => $val) {
-            // dd($list);
             $result[$key]['patient_mrn'] = $val['patient_mrn'] ?? 'NA';
             $result[$key]['name_asin_nric'] = $val['name_asin_nric'] ?? 'NA';
             $result[$key]['id'] = $val['id'];
@@ -335,7 +318,6 @@ class PatientRegistrationController extends Controller
             $result[$key]['kin_nric_no'] = $val['kin_nric_no'] ?? 'NA';
             $result[$key]['kin_mobile_no'] = $val['kin_mobile_no'] ?? 'NA';
 
-            //  dd($result);
         }
         return response()->json(["message" => "Patients List", 'list' => $result, "code" => 200]);
     }
@@ -380,7 +362,6 @@ class PatientRegistrationController extends Controller
                 $result[$key]['appointments'] = 'NA';
                 $result[$key]['team_name'] = 'NA';
             }
-            //  dd($result);
         }
         return response()->json(["message" => "Patients List", 'list' => $result, "code" => 200]);
     }
@@ -470,7 +451,6 @@ class PatientRegistrationController extends Controller
                 $result[$key]['salutation'] = 'NA';
             }
             if ($val['service'] != null) {
-                // dd($val['service']['id']);
                 $result[$key]['service'] = $val['service']['service_name'];
             } else {
                 $result[$key]['service'] = 'NA';
@@ -821,7 +801,6 @@ class PatientRegistrationController extends Controller
                 $result[$key]['appointments'] = 'NA';
                 $result[$key]['team_name'] = 'NA';
             }
-            //  dd($result);
         }
         return response()->json(["message" => "Patients List", 'list' => $result, "code" => 200]);
     }

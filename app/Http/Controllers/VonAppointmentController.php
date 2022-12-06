@@ -26,7 +26,6 @@ class VonAppointmentController extends Controller
             'booking_date' => 'required',
             'booking_time' => 'required',
             'duration' => 'required|integer',
-            // 'appointment_type' => '',
             'interviewer_id' => 'required|integer',
             'area_of_involvement' => 'required|integer',
             'services_type' => 'required'
@@ -35,19 +34,6 @@ class VonAppointmentController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
 
-        // $nric_or_passportno = $request->nric_or_passportno;
-        // $getmnr_id = PatientRegistration::select('id')
-        //     ->where('nric_no', $nric_or_passportno)
-        //     ->orWhere('passport_no', $nric_or_passportno)
-        //     ->pluck('id');
-        // dd($getmnr_id);
-        // $chkPoint1 =  PatientRegistration::where(function ($query) use ($nric_or_passportno) {
-        // $query->where('nric_no','=', $nric_or_passportno);
-        // })->where('status', '1')->get();
-
-        // if (count($getmnr_id) == 0) {
-        //     return response()->json(["message" => "This user is not registered", "code" => 401]);
-        // } else {
         $booking_date = $request->booking_date;
         $booking_time = $request->booking_time;
         $interviewer_id = $request->interviewer_id;
@@ -62,9 +48,7 @@ class VonAppointmentController extends Controller
                 'parent_section_id' => $request->parent_section_id,
                 'booking_date' => $request->booking_date,
                 'booking_time' => $request->booking_time,
-                // 'patient_mrn_id' => $getmnr_id[0],
                 'duration' => $request->duration,
-                // 'appointment_type' => $request->appointment_type,
                 'interviewer_id' => $request->interviewer_id,
                 'area_of_involvement' => $request->area_of_involvement,
                 'services_type' => $request->services_type,
@@ -75,7 +59,6 @@ class VonAppointmentController extends Controller
         } else {
             return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
         }
-        // }
     }
 
     public function geyVonAppointmentById(Request $request)
@@ -92,7 +75,6 @@ class VonAppointmentController extends Controller
             'booking_date' => 'required',
             'booking_time' => 'required',
             'duration' => 'required|integer',
-            // 'appointment_type' => 'required|integer',
             'interviewer_id' => 'required|integer',
             'area_of_involvement' => 'required|integer',
             'services_type' => 'required',
@@ -117,7 +99,6 @@ class VonAppointmentController extends Controller
                 'booking_date' => $request->booking_date,
                 'booking_time' => $request->booking_time,
                 'duration' => $request->duration,
-                // 'appointment_type' => $request->appointment_type,
                 'interviewer_id' => $request->interviewer_id,
                 'area_of_involvement' => $request->area_of_involvement,
                 'services_type' => $request->services_type

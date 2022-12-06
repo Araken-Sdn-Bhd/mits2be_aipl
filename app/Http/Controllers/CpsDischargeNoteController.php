@@ -10,7 +10,6 @@ use App\Models\CpsDischargeNote;
 
 class CpsDischargeNoteController extends Controller
 {
-    //
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [

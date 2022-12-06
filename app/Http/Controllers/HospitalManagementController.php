@@ -138,7 +138,6 @@ class HospitalManagementController extends Controller
                 ['hod_psychiatrist_id' => $request->id]
             )->update([
                 'hod_psychiatrist_name' => $request->name,
-                // 'hod_psychiatrist_id' => $HOD->hod_psychiatrist_id,
                 'added_by' =>  $request->added_by,
                 'hospital_code' =>  $request->hospital_code,
                 'hospital_prefix' =>  $request->hospital_prefix,
@@ -157,7 +156,6 @@ class HospitalManagementController extends Controller
             return response()->json(["message" => "Updated Successfully.", "code" => 200]);
 
         } catch (\Throwable $th) {
-            //throw $th;
             return response()->json(["message" => "Something Went Wrong", "code" => 501]);
         }
 
@@ -293,40 +291,28 @@ class HospitalManagementController extends Controller
     {
         $added_by =  PatientRegistration::select('added_by')->where('id', '=', $request->patient_id)
         ->get();
-        // dd($added_by[0]['added_by']);
         $users = DB::table('patient_registration')
             ->join('users', 'patient_registration.added_by', '=', 'users.id')
             ->select('users.email')
             ->where('patient_registration.added_by', '=', $added_by[0]['added_by'])
             ->get();
-        // dd($users[0]);
         $result = [];
         if ($users) {
             $tmp = json_decode(json_encode($users[0]), true)['email'];
-            // $team =  StaffManagement::select('is_incharge')->where('email', '=', $tmp)
-            //     ->get();
                 $branch_id =  StaffManagement::select('branch_id')->where('email', '=', $tmp)
                 ->get();
-                // dd($branch_id[0]['branch_id']);
-            // if (!empty($branch_id[0]['branch_id'])) {
-                // $pc = HospitalBranchTeamManagement::where(['hospital_branch_id' => $branch_id[0]['branch_id']])->where('status','=', '1')->get()->toArray();
                 $pc = StaffManagement::where(['branch_id' => $branch_id[0]['branch_id']])->where('team_id','=', $request->team_id)->get()->toArray();
                 foreach ($pc as $key => $value) {
-                    // dd($value);
                     $result[$key]['team_name'] =  $value['name'] ?? 'NA';
                     $result[$key]['id'] =  $value['id'] ?? 'NA';
                 }
 
-            // } else {
-            //     $result[0]['team_name'] = 'NA';
-            // }
         }
         return response()->json(["message" => "Hospital Staff", 'details' => $result, "code" => 200]);
     }
 
     public function getServiceByTeamId(Request $request)
     {
-        //dd('ni');
         $list = StaffManagement::select('team_id','branch_id','role_id')
         ->where('email','=', $request->email)->get();
 
@@ -340,7 +326,6 @@ class HospitalManagementController extends Controller
         $role_id=7;
         $rolelist = StaffManagement::select('id', 'name')
         ->where('role_id','=', $role_id)->get();
-        // dd($list[0]['role_id']);
 
         return response()->json(["message" => "Staff Name", 'list' => $list2, 'stafflist' => $stafflist, 'rolelist' => $rolelist, "code" => 200]);
 
@@ -376,7 +361,6 @@ class HospitalManagementController extends Controller
         $hospital['name'] = $hm['hospital_name'];
         $hospital['code'] = $hm['hospital_code'];
         $hospital['prefix'] = $hm['hospital_prefix'];
-        // $hospital['address'] = $hm['hospital_adrress_1'] . '<br />' . $hm['hospital_adrress_2'] . '<br />' . $hm['hospital_adrress_3'];
         $hospital['address1'] = $hm['hospital_adrress_1'];
         $hospital['address2']=$hm['hospital_adrress_2'];
         $hospital['address3']= $hm['hospital_adrress_3'];
@@ -390,9 +374,7 @@ class HospitalManagementController extends Controller
         $hospital['contact'] = $hm['hospital_contact_number'];
         $hospital['status'] = $hm['hospital_status'];
         $hospital['fax'] = $hm['hospital_fax_no'];
-        // dd($hm);
         $hbm = HospitalHODManagement::find($hm['hod_psychiatrist_id']);
-        //dd($hbm);
         $hod['name'] = $hbm['name'];
         $hod['nric'] = $hbm['passport_nric_no'];
         $hod['email'] = $hbm['email'];
@@ -436,7 +418,6 @@ class HospitalManagementController extends Controller
         $branch['branch_contact_number_office'] = $hm['branch_contact_number_office'];
         $branch['branch_contact_number_mobile'] = $hm['branch_contact_number_mobile'];
         $branch['branch_fax_no'] = $hm['branch_fax_no'];
-        // dd($hm);
 
         return response()->json(["message" => "Branch List", 'list' => $branch, "code" => 200]);
     }
@@ -449,7 +430,6 @@ class HospitalManagementController extends Controller
         $branchteam['hospital_branch_id'] = $hm['hospital_branch_id'];
         $branchteam['hospital_branch_name'] = $hm['hospital_branch_name'];
         $branchteam['team_name'] = $hm['team_name'];
-        // dd($hm);
 
         return response()->json(["message" => "Branch Team List", 'list' => $branchteam, "code" => 200]);
     }
@@ -483,7 +463,6 @@ class HospitalManagementController extends Controller
         $query->where('branch_city', '=', $branch_city)->where('branch_postcode', '=', $branch_postcode);
         })->where('id', '!=', $request->id)->where('branch_status', '1')->get();
          if ($chkPoint->count() == 0) {
-            //dd('die');
             HospitalBranchManagement::where(
             ['id' => $request->id]
             )->update([
@@ -531,7 +510,6 @@ class HospitalManagementController extends Controller
 
          $chkPoint =  HospitalBranchTeamManagement::where(['hospital_code' => $hospital_code, 'hospital_branch_id' => $request->hospital_branch_id, 'status' => '1','hospital_branch_name' =>  $request->hospital_branch_name,])->where('id','!=',$request->id)->get();
          if ($chkPoint->count() == 0) {
-            //dd('die');
             HospitalBranchTeamManagement::where(
             ['id' => $request->id]
             )->update([

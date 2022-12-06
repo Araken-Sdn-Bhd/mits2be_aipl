@@ -11,7 +11,6 @@ use App\Models\RehabDischargeNote;
 
 class RehabDischargeNoteController extends Controller
 {
-    //
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -70,7 +69,6 @@ class RehabDischargeNoteController extends Controller
             }
             if ($request->id) {
                 RehabDischargeNote::where(['id' => $request->id])->update($rehabdischarge);
-                // RehabDischargeNote::firstOrCreate($rehabdischarge);
                 return response()->json(["message" => "Rehab Discharge Note Created Successfully!", "code" => 200]);
             } else {
                 RehabDischargeNote::firstOrCreate($rehabdischarge);
@@ -120,7 +118,6 @@ class RehabDischargeNoteController extends Controller
             }
             if ($request->id) {
                 RehabDischargeNote::where(['id' => $request->id])->update($rehabdischarge);
-                // RehabDischargeNote::firstOrCreate($rehabdischarge);
                 return response()->json(["message" => "Rehab Discharge Note Created Successfully!", "code" => 200]);
             } else {
                 RehabDischargeNote::firstOrCreate($rehabdischarge);

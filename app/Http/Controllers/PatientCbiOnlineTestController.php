@@ -198,12 +198,6 @@ class PatientCbiOnlineTestController extends Controller
                 'added_by' => 'required|integer',
                 'Type' => 'required|string',
                 'Question' => 'required|string',
-                // 'Answer0' => 'required|string',
-                // 'Answer1' => 'required|string',
-                // 'Answer2' => 'required|string',
-                // 'Answer3' => 'required|string',
-                // 'Answer4' => 'required|string',
-                // 'Answer5' => 'required|string'
             ]);
             if ($validator->fails()) {
                 return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -212,12 +206,6 @@ class PatientCbiOnlineTestController extends Controller
                 'added_by' => $request->added_by,
                 'Type' => $request->Type,
                 'Question' => $request->Question,
-                // 'Answer0' => $request->Answer0,
-                // 'Answer1' => $request->Answer1,
-                // 'Answer2' => $request->Answer2,
-                // 'Answer3' => $request->Answer3,
-                // 'Answer4' => $request->Answer4,
-                // 'Answer5' => $request->Answer5,
                 'status' => "1"
             ];
             PatientCbiOnlineTest::firstOrCreate($module);

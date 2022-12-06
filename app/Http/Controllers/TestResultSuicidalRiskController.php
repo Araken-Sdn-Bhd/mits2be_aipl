@@ -49,17 +49,4 @@ class TestResultSuicidalRiskController extends Controller
         }
     }
 
-    //    public function getSuicidalResult(Request $request)
-    //    {
-    //     $validator = Validator::make($request->all(), [
-    //         'patient_id' => 'required|integer',
-    //        ]);
-    //        if ($validator->fails()) {
-    //            return response()->json(["message" => $validator->errors(), "code" => 422]);
-    //        }
-    //       $list =TestResultSuicidalRisk::select('id', 'result')
-    //       ->where('patient_id','=',  $request->patient_id)
-    //       ->get();
-    //       return response()->json(["message" => "Suicidal Result", 'list' => $list, "code" => 200]);
-    //    }
 }

@@ -137,11 +137,6 @@ class JobInterestChecklistController extends Controller
                 'jobs' => '',
                 'id' => '',
                 'appId' => '',
-                //  $jobs=array(
-                //     array('job' => 'job 1', 'duration'=>'1 month', 'reason'=>"work 1" ),
-                //     array('job' => 'job 2', 'duration'=>'2 month', 'reason'=>"work 2" ),
-                //     array('job' => 'job 3', 'duration'=>'3 month', 'reason'=>"work 3" ),
-                //  ),
             ]);
             if ($validator->fails()) {
                 return response()->json(["message" => $validator->errors(), "code" => 422]);

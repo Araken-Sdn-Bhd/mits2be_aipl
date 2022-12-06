@@ -146,7 +146,6 @@ class StaffManagementController extends Controller
 
 
 
-                    //email
                     $toEmail    =   $request->email;
                     $data       =   ['name' => $request->name,'user_id' => $toEmail, 'password' =>'password@123'];
 
@@ -181,7 +180,6 @@ class StaffManagementController extends Controller
     public function checknricno(Request $request)
     {
         $check = StaffManagement::where('nric_no', $request->nric_no)->count();
-        // dd($check);
         if ($check == 0) {
             return response()->json(["message" => "Staff Management List", 'list' => "Not Exist", "code" => 400]);
         }else{
@@ -262,7 +260,6 @@ class StaffManagementController extends Controller
                 ->where('staff_management.status', '=', '1')
                 ->where('staff_management.name', 'LIKE', "%{$request->name}%", '=', $request->name)
                 ->orderBy('staff_management.name', 'asc')
-                //'bookname', 'like', '%'.$element.'%'
                 ->get();
             return response()->json(["message" => "Staff Management List", 'list' => $users, "code" => 200]);
         } else {
@@ -293,14 +290,11 @@ class StaffManagementController extends Controller
         $users = DB::table('users')
         ->leftjoin('staff_management', 'users.email', '=', 'staff_management.email')
         ->select('staff_management.id','users.id as users_id', 'users.name','users.role')
-        //->where('staff_management.name','=', $request->name)
-        // ->where('staff_management.branch_id', '=', $request->branch_id)
         ->get();
         }else{
             $users = DB::table('users')
             ->leftjoin('staff_management', 'users.email', '=', 'staff_management.email')
             ->select('staff_management.id','users.id as users_id', 'users.name','users.role')
-            //->where('staff_management.name','=', $request->name)
             ->where('staff_management.branch_id', '=', $request->branch_id)
             ->get();
 
@@ -324,7 +318,6 @@ class StaffManagementController extends Controller
     {
         $users = DB::table('staff_management')
         ->select('staff_management.id', 'staff_management.name', 'contact_no', 'email' )
-            // ->select('staff_management.id', 'staff_management.name', )
             ->Where('staff_management.branch_id', '=', $request->branch_id)
             ->Where('staff_management.status', '=', '1')
             ->get();
@@ -522,7 +515,6 @@ class StaffManagementController extends Controller
                     'is_incharge' =>  $request->is_incharge,
                     'designation_period_start_date' =>  $request->designation_period_start_date,
                     'designation_period_end_date' =>  $request->designation_period_end_date,
-                    //'mentari_location' =>  $request->mentari_location,
                     'start_date' =>  $request->start_date,
                     'end_date' =>  $request->end_date,
                     'document' =>   $isUploaded->getData()->path,

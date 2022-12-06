@@ -11,7 +11,6 @@ use Maatwebsite\Excel\Concerns\FromView;
 class PatientByAgeReportExport implements FromView
 {
     private $reportSet;
-    // private $totalRecord;
     private $fromDate;
     private $toDate;
 

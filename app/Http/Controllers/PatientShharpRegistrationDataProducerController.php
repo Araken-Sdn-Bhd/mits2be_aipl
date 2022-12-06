@@ -36,7 +36,6 @@ class PatientShharpRegistrationDataProducerController extends Controller
             'status' => $request->status
         ];
         $sri = $request->sharp_register_id;
-        //dd($module);
         if ($sri == 0) {
             return response()->json(["message" => "Can't inserted data.Please fill all forms first!", 'id' => $sri, "code" => 400]);
         } else {

@@ -63,7 +63,6 @@ class ConsultationDischargeNoteController extends Controller
                 ConsultationDischargeNote::where(
                     ['id' => $request->id]
                 )->update($consultationdischarge);
-                // ConsultationDischargeNote::firstOrCreate($consultationdischarge);
                 return response()->json(["message" => "Consultation Discharge Note Updated Successfully!", "code" => 200]);
             } else {
                 ConsultationDischargeNote::firstOrCreate($consultationdischarge);
@@ -112,7 +111,6 @@ class ConsultationDischargeNoteController extends Controller
                 ConsultationDischargeNote::where(
                     ['id' => $request->id]
                 )->update($consultationdischarge);
-                // ConsultationDischargeNote::firstOrCreate($consultationdischarge);
                 return response()->json(["message" => "Consultation Discharge Note Updated Successfully!", "code" => 200]);
             } else {
                 ConsultationDischargeNote::firstOrCreate($consultationdischarge);

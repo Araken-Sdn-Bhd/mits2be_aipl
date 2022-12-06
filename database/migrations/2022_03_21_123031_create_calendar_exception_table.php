@@ -20,8 +20,6 @@ class CreateCalendarExceptionTable extends Migration
             $table->string('name');
             $table->date('start_date');
             $table->date('end_date');
-            // $table->string('start_date');
-            // $table->string('end_date');
             $table->string('description', 1024);
             $table->string('state');
             $table->enum('status', [0, 1, 2])->default(1);

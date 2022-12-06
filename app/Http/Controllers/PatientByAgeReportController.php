@@ -17,7 +17,6 @@ use Illuminate\Support\Facades\Storage;
 
 class PatientByAgeReportController extends Controller
 {
-    //
 
     public function getPatientByAgeReport(Request $request)
     {
@@ -93,7 +92,6 @@ class PatientByAgeReportController extends Controller
                
                 $index = 0;
                 foreach ($response as $k => $v) {
-                    // dd(date('d/m/y', strtotime($v['booking_date'])));
                     $result[$index]['DATE'] = date('d/m/y', strtotime($v['booking_date']));
                     $result[$index]['Gender'] = $patientInfo[$v['patient_mrn_id']]['Gender'] ?? 'NA';
                     $result[$index]['race'] = $patientInfo[$v['patient_mrn_id']]['race'] ?? 'NA';
@@ -107,23 +105,14 @@ class PatientByAgeReportController extends Controller
                 
             }
 
-            // dd($result);
            
 
             if ($result) {
                 $totalReports = count($result);
-                // GeneralSetting::select(DB::raw('count( * ) as total'), 
-                // DB::raw("CASE WHEN section='Male' THEN 'Male' WHEN section='Female' THEN 'Female' END as gender"), 'section', 'section_value')
-                // ->where('id', 'section')
-                // ->groupby('section','section_value')
-                // ->get()->toArray();
-
-        //  dd($result); 
         $mainResult = [];
 foreach($result as $key => $val){
     $raceName = GeneralSetting::where('id',$val['race_id'])->get()->toArray();
     $gender = GeneralSetting::where('id',$val['gender_id'])->get()->toArray();
-    // dd([$raceName[0]['section_value']]);
     $mainResult[0]['group_name'][$raceName[0]['section_value']]['below_10']['male'] = 0;
     $mainResult[0]['group_name'][$raceName[0]['section_value']]['below_10']['female'] = 0;
     $mainResult[0]['group_name'][$raceName[0]['section_value']]['10-19']['male'] = 0;
@@ -135,122 +124,49 @@ foreach($result as $key => $val){
     $mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['male'] = 0;
     $mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['female'] = 0;
     $mainResult[0]['group_name'][$raceName[0]['section_value']]['jumlah_besar'] = 0;
-    // dd($mainResult[0]['group_name'][$raceName[0]['section_value']]['below_10']['male']);
     if($val['Age']<10){
         if(strtolower($gender[0]['section_value']) == 'male'){
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['below_10']['male'] +=1;
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['male'] = ($mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['male']+ $mainResult[0]['group_name'][$raceName[0]['section_value']]['below_10']['male']);
-            // if(array_key_exists($raceName[0]['group_name']['section_value'],$mainResult) 
-            // && array_key_exists('below_10', $mainResult[$raceName[0]['group_name']['section_value']]) 
-            // && array_key_exists('male', $mainResult[$raceName[0]['group_name']['section_value']]['below_10'])
-            // ){
-            //     $mainResult[0][$raceName[0]['group_name']['section_value']]['below_10']['male'] +=1;
-            // }else{
-            //     $mainResult[0][$raceName[0]['section_value']]['below_10']['male'] = 1;
-            // } 
         }
         if(strtolower($gender[0]['section_value']) == 'female'){
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['below_10']['female'] +=1;
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['female'] = ($mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['female'] + $mainResult[0]['group_name'][$raceName[0]['section_value']]['below_10']['female']);
-            // if(array_key_exists($raceName[0]['section_value'],$mainResult) 
-            // && array_key_exists('below_10', $mainResult[$raceName[0]['section_value']]) 
-            // && array_key_exists('female', $mainResult[$raceName[0]['section_value']]['below_10'])
-            // ){
-            //     $mainResult[0][$raceName[0]['section_value']]['below_10']['female'] +=1;
-            // }else{
-            //     $mainResult[0][$raceName[0]['section_value']]['below_10']['female'] = 1;
-            // } 
         }
     }
     if($val['Age']>=10 && $val['Age']<=19){
         if(strtolower($gender[0]['group_name']['section_value']) == 'male'){
             $mainResult[0][$raceName[0]['group_name']['section_value']]['10-19']['male'] +=1;
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['male'] =  ($mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['male']+$mainResult[0]['group_name'][$raceName[0]['section_value']]['10-19']['male']);
-            // if(array_key_exists($raceName[0]['section_value'],$mainResult) 
-            // && array_key_exists('10-19', $mainResult[$raceName[0]['section_value']]) 
-            // && array_key_exists('male', $mainResult[$raceName[0]['section_value']]['10-19'])
-            // ){
-            //     $mainResult[0][$raceName[0]['section_value']]['10-19']['male'] +=1;
-            // }else{
-            //     $mainResult[0][$raceName[0]['section_value']]['10-19']['male'] = 1;
-            // } 
         }
         if(strtolower($gender[0]['section_value']) == 'female'){
             $mainResult[0][$raceName[0]['group_name']['section_value']]['10-19']['female'] +=1;
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['female'] =  ($mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['female']+$mainResult[0]['group_name'][$raceName[0]['section_value']]['10-19']['female']);
-            // if(array_key_exists($raceName[0]['section_value'],$mainResult) 
-            // && array_key_exists('10-19', $mainResult[$raceName[0]['section_value']]) 
-            // && array_key_exists('female', $mainResult[$raceName[0]['section_value']]['10-19'])
-            // ){
-            //     $mainResult[0][$raceName[0]['group_name']['section_value']]['10-19']['female'] +=1;
-            // }else{
-            //     $mainResult[0][$raceName[0]['section_value']]['10-19']['female'] = 1;
-            // } 
         }
     }
     if($val['Age']>=20 && $val['Age']<=59){
         if(strtolower($gender[0]['section_value']) == 'male'){
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['20-59']['male'] +=1;
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['male'] =  ($mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['male']+$mainResult[0]['group_name'][$raceName[0]['section_value']]['20-59']['male']);
-            // if(array_key_exists($raceName[0]['section_value'],$mainResult) 
-            // && array_key_exists('20-59', $mainResult[$raceName[0]['section_value']]) 
-            // && array_key_exists('male', $mainResult[$raceName[0]['section_value']]['20-59'])
-            // ){
-            //     $mainResult[0][$raceName[0]['section_value']]['20-59']['male'] +=1;
-            // }else{
-            //     $mainResult[0][$raceName[0]['section_value']]['20-59']['male'] = 1;
-            // } 
         }
         if(strtolower($gender[0]['section_value']) == 'female'){
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['20-59']['female'] +=1;
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['female'] =  ($mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['female']+$mainResult[0]['group_name'][$raceName[0]['section_value']]['20-59']['female']);
-            // if(array_key_exists($raceName[0]['section_value'],$mainResult) 
-            // && array_key_exists('20-59', $mainResult[$raceName[0]['section_value']]) 
-            // && array_key_exists('female', $mainResult[$raceName[0]['section_value']]['20-59'])
-            // ){
-            //     $mainResult[0][$raceName[0]['section_value']]['20-59']['female'] +=1;
-            // }else{
-            //     $mainResult[0][$raceName[0]['section_value']]['10-19']['female'] = 1;
-            // } 
         }
     }
     if($val['Age']>=60){
         if(strtolower($gender[0]['section_value']) == 'male'){
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['greater_60']['male'] +=1;
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['male'] =  ($mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['female']+$mainResult[0][$raceName[0]['group_name']['section_value']]['greater_60']['male']);
-            // if(array_key_exists($raceName[0]['section_value'],$mainResult) 
-            // && array_key_exists('greater_60', $mainResult[$raceName[0]['section_value']]) 
-            // && array_key_exists('male', $mainResult[$raceName[0]['section_value']]['greater_60'])
-            // ){
-            //     $mainResult[0][$raceName[0]['section_value']]['greater_60']['male'] +=1;
-            // }else{
-            //     $mainResult[0][$raceName[0]['section_value']]['greater_60']['male'] = 1;
-            // } 
         }
         if(strtolower($gender[0]['section_value']) == 'female'){
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['greater_60']['female'] +=1;
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['female'] =  ($mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['female']+$mainResult[0][$raceName[0]['group_name']['section_value']]['greater_60']['female']);
-            // if(array_key_exists($raceName[0]['section_value'],$mainResult) 
-            // && array_key_exists('greater_60', $mainResult[$raceName[0]['section_value']]) 
-            // && array_key_exists('female', $mainResult[$raceName[0]['section_value']]['greater_60'])
-            // ){
-            //     $mainResult[0][$raceName[0]['section_value']]['greater_60']['female'] +=1;
-            // }else{
-            //     $mainResult[0][$raceName[0]['section_value']]['greater_60']['female'] = 1;
-            // } 
         }
     }
     $mainResult[0]['group_name'][$raceName[0]['section_value']]['jumlah_besar'] =  $mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['male'] + $mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['female'];
-//    dd($mainResult);
 }
-// this.list = response.data.result[0]['group_name'];
-// this.listKey = Object.keys(this.list);
 $listKey=[];
-// $lis = new stdClass();
-//                 $lis =$mainResult[0]['group_name'];
-//                 $listKey[] =var_dump($lis);
-//                 dd($listKey);
-        //  $totalReports = count($mainResult);
         $headers = [
             'Content-Type' => 'application/vnd.ms-excel',
             'Access-Control-Allow-Origin'      => '*',

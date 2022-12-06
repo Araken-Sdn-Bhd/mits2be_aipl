@@ -78,19 +78,11 @@ class CounsellingProgressNoteController extends Controller
             }
 
 
-            // if ($request->referral_letter) {
-            //     $files = $request->file('referral_letter');
-            //     $isUploaded = upload_file($files, 'PatientRegistration');
-            //     $patientregistration['referral_letter'] =  $isUploaded->getData()->path;
-            // } else {
-            //     $patientregistration['referral_letter'] = '';
-            // }
             if ($request->id) {
                 try {
                     CounsellingProgressNote::where(
                         ['id' => $request->id]
                     )->update($counsellingprogess);
-                    // $Patient = CounsellingProgressNote::firstOrCreate($counsellingprogess);
                 } catch (Exception $e) {
                     return response()->json(["message" => $e->getMessage(), 'Counselling Progress Note' => $counsellingprogess, "code" => 200]);
                 }
@@ -157,19 +149,11 @@ class CounsellingProgressNoteController extends Controller
             }
 
 
-            // if ($request->referral_letter) {
-            //     $files = $request->file('referral_letter');
-            //     $isUploaded = upload_file($files, 'PatientRegistration');
-            //     $patientregistration['referral_letter'] =  $isUploaded->getData()->path;
-            // } else {
-            //     $patientregistration['referral_letter'] = '';
-            // }
             if ($request->id) {
                 try {
                     CounsellingProgressNote::where(
                         ['id' => $request->id]
                     )->update($counsellingprogess);
-                    // $Patient = CounsellingProgressNote::firstOrCreate($counsellingprogess);
                 } catch (Exception $e) {
                     return response()->json(["message" => $e->getMessage(), 'Counselling Progress Note' => $counsellingprogess, "code" => 200]);
                 }

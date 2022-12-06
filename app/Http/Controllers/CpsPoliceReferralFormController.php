@@ -10,7 +10,6 @@ use App\Models\CpsPoliceReferralForm;
 
 class CpsPoliceReferralFormController extends Controller
 {
-    //
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -42,7 +41,6 @@ class CpsPoliceReferralFormController extends Controller
         try {
             if($request->id){
                 CpsPoliceReferralForm::where(['id' => $request->id])->update($cpspolicereferralform);
-                // CpsPoliceReferralForm::where(['id' => $request->id])->update($cpspolicereferralform);
             }else{
             $HOD = CpsPoliceReferralForm::firstOrCreate($cpspolicereferralform);
             }
@@ -69,7 +67,6 @@ class CpsPoliceReferralFormController extends Controller
         try {
             if($request->id){
                 CpsPoliceReferralForm::where(['id' => $request->id])->update($CpsPolice);
-                // CpsPoliceReferralForm::where(['id' => $request->id])->update($cpspolicereferralform);
             }else{
                 $HOD = CpsPoliceReferralForm::firstOrCreate($CpsPolice);
             }

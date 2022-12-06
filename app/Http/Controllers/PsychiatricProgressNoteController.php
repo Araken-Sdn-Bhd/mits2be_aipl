@@ -55,7 +55,6 @@ class PsychiatricProgressNoteController extends Controller
                         PsychiatricProgressNote::where(
                             ['id' => $request->id]
                         )->update($psychiatryprogressnote);
-                        // $HOD = PsychiatricProgressNote::Create($psychiatryprogressnote);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'psychiatryclerking' => $psychiatryprogressnote, "code" => 200]);
                     }
@@ -91,7 +90,6 @@ class PsychiatricProgressNoteController extends Controller
                         PsychiatricProgressNote::where(
                             ['id' => $request->id]
                         )->update($psychiatryprogressnote);
-                        // $HOD = PsychiatricProgressNote::Create($psychiatryprogressnote);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'psychiatryprogressnote' => $psychiatryprogressnote, "code" => 200]);
                     }
@@ -194,7 +192,6 @@ class PsychiatricProgressNoteController extends Controller
                         PsychiatricProgressNote::where(
                             ['id' => $request->id]
                         )->update($psychiatryprogressnote);
-                        // $HOD = PsychiatricProgressNote::Create($psychiatryprogressnote);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'psychiatryclerking' => $psychiatryprogressnote, "code" => 200]);
                     }
@@ -222,7 +219,6 @@ class PsychiatricProgressNoteController extends Controller
                         PsychiatricProgressNote::where(
                             ['id' => $request->id]
                         )->update($psychiatryprogressnote);
-                        // $HOD = PsychiatricProgressNote::Create($psychiatryprogressnote);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'psychiatryprogressnote' => $psychiatryprogressnote, "code" => 200]);
                     }
@@ -332,7 +328,6 @@ class PsychiatricProgressNoteController extends Controller
                         'management' =>  $request->management,
                         'location_services_id' =>  $request->location_services_id,
                         'type_diagnosis_id' =>  $request->type_diagnosis_id,
-                        // 'category_services' =>  $request->category_services,
                         'complexity_services_id' =>  $request->complexity_services_id,
                         'outcome_id' =>  $request->outcome_id,
                         'medication_des' =>  $request->medication_des,
