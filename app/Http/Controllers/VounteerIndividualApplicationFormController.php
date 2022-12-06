@@ -736,9 +736,19 @@ class VounteerIndividualApplicationFormController extends Controller
 
     public function getListByBranchId(Request $request)
     {
+        $role = DB::table('staff_management')
+            ->select('roles.code')
+            ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+            ->where('staff_management.email', '=', $request->email)
+            ->first();
+            
         $result = [];
         $k = 0;
-        $indi = VonOrgRepresentativeBackground::where('section', 'individual')->where('status', '0')->where('branch_id',$request->branch)->get();
+        if($role->code != 'superadmin'){
+         $indi = VonOrgRepresentativeBackground::where('section', 'individual')->where('status', '0')->where('branch_id',$request->branch)->get();
+        }else{
+            $indi = VonOrgRepresentativeBackground::where('section', 'individual')->where('status', '0')->get();
+        }
         if ($indi) {
             foreach ($indi as $key => $val) {
                 $result[$k]['id'] = $val['id'];
@@ -767,7 +777,11 @@ class VounteerIndividualApplicationFormController extends Controller
                 $k++;
             }
         }
+        if($role->code != 'superadmin'){
         $group = VonOrgRepresentativeBackground::where('section', 'group')->where('status', '0')->where('branch_id',$request->branch)->get();
+        }else{
+            $group = VonOrgRepresentativeBackground::where('section', 'group')->where('status', '0')->get(); 
+        }
         if ($group) {
             foreach ($group as $key => $val) {
                 $result[$k]['id'] = $val['id'];
@@ -796,7 +810,12 @@ class VounteerIndividualApplicationFormController extends Controller
                 $k++;
             }
         }
+        if($role->code != 'superadmin'){
         $org = VonOrgRepresentativeBackground::where('section', 'org')->where('status', '0')->where('branch_id',$request->branch)->get();
+        }else{
+            $org = VonOrgRepresentativeBackground::where('section', 'org')->where('status', '0')->get();
+         
+        }
         if ($org) {
             foreach ($org as $key => $val) {
                 $result[$k]['id'] = $val['id'];
