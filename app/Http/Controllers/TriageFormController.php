@@ -202,19 +202,13 @@ class TriageFormController extends Controller
                         'status' => "0",
                         'appointment_details_id' => $request->appId,
                     ];
-                    if($request->id){
+                    if ($request->id){
                         TriageForm::where(['id' => $request->id])->update($triageform);
                         return response()->json(["message" => "Triage Updated Successfully!", "code" => 200]);
                     } else {
                     TriageForm::create($triageform);
                     return response()->json(["message" => "Triage Created Successfully!", "code" => 200]);
                     }
-                 
-                //  else {
-                
-                //     return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
-                // }
-            // }
-        }
-    }
+                    }
+                 }
 }

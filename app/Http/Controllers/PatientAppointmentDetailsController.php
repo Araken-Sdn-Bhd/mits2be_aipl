@@ -281,10 +281,10 @@ class PatientAppointmentDetailsController extends Controller
         ];
         if($request->id){
             PatientAppointmentDetails::where(['id' => $request->id])->update($service);
-            return response()->json(["message" => "Triage Updated Successfully!", "code" => 200]);
+            return response()->json(["message" => "Book Appointment Updated Successfully!", "code" => 200]);
         } else {
             PatientAppointmentDetails::create($service);
-        return response()->json(["message" => "Triage Created Successfully!", "code" => 200]);
+        return response()->json(["message" => "Book Appointment Created Successfully!", "code" => 200]);
         }
     }
 
