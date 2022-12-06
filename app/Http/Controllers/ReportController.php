@@ -1017,22 +1017,41 @@ class ReportController extends Controller
 
     public function getPatientActivityReport(Request $request)
     {
-        $appointments = PatientAppointmentDetails::whereBetween('booking_date', [$request->fromDate, $request->toDate]);
-        if ($request->type_visit != 0)
-            $ssh = $appointments->where('type_visit', $request->type_visit);
-        if ($request->patient_category != 0)
-            $ssh =  $appointments->where('patient_category', $request->patient_category);
-        if ($request->appointment_type != 0)
-            $ssh = $appointments->where('appointment_type', $request->appointment_type);
-        if ($request->appointment_status != 0)
-            $ssh = $appointments->where('appointment_status', $request->appointment_status);
+        if ($request->appointment_type) {
+            $demo['appointment_type'] = $request->appointment_type;
+        }
+        if ($request->patient_category) {
+            $demo['patient_category'] = $request->patient_category;
+        }
+        if ($request->referral_type) {
+            $demo['referral_type'] = $request->referral_type;
+        }
+        if ($request->type_visit ) {
+            $demo['type_visit '] = $request->type_visit ;
+        }      
+        if ($request->gender) {
+            $demo['sex'] = $request->gender;
+        }
+        if ($request->diagnosis_id) {
+            $demo['sex'] = $request->diagnosis_id;
+        }        
+            $query = DB::table('patient_appointment_details as pad')
+            ->select('*')
+            ->join('patient_registration as p', function($join) {
+                $join->on('pad.patient_mrn_id', '=', 'p.id');
+            })     
+            ->whereBetween('booking_date', [$request->fromDate, $request->toDate]);
+            if ($demo)
+            $query->where($demo);
 
-        $ssh = $appointments->get()->toArray();
+       $response = $query->get()->toArray();
+        $ssh  = json_decode(json_encode($response), true);
         $apcount = [];
         $result = [];
         $attendanceStatus = [];
         $attend = 0;
         $noShow = 0;
+        dd($ssh);
         if ($ssh) {
             $index = 0;
             foreach ($ssh as $k => $v) {
@@ -1063,10 +1082,42 @@ class ReportController extends Controller
                         ->get()->toArray();
                 }
                 }elseif($request->appointment_type == 3){
-                    $notes = SeProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+
+                    if($request->employment_status){
+                        $employment_status = SeProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('employment_status',$request->employment_status)
+                        ->where('status', '1')
                         ->get()->toArray();
+
+                        if(empty($employment_status)){
+                            continue;
+                        }   
+                    }
+                    if($request->case_manager){
+                        $case_manager = JobStartForm::where('patient_id', $v['patient_mrn_id'])
+                        ->where('is_deleted', 0)
+                        ->where('status', '1')
+                        ->where('case_manager',$request->case_manager)
+                        ->get()->toArray();
+                        if(empty($case_manager)){
+                            continue;
+                        }   
+                    }
+                    if($request->employer_list){
+                        $employer_list = JobStartForm::where('patient_id', $v['patient_mrn_id'])
+                        ->where('is_deleted', 0)
+                        ->where('status', '1')
+                        ->where('name_of_employer',$request->employer_list)
+                        ->get()->toArray();
+                        if(empty($employer_list)){
+                            continue;
+                        } 
+                    }
+                    $notes = SeProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                    ->where('status', '1')->get()->toArray();
                 
                     $jobStart = JobStartForm::where('patient_id', $v['patient_mrn_id'])
+                                            ->where('status', '1')
                                             ->where('is_deleted', 0)
                                             ->get()->toArray();
 
@@ -1077,21 +1128,92 @@ class ReportController extends Controller
                             $jv += 1;
                         }
                         $empStatus = GeneralSetting::where('id', $notes[0]['employment_status'])->get()->toArray();
+                    }               
+                        $log_meeting = LogMeetingWithEmployer::where(['patient_id' => $v['patient_mrn_id']])->get()->toArray();
+                    if($log_meeting){
+                        $jv = $jv + count($log_meeting);
                     }
-
-                
-                $log_meeting = LogMeetingWithEmployer::where(['patient_id' => $v['patient_mrn_id']])->get()->toArray();
-                if($log_meeting){
-                    $jv = $jv + count($log_meeting);
-                }
                 }
                 elseif($request->appointment_type == 4){
+                    if($request->work_readiness){
+                        $work_readiness = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('work_readiness',$request->work_readiness)
+                        ->where('status', '1')
+                        ->where('is_deleted', 0)
+                        ->get()->toArray();
+                        if(empty($employment_status)){
+                            continue;
+                        }   
+                    }
+                    if($request->case_manager){
+                        $staff_name = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('status', '1')
+                        ->where('is_deleted', 0)
+                        ->first();
+                        $case_manager = StaffManagement::where('name', $staff_name['staff_name'])
+                        ->where('status', '1')
+                        ->get()->toArray();
+                        if(empty($case_manager)){
+                            continue;
+                        }   
+                    }
                     $notes = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
                     ->get()->toArray();
+
+
+
+
                 }elseif($request->appointment_type == 5){
+                    if($request->work_readiness){
+                        $work_readiness = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('work_readiness',$request->work_readiness)
+                        ->where('status', 1)
+                        ->where('is_deleted', 0)
+                        ->get()->toArray();
+                        if(empty($employment_status)){
+                            continue;
+                        }   
+                    }
+                    if($request->case_manager){
+                        $staff_name = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('status', 1)
+                        ->where('is_deleted', 0)
+                        ->first();
+                        $case_manager = StaffManagement::where('name', $staff_name['staff_name'])
+                        ->where('status', 1)
+                        ->get()->toArray();
+                        if(empty($case_manager)){
+                            continue;
+                        }   
+                    }
                     $notes = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
                     ->get()->toArray();
+
                 }elseif($request->appointment_type == 6){
+
+                    if($request->current_intervention){
+                        $current_intervention = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('current_intervention',$request->current_intervention)
+                        ->where('status', 1)
+                        ->where('is_deleted', 0)
+                        ->get()->toArray();
+                        if(empty($employment_status)){
+                            continue;
+                        }   
+                    }
+                    if($request->case_manager){
+                        $case_manager_name = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('status', 1)
+                        ->where('is_deleted', 0)
+                        ->first();
+                        $case_manager = StaffManagement::where('id', $case_manager_name['case_manager'])
+                        ->where('status', 1)
+                        ->get()->toArray();
+                        if(empty($case_manager)){
+                            continue;
+                        }   
+                    }
+
                     $notes = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
                     ->get()->toArray();
                     if(count($notes) != 0){
@@ -1266,12 +1388,12 @@ class ReportController extends Controller
                 // ]);
             } else {
                 return response()->json([
-                    "message" => "Toal Patient & Type of Refferal Report", 'result' => $result, 'filepath' => '',
+                    "message" => "Activity Report", 'result' => $result, 'filepath' => '',
                     "Total_Days" => $totalDays, "Total_Patient" => $totalPatients, "Attend" => $attend, "No_Show" => $noShow, "Total_PatientsPDF" => $totalPatientsPDF, "Total_DaysPDF"=> $totalDaysPDF, "code" => 200
                 ]);
             }
         } else {
-            return response()->json(["message" => "Toal Patient & Type of Refferal Report", 'result' => [], 'filepath' => null, "code" => 200]);
+            return response()->json(["message" => "Activity Report", 'result' => [], 'filepath' => null, "code" => 200]);
         }
     }
 
