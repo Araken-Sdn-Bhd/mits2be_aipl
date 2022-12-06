@@ -1020,6 +1020,7 @@ class ReportController extends Controller
         if ($request->appointment_type) {
             $demo['appointment_type'] = $request->appointment_type;
         }
+
         if ($request->patient_category) {
             $demo['patient_category'] = $request->patient_category;
         }
@@ -1027,7 +1028,7 @@ class ReportController extends Controller
             $demo['referral_type'] = $request->referral_type;
         }
         if ($request->type_visit ) {
-            $demo['type_visit '] = $request->type_visit ;
+            $demo['type_visit'] = $request->type_visit ;
         }      
         if ($request->gender) {
             $demo['sex'] = $request->gender;
@@ -1044,6 +1045,16 @@ class ReportController extends Controller
             if ($demo)
             $query->where($demo);
 
+            if ($request->appointment_status!=NULL) {
+                if($request->appointment_status==1){
+                    $query->where('appointment_status','!=', 2);
+                }else{
+                    $query->where('appointment_status','=', 2);
+
+                }
+                
+            }
+
        $response = $query->get()->toArray();
         $ssh  = json_decode(json_encode($response), true);
         $apcount = [];
@@ -1051,7 +1062,7 @@ class ReportController extends Controller
         $attendanceStatus = [];
         $attend = 0;
         $noShow = 0;
-
+        
         if ($ssh) {
             $index = 0;
             foreach ($ssh as $k => $v) {
@@ -1226,19 +1237,14 @@ class ReportController extends Controller
                     ->get()->toArray();
 
                 $staff = StaffManagement::select('name')->where('id', $v['assign_team'])->get()->toArray();
-                $query = PatientRegistration::where('id', $v['patient_mrn_id']);
-                if ($request->referral_type != 0)
-                    $query->where('referral_type', $request->referral_type);
-                if ($request->gender != 0)
-                    $query->where('sex', $request->gender);
-                    $patientInfon = $query->get()->toArray();
-                if ($patientInfon) {
-                    $patientInfo = $patientInfon[0];
-                    $pc = GeneralSetting::where(['id' => $patientInfo['sex']])->get()->toArray();
+
+
+                    $pc = GeneralSetting::where(['id' => $v['sex']])->get()->toArray();
                     $st = ServiceRegister::where(['id' => $v['appointment_type']])->get()->toArray();
                     $vt = PatientAppointmentVisit::where('id', $v['type_visit'])->get()->toArray();
                     $cp = PatientAppointmentCategory::where('id', $v['patient_category'])->get()->toArray();
-                    $reftyp = GeneralSetting::where(['id' => $patientInfo['referral_type']])->get()->toArray();
+                    $reftyp = GeneralSetting::where(['id' => $v['referral_type']])->get()->toArray();
+                    
 
                     if ($notes)
                         $icd = IcdCode::where('id', $notes[0]['code_id'])->get()->toArray();
@@ -1254,14 +1260,13 @@ class ReportController extends Controller
                     $result[$index]['time_registered'] = ($nxtAppointments) ? date('h:i:s A', strtotime($nxtAppointments['booking_time'])) : '-';
                     $result[$index]['time_seen'] = ($nxtAppointments) ? date('h:i:s A', strtotime($nxtAppointments['booking_time'])) : '-';
                     $result[$index]['Procedure'] = ($icd) ? $icd[0]['icd_name'] : 'NA';
-                    // $result[$index]['Attendance_status'] = get_appointment_status($v['appointment_status']);
                     $result[$index]['Attendance_status'] = get_appointment_status($v['appointment_status']);
-                    $result[$index]['Name'] = $patientInfo['name_asin_nric'];
+                    $result[$index]['Name'] = $v['name_asin_nric'];
                     $result[$index]['Attending_staff'] = ($staff) ? $staff[0]['name'] : 'NA';
                     $result[$index]['IC_NO'] = $v['nric_or_passportno'];
                     $result[$index]['GENDER'] = $gender;
                     $result[$index]['APPOINTMENT_TYPE'] = $appointment_type;
-                    $result[$index]['AGE'] = $patientInfo['age'];
+                    $result[$index]['AGE'] = $v['age'];
                     $result[$index]['DIAGNOSIS'] = ($icd) ? $icd[0]['icd_name'] : 'NA';
                     if($request->appointment_type == 3){
                         $result[$index]['MEDICATIONS'] = ($notes) ? $notes[0]['medication'] : "NA";
@@ -1307,7 +1312,7 @@ class ReportController extends Controller
 
                     $index++;
 
-                }
+                
 
             }
             // dd($index);
@@ -1419,6 +1424,7 @@ class ReportController extends Controller
         }
         $response = $ssh->get()->toArray();
         $vorb  = json_decode(json_encode($response), true);
+        
         if ($vorb) {
             foreach ($vorb as $k => $v) {
                 if ($request->location == NULL) {
@@ -1436,6 +1442,7 @@ class ReportController extends Controller
                             }                 
                  }
                 if ($request->event != NULL){
+                    
                     $event=OutReachProjects::where('parent_section_id', $v['id'])
                     ->where('project_name','LIKE','%'.$request->event.'%')->first();
 
@@ -1443,11 +1450,12 @@ class ReportController extends Controller
                         continue;
                     }
                 }
-                if ($request->other_value != NULL) {
+                if ($request->others_value != NULL) {
+                    
                     $location_value_other=OutReachProjects::where('parent_section_id', $v['id'])
                     ->where('project_loaction','=','project-location-others')
-                    ->where('project_loaction_value','LIKE','%'.$request->other_value.'%')->first();
-
+                    ->where('project_loaction_value','LIKE',"%".$request->others_value."%")->first();
+                    
                     if(empty($location_value_other)){
                         continue;
                     }
