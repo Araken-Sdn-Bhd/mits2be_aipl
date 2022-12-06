@@ -10,7 +10,6 @@ use App\Models\ListJobClub;
 
 class ListJobClubController extends Controller
 {
-    //
     public function store(Request $request)
     {
          $validator = Validator::make($request->all(), [

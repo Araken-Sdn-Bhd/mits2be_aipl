@@ -22,12 +22,7 @@ class ForgetpasswordController extends Controller
         }
 
         $user = User::where('email', $request->email)->first();
-        // dd($user);
         if ($user) {
-            // $this->html_email();
-    //         $list =Citizenship::select('id', 'citizenship_name')
-    //    ->where('citizenship_status','=', '1')
-    //    ->get();
             $ss = SystemSetting::select('variable_name','variable_value')->where('section','email-setting')->get();
             $configuration = SystemSetting::select('variable_name','variable_value')->
             where("section", "email-setting")->get();
@@ -56,12 +51,6 @@ class ForgetpasswordController extends Controller
         }else{
             return response()->json(["message" => "User does not exist", "code" => 401]);
         }
-        // try {
-        //     // dd($list);
-        //     return response()->json(["message" => "Email Successfully Sent", "code" => 200]);
-        // } catch (\Throwable $th) {
-        //     return response()->json(["message" => "User does not exist", "code" => 401]);
-        // }
     }
 
     public function html_email() {

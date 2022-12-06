@@ -11,7 +11,6 @@ use App\Models\PreviousOrCurrentJobRecord;
 
 class ListPreviousCurrentJobController extends Controller
 {
-    //
     public function store(Request $request)
     {
          $validator = Validator::make($request->all(), [

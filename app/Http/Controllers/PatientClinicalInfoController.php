@@ -76,12 +76,6 @@ class PatientClinicalInfoController extends Controller
             ->where('patient_clinical_information.status', '=', '1')
             ->orderBy('patient_clinical_information.created_at', 'desc')
             ->get();
-            // dd($list);
-        // $list = PatientClinicalInfo::select('id', 'temperature', 'blood_pressure', 'pulse_rate', 'weight', 'height', 'bmi', 'waist_circumference', DB::raw("DATE_FORMAT(created_at, '%d/%m/%Y %H:%i') as date_time"))
-        //     ->where('patient_id', $request->patient_id)
-        //     ->where('status', '=', '1')
-        //     ->orderBy('created_at', 'desc')
-        //     ->get();
         return response()->json(["message" => "Patient Clinical Information List", 'list' => $list, "code" => 200]);
     }
     public function getPatientClinicalListOfPatient(Request $request)

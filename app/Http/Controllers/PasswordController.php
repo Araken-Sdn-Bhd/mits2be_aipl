@@ -29,7 +29,6 @@ class PasswordController extends Controller
         } catch (Exception $e) {
             return response()->json(["message" => $e->getMessage(), "code" => 500]);
         }
-        //dd($user_id);
     }
 
     public function verifyAccount(Request $request)
@@ -41,18 +40,14 @@ class PasswordController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 404]);
         }
         $encyptUserId = $request->userid;
-        // $password = $request->password;
         
         try {
-            // dd($encyptUserId);
             $user_id = Crypt::decryptString($encyptUserId);
-            // dd($user_id);
             User::where('id', $user_id)->update(['email_verified_at' => date('Y-m-d H:i:s')]);
             return response()->json(["message" => 'Account verified Successfully.', "code" => 200]);
         } catch (Exception $e) {
             return response()->json(["message" => $e->getMessage(), "code" => 500]);
         }
-        //dd($user_id);
     }
 
     public function changePassword(Request $request)
@@ -64,16 +59,13 @@ class PasswordController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 404]);
         }
-        // $user_id = $request->userid;
         $password = $request->password;
         
         try {
-            // $user_id = Crypt::decryptString($encyptUserId);
             User::where('id', $request->userid)->update(['password' => bcrypt($password)]);
             return response()->json(["message" => 'Password Changed Successfully.', "code" => 200]);
         } catch (Exception $e) {
             return response()->json(["message" => $e->getMessage(), "code" => 500]);
         }
-        //dd($user_id);
     }
 }

@@ -44,7 +44,6 @@ class CalendarExceptionController extends Controller
                     'state' =>  $val
                 ];
             }
-            //dd($addexception);
             try {
                 $HOD = CalendarException::insert($addexception);
             } catch (Exception $e) {

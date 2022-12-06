@@ -26,7 +26,6 @@ class PatientAlertController extends Controller
         $checkpatientid = PatientAlert::select('id')
             ->where('patient_id', $patient_id)
             ->pluck('id');
-            // count($checkpatientid) == 0
             if ($request->alert_id==0) {
                 
                    $alert = [
@@ -62,14 +61,12 @@ class PatientAlertController extends Controller
             ->select('patient_alert.id','patient_alert.message',DB::raw("DATE_FORMAT(patient_alert.created_at, '%d-%m-%Y') as created"),DB::raw("DATE_FORMAT(patient_alert.updated_at, '%d-%m-%Y') as updated"),'users.name')
             ->where('patient_alert.patient_id', $request->patient_id)
             ->get();
-        // $ab= PatientAlert::select('id','message',DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as created"),DB::raw("DATE_FORMAT(updated_at, '%d-%m-%Y') as updated"))->where('patient_id', $request->patient_id)->get();
         return response()->json(["message" => "Alert List", "list" => $users,  "code" => 200]);
     }
 
     public function alertListbyAlertId(Request $request)
     {
         return PatientAlert::select( 'message',DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as created"))->where('id', $request->alert_id)->get();
-        // return response()->json(["message" => "Alert List", "list" => $ab,  "code" => 200]);
     }
     public function resolved(Request $request)
     {
@@ -97,7 +94,6 @@ class PatientAlertController extends Controller
             ->where('patient_alert.patient_id', $request->patient_id)
             ->orderBy('patient_alert.created_at', 'desc')->limit(1)
             ->get();
-        // $ab= PatientAlert::select('id','message',DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as created"),DB::raw("DATE_FORMAT(updated_at, '%d-%m-%Y') as updated"))->where('patient_id', $request->patient_id)->get();
         return response()->json(["message" => "Alert List", "list" => $users,  "code" => 200]);
     }
 

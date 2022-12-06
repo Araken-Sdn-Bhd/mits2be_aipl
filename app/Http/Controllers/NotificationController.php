@@ -35,13 +35,9 @@ class NotificationController extends Controller
                 $ab[$key]['message']  = $value['message'];
                 $ab[$key]['patient_mrn']  = $value['patient_mrn'];
                 $ab[$key]['url_route']  = $value['url_route'];
-                // $ab[$key]['url_route']  = $value['url_route']."=". $value['patient_mrn'];
-
-               // dd($ab[$key]['url_route']);
 
             }
         }
-        // dd($ab);
         return response()->json(["message" => "Notifications List", 'list' => $ab, 'notification_count' => $count, "code" => 200]);
     }else{
             $staff_id = StaffManagement::select('id')->where('email',$request->email)->first();
@@ -72,7 +68,6 @@ class NotificationController extends Controller
     
                 }
             
-            // dd($ab);
             return response()->json(["message" => "Notifications List", 'list' => $ab, 'notification_count' => $count, "code" => 200]);
 
             }

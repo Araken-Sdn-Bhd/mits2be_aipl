@@ -10,7 +10,6 @@ use App\Models\ListOfETP;
 
 class ListOfETPController extends Controller
 {
-    //
     public function store(Request $request)
     {
          $validator = Validator::make($request->all(), [

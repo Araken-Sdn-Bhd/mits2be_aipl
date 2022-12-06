@@ -36,7 +36,6 @@ class PatientRiskProtectiveAnswerController extends Controller
         $riskArray = [];
         if ($sri != 0) {
             $risk = SharpRegistrationFinalStep::where('id', $sri)->get()->pluck('risk')->toArray();
-            // dd($risk);
             if(count($risk)>0 && $risk[0] != '')
                 $riskArray = explode('^', $risk[0]);
         }
@@ -79,7 +78,6 @@ class PatientRiskProtectiveAnswerController extends Controller
                         'QuestionId' => $key,
                         'Answer' => $answer,
                         'Answer_text' => $txt,
-                        // 'status' =>  $request->status,
                         'updated_at' => date('Y-m-d H:i:s'),
                         'risk_factor_yes_value' => $request->risk_factor_yes_value
                     ]);
@@ -91,11 +89,9 @@ class PatientRiskProtectiveAnswerController extends Controller
                         'QuestionId' => $key,
                         'Answer' => $answer,
                         'Answer_text' => $txt,
-                        // 'status' =>  $request->status,
                         'updated_at' => date('Y-m-d H:i:s'),
                         'risk_factor_yes_value' => $request->risk_factor_yes_value
                     ]);
-                    // $id=$table->id;
 
                 }
                 }
@@ -123,7 +119,6 @@ class PatientRiskProtectiveAnswerController extends Controller
                         'hospital_mgmt' => '',
                         'status' =>  $request->status,
                         'created_at' => $date->format('Y-m-d H:i:s'),
-                        // 'risk_factor_yes_value' => $request->risk_factor_yes_value
                     ]);
                     $insertID = $id->id;
                     return response()->json(["message" => "Data Inserted Successfully!", 'id' => $insertID, "code" => 201]);
@@ -162,14 +157,12 @@ class PatientRiskProtectiveAnswerController extends Controller
         $insertArray = [];
         if ($result) {
             foreach ($result[0] as $key => $val) {
-                // dd($key.$val);
                 $txt = '';
                 if ($val != '0') {
                     $answer = 'Yes';
                 }else{
                     $answer = 'No';
                 }
-                // if (in_array($key, [13, 14, 15, 16, 17, 18])) {
                 if (in_array($key, [1, 3, 4, 6, 7, 8, 10])) {
                     if ($val != '0') {
                         if ($request->factor_type == 'risk') {
@@ -321,7 +314,6 @@ class PatientRiskProtectiveAnswerController extends Controller
                     $insertID = $id->id;
                     return response()->json(["message" => "Data Inserted Successfully!", 'id' => $insertID, "code" => 201]);
                 } else {
-                    //dd($harmDate);
                     SharpRegistrationFinalStep::where('id', $sri)->update(['self_harm' => implode('^', $insertedIds), 'harm_time' => $harmTime, 'harm_date' => $harmDate]);
                     return response()->json(["message" => "Data Updated Successfully!", 'id' => $sri, "code" => 201]);
                 }
@@ -354,7 +346,6 @@ class PatientRiskProtectiveAnswerController extends Controller
             if ($self_harm[0] != '')
                 $riskArray = $self_harm[0];
         }
-        //dd($riskArray);
         $insertArray = [];
 
 
@@ -375,7 +366,6 @@ class PatientRiskProtectiveAnswerController extends Controller
             ]);
         }
 
-        // dd($insertArray);
         try {
             if ($riskArray == 0) {
                 DB::beginTransaction();
@@ -434,7 +424,6 @@ class PatientRiskProtectiveAnswerController extends Controller
             'sharp_registraion_final_step.created_at','patient_shharp_registration_data_producer.name_registering_officer',
             'sharp_registraion_final_step.status','patient_shharp_registration_data_producer.hospital_name')
             ->get();
-            // dd($records);
         return response()->json(["message" => "List", 'Data' => $records, "code" => 200]);
     }
 
@@ -457,7 +446,6 @@ class PatientRiskProtectiveAnswerController extends Controller
         if (count($shharp) > 0) {
             $risk = !empty($shharp[0]['risk']) ? explode('^', $shharp[0]['risk']) : [];
             $riskData = PatientRiskProtectiveAnswer::select('QuestionId', 'Answer', 'Answer_text', 'risk_factor_yes_value')->whereIn('id', $risk)->get()->toArray();
-            // dd($riskData);
             if ($riskData) {
                 foreach ($riskData as $k => $v) {
                     $ques = PatientShharpRegistrationRiskProtective::where('id', $v['QuestionId'])->get();
@@ -478,7 +466,6 @@ class PatientRiskProtectiveAnswerController extends Controller
                 foreach ($selfharmData as $k => $v) {
 
                     $jsonDecode = json_decode($v['section_value'], true);
-                    // dd($jsonDecode);
                     if (array_key_exists('CURRENT SELF HARM ACT', $jsonDecode)) {
                         $jsonDecode['CURRENT SELF HARM ACT']['Place_of_Occurance'] = $jsonDecode['CURRENT SELF HARM ACT']['Place of Occurance'];
                     }

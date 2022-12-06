@@ -98,7 +98,6 @@ class PatientCounsellorClerkingNotesController extends Controller
                         PatientCounsellorClerkingNotes::where(
                             ['id' => $request->id]
                         )->update($psychiatryclerking);
-                        // $HOD = PatientCounsellorClerkingNotes::firstOrCreate($psychiatryclerking);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'counsellclerking' => $psychiatryclerking, "code" => 200]);
                     }
@@ -244,7 +243,6 @@ class PatientCounsellorClerkingNotesController extends Controller
                         PatientCounsellorClerkingNotes::where(
                             ['id' => $request->id]
                         )->update($psychiatryclerking);
-                        // $HOD = PatientCounsellorClerkingNotes::firstOrCreate($psychiatryclerking);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'counsellclerking' => $psychiatryclerking, "code" => 200]);
                     }
@@ -326,7 +324,6 @@ class PatientCounsellorClerkingNotesController extends Controller
                         'management' =>  $request->management,
                         'location_services_id' =>  $request->location_services_id,
                         'type_diagnosis_id' =>  $request->type_diagnosis_id,
-                        // 'category_services' =>  $request->category_services,
                         'complexity_services_id' =>  $request->complexity_services_id,
                         'outcome_id' =>  $request->outcome_id,
                         'medication_des' =>  $request->medication_des,

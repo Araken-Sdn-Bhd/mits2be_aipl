@@ -21,7 +21,6 @@ class CreateVonAppointmentTable extends Migration
             $table->date('booking_date');
             $table->time('booking_time');
             $table->string('duration');
-            // $table->integer('appointment_type');
             $table->integer('interviewer_id');
             $table->integer('area_of_involvement');
             $table->string('services_type');

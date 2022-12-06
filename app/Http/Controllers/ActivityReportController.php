@@ -20,7 +20,6 @@ use App\Models\JobDescription;
 
 class ActivityReportController extends Controller
 {
-    //
     public function getActivityReport(Request $request)
     {
         $response = PatientAppointmentDetails::select('*')
@@ -96,9 +95,6 @@ class ActivityReportController extends Controller
                     $patientInfo[$val['id']]['Diagnosis'] = ($ts) ? $ts[0]['diagnosis'] : 'NA';
                     $pro = JobDescription::where(['id' => $val['id']])->get()->toArray();
                     $patientInfo[$val['id']]['PROCEDURE'] = ($pro) ? $pro[0]['procedure'] : 'NA';
-                    // $gn2 = GeneralSetting::where(['section' => $demo['type_of_visit']])->get()->toArray();
-                    // dd($gn2);
-                    // $patientInfo[$val['id']]['type_of_visit'] = ($gn2) ? $gn2[0]['section_value'] : 'NA';
     
                 }
 
@@ -132,7 +128,6 @@ class ActivityReportController extends Controller
 
             if ($result) {
                 $totalReports = count($result);
-        //  dd($result);       
                 $filePath = 'downloads/report/report-' . time() . '.xlsx';
                 Excel::store(new ActivityReportExport($result, $totalReports, $request->fromDate, $request->toDate), $filePath, 'public');
                

@@ -13,7 +13,6 @@ use DateTimeZone;
 
 class PatientIndexFormController extends Controller
 {
-    //
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -126,7 +125,6 @@ class PatientIndexFormController extends Controller
                     PatientIndexForm::where(
                         ['id' => $request->id]
                     )->update($patientindexform);
-                    // $HOD = PatientIndexForm::firstOrCreate($patientindexform);
                 } catch (Exception $e) {
                     return response()->json(["message" => $e->getMessage(), 'PatientIndex' => $patientindexform, "code" => 200]);
                 }
@@ -191,7 +189,6 @@ class PatientIndexFormController extends Controller
                     PatientIndexForm::where(
                         ['id' => $request->id]
                     )->update($PatientIndex);
-                    // $HOD = PatientIndexForm::firstOrCreate($PatientIndex);
                 } catch (Exception $e) {
                     return response()->json(["message" => $e->getMessage(), 'PatientIndex' => $PatientIndex, "code" => 200]);
                 }
@@ -255,7 +252,6 @@ class PatientIndexFormController extends Controller
                     PatientIndexForm::where(
                         ['id' => $request->id]
                     )->update($PatientIndex);
-                    // $HOD = PatientIndexForm::firstOrCreate($PatientIndex);
                 } catch (Exception $e) {
                     return response()->json(["message" => $e->getMessage(), 'PatientIndex' => $PatientIndex, "code" => 200]);
                 }

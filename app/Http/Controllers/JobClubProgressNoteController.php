@@ -10,7 +10,6 @@ use App\Models\JobClubProgressNote;
 
 class JobClubProgressNoteController extends Controller
 {
-    //
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -56,12 +55,10 @@ class JobClubProgressNoteController extends Controller
                         'status' => "1",
                         'appointment_details_id' => $request->appId,
                     ];
-                    // dd($JobClubProgressNote);
                     try {
                         JobClubProgressNote::where(
                             ['id' => $request->id]
                         )->update($jobclubprogressnote);
-                        // $HOD = JobClubProgressNote::firstOrCreate($jobclubprogressnote);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'JobClubProgress' => $jobclubprogressnote, "code" => 200]);
                     }
@@ -103,7 +100,6 @@ class JobClubProgressNoteController extends Controller
                         JobClubProgressNote::where(
                             ['id' => $request->id]
                         )->update($JobClubProgress);
-                        // $HOD = JobClubProgressNote::firstOrCreate($JobClubProgress);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'JobClubProgress' => $JobClubProgress, "code" => 200]);
                     }
@@ -111,7 +107,6 @@ class JobClubProgressNoteController extends Controller
                 }
             } else {
                 if ($request->service_category == 'assisstance' || $request->service_category == 'external') {
-                    // dd($JobClubProgressNote);
                     $validator = Validator::make($request->all(), [
                         'services_id' => 'required'
                     ]);
@@ -140,7 +135,6 @@ class JobClubProgressNoteController extends Controller
                         'status' => "1",
                         'appointment_details_id' => $request->appId,
                     ];
-                    // dd($JobClubProgressNote);
                     try {
                         $HOD = JobClubProgressNote::firstOrCreate($jobclubprogressnote);
                     } catch (Exception $e) {
@@ -271,7 +265,6 @@ class JobClubProgressNoteController extends Controller
                         'management_plan' =>  $request->management_plan,
                         'location_service' =>  $request->location_service,
                         'diagnosis_type' =>  $request->diagnosis_type,
-                        // 'service_category' =>  $request->service_category,
                         'complexity_service' =>  $request->complexity_service,
                         'outcome' =>  $request->outcome,
                         'medication' =>  $request->medication,
@@ -366,7 +359,6 @@ class JobClubProgressNoteController extends Controller
                         'management_plan' =>  $request->management_plan,
                         'location_service' =>  $request->location_service,
                         'diagnosis_type' =>  $request->diagnosis_type,
-                        // 'service_category' =>  $request->service_category,
                         'complexity_service' =>  $request->complexity_service,
                         'outcome' =>  $request->outcome,
                         'medication' =>  $request->medication,

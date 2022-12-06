@@ -11,7 +11,6 @@ use App\Models\CpsProgressList;
 
 class CpsProgressNoteController extends Controller
 {
-    //
 
     public function GetCPSProgressList(Request $request)
     {
@@ -116,7 +115,6 @@ class CpsProgressNoteController extends Controller
                         CpsProgressNote::where(
                             ['id' => $request->id]
                         )->update($cpsprogressnote);
-                        // $HOD = CpsProgressNote::firstOrCreate($cpsprogressnote);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $cpsprogressnote, "code" => 200]);
                     }
@@ -206,7 +204,6 @@ class CpsProgressNoteController extends Controller
                         CpsProgressNote::where(
                             ['id' => $request->id]
                         )->update($CpsProgress);
-                        // $HOD = CpsProgressNote::firstOrCreate($CpsProgress);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $CpsProgress, "code" => 200]);
                     }
@@ -559,7 +556,6 @@ class CpsProgressNoteController extends Controller
                         CpsProgressNote::where(
                             ['id' => $request->id]
                         )->update($cpsprogressnote);
-                        // $HOD = CpsProgressNote::firstOrCreate($cpsprogressnote);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $cpsprogressnote, "code" => 200]);
                     }
@@ -643,7 +639,6 @@ class CpsProgressNoteController extends Controller
                         CpsProgressNote::where(
                             ['id' => $request->id]
                         )->update($CpsProgress);
-                        // $HOD = CpsProgressNote::firstOrCreate($CpsProgress);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $CpsProgress, "code" => 200]);
                     }
@@ -712,7 +707,6 @@ class CpsProgressNoteController extends Controller
                         'comments' =>  $request->comments,
                         'location_service' =>  $request->location_service,
                         'diagnosis_type' =>  $request->diagnosis_type,
-                        // 'service_category' =>  $request->service_category,
                         'complexity_services' =>  $request->complexity_services,
                         'outcome' =>  $request->outcome,
                         'medication' =>  $request->medication,
@@ -1035,7 +1029,6 @@ class CpsProgressNoteController extends Controller
                         'comments' =>  $request->comments,
                         'location_service' =>  $request->location_service,
                         'diagnosis_type' =>  $request->diagnosis_type,
-                        // 'service_category' =>  $request->service_category,
                         'complexity_services' =>  $request->complexity_services,
                         'outcome' =>  $request->outcome,
                         'medication' =>  $request->medication,

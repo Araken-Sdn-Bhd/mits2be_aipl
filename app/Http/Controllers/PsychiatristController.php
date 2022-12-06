@@ -13,7 +13,6 @@ class PsychiatristController extends Controller
     public function store(Request $request){
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
-            // 'patient_id' => 'required|integer',
             'name' => 'required|string'
            ]);
            if ($validator->fails()) {
@@ -21,7 +20,6 @@ class PsychiatristController extends Controller
            }
            $psychiatrist = [
                'added_by' =>  $request->added_by,
-            //    'patient_id' =>  $request->patient_id,
                'name' =>  $request->name,
            ];
            try {

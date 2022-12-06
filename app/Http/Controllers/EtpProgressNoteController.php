@@ -10,7 +10,6 @@ use App\Models\EtpProgressNote;
 
 class EtpProgressNoteController extends Controller
 {
-    //
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -57,7 +56,6 @@ class EtpProgressNoteController extends Controller
                         EtpProgressNote::where(
                             ['id' => $request->id]
                         )->update($etpprogressnote);
-                        // $HOD = EtpProgressNote::firstOrCreate($etpprogressnote);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'EtpProgress' => $etpprogressnote, "code" => 200]);
                     }
@@ -99,7 +97,6 @@ class EtpProgressNoteController extends Controller
                         EtpProgressNote::where(
                             ['id' => $request->id]
                         )->update($EtpProgress);
-                        // $HOD = EtpProgressNote::firstOrCreate($EtpProgress);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'EtpProgress' => $EtpProgress, "code" => 200]);
                     }
@@ -212,7 +209,6 @@ class EtpProgressNoteController extends Controller
                         EtpProgressNote::where(
                             ['id' => $request->id]
                         )->update($etpprogressnote);
-                        // $HOD = EtpProgressNote::firstOrCreate($etpprogressnote);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'EtpProgress' => $etpprogressnote, "code" => 200]);
                     }
@@ -246,7 +242,6 @@ class EtpProgressNoteController extends Controller
                         EtpProgressNote::where(
                             ['id' => $request->id]
                         )->update($EtpProgress);
-                        // $HOD = EtpProgressNote::firstOrCreate($EtpProgress);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'EtpProgress' => $EtpProgress, "code" => 200]);
                     }

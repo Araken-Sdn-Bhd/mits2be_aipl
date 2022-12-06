@@ -187,7 +187,6 @@ class ServiceSettingController extends Controller
             ->select('service_division.id', 'service_division.service_id', 'service_division.hospital_id', 'service_division.branch_id', 'service_division.division_order','hospital_management.hospital_code')
             ->where('service_division.id','=', $request->division_id)
             ->get();
-        //$list = ServiceDivision::select('id', 'service_id', 'hospital_id', 'branch_id', 'division_order')->where('id', $request->division_id)->get();
         return response()->json(["message" => "Service List", 'list' => $users, 'code' => 200]);
     }
 
