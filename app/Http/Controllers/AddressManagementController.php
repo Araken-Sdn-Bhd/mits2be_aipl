@@ -90,10 +90,8 @@ class AddressManagementController extends Controller
             return response()->json(["message" => $e->getMessage(), 'state' => $state, "code" => 200]);
         }
         if ($HOD->wasRecentlyCreated === true) {
-            // item wasn't found and have been created in the database
             return response()->json(["message" => "State Created", "code" => 200]);
         } else {
-            // item was found and returned from the database
             return response()->json(["message" => "State Already Exist", "code" => 401]);
         }
     }
@@ -114,7 +112,6 @@ class AddressManagementController extends Controller
         }
         $countryName = Country::where('id', $request->country_id)->pluck('country_name', 'id')->toArray();
         $stateName = State::where('id', $request->state_id)->pluck('state_name', 'id')->toArray();
-        // dd($countryName);
         $postcode = [
             'added_by' =>  $request->added_by,
             'country_id' =>  $request->country_id,
@@ -125,7 +122,6 @@ class AddressManagementController extends Controller
             'country_name' => $countryName[$request->country_id],
             'state_name' => $stateName[$request->state_id]
         ];
-        //dd($postcode);
         try {
             $check = Postcode::where(['country_id' => $request->country_id, 'state_id' =>  $request->state_id, 'city_name' => $request->city_name, 'postcode' => $request->postcode])->count();
             if ($check == 0) {
@@ -153,7 +149,6 @@ class AddressManagementController extends Controller
         $list = Country::select('id', 'country_name', 'country_code', 'country_status', 'country_order')
             ->where('country_status', '=', '1')
             ->get();
-        //$list =State::select('id', 'country_id', 'state_name','state_order', 'state_status')->get();
         return response()->json(["message" => "Country List", 'list' => $list, "code" => 200]);
     }
     public function getStateList()
@@ -343,7 +338,6 @@ class AddressManagementController extends Controller
         $list = Country::select('country_name', 'country_code', 'country_status', 'country_order')
             ->where('id', '=', $id)
             ->get();
-        //$list =State::select('id', 'country_id', 'state_name','state_order', 'state_status')->get();
         return response()->json(["message" => "Country Details", 'list' => $list, "code" => 200]);
     }
 
@@ -401,7 +395,6 @@ class AddressManagementController extends Controller
         $list = Postcode::select('id', 'state_id', 'country_id', 'state_name', 'city_name')
             ->where('postcode', '=', $request->postcode)
             ->get();
-        // dd($list);
         if (count($list) > 0) {
             return response()->json(["message" => "Postcode List", 'list' => $list, "code" => 200]);
         } else {

@@ -10,7 +10,6 @@ use App\Models\SeProgressNote;
 
 class SeProgressNoteController extends Controller
 {
-    //
 
     public function GetActivityList()
     {

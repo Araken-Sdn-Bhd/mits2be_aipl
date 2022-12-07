@@ -69,7 +69,6 @@ class PatientAppointmentDetailsController extends Controller
 {
     public function store(Request $request)
     {
-        // patient_mrn_id is treated as patient_id
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
             'nric_or_passportno' => 'required|string',
@@ -102,7 +101,6 @@ class PatientAppointmentDetailsController extends Controller
             $chkPoint =  PatientAppointmentDetails::where(function ($query) use ($booking_date, $booking_time, $assign_team, $endTime) {
                 $query->where('booking_date', '=', $booking_date)->whereBetween('booking_time', [$booking_time, $endTime])->where('assign_team', '=', $assign_team);
             })->where('status', '1')->get();
-            //dd($chkPoint);
             if ($chkPoint->count() == 0) {
                 $service = [
                     'added_by' => $request->added_by,
@@ -171,7 +169,6 @@ class PatientAppointmentDetailsController extends Controller
     public function storeByPID(Request $request)
     {
         if ($request->status == '1') {
-        // patient_mrn_id is treated as patient_id
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
             'booking_date' => 'required',
@@ -202,7 +199,6 @@ class PatientAppointmentDetailsController extends Controller
             $chkPoint =  PatientAppointmentDetails::where(function ($query) use ($booking_date, $booking_time, $assign_team, $endTime) {
                 $query->where('booking_date', '=', $booking_date)->whereBetween('booking_time', [$booking_time, $endTime])->where('assign_team', '=', $assign_team);
             })->where('status', '1')->get();
-            //dd($chkPoint);
             if ($chkPoint->count() == 0) {
                 $service = [
                     'added_by' => $request->added_by,
@@ -341,7 +337,6 @@ class PatientAppointmentDetailsController extends Controller
                 'nric_or_passportno' => $request->nric_or_passportno,
                 'booking_date' => $request->booking_date,
                 'booking_time' => $request->booking_time,
-                // 'patient_mrn_id' => $request->patient_mrn_id,
                 'duration' => $request->duration,
                 'appointment_type' => $request->appointment_type,
                 'type_visit' => $request->type_visit,
@@ -406,7 +401,6 @@ class PatientAppointmentDetailsController extends Controller
                     ->with('salutation:section_value,id')
                     ->get()
                     ->toArray();
-                // dd($patient);
                 if (($patient)) {
                     $resultChunk = [];
                     $resultChunk['patient_id'] = $patient[0]['id'] ?: 'NA';
@@ -414,7 +408,6 @@ class PatientAppointmentDetailsController extends Controller
                     $resultChunk['name_asin_nric'] = $patient[0]['name_asin_nric'];
                     $resultChunk['nric_no'] = $patient[0]['nric_no'] ?: 'NA';
                     $resultChunk['passport_no'] = $patient[0]['passport_no'] ?: 'NA';
-                    // $resultChunk['salutation'] = $patient[0]['salutation'][0]['section_value'] ?: 'NA';
 
                     if ($patient[0]['salutation']  != null) {
                         $resultChunk['salutation'] = $patient[0]['salutation'][0]['section_value'] ?: 'NA';
@@ -433,18 +426,12 @@ class PatientAppointmentDetailsController extends Controller
                     $resultChunk['appointment_status'] = $val['appointment_status'] ?: 'NA';
                     $team_id = $val['assign_team'] ?: 'NA';
                     $staff_id = $val['staff_id'] ?: 'NA';
-                    // $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get()->pluck('team_name');
-                    // //  print_r($teamName);
-                    // $resultChunk['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
                     if($val['staff_id']){
-                        // dd('if');
                         $staffName = StaffManagement::where('id', $staff_id)->get()->pluck('name');
-                        //  print_r($staffName);
                         $resultChunk['team_name'] = (count($staffName) > 0) ? $staffName[0] : 'NA';
                     }
                     else{
                         $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get()->pluck('team_name');
-                        //  print_r($teamName);
                         $resultChunk['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
                     }
                     $resultChunk['team_id'] = $team_id ? : 'NA';
@@ -544,7 +531,6 @@ class PatientAppointmentDetailsController extends Controller
     {
         DB::enableQueryLog();
         $validator = Validator::make($request->all(), [
-            // 'date' => 'required',
             'service_id' => 'required|integer',
             'keyword' => 'required|string'
         ]);
@@ -652,10 +638,6 @@ class PatientAppointmentDetailsController extends Controller
                     'patient_appointment_details.assign_team',
                     'patient_appointment_details.appointment_status'
                 );
-            // ->where('hospital_branch_team_details.hospital_branch_id', '=', $request->branch_id);
-            // $sql = PatientAppointmentDetails::select('id', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'appointment_status')
-            // ->with('service:service_name,id')
-            // ->where('status', '1');
             $sql = $list->where('hospital_branch_id', '=', $request->branch_id);
         }
         if ($request->keyword != 'no-keyword') {
@@ -667,11 +649,8 @@ class PatientAppointmentDetailsController extends Controller
             $resultSet = $sql->where(function ($query) use ($searchWord, $ids) {
                 $query->where('nric_or_passportno', 'LIKE', '%' . $searchWord . '%')
                     ->orWhereIn('patient_mrn_id',  $ids);
-            });
-            // dd($sql);
-        }
+            });        }
         $resultSet = $sql->get()->toArray();
-        // dd($resultSet);
         $result = [];
         if ($request->branch_id != '0') {
             if (count($resultSet) > 0) {
@@ -680,18 +659,12 @@ class PatientAppointmentDetailsController extends Controller
                     $patient =  PatientRegistration::select('id', 'patient_mrn', 'name_asin_nric', 'passport_no', 'nric_no', 'salutation_id')->where('id', $val->patient_mrn_id)
                         ->with('salutation:section_value,id')
                         ->get();
-                    // dd($patient[0]['patient_mrn']);
                     $result[$key]['patient_id'] = $patient[0]['id'] ??  'NA';
                     $result[$key]['patient_mrn'] = $patient[0]['patient_mrn'] ??  'NA';
                     $result[$key]['name_asin_nric'] = $patient[0]['name_asin_nric'] ??  'NA';
                     $result[$key]['nric_no'] = $patient[0]['nric_no'] ??  'NA';
                     $result[$key]['passport_no'] = $patient[0]['passport_no'] ??  'NA';
                     $result[$key]['salutation'] = $patient[0]['salutation'][0]['section_value'] ??  'NA';
-                    // if ($val->service != null) {
-                    //     $result[$key]['service'] = $val->service->service_name;
-                    // } else {
-                    //     $result[$key]['service'] = 'NA';
-                    // }
                     $result[$key]['appointment_id'] = $val->id ??  'NA';
                     $result[$key]['appointment_date'] = $val->booking_date ??  'NA';
                     $result[$key]['appointment_time'] = date('H:i', strtotime($val->booking_time)) ??  'NA';
@@ -708,7 +681,6 @@ class PatientAppointmentDetailsController extends Controller
                     $patient =  PatientRegistration::select('id', 'patient_mrn', 'name_asin_nric', 'passport_no', 'nric_no', 'salutation_id')->where('id', $val['patient_mrn_id'])
                         ->with('salutation:section_value,id')
                         ->get();
-                    // dd($patient[0]['patient_mrn']);
                     $result[$key]['patient_id'] = $patient[0]['id'] ??  'NA';
                     $result[$key]['patient_mrn'] = $patient[0]['patient_mrn'] ??  'NA';
                     $result[$key]['name_asin_nric'] = $patient[0]['name_asin_nric'] ??  'NA';
@@ -810,7 +782,6 @@ class PatientAppointmentDetailsController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        // dd($request);
         $patientAppointmentDetails = PatientAppointmentDetails::where(
             ['id' => $request->appointment_id]
         );
@@ -856,7 +827,6 @@ class PatientAppointmentDetailsController extends Controller
         $Psychiatry_Clerking_Note = [];
         $Counsellor_Clerking_Note = [];
         $Psychiatry_Clerking_Note = DB::table('psychiatry_clerking_note')
-            // ->join('staff_management', 'psychiatry_clerking_note.added_by', '=', 'staff_management.id')
             ->join('users', 'psychiatry_clerking_note.added_by', '=', 'users.id')
             ->select(DB::raw("(CASE WHEN TIME(psychiatry_clerking_note.created_at) BETWEEN '00:00:00' AND '11:59:59' THEN DATE_FORMAT(psychiatry_clerking_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(psychiatry_clerking_note.created_at, '%h:%i PM')
@@ -866,7 +836,6 @@ class PatientAppointmentDetailsController extends Controller
             ->get();
 
         $Counsellor_Clerking_Note = DB::table('patient_counsellor_clerking_notes')
-            //  ->join('staff_management', 'patient_counsellor_clerking_notes.added_by', '=', 'staff_management.id')
             ->join('users', 'patient_counsellor_clerking_notes.added_by', '=', 'users.id')
 
             ->select(
@@ -1230,17 +1199,6 @@ class PatientAppointmentDetailsController extends Controller
             ->orderBy('job_club_consent_form.created_at', 'asc')
             ->get();
 
-        //         $job_club_consent_form = DB::table('job_club_consent_form')
-        //         ->join('users', 'job_club_consent_form.added_by', '=', 'users.id')
-        //         ->select(DB::raw("(CASE WHEN TIME(job_club_consent_form.created_at) BETWEEN '00:00:00' AND
-        //         '11:59:59' THEN DATE_FORMAT(job_club_consent_form.created_at, '%h:%i AM')
-        //         ELSE DATE_FORMAT(job_club_consent_form.created_at, '%h:%i PM')
-        //    END)  as time"), DB::raw("DATE_FORMAT(job_club_consent_form.created_at, '%d-%m-%Y') as date"),
-        //    'job_club_consent_form.consent_for_participation as status', 'job_club_consent_form.id', 'users.name',
-        //    DB::raw("'JobClubConsentForm' as type"), DB::raw("'Job Club Consent Form' as section_name"))
-        //         ->where('job_club_consent_form.patient_id', $request->patient_id)
-        //         ->orderBy('job_club_consent_form.created_at', 'asc')
-        //         ->get();
 
         $patient_care_paln = DB::table('patient_care_paln')
             ->join('users', 'patient_care_paln.added_by', '=', 'users.id')
@@ -1270,7 +1228,6 @@ class PatientAppointmentDetailsController extends Controller
             ELSE DATE_FORMAT(job_start_form.created_at, '%h:%i PM')
        END)  as time"),
                 DB::raw("DATE_FORMAT(job_start_form.created_at, '%d-%m-%Y') as date"),
-                // DB::raw("'1' as status"),
                 'job_start_form.status',
                 'job_start_form.id',
                 'users.name',
@@ -1290,7 +1247,6 @@ class PatientAppointmentDetailsController extends Controller
             ELSE DATE_FORMAT(job_end_report.created_at, '%h:%i PM')
        END)  as time"),
                 DB::raw("DATE_FORMAT(job_end_report.created_at, '%d-%m-%Y') as date"),
-                // DB::raw("'1' as status"),
                 'job_end_report.status',
                 'job_end_report.id',
                 'users.name',
@@ -1310,7 +1266,6 @@ class PatientAppointmentDetailsController extends Controller
             ELSE DATE_FORMAT(job_transition_report.created_at, '%h:%i PM')
        END)  as time"),
                 DB::raw("DATE_FORMAT(job_transition_report.created_at, '%d-%m-%Y') as date"),
-                // DB::raw("'1' as status"),
                 'job_transition_report.status',
                 'job_transition_report.id',
                 'users.name',
@@ -1349,7 +1304,6 @@ class PatientAppointmentDetailsController extends Controller
             ELSE DATE_FORMAT(triage_form.created_at, '%h:%i PM')
        END)  as time"),
                 DB::raw("DATE_FORMAT(triage_form.created_at, '%d-%m-%Y') as date"),
-                // DB::raw("'1' as status"),
                 'triage_form.status',
                 'triage_form.id',
                 'users.name',
@@ -1725,17 +1679,7 @@ class PatientAppointmentDetailsController extends Controller
         }
         $ab = [];
 
-        //     if (count($list) > 0) {
-        //     foreach ($list as $key => $value) {
-        //         // $ab['id']=$value['date'];
-        //         dd($ab);
-        //     }
-        // }
 
-        // dd($ab);
-
-        // $list["Psychiatry_Clerking_Note"]=$Psychiatry_Clerking_Note;
-        // $list["Counsellor_Clerking_Note"]=$Counsellor_Clerking_Note;
         $list = collect($list)->sortByDesc('created_at')->values();
 
         return response()->json(["message" => "List", 'Data' => $list, "code" => 200]);
@@ -1753,173 +1697,133 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "PsychiatryClerkingNote") {
             $list = PsychiatryClerkingNote::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "CounsellorClerkingNote") {
             $list = PatientCounsellorClerkingNotes::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "PatientIndexForm") {
             $list = PatientIndexForm::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
-        // if ($request->type == "PatientIndexForm") {
-        //     $list = PatientIndexForm::select('*')
-        //         ->where('id', '=', $request->id)
-        //         // ->where('status', '1')
-        //         ->get();
-        // }
         if ($request->type == "PsychiatricProgressNote") {
             $list = PsychiatricProgressNote::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "CPSProgressNote") {
             $list = CpsProgressNote::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "SEProgressNote") {
             $list = SeProgressNote::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "CounsellingProgressNote") {
             $list = CounsellingProgressNote::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "EtpProgressNote") {
             $list = EtpProgressNote::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "JobClubProgressNote") {
             $list = JobClubProgressNote::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "ConsultationDischargeNote") {
             $list = ConsultationDischargeNote::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "RehabDischargeNote") {
             $list = RehabDischargeNote::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "CpsDischargeNote") {
             $list = CpsDischargeNote::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "CpsHomeVisitConsentForm") {
             $list = CpsHomevisitConsentForm::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "CpsHomeVisitWithdrawalForm") {
             $list = CpsHomevisitWithdrawalForm::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "CpsPoliceReferralForm") {
             $list = CpsPoliceReferralForm::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "PhotographyConsentForm") {
             $list = PhotographyConsentForm::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "SEConsentForm") {
             $list = SEConsentForm::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "ETPConsentForm") {
             $list = EtpConsentForm::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "JobClubConsentForm") {
             $list = JobClubConsentForm::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "PatientCarePlanAndCaseReviewForm") {
             $list = PatientCarePaln::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "JobStartReport") {
             $list = JobStartForm::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "JobEndReport") {
             $list = JobEndReport::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "JobTransitionReport") {
             $list = JobTransitionReport::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "LaserAssessment") {
             $list = LASERAssesmenForm::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "TriageForm") {
             $list = TriageForm::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "JobInterestCheckList") {
 
-            // $list = DB::table('job_interest_checklist')
-            // ->join('job_interest_list', 'job_interest_checklist.id', '=', 'job_interest_list.job_interest_checklist_id')
-            // ->select('job_interest_checklist.*', 'job_interest_list.*')
-            // ->where('job_interest_checklist.status', '=', '1')
-            // ->where('job_interest_checklist.id', '=', $request->id)
-            // ->get();
-            // dd($list);
-            // return response()->json(["message" => "CountryState List", 'list' => $users, "code" => 200]);
 
             $list1 = JobInterestChecklist::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
             $result = (array) json_decode($list1, true);
             $list = [];
@@ -2042,19 +1946,16 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "ListofJobClub") {
             $list = ListJobClub::select('*')
                 ->where('patient_id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "ListofEtp") {
             $list = ListOfETP::select('*')
                 ->where('patient_id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "ListofJobSearch") {
             $list1 = ListOfJobSearch::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
 
             $result = (array) json_decode($list1, true);
@@ -2084,13 +1985,11 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "LogMeetingWithEmployer") {
             $list = LogMeetingWithEmployer::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "ListofPreviousCurrentJob") {
             $list1 = ListPreviousCurrentJob::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
             $result = (array) json_decode($list1, true);
             $list = [];
@@ -2119,37 +2018,31 @@ class PatientAppointmentDetailsController extends Controller
         if ($request->type == "InternalRefferalForm") {
             $list = InternalReferralForm::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "ExternalRefferalForm") {
             $list = ExternalReferralForm::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "CpsRefferalForm") {
             $list = CPSReferralForm::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "OcctRefferalForm") {
             $list = Occt_Referral_Form::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "PsychologyRefferalForm") {
             $list = PsychologyReferral::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         if ($request->type == "RehabRefferalAndClinicalForm") {
             $list = RehabReferralAndClinicalForm::select('*')
                 ->where('id', '=', $request->id)
-                // ->where('status', '1')
                 ->get();
         }
         return response()->json(["message" => "List", 'Data' => $list, "code" => 200]);
@@ -2174,7 +2067,6 @@ class PatientAppointmentDetailsController extends Controller
                 'patient_appointment_details.patient_category',
                 'patient_appointment_details.booking_date',
                 'patient_appointment_details.booking_time',
-                // DB::raw("DATE_FORMAT(patient_appointment_details.created_at, '%d-%m-%Y') as date"),
                 'psychiatry_clerking_note.id',
                 'psychiatry_clerking_note.category_services',
                 'psychiatry_clerking_note.complexity_services_id',
@@ -2198,10 +2090,8 @@ class PatientAppointmentDetailsController extends Controller
                 'psychiatry_clerking_note.outcome_id',
             )
             ->get();
-            // dd($Psychiatry_Clerking_Note);
 
         $Counsellor_Clerking_Note = DB::table('patient_counsellor_clerking_notes')
-            //  ->join('staff_management', 'patient_counsellor_clerking_notes.added_by', '=', 'staff_management.id')
             ->join('users', 'patient_counsellor_clerking_notes.added_by', '=', 'users.id')
             ->join('patient_appointment_details', 'patient_counsellor_clerking_notes.added_by', '=', 'patient_appointment_details.added_by')
             ->select(
@@ -2940,8 +2830,6 @@ class PatientAppointmentDetailsController extends Controller
 
         $list = [];
         foreach ($Psychiatry_Clerking_Note as $key => $val) {
-            // dd($val);
-            // $list[] = $val;
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -2965,10 +2853,8 @@ class PatientAppointmentDetailsController extends Controller
 
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
-            //    dd($a[0]['appointment_category_name']);'patient_appointment_details.date',
         }
         foreach ($Counsellor_Clerking_Note as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -2990,14 +2876,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome_id ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services_id ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_services_id ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome_id ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($patient_index_form as $key => $val) {
-            // dd($val);
             $a = PatientIndexForm::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3019,14 +2901,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_of_service ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_of_services ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($psychiatric_progress_note as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3048,14 +2926,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome_id ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services_id ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_services_id ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome_id ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($cps_progress_note as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3077,14 +2951,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_service ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($se_progress_note as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3106,14 +2976,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_service ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_service ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($counselling_progress_note as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3135,14 +3001,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome_id ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services_id ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_services_id ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome_id ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($etp_progress_note as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3164,14 +3026,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_service ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_service ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($job_club_progress_note as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3193,14 +3051,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_service ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_service ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($consultation_discharge_note as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3222,14 +3076,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_services ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($rehab_discharge_note as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3251,14 +3101,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_service ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($cps_discharge_note as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3280,15 +3126,11 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_service ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
 
         foreach ($patient_care_paln as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3310,14 +3152,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_of_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_of_service ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($job_start_form as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3339,14 +3177,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_of_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_of_service ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($job_end_report as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3368,14 +3202,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_of_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_of_service ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($job_transition_report as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3397,14 +3227,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_of_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_of_service ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($laser_assesmen_form as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3426,14 +3252,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_of_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_of_service ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($triage_form as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3455,14 +3277,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome_id ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services_id ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_services_id ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome_id ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($job_interest_checklist as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3484,14 +3302,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_services ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($work_analysis_form as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3513,14 +3327,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_services ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($list_job_club as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3542,14 +3352,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_services ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($list_of_etp as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3571,14 +3377,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_services ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($list_of_job_search as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3600,14 +3402,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_services ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($log_meeting_with_employer as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3629,14 +3427,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_services ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($list_previous_current_job as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3659,14 +3453,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_services ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($internal_referral_form as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3688,14 +3478,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_services ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($external_referral_form as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3717,14 +3503,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_services ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($cps_referral_form as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3746,14 +3528,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_of_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_of_service ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($occt_referral_form as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3775,14 +3553,10 @@ class PatientAppointmentDetailsController extends Controller
             $list[$key]['outcome'] =  $outcome[0]['section_value'] ??  'NA';
             $list[$key]['outcome_id'] = $val->outcome ??  'NA';
 
-            // $list[$key]['complexity_services_id'] = $val->complexity_services ??  'NA';
-            // $list[$key]['location_services_id'] = $val->location_services ??  'NA';
-            // $list[$key]['outcome_id'] = $val->outcome ??  'NA';
             $list[$key]['type'] = $val->type ??  'NA';
             $list[$key]['end_appointment_date'] = $val->end_appoitment_date ??  'NA';
         }
         foreach ($psychology_referral as $key => $val) {
-            // dd($val);
             $a = PatientAppointmentCategory::select('appointment_category_name')->where('id', "=", $val->patient_category)->get();
             $list[$key]['appointment_category_name'] = $a[0]['appointment_category_name'] ??  'NA';
             $list[$key]['app'] = $val->type ??  'NA';
@@ -3833,17 +3607,6 @@ class PatientAppointmentDetailsController extends Controller
         }
         $ab = [];
 
-        //     if (count($list) > 0) {
-        //     foreach ($list as $key => $value) {
-        //         // $ab['id']=$value['date'];
-        //         dd($ab);
-        //     }
-        // }
-
-        // dd($list);
-
-        // $list["Psychiatry_Clerking_Note"]=$Psychiatry_Clerking_Note;
-        // $list["Counsellor_Clerking_Note"]=$Counsellor_Clerking_Note;
 
 
         return response()->json(["message" => "List", 'Data' => $list, "code" => 200]);
@@ -3863,16 +3626,13 @@ class PatientAppointmentDetailsController extends Controller
             array("tab" => "psychiatry_clerking_note", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services_id", "outcome" => "outcome_id", "ls" => "location_services_id", "type" => "PsychiatryClerkingNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
             array("tab" => "patient_counsellor_clerking_notes", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services_id", "outcome" => "outcome_id", "ls" => "location_services_id", "type" => "CounsellorClerkingNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id"),
             ];
-        // $qry = "";
         $id = PatientAppointmentDetails::select('id','patient_mrn_id')->get()->toArray();
-        // dd($id[0]['patient_mrn_id']);
 
         $qry="";
         foreach ($tabData as $key => $value) {
             $qry .= ($qry=="" )?' ':' union all ';
             $qry .= "select appointment_details_id, added_by,id, CASE WHEN true THEN '{$value['type']}' END AS type ,  id id_ , created_at ,{$value['patient_mrn_id']} patient_mrn_id, {$value['col']} did,{$value['cos']} category_services_id,{$value['cs']} csr,{$value['outcome']} oc,{$value['ls']} ls from {$value['tab']} where added_by={$request->patient_id} and is_deleted='0'";
         }
-        //dd($qry);
 
         $qry2 = "select d.id patient_appointment_id, pac.appointment_category_name ,csr.section_value csr_ , oc.section_value oc_ ,
         ls.section_value ls_ , d.*,c.* from (select distinct(b.patient_mrn_id) as patient, b.* from (select * from ($qry) a) b) c
@@ -3883,17 +3643,6 @@ class PatientAppointmentDetailsController extends Controller
         left join general_setting ls on c.ls=ls.id
         order by c.patient_mrn_id , DATE_FORMAT(c.created_at ,'%Y%m%d%h%i%s') desc LIMIT 18446744073709551615";
 
-        //select d.id patient_appointment_id, pac.appointment_category_name ,csr.section_value csr_ , oc.section_value oc_ , ls.section_value ls_ , d.*,c.* from (
-        //    select b.* from (
-        //        select a.* from ($qry) a order by a.patient_mrn_id , DATE_FORMAT(created_at ,'%Y%m%d%h%i%s') desc LIMIT 18446744073709551615
-        //    ) b group by b.patient_mrn_id , DATE_FORMAT(created_at ,'%Y%m%d') desc) c
-        //left join (
-        //    select * from patient_appointment_details order by patient_mrn_id ,created_at desc
-        //) d on c.pad_id=d.id left join general_setting csr on c.csr=csr.id left join general_setting oc on c.oc=oc.id left join general_setting ls on c.ls=ls.id
-        //left join patient_appointment_category pac on d.patient_category=pac.id;";
-
-
-         //$staff_patient_list  = DB::select(DB::raw($qry2));
 
          $staff_patient_list= DB::select( DB::raw($qry2));
 
@@ -4622,7 +4371,6 @@ class PatientAppointmentDetailsController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        // dd($request);
         if ($request->type == "PsychiatryClerkingNote") {
 
            PsychiatryClerkingNote::where(['id' => $request->tbid])->update([

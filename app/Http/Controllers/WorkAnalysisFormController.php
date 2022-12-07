@@ -37,15 +37,6 @@ class WorkAnalysisFormController extends Controller
             'wage_specify' => $request->wage_specify,
             'wage_change_occur' => $request->wage_change_occur,
 
-            // 'change_in_rate' => $request->change_in_rate,
-            // 'from' => $request->from,
-            // 'to' =>$request->to,
-            // 'on_date' => $request->on_date,
-            // 'works_hour_week' => $request->works_hour_week,
-            // 'work_schedule' => $request->work_schedule,
-            // 'no_of_current_employee' => $request->no_of_current_employee,
-            // 'no_of_other_employee' => $request->no_of_other_employee,
-            // 'during_same_shift' => $request->during_same_shift,
             'education_level' => $request->education_level,
             'grade' => $request->grade,
             'job_experience_year' => $request->job_experience_year,
@@ -105,26 +96,6 @@ class WorkAnalysisFormController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
 
-        // dd($WorkAnalysisForm);
-        // $ab=WorkAnalysisForm::firstOrCreate($WorkAnalysisForm);
-        // $WorkAnalysisFormid=($ab->id);
-
-        // if(!empty($request->jobs)){
-        //     foreach($request->jobs as $key) {
-        //     if($key['task_description']){
-        //      $data = array('task_description' => $key['task_description'],'patient_id' =>$request->patient_id,'objectives'=>$key['objectives'],'procedure'=>$key['procedure'],'rate_of_time'=>$key['rate_of_time'],'work_analysis_form_id'=>$WorkAnalysisFormid);
-        //         JobDescription::insert($data);
-        //     }
-        //     }
-        // }
-        // if(!empty($request->job_specification)){
-        //     foreach($request->job_specification as $key) {
-        //         if($key['questions']){
-        //     $data = array('question_name' => $key['questions'],'patient_id' =>$request->patient_id,'answer'=>$key['answer'],'comment'=>$key['comments'],'work_analysis_form_id'=>$WorkAnalysisFormid);
-        //         WorkAnalysisJobSpecification::insert($data);
-        //         }
-        //     }
-        // }
         WorkAnalysisForm::firstOrCreate($WorkAnalysisForm);
         return response()->json(["message" => "Work Analysis Form Created Successfully!", "code" => 200]);
 
@@ -199,15 +170,6 @@ class WorkAnalysisFormController extends Controller
             'wage_specify' => $request->wage_specify,
             'wage_change_occur' => $request->wage_change_occur,
 
-            // 'change_in_rate' => $request->change_in_rate,
-            // 'from' => $request->from,
-            // 'to' =>$request->to,
-            // 'on_date' => $request->on_date,
-            // 'works_hour_week' => $request->works_hour_week,
-            // 'work_schedule' => $request->work_schedule,
-            // 'no_of_current_employee' => $request->no_of_current_employee,
-            // 'no_of_other_employee' => $request->no_of_other_employee,
-            // 'during_same_shift' => $request->during_same_shift,
             'education_level' => $request->education_level,
             'grade' => $request->grade,
             'job_experience_year' => $request->job_experience_year,
@@ -267,7 +229,6 @@ class WorkAnalysisFormController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
 
-        // dd($WorkAnalysisForm);
         $ab=WorkAnalysisForm::firstOrCreate($WorkAnalysisForm);
         $WorkAnalysisFormid=($ab->id);
 

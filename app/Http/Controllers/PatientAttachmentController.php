@@ -45,7 +45,6 @@ class PatientAttachmentController extends Controller
         }
         $list = PatientAttachment::select('id','file_name','uploaded_path', 'patient_id', DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as date"))
             ->where('patient_id', '=', $request->patient_id)
-            // ->orWhere('status', '=', '0')
             ->get();
         return response()->json(["message" => "List", 'list' => $list, "code" => 200]);
     }

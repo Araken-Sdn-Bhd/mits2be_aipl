@@ -21,9 +21,6 @@ use App\Models\StaffManagement;
 
 class RequestAppointmentReportController extends Controller
 {
-    //        $list = StaffManagement::select('id', 'team_id', 'branch_id')->where('email','=', $request->email)->get();
-    // $list2 = StaffManagement::select('id', 'team_id', 'name')->where('branch_id','=', $list[0]['branch_id'])->where('team_id','=', $request->appointment_type)->get();
-    // return response()->json(["message" => "Staff Name", 'list' => $list2, "code" => 200]);
 
     public function getRequestAppointmentReport(Request $request)
     {

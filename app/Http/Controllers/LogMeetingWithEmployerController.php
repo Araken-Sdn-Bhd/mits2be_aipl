@@ -10,7 +10,6 @@ use App\Models\LogMeetingWithEmployer;
 
 class LogMeetingWithEmployerController extends Controller
 {
-    //
 
     public function store(Request $request)
     {

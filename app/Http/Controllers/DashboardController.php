@@ -91,14 +91,6 @@ class DashboardController extends Controller
     public function getallmentaristaff(Request $request)
     {
 
-        // $search = "";
-        // $result = PatientRegistration::select("patient_mrn", "name_asin_nric", "passport_no", "nric_no")
-        //     ->Where(DB::raw("concat(patient_mrn, ' ', name_asin_nric)"), 'LIKE', "%" . $search . "%")
-        //     ->where('patient_mrn', '=', $request->patient_mrn)
-        //     ->orwhere('name_asin_nric', '=', $request->name_asin_nric)
-        //     ->where('passport_no', '=', $request->passport_no)
-        //     ->orwhere('nric_no', '=', $request->nric_no)
-        //     ->get();
 
 
         //////////Today's Appointment///////////
@@ -286,8 +278,6 @@ class DashboardController extends Controller
             $listSQL->whereYear('created_at', $request->taryear);
         if ($request->tarmonth != 0)
             $listSQL->whereMonth('created_at', $request->tarmonth);
-        // if ($request->tarmentari != 0)
-        //     $listSQL->where('hospital_id', $request->tarmentari);
 
         $list = $listSQL->get();
 
@@ -311,8 +301,6 @@ class DashboardController extends Controller
         if ($request->tmpmonth != 0)
             $totalmentariSQL->whereMonth('created_at', $request->tmpmonth);
 
-        // if ($request->tarmentari != 0)
-        //     $totalmentariSQL->whereMonth('created_at', $request->tarmentari);
 
         $totalmentari = $totalmentariSQL->get();
 
@@ -324,20 +312,6 @@ class DashboardController extends Controller
 
         $totalpatient = $totalpatientSQL->get();
 
-        // $users2 = DB::table('state')->where('state_name', '=', $request->state_name)
-        //     ->join('hospital_management', 'hospital_management.id', '=', 'state.country_id')
-        //     ->select('state_name', DB::raw('count(state_name) as TotalState'))
-        //     ->where('state.state_status', '=', '1')
-        //     ->groupBy('state.state_name')
-        //     ->get();
-
-        // $shharpcase = ShharpReportGenerateHistory::select(DB::raw('count( * ) as total'), DB::raw("CASE WHEN report_month=1 THEN 'January' WHEN report_month=2 THEN 'Febuary' WHEN report_month=3 THEN 'March'  WHEN report_month=4 THEN 'April'  WHEN report_month=5 THEN 'May'  WHEN report_month=6 THEN 'June'  WHEN report_month=7 THEN 'July'  WHEN report_month=8 THEN 'August'  WHEN report_month=9 THEN 'September'  WHEN report_month=10 THEN 'October'  WHEN report_month=11 THEN 'November' ELSE 'December' END as month"), 'report_month', 'report_year', 'state_name')
-        //     ->join('state', 'state.id', '=', 'shharp_report_generate_history.id')
-        //     ->where('report_month', '=', $request->report_month)
-        //     ->where('report_year', '=', $request->report_year)
-        //     ->where('state_name', '=', $request->state_name)
-        //     ->groupBy('report_month', 'report_year', 'state_name')
-        //     ->get()->toArray();
 
         $shharpcaseSQL = PatientRegistration::select(DB::raw('count(*) as Sharptotal'))->where('sharp','1');
         if ($request->sharpyear != 0)
@@ -346,10 +320,6 @@ class DashboardController extends Controller
             $shharpcaseSQL->whereMonth('created_at', $request->sharpmonth);
         if ($request->sharpmentari != 0)
             $shharpcaseSQL->where('branch_id', $request->sharpmentari);
-        // $shharpcaseSQL = DB::table('sharp_registraion_final_step')
-        // ->join('patient_registration', 'sharp_registraion_final_step.patient_id', '=', 'patient_registration.id')
-        // ->select(DB::raw('count(sharp_registraion_final_step.id) as Sharptotal'))
-        // ->where('patient_registration.branch_id','=', $request->sharpmentari);
         $male=null;$female=null;
         if ($request->sharprace == "Race")
         $shharpcaseSQL->where('race_id','!=','0');
@@ -361,35 +331,25 @@ class DashboardController extends Controller
         $shharpcaseSQL->where('sharp', 1);
         $getmalefemale=GeneralSetting::select('id','section_value')->where('section','gender')->where('status','=','1')->get();
         if($getmalefemale[0]['section_value']){
-            // dd($getmalefemale[0]['id'].$getmalefemale[1]['id']);
             $male1=PatientRegistration::select(DB::raw('count(*) as Sharptotal'))->where('sharp','1')->where('sex','426');
-            // ->get();
             $female1=PatientRegistration::select(DB::raw('count(*) as Sharptotal'))->where('sharp','1')->where('sex','427');
-            // ->get();
         if ($request->sharpyear != 0)
             $male1->whereYear('created_at', $request->sharpyear);
-            // $female1->whereYear('created_at', $request->sharpyear);
         if ($request->sharpmonth != 0)
             $male1->whereMonth('created_at', $request->sharpmonth);
-            // $female1->whereMonth('created_at', $request->sharpmonth);
         if ($request->sharpmentari != 0)
             $male1->where('branch_id', $request->sharpmentari);
-            // $female1->where('branch_id', $request->sharpmentari);
 
             if ($request->sharpyear != 0)
-            // $male1->whereYear('created_at', $request->sharpyear);
             $female1->whereYear('created_at', $request->sharpyear);
         if ($request->sharpmonth != 0)
-            // $male1->whereMonth('created_at', $request->sharpmonth);
             $female1->whereMonth('created_at', $request->sharpmonth);
         if ($request->sharpmentari != 0)
-            // $male1->where('branch_id', $request->sharpmentari);
             $female1->where('branch_id', $request->sharpmentari);
 
             $female = $female1->get();
             $male = $male1->get();
             
-            // dd($female);
         }
         }
         else if ($request->sharprace == "Religion")
@@ -400,9 +360,7 @@ class DashboardController extends Controller
 
         $shharpcase = $shharpcaseSQL->get();
      
-        // dd($shharpcase. '  ' .$shharpcase1);
 
-        // dd($summaryActivity);
         function random_color_part() {
             return str_pad( dechex( mt_rand( 0, 255 ) ), 2, '0', STR_PAD_LEFT);
         }
@@ -418,10 +376,8 @@ class DashboardController extends Controller
         if ($request->scrmentari != 0)
             $clinicrepor1->where('branch_id', '=', $request->scrmentari);
             $clini22 = $clinicrepor1->get();
-            // dd($clini22);
             foreach ($clini22 as $key => $value) {
                 if($value['services_type']){
-                    // dd($value['services_type']);
                     $aa=ServiceRegister::select('service_name')->where('id',$value['services_type'])->get();
                     if(isset($aa)){
                         $clini22[$key]['service_name'] = $aa[0]['service_name'] ?? null;
@@ -431,11 +387,9 @@ class DashboardController extends Controller
                 }
                 
             }
-            // dd($clini22);
         // ----------------------------start for diagnosis---------------------------------------
 
         $id = IcdType::select('id')->where('icd_type_code', "=", 'ICD-10')->get();
-        // dd($id[0]['id']); "F00-F07",
 
 
         $tabData = [
@@ -471,7 +425,6 @@ class DashboardController extends Controller
         ];
         $qry = "";
         $id = IcdType::select('id')->where('icd_type_code', "=", 'ICD-10')->get();
-        // dd($id[0]['id']);
 
         foreach ($tabData as $key => $value) { 
             if ($qry) {
@@ -484,16 +437,12 @@ class DashboardController extends Controller
 
 
         $diagnosis  = DB::select("SELECT sum(bb.count_) sum_, bb.id_ , icd.icd_category_code from ( $qry ) bb , icd_category icd where bb.id_=icd.id group by icd.id,bb.id_,icd.icd_category_code;");
-        // dd($diagnosis);
-        // dd("SELECT sum(bb.count_) sum_, bb.id_ , icd.icd_category_code from ( $qry ) bb , icd_category icd where bb.id_=icd.id group by icd.id;");
 
         $clinicreportSQLseD = JobInterestList::select(DB::raw('count( * ) as SeProgressNote'));
         if ($request->scryear != 0)
             $clinicreportSQLseD->whereYear('created_at', '=', $request->scryear);
         if ($request->scrmonth != 0)
             $clinicreportSQLseD->whereMonth('created_at', '=', $request->scrmonth);
-        // if ($request->scrmentari != 0)
-        // $clinicreportSQLseD->whereYear('created_at', '=', $request->scrmentari);
         $clinicreportSeD = $clinicreportSQLseD->get();
 
 
@@ -509,8 +458,6 @@ class DashboardController extends Controller
         ->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
         ->select(DB::raw('count(se_progress_note.employment_status) as kpiTotalCaseLoad'))
         ->where('se_progress_note.patient_id','=', $request->kpimentari);
-        // ->get();
-            // $kpiSQL->where('id', '=', $request->kpimentari);
         $kpi = $kpiSQL->get();
 
 
@@ -519,7 +466,6 @@ class DashboardController extends Controller
         $terminateid = 0;
         $employ = GeneralSetting::select('id', 'section_value')->where('section', "=", 'employment-status')->where('status', "=", '1')->get();
         foreach ($employ as $key => $value) {
-            // dd($value['section_value']);
             if ($value['section_value'] == "Employed") {
                 $employid = $value['id'];
             } elseif ($value['section_value'] == "Unemployed") {
@@ -528,7 +474,6 @@ class DashboardController extends Controller
                 $terminateid = $value['id'];
             }
         }
-        // dd($employid);
         $kpiEmployement1 = SeProgressNote::select(DB::raw('count( employment_status ) as employed'))
             ->where('employment_status', '=', $employid);
         if ($request->kpiyear != 0)
@@ -570,15 +515,11 @@ class DashboardController extends Controller
 
 
         $HLM = [];
-        // foreach ($result as $key => $value) {
-        //     $HLM[] = $value;
-        // }
 
 
         return response()->json([
             "message" => "High Level Mgt", 'TotalMintari' => $totalmentari,
             'TotalAppoitment' => $list, 'User1' => $users,
-            // 'TotalShharp' => $shharpcase,totalmentarilocation
             'totalpatient' => $totalpatient,
             'totalmentarilocation' => $totalmentarilocation,
             'totalsharp' => $shharpcase,
@@ -601,39 +542,6 @@ class DashboardController extends Controller
             ->get();
         return response()->json(["message" => "Years List", 'list' => $list, "code" => 200]);
     }
-    // public function getNotification(Request $request)
-    // {
-    //     $list = Notifications::select('*')
-    //         ->where('role', '=', $request->role)
-    //         ->where('isseen_staff', '=', '1')
-    //         ->orderBy('id', 'DESC')
-    //         ->get()->toArray();
-    //     $count = count($list);
-    //     // dd(count($list));
-    //     $ab = [];
-    //     if (count($list) > 0) {
-    //         foreach ($list as $key => $value) {
-
-    //             $datetime1 = new DateTime();
-    //             $datetime12 = new DateTime($value['created_at']);
-
-    //             if (DATE_FORMAT($datetime12, 'Y-m-d') == date('Y-m-d')) {
-    //                 $ab[$key]['time']  = $datetime1->diff(new DateTime($value['created_at']))->format('%h hours %i minutes');
-    //             } else {
-    //                 $ab[$key]['time']  = $datetime1->diff(new DateTime($value['created_at']))->format('%a days %h hours %i minutes');
-    //             }
-    //             $ab[$key]['id']  = $value['id'];
-    //             $ab[$key]['message']  = $value['message'];
-    //             $ab[$key]['patient_mrn']  = $value['patient_mrn'];
-    //             $ab[$key]['url_route']  = $value['url_route']."=". $value['patient_mrn'];
-
-    //            // dd($ab[$key]['url_route']);
-
-    //         }
-    //     }
-    //     // dd($ab);
-    //     return response()->json(["message" => "Notifications List", 'list' => $ab, 'notification_count' => $count, "code" => 200]);
-    // }
 
     public function AdminSpeciallist(Request $request)
     {

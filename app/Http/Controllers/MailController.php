@@ -70,7 +70,6 @@ class MailController extends Controller
                         return response()->json(["message" => $e->getMessage(), "code" => 500]);
                     }
                     
-                    // return response()->json(["message" => "User Created Successfully!", "code" => 200]);
                 }else{
                     return response()->json(["message" => "Employer already exists!", "code" => 200]);
                 }

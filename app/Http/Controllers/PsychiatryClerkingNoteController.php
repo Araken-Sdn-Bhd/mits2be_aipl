@@ -24,7 +24,6 @@ class PsychiatryClerkingNoteController extends Controller
         }
         if ($request->status == "1") {
             if ($request->id) {
-                // dd("if");
                 if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
                     $validator = Validator::make($request->all(), [
                         'services_id' => 'required'
@@ -63,7 +62,6 @@ class PsychiatryClerkingNoteController extends Controller
                             ['id' => $request->id]
                         )->update($psychiatryclerking);
 
-                        // $HOD = PsychiatryClerkingNote::firstOrCreate($psychiatryclerking);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'psychiatryclerking' => $psychiatryclerking, "code" => 200]);
                     }
@@ -106,14 +104,12 @@ class PsychiatryClerkingNoteController extends Controller
                         PsychiatryClerkingNote::where(
                             ['id' => $request->id]
                         )->update($psychiatryclerking);
-                        // $HOD = PsychiatryClerkingNote::firstOrCreate($psychiatryclerking);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'psychiatryclerking' => $psychiatryclerking, "code" => 200]);
                     }
                     return response()->json(["message" => "Psychiatry clerking Successfully11", "code" => 200]);
                 }
             } else {
-                // dd("else");
                 if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
                     $validator = Validator::make($request->all(), [
                         'services_id' => 'required'
@@ -121,7 +117,6 @@ class PsychiatryClerkingNoteController extends Controller
                     if ($validator->fails()) {
                         return response()->json(["message" => $validator->errors(), "code" => 422]);
                     }
-                    // $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
                     $psychiatryclerking = [
                         'services_id' =>  $request->services_id,
                         'added_by' =>  $request->added_by,
@@ -272,7 +267,6 @@ class PsychiatryClerkingNoteController extends Controller
             } else {
                 if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
 
-                    // $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
                     $psychiatryclerking = [
                         'services_id' =>  $request->services_id,
                         'added_by' =>  $request->added_by,

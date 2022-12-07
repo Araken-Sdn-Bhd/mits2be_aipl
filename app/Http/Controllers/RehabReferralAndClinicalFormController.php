@@ -10,7 +10,6 @@ use App\Models\RehabReferralAndClinicalForm;
 
 class RehabReferralAndClinicalFormController extends Controller
 {
-    //
     public function store(Request $request)
     {
         if ($request->status=='0') {

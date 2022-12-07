@@ -14,7 +14,6 @@ class AttemptTestController extends Controller
 {
     public function store(Request $request)
     {
-        // dd($request);
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
             'patient_id' => 'required|integer',
@@ -26,10 +25,8 @@ class AttemptTestController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        // dd($request);
 
         $result = json_decode($request->result, true);
-        // dd($result);
         $addTestResult = [];
         $level = [];
         if (count($result) > 0) {
@@ -37,7 +34,6 @@ class AttemptTestController extends Controller
             $whoDasTotal = 0;
             foreach ($result as $key => $val) {
                 foreach ($val as $kk => $vv) {
-                    //  $TestResult[$request->test_name][$kk] =  $this->prepareResult($vv, $request->test_name);
                     if (
                         $request->test_name == 'cbi'
                         || $request->test_name == 'phq9'
@@ -101,7 +97,6 @@ class AttemptTestController extends Controller
                     }
                 }
             }
-            //  dd($testResult);
             try {
                 AttemptTest::insert($addTestResult);
                 TestResult::insert($testResult);
@@ -119,10 +114,7 @@ class AttemptTestController extends Controller
         $revValues = ['5' => 100, '4' => 75, '3'=>35,'2'=>25,'1'=>0];
         $valuesphq9 = ['1' => 0, '2' => 1, '3'=>2,'4'=>3];
         $i = 1;
-        // dd($resultSet);
         if($testName=='cbi'){
-            // dd('if');
-            // dd($resultSet);
         foreach ($resultSet as $k => $v) {
             if($i<7){
             $result += $values[$v];
@@ -135,7 +127,6 @@ class AttemptTestController extends Controller
         }
         return round($result/count($resultSet));
     } else if ($testName=='dass'){
-           // dd('if');
            foreach ($resultSet as $k => $v) {
             if($i<7){
             $result += $values[$v];
@@ -148,7 +139,6 @@ class AttemptTestController extends Controller
         }
         return round($result/count($resultSet));
     } elseif($testName=='si'){
-        // dd($testName);
         $result = 0;
         $values = ['0' => 0, '1' => 1, '2'=>2];
         $i = 1;
@@ -159,11 +149,9 @@ class AttemptTestController extends Controller
 
             $i++;
         }
-        // dd($result);
         return $result;
     }
     else{
-        // dd('if'.$testName);
         $result = 0;
         foreach ($resultSet as $k => $v) {
             $result += $v;
@@ -402,7 +390,6 @@ class AttemptTestController extends Controller
         DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as date")
         ,DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') as datetime"))
             ->where('patient_id', $request->patient_id)->groupBy('created_at', 'test_name','patient_id')->get();
-            // dd($list1);
 
             $sr = TestResultSuicidalRisk::select('result','patient_id', DB::raw("'SR' as test_name"), DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as date"),
             DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') as datetime"))
@@ -501,18 +488,6 @@ class AttemptTestController extends Controller
         return response()->json(["message" => "Test List.", 'list' => $list, "code" => 200]);
         }
 
-            // $sr = TestResultSuicidalRisk::select('result', DB::raw("'SR' as test_name"), DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as date"),'id')
-            // ->where('patient_id', $request->patient_id)->get();
-
-        //     $list=[];
-        //     foreach ($list1 as $key => $val) {
-        //         $tmp1 =(array) $val;
-        //         for ($iii=0; $iii <6; $iii++) { 
-        //             $tmp1["Answer$iii"] = array('value' => ($val->answer_id==$iii)? 'true':'false','text'=> $tmp1["Answer$iii"]);
-        //         }
-        //         $list[] =  $tmp1;
-        //     }
-        // return response()->json(["message" => "Test List.", 'list' => $list, "code" => 200]);
     }
 
     public function getBDINBAIResultValue($value, $testName)
@@ -581,50 +556,37 @@ class AttemptTestController extends Controller
         ->where('id', '=', $request->id)
         ->where('test_name', '=', $request->test_name)
         ->get();
-        // dd($value[0]['result']);
         if ($request->test_name == 'atq') {
             if ($value[0]['result'] >= 0 && $value[0]['result'] <= 17) {
                 return response()->json(["message" => "Low', 0-27", 'result'=>$value[0]['result'], "code" => 200]);
-                // return ['Low', '0-27'];
             } else if ($value[0]['result'] >= 18 && $value[0]['result'] <= 51) {
                 return response()->json(["message" => "Moderate', 18-51", 'result'=>$value[0]['result'], "code" => 200]);
-                // return ['Moderate', '18-51'];
             } else {
                 return response()->json(["message" => "High, >51", 'result'=>$value[0]['result'], "code" => 200]);
-                // return ['High', '>51'];
             }
         }
         if ($request->test_name == 'psp') {
             if ($value[0]['result'] >= 0 && $value[0]['result'] <= 2) {
                 return response()->json(["message" => "Absent, 0-2", 'result'=>$value[0]['result'], "code" => 200]);
-                // return ['Absent', '0-2'];
             } else if ($value[0]['result'] >= 2 && $value[0]['result'] <= 5) {
                 return response()->json(["message" => "Mild, 2-5", 'result'=>$value[0]['result'], "code" => 200]);
-                // return ['Mild', '2-5'];
             } else if ($value[0]['result'] >= 6 && $value[0]['result'] <= 8) {
                 return response()->json(["message" => "Manifest, 6-8", 'result'=>$value[0]['result'], "code" => 200]);
-                // return ['Manifest', '6-8'];
             } else if ($value[0]['result'] >= 9 && $value[0]['result'] <= 11) {
                 return response()->json(["message" => "Marked, 9-11", 'result'=>$value[0]['result'], "code" => 200]);
-                // return ['Marked', '9-11'];
             } else if ($value[0]['result'] >= 12 && $value[0]['result'] <= 15) {
                 return response()->json(["message" => "Severe, 12-15", 'result'=>$value[0]['result'], "code" => 200]);
-                // return ['Severe', '12-15'];
             } else {
                 return response()->json(["message" => "Very Severe, >15", 'result'=>$value[0]['result'], "code" => 200]);
-                // return ['Very Severe', '>15'];
             }
         }
         if ($request->test_name == 'si') {
             if ($value[0]['result'] >= 15 && $value[0]['result'] <= 19) {
                 return response()->json(["message" => "Low Intent, 15-19", 'result'=>$value[0]['result'], "code" => 200]);
-                // return ['Low Intent', '15-19'];
             } else if ($value[0]['result'] >= 20 && $value[0]['result'] <= 28) {
                 return response()->json(["message" => "Medium Intent, 20-28", 'result'=>$value[0]['result'], "code" => 200]);
-                // return ['Medium Intent', '20-28'];
             } else {
                 return response()->json(["message" => "High Intent, >28", 'result'=>$value[0]['result'], "code" => 200]);
-                // return ['High Intent', '>28'];
             }
         }
     }

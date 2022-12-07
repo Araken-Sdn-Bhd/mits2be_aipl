@@ -42,10 +42,6 @@ class AuthController extends Controller
         }
         if (!$token = auth()->attempt($validator->validated())) {
             $id = User::select('id')->where('email', $request->email)->pluck('id');
-            // dd($id[0]);
-            // $a=date('Y-m-d H:i:s');
-
-            // dd($currentdatetime);
             $systemattempt = SystemSetting::select('variable_value')->where('section', 'login-attempt')->pluck('variable_value');
             $blocktime = SystemSetting::select('variable_value')->where('section', 'system-block-duration')->pluck('variable_value');
             $no_of_attempts = UserBlock::select('no_of_attempts')->where('user_id', $id)->pluck('no_of_attempts');
@@ -53,19 +49,12 @@ class AuthController extends Controller
 
             $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
             $newDate = $date->format('Y-m-d H:i:s');
-            // dd($systemattempt[0].''.$no_of_attempts[0]);
             if (!empty($systemattempt[0]) == !empty($no_of_attempts[0])) {
-                // dd('if');
                 $currentdatetime = date('Y-m-d H:i:s', strtotime($newDate . '+' . $blocktime[0] . 'hours'));
             } else {
-                // dd('else');
                 $currentdatetime = $date->format('Y-m-d H:i:s');
             }
-            // $currentdatetime = date('Y-m-d H:i:s', strtotime($newDate . '+' . $blocktime[0] . 'hours'));
-            // dd($currentdatetime);
-            // dd(count($id_block_user));
             if (count($id_block_user) == 0) {
-                // dd('if');
                 $data = [
                     'user_id' => $id[0],
                     'no_of_attempts' => "1",
@@ -76,17 +65,13 @@ class AuthController extends Controller
                 UserBlock::insert($data);
                 return response()->json(["message" => "Incorrect password", "code" => 401]);
             } else {
-                // dd($currentdatetime);
-                // dd($no_of_attempts[0]);
                 if ($systemattempt[0] <= $no_of_attempts[0]) {
                     return response()->json(['message' => 'Account has been blocked for next ' . $blocktime[0] . ' hour', 'code' => 201], 201);
                 } else {
                     $count = number_format($no_of_attempts[0]) + 1;
-                    // dd($count);
                     UserBlock::where(
                         ['id' => $id_block_user]
                     )->update([
-                        // 'user_id' => $id[0],
                         'no_of_attempts' => $count,
                         'block_untill' => $currentdatetime
                     ]);
@@ -112,17 +97,14 @@ class AuthController extends Controller
         $blocktime = SystemSetting::select('variable_value')->where('section', 'system-block-duration')->pluck('variable_value');
         $no_of_attempts = UserBlock::select('no_of_attempts')->where('user_id', $id)->pluck('no_of_attempts');
         $block_untill = UserBlock::select('block_untill')->where('user_id', $id)->pluck('block_untill');
-        // dd($systemattempt.$no_of_attempts);
         $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
         $newDate = $date->format('Y-m-d H:i:s');
         $currentdatetime = date('Y-m-d H:i:s', strtotime($newDate . '+' . 'hours'));
-        // dd($currentdatetime);
         if (!empty($no_of_attempts[0])) {
         } else {
             $no_of_attempts = "0";
         }
         if (($systemattempt[0]) <= ($no_of_attempts[0])) {
-            // dd($block_untill[0] . $newDate);
             if ($block_untill[0] < $newDate) {
                 UserBlock::where(
                     ['id' => $id_block_user]
@@ -139,7 +121,6 @@ class AuthController extends Controller
                         })
                         ->where('screens.screen_route', 'like', '%Dash%')
                         ->where('screen_access_roles.staff_id', '=', $id)
-                        //->orWhere('screen_access_roles.user_type', '=', $useradmin)
                         ->where('screen_access_roles.status', '=', '1')
                         ->get();
 
@@ -186,7 +167,6 @@ class AuthController extends Controller
                     'block_untill' => $currentdatetime
                 ]);
             } catch (\Throwable $th) {
-                //throw $th;
             }
             if(!$request->type=="Von"){
             $screenroute = DB::table('screen_access_roles')
@@ -211,12 +191,9 @@ class AuthController extends Controller
                 ->where('screen_access_roles.status', '=', '1')
                 ->get();
 
-                // dd($screenroute);
             if (!empty($screenroute[0])) {
                 $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
                 $tmp_alt = json_decode(json_encode($screenroutealt[0]), true)['screen_route_alt'];
-                // $tmp_alt = json_decode(json_encode($screenroute[0]), true)['screen_route_alt'];
-                // dd($tmp_alt);
 
                 return $this->createNewToken($token, $tmp,$tmp_alt, $branch);
             } else {
@@ -351,7 +328,6 @@ class AuthController extends Controller
                     'block_untill' => $currentdatetime
                 ]);
             } catch (\Throwable $th) {
-                //throw $th;
             }
             return $this->createNewToken($token, $tmp,$tmp_alt, $branch);
         }

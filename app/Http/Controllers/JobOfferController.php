@@ -88,7 +88,6 @@ class JobOfferController extends Controller
             }
         } else if ($request->type == 'update') {
             try {
-                // $job['status'] = $request->status;
                 JobOffers::where('id', $request->job_id)->update($job);
                 return response()->json(["message" => "Job updated", "result" => $job, "code" => 200]);
             } catch (Exception $e) {
@@ -132,13 +131,11 @@ class JobOfferController extends Controller
     public function jobList(Request $request)
     {
         DB::enableQueryLog();
-        // JobOffers::select(DB::raw("count('id') as job_posted"), 'id', 'position_offered')->where('added_by', $request->added_by)->groupBy('position_offered', 'id')->get();
         $result = DB::table('job_offers as A')
         ->select('A.id', 'A.position_offered',DB::raw("DATE_FORMAT(A.created_at, '%d-%M-%y') as job_posted"))
         ->where('A.added_by', $request->added_by)
         ->groupBy('A.id','A.position_offered','A.created_at')
         ->get();
-        // dd(DB::getQueryLog());
         return $result;
     }
 
@@ -288,13 +285,6 @@ class JobOfferController extends Controller
                     $v['job_availability'] = 'Not Available';
                 }
 
-                // if ($v['work_schedule'] == '1') {
-                //     $v['work_schedule'] = 'Part Time';
-                // } else if ($v['work_schedule'] == '2') {
-                //     $v['work_schedule'] = 'Full Time';
-                // } else {
-                //     $v['work_schedule'] = 'Part & Full Time';
-                // }
                 $result[$k] = $v;
                 $company = JobCompanies::where('id', $v['company_id'])->get();
                 if (count($company) > 0) {
@@ -360,7 +350,6 @@ class JobOfferController extends Controller
         $patient = PatientRegistration::select('name_asin_nric', 'nric_no', 'passport_no')->where('id', $patient_id)->get();
         $hospital = HospitalManagement::select('hospital_name')->where('added_by', $request->added_by)->get();
         $hospitalbranch = HospitalBranchManagement::select('hospital_branch_name')->where('added_by', $request->added_by)->get();
-        // dd($hospitalbranch[0]['hospital_branch_name']);
         $user = User::select('name', 'role')->where('id', $request->added_by)->get();
          if(!empty($hospital[0])){
             $response = [
@@ -372,7 +361,6 @@ class JobOfferController extends Controller
                 'hospital_name' => $hospital[0]['hospital_name'],
                 'hospital_branch_name' => $hospitalbranch[0]['hospital_branch_name'] ?? 'NA'
             ];
-            // return response()->json(["message" => "SE Consent Form", "list" => $response,  "code" => 200]);
         }else if(!empty($hospitalbranch[0])){
             $response = [
                 'patient_name' => $patient[0]['name_asin_nric'],
@@ -533,7 +521,6 @@ class JobOfferController extends Controller
     {
 
         $result = json_decode($request->result, true);
-        // dd($result);
         $addTestResult = [];
         $level = [];
         if (count($result) > 0) {
@@ -541,7 +528,6 @@ class JobOfferController extends Controller
             $whoDasTotal = 0;
             foreach ($result as $key => $val) {
                 foreach ($val as $kk => $vv) {
-                    //  $TestResult[$request->test_name][$kk] =  $this->prepareResult($vv, $request->test_name);
                     if (
                         $request->test_name == 'laser'
                     ) {
@@ -557,7 +543,6 @@ class JobOfferController extends Controller
                                 'result' => $this->prepareLaserResult($vv),
                                 'appointment_details_id' => $request->appId,
                             ];
-                        // if ($request->test_name != 'bdi' && $request->test_name != 'bai' && $request->test_name != 'atq' && $request->test_name != 'psp' && $request->test_name != 'si') {
                             if ($request->test_name == 'laser') {
                                 $level[$kk] =  ['score' => $this->prepareLaserResult($vv)];
                             }else if($request->test_name == 'contemplation'){
@@ -565,13 +550,8 @@ class JobOfferController extends Controller
                             } else {
                                 $level[$kk] = $this->prepareLaserResult($vv);
                             }
-                        // }
 
                     }
-                    // else if ($request->test_name == 'dass') {
-                    //     $testResult = $this->prepareDASSResult($vv, $request);
-                    //     $level = $this->getDassLevel($testResult);
-                    // }
 
                     foreach ($vv as $k => $v) {
                         $addTestResult[$i] = [
@@ -590,14 +570,6 @@ class JobOfferController extends Controller
                     }
                 }
             }
-            //  dd($testResult);
-            // try {
-            //     AttemptTest::insert($addTestResult);
-            //     TestResult::insert($testResult);
-            //     return response()->json(["message" => "Answer submitted", "result" => $level, "code" => 200]);
-            // } catch (Exception $e) {
-            //     return response()->json(["message" => $e->getMessage(), 'Exception' => $addTestResult, "code" => 200]);
-            // }
         }
         $laserreferral=[
             'patient_id' => $request->patient_id,
@@ -619,7 +591,6 @@ class JobOfferController extends Controller
         ];
         if($request->id){
             LASERAssesmenForm::where(['id' => $request->id])->update($laserreferral);
-            // RehabDischargeNote::firstOrCreate($rehabdischarge);
             return response()->json(["message" => "Updated", "code" => 200]);
          }else{
             LASERAssesmenForm::create($laserreferral);
@@ -630,7 +601,6 @@ class JobOfferController extends Controller
             } catch (Exception $e) {
                 return response()->json(["message" => $e->getMessage(), 'Exception' => $addTestResult, "code" => 200]);
             }
-        //  return response()->json(["message" => "Created", "code" => 200]);
          }
     }
 
@@ -687,10 +657,8 @@ class JobOfferController extends Controller
                 'status' => "0",
             ];
 
-            // PatientCarePaln::create()
             if($request->id){
                 PatientCarePaln::where(['id' => $request->id])->update($patientcarepln);
-                // RehabDischargeNote::firstOrCreate($rehabdischarge);
                 return response()->json(["message" => "Updated", "code" => 200]);
             }else{
                 $HOD=PatientCarePaln::create($patientcarepln);
@@ -731,10 +699,8 @@ class JobOfferController extends Controller
                 'status' => "1",
             ];
 
-            // PatientCarePaln::create()
             if($request->id){
                 PatientCarePaln::where(['id' => $request->id])->update($patientcarepln);
-                // RehabDischargeNote::firstOrCreate($rehabdischarge);
                 return response()->json(["message" => "Updated", "code" => 200]);
             }else{
                 $HOD=PatientCarePaln::create($patientcarepln);
@@ -754,8 +720,6 @@ class JobOfferController extends Controller
 
     public function dischareCategory()
     {
-        // $arr = ['1' => 'At Own Risk', '2' => 'Death', '3' => 'Discharged Well', '4' => 'Technical Discharge', '5' => 'Transfer'];
-        // $arr = ['1' => 'At Own Risk', '2' => 'Death', '3' => 'Discharged Well', '4' => 'Technical Discharge', '5' => 'Transfer'];
         $arr = array(
             array('id' => '1','name' => 'At Own Risk'),
             array('id' => '2','name' => 'Death'),
@@ -766,7 +730,6 @@ class JobOfferController extends Controller
     }
     public function screeningTypes()
     {
-        // $arr = ['1' => 'CBI', '2' => 'DASS', '3' => 'PHQ9', '4' => 'WHODAS'];
         $arr = array(
             array('id' => '1','name' => 'CBI'),
             array('id' => '2','name' => 'DASS'),
@@ -1052,14 +1015,6 @@ class JobOfferController extends Controller
                 JobStartForm::create($jobstart);
                 return response()->json(["message" => "Created", "code" => 200]);
             }
-        //    $check=JobStartForm::where(['id' => $request->id])->first();
-        //     if($check!= null){
-        //         JobStartForm::where(['id' => $request->id])->update($jobstart);
-        //         return response()->json(["message" => "Updated", "code" => 200]);
-        //     } else {
-        //     JobStartForm::create($jobstart);
-        //     return response()->json(["message" => "Created", "code" => 200]);
-        //     }
         } else if ($request->status == '0') {
             $jobstart=[
                 'patient_id' => $request->patient_id,
@@ -1097,15 +1052,6 @@ class JobOfferController extends Controller
                 JobStartForm::create($jobstart);
                 return response()->json(["message" => "Created", "code" => 200]);
             }
-            // $check=JobStartForm::where(['id' => $request->id])->first();
-            // if($check!= null){
-            // // if($request->id){
-            //     JobStartForm::where(['id' => $request->id])->update($jobstart);
-            //     return response()->json(["message1" => "Updated", "code" => 200]);
-            // } else {
-            // JobStartForm::create($jobstart);
-            // return response()->json(["message2" => "Created", "code" => 200]);
-            // }
         }
     }
 
@@ -1152,16 +1098,6 @@ class JobOfferController extends Controller
                 JobEndReport::create($jobend);
                 return response()->json(["message" => "Created", "code" => 200]);
             }
-            // $check=JobEndReport::where(['patient_id' => $request->patient_id])->first();
-            // if($check!= null){
-            // //  if($request->id){
-            //     JobEndReport::where(['patient_id' => $request->patient_id])->update($jobend);
-            //     return response()->json(["message" => "Updated", "code" => 200]);
-            // } else {
-            //     JobEndReport::create($jobend);
-            // return response()->json(["message" => "Created", "code" => 200]);
-            // }
-
         } else if ($request->status == '0') {
 
             $jobend=[

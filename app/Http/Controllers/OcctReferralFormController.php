@@ -36,20 +36,6 @@ class OcctReferralFormController extends Controller
             'status' => "0",
             'appointment_details_id' => $request->appId,
             ];
-        // $validateOcctForm = [];
-        // if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
-        //     $validateOcctForm['services_id'] = 'required';
-        //     $occtform['services_id'] =  $request->services_id;
-        // } elseif ($request->category_services == 'clinical-work') {
-        //     $validateOcctForm['code_id'] = 'required';
-        //     $occtform['code_id'] =  $request->code_id;
-        //     $validateOcctForm['sub_code_id'] = 'required';
-        //     $occtform['sub_code_id'] =  $request->sub_code_id;
-        // }
-        // $validator = Validator::make($request->all(), $validateOcctForm);
-        // if ($validator->fails()) {
-        //     return response()->json(["message" => $validator->errors(), "code" => 422]);
-        // }
         if($request->id){
             Occt_Referral_Form::where(['id' => $request->id])->update($occtform);
             return response()->json(["message" => "Successfully updated", "code" => 200]);
@@ -112,22 +98,6 @@ class OcctReferralFormController extends Controller
         'status' => "1",
         'appointment_details_id' => $request->appId,
         ];
-        // $validateOcctForm = [];
-        //     if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
-        //         $validateOcctForm['services_id'] = 'required';
-        //         $occtform['services_id'] =  $request->services_id;
-        //     } elseif ($request->category_services == 'clinical-work') {
-        //         $validateOcctForm['code_id'] = 'required';
-        //         $occtform['code_id'] =  $request->code_id;
-        //         $validateOcctForm['sub_code_id'] = 'required';
-        //         $occtform['sub_code_id'] =  $request->sub_code_id;
-        //     }
-        //     $validator = Validator::make($request->all(), $validateOcctForm);
-        //     if ($validator->fails()) {
-        //         return response()->json(["message" => $validator->errors(), "code" => 422]);
-        //     }
-        //     Occt_Referral_Form::where(['id'=>$request->id])->update($occtform);
-        // }
         if($request->id){
             Occt_Referral_Form::where(['id' => $request->id])->update($occtform);
             return response()->json(["message" => "Successfully updated", "code" => 200]);
