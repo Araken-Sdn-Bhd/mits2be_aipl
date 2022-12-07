@@ -79,7 +79,6 @@ class PatientRegistrationController extends Controller
             'mintari_mrn_no' =>  $request->mintari_mrn_no,
             'services_type' =>  $request->services_type,
             'referral_type' =>  $request->referral_type,
-            'referral_letter' =>  $request->referral_letter,
             'address1' =>  $request->address1,
             'address2' =>  $request->address2,
             'address3' =>  $request->address3,
@@ -147,30 +146,37 @@ class PatientRegistrationController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        if (!empty($request->referral_letter)) {
-            $files = $request->file('referral_letter');
-            $fileName = $files->getClientOriginalName();
-            $isUploaded = upload_file($files, 'PatientRegistration');
-            $filePath = $isUploaded->getData()->path;
-            $patientregistration['referral_letter'] =  $filePath;
-            $fileData = [
-                'added_by' =>  $request->added_by,
-                'file_name' => $fileName,
-                'uploaded_path' => $filePath,
-            ];
-            PatientAttachment::insert($fileData);
-        } else {
-            $patientregistration['referral_letter'] = '';
-        }
         try {
             $Patient = PatientRegistration::firstOrCreate($patientregistration);
-            $fileData = [
-                'added_by' =>  $request->added_by,
-                'patient_id' => $Patient['id'],
-                'file_name' => $fileName,
-                'uploaded_path' => $filePath,
-            ];
-            PatientAttachment::insert($fileData);
+            if ($request->hasFile('referral_letter')) {
+                dd('has file');
+                $files = $request->file('referral_letter');
+                $fileName = $files->getClientOriginalName();
+                $isUploaded = upload_file($files, 'PatientRegistration');
+                $filePath = $isUploaded->getData()->path;
+                $patientregistration['referral_letter'] =  $filePath;
+                $fileData = [
+                    'added_by' =>  $request->added_by,
+                    'patient_id' => $Patient['id'],
+                    'file_name' => $fileName,
+                    'uploaded_path' => $filePath,
+                ];
+
+                $patientRefLetter = [
+                    'id' => $Patient['id'],
+                    'referral_letter'  => $request->referral_letter,
+                ];
+
+                PatientAttachment::insert($fileData);
+                PatientRegistration::firstOrCreate($patientRefLetter);
+            } else {
+                $patientRefLetter = [
+                    'id' => $Patient['id'],
+                    'referral_letter'  => '',
+                ];
+                PatientRegistration::firstOrCreate($patientRefLetter);
+            }
+
             $MRN = $this->generateMRNString(10, $Patient['id']);
             PatientRegistration::where('id', $Patient['id'])->update(['patient_mrn' => $MRN]);
             $tran = [
@@ -262,9 +268,6 @@ class PatientRegistrationController extends Controller
             }
             $result[$key]['birth_date'] = $val['birth_date'] ?? 'NA';
             $result[$key]['drug_allergy_description'] = $val['drug_allergy_description'] ?? 'NA';
-
-
-
         }
         return response()->json(["message" => "Patients List", 'list' => $list, "code" => 200]);
     }
@@ -317,7 +320,6 @@ class PatientRegistrationController extends Controller
             $result[$key]['kin_name_asin_nric'] = $val['kin_name_asin_nric'] ?? 'NA';
             $result[$key]['kin_nric_no'] = $val['kin_nric_no'] ?? 'NA';
             $result[$key]['kin_mobile_no'] = $val['kin_mobile_no'] ?? 'NA';
-
         }
         return response()->json(["message" => "Patients List", 'list' => $result, "code" => 200]);
     }
