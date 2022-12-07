@@ -716,11 +716,11 @@ class StaffManagementController extends Controller
                 'staff_management.id',
                 'staff_management.name',
                 'general_setting.section_value as designation_name',
-                'hospital_branch_team_details.hospital_branch_name',
+                'hospital_branch__details.hospital_branch_name',
                 'users.id as staffId'
             )
             ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
-            ->join('hospital_branch_team_details', 'staff_management.team_id', '=', 'hospital_branch_team_details.id')
+            ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
             ->join('roles', 'staff_management.role_id', '=', 'roles.id')
             ->join('users', 'staff_management.email', '=', 'users.email')
             ->where('staff_management.status', '=', '1')

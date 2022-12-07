@@ -228,7 +228,6 @@ class PatientRegistrationController extends Controller
             ->with('fee:section_value,id')
             ->with('accomondation:section_value,id')
             ->with('citizenships:section_value,id')
-
             ->get();
         $result = [];
         foreach ($list as $key => $val) {
@@ -480,6 +479,7 @@ class PatientRegistrationController extends Controller
 
     public function updatePatientRegistration(Request $request)
     {
+       
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|string',
             'salutation_id' => '',
@@ -502,7 +502,7 @@ class PatientRegistrationController extends Controller
             'traditional_medication' => '',
             'other_allergy' => '',
             'id' => 'required',
-            'branch_id' => '',
+            'branch_id' =>'',
             'other_race' => '',
             'other_religion' => '',
             'other_accommodation' => '',
@@ -517,7 +517,6 @@ class PatientRegistrationController extends Controller
 
         $patientregistration = [
             'added_by' =>  $request->added_by,
-            'branch_id' => $request->branch_id,
             'citizenship' =>  $request->citizenship,
             'salutation_id' =>  $request->salutation_id,
             'name_asin_nric' =>  $request->name_asin_nric,
@@ -569,6 +568,7 @@ class PatientRegistrationController extends Controller
             'other_accommodation' => $request->other_accommodation,
             'other_feeExemptionStatus' => $request->other_feeExemptionStatus,
             'other_occupationStatus' => $request->other_occupationStatus,
+            
         ];
 
         $validateCitizenship = [];
@@ -695,7 +695,6 @@ class PatientRegistrationController extends Controller
             'marital_id' =>  $request->marital_id,
             'education_level' => $request->education_level,
             'branch_id' =>  $request->branch_id,
-
             'status' => "1"
 
         ];
@@ -806,4 +805,6 @@ class PatientRegistrationController extends Controller
         }
         return response()->json(["message" => "Patients List", 'list' => $result, "code" => 200]);
     }
+
+    
 }

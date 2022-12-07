@@ -38,6 +38,7 @@ use App\Models\StaffManagement;
 use App\Models\VonnAppointment;
 use App\Models\Announcement;
 use App\Models\TriageForm;
+use App\Models\SharpRegistrationSelfHarmResult;
 use App\Models\Year;
 use DateTime;
 use Illuminate\Http\Request;
@@ -91,67 +92,54 @@ class DashboardController extends Controller
     public function getallmentaristaff(Request $request)
     {
 
-
-
-        //////////Today's Appointment///////////
-
-        $today_appointment=0;
+        $today_appointment = 0;
         $query = DB::table('patient_appointment_details as p')
-        ->select('p.id')
-        ->leftjoin('users as u', function($join) {
-            $join->on('u.id', '=', 'p.added_by');
-
-        })
-        ->leftjoin('staff_management as s', function($join) {
-            $join->on('u.email', '=', 's.email');
-
-        })    
-        ->Where("booking_date",'=',date('Y-m-d'))
-        ->Where("branch_id",'=',$request->branch)->get();  
+            ->select('p.id')
+            ->leftjoin('users as u', function ($join) {
+                $join->on('u.id', '=', 'p.added_by');
+            })
+            ->leftjoin('staff_management as s', function ($join) {
+                $join->on('u.email', '=', 's.email');
+            })
+            ->Where("booking_date", '=', date('Y-m-d'))
+            ->Where("branch_id", '=', $request->branch)->get();
         $today_appointment = $query->count();
 
-
-        //////////Personal Task///////////
-
-        $personal_task=0;
+        $personal_task = 0;
         $query2 = DB::table('von_appointment as v')
-        ->select('v.id')
-        ->leftjoin('staff_management as s', function($join) {
-            $join->on('v.interviewer_id', '=', 's.id');
+            ->select('v.id')
+            ->leftjoin('staff_management as s', function ($join) {
+                $join->on('v.interviewer_id', '=', 's.id');
+            })
+            ->Where("booking_date", '=', date('Y-m-d'))->get();
+        $personal_task = $query2->count();
 
-        })
-        ->Where("booking_date",'=',date('Y-m-d'))->get();
-        $personal_task = $query2->count();  
-
-
-        //////////Team Task///////////
-
-        $team_task=0;
-        $list= StaffManagement::select("team_id")->Where("email",'=',$request->email)->get();
+        $team_task = 0;
+        $list = StaffManagement::select("team_id")->Where("email", '=', $request->email)->get();
 
         $query3 = DB::table('patient_care_paln as p')
-        ->select('p.id')
-        ->leftjoin('patient_registration as r', function($join) {
-            $join->on('p.patient_id', '=', 'r.id');
-        })
-        ->Where("p.services",'=', $list[0]['team_id'])
-        ->Where("r.branch_id",'=',$request->branch)
-        ->Where("p.next_review_date",'=',date('Y-m-d'))->get();
+            ->select('p.id')
+            ->leftjoin('patient_registration as r', function ($join) {
+                $join->on('p.patient_id', '=', 'r.id');
+            })
+            ->Where("p.services", '=', $list[0]['team_id'])
+            ->Where("r.branch_id", '=', $request->branch)
+            ->Where("p.next_review_date", '=', date('Y-m-d'))->get();
         $team_task = $query3->count();
 
-        //////////Announcement Management///////////
-        ///////////kena tambah condition untuk status and designation/////////////////
-        $date= date('Y-m-d');
-        $list= Announcement::select("id","title", "start_date")
-        ->Where("branch_id",'=',$request->branch)
-        ->Where("status", '=', "2")
-        ->Where("start_date", '<=', $date )
-        ->Where("end_date", '>=', $date)
-        ->OrderBy("start_date", 'DESC')
-        ->get();
+        $date = date('Y-m-d');
+        $list = Announcement::select("id", "title", "start_date")
+            ->Where("branch_id", '=', $request->branch)
+            ->Where("status", '=', "2")
+            ->Where("start_date", '<=', $date)
+            ->Where("end_date", '>=', $date)
+            ->OrderBy("start_date", 'DESC')
+            ->get();
 
-        return response()->json(["message" => "All Mentari Staffams", 'list' => $list, 'today_appointment' => $today_appointment,
-        'team_task' => $team_task, 'personal_task'=>$personal_task, "code" => 200]);
+        return response()->json([
+            "message" => "All Mentari Staffams", 'list' => $list, 'today_appointment' => $today_appointment,
+            'team_task' => $team_task, 'personal_task' => $personal_task, "code" => 200
+        ]);
     }
 
     public function getuseradminclerk(Request $request)
@@ -312,82 +300,178 @@ class DashboardController extends Controller
 
         $totalpatient = $totalpatientSQL->get();
 
-
-        $shharpcaseSQL = PatientRegistration::select(DB::raw('count(*) as Sharptotal'))->where('sharp','1');
-        if ($request->sharpyear != 0)
+        $ShharpOverall = PatientRegistration::select(DB::raw('count(*) as Sharptotal'))->where('sharp', '1');
+        $shharpcaseSQL = PatientRegistration::select('id', 'race_id', 'age', 'religion_id', 'marital_id', 'education_level', 'employment_status', DB::raw('count(*) as Sharptotal'))->where('sharp', '1');
+        if ($request->sharpyear != 0) {
+            $ShharpOverall->whereYear('created_at', $request->sharpyear);
             $shharpcaseSQL->whereYear('created_at', $request->sharpyear);
-        if ($request->sharpmonth != 0)
+        }
+        if ($request->sharpmonth != 0) {
+            $ShharpOverall->whereMonth('created_at', $request->sharpmonth);
             $shharpcaseSQL->whereMonth('created_at', $request->sharpmonth);
-        if ($request->sharpmentari != 0)
+        }
+        if ($request->sharpmentari != 0) {
+            $ShharpOverall->where('branch_id', $request->sharpmentari);
             $shharpcaseSQL->where('branch_id', $request->sharpmentari);
-        $male=null;$female=null;
-        if ($request->sharprace == "Race")
-        $shharpcaseSQL->where('race_id','!=','0');
-        else if ($request->sharprace == "Employment Status")
-        $shharpcaseSQL->where('employment_status','!=','0');
-        else if ($request->sharprace == "Education")
-        $shharpcaseSQL->where('education_level', '!=','0');
-        else if ($request->sharprace == "Gender"){
-        $shharpcaseSQL->where('sharp', 1);
-        $getmalefemale=GeneralSetting::select('id','section_value')->where('section','gender')->where('status','=','1')->get();
-        if($getmalefemale[0]['section_value']){
-            $male1=PatientRegistration::select(DB::raw('count(*) as Sharptotal'))->where('sharp','1')->where('sex','426');
-            $female1=PatientRegistration::select(DB::raw('count(*) as Sharptotal'))->where('sharp','1')->where('sex','427');
-        if ($request->sharpyear != 0)
-            $male1->whereYear('created_at', $request->sharpyear);
-        if ($request->sharpmonth != 0)
-            $male1->whereMonth('created_at', $request->sharpmonth);
-        if ($request->sharpmentari != 0)
-            $male1->where('branch_id', $request->sharpmentari);
-
-            if ($request->sharpyear != 0)
-            $female1->whereYear('created_at', $request->sharpyear);
-        if ($request->sharpmonth != 0)
-            $female1->whereMonth('created_at', $request->sharpmonth);
-        if ($request->sharpmentari != 0)
-            $female1->where('branch_id', $request->sharpmentari);
-
-            $female = $female1->get();
-            $male = $male1->get();
-            
         }
+
+        $shharpraces = [];
+        $shharpRangeAge = [];
+        $shharpReligions = [];
+        $shharpMaritals = [];
+        $shharpEducation = [];
+        $shharpEmployment = [];
+        $education = [];
+        $maritals = [];
+        $religions = [];
+        $employment = [];
+        $rangeofage = [];
+        $shharpSelfHarm = [];
+        $selfharm = [];
+        $selfharmData = [];
+        $races = [];
+        $Shharptotal = [0];
+        $male = null;
+        $female = null;
+        if ($request->sharprace == "Race") {
+            $shharpraces = $shharpcaseSQL->groupBy('race_id')->get()->toArray();
+            foreach ($shharpraces as $key => $value) {
+                if ($value['race_id']) {
+                    $races = GeneralSetting::select('id', 'section_value')->where('id', $value['race_id'])->where('status', '=', '1')->get()->toArray();
+                    if (isset($races)) {
+                        $shharpraces[$key]['section_value'] = $races[0]['section_value'] ?? null;
+                    }
+                }
+            }
+        } else if ($request->sharprace == "Employment Status") {
+            $shharpcaseSQL->where('employment_status', '!=', '0');
+            $shharpEmployment = $shharpcaseSQL->groupBy('employment_status')->get()->toArray();
+            foreach ($shharpEmployment as $key => $value) {
+                if ($value['employment_status']) {
+                    $employment = GeneralSetting::select('id', 'section_value')->where('id', $value['employment_status'])->where('status', '=', '1')->get()->toArray();
+                    if (isset($employment)) {
+                        $shharpEmployment[$key]['section_value'] = $employment[0]['section_value'] ?? null;
+                    }
+                }
+            }
+        } else if ($request->sharprace == "Education") {
+            $shharpcaseSQL->where('education_level', '!=', '0');
+            $shharpEducation = $shharpcaseSQL->groupBy('education_level')->get()->toArray();
+            foreach ($shharpEducation as $key => $value) {
+                if ($value['education_level']) {
+                    $education = GeneralSetting::select('id', 'section_value')->where('id', $value['education_level'])->where('status', '=', '1')->get()->toArray();
+                    if (isset($education)) {
+                        $shharpEducation[$key]['section_value'] = $education[0]['section_value'] ?? null;
+                    }
+                }
+            }
+        } else if ($request->sharprace == "Gender") {
+            $ShharpOverall->where('sharp', 1);
+            $shharpcaseSQL->where('sharp', 1);
+            $getmalefemale = GeneralSetting::select('id', 'section_value')->where('section', 'gender')->where('status', '=', '1')->get();
+            if ($getmalefemale[0]['section_value']) {
+
+                $male1 = PatientRegistration::select(DB::raw('count(*) as Sharptotal'))->where('sharp', '1')->where('sex', '71');
+
+                $female1 = PatientRegistration::select(DB::raw('count(*) as Sharptotal'))->where('sharp', '1')->where('sex', '72');
+
+                if ($request->sharpyear != 0)
+                    $male1->whereYear('created_at', $request->sharpyear);
+                if ($request->sharpmonth != 0)
+                    $male1->whereMonth('created_at', $request->sharpmonth);
+                if ($request->sharpmentari != 0)
+                    $male1->where('branch_id', $request->sharpmentari);
+
+                if ($request->sharpyear != 0)
+                    $female1->whereYear('created_at', $request->sharpyear);
+                if ($request->sharpmonth != 0)
+                    $female1->whereMonth('created_at', $request->sharpmonth);
+                if ($request->sharpmentari != 0)
+                    $female1->where('branch_id', $request->sharpmentari);
+
+                $female = $female1->get();
+                $male = $male1->get();
+            }
+        } else if ($request->sharprace == "Method of Self harm") {
+            $shharpSelfHarm = $shharpcaseSQL->get()->toArray();
+            $selfharmData = SharpRegistrationSelfHarmResult::select('section_value')->where('section', 'Method of Self-Harm')->where('patient_id', $shharpSelfHarm[0]['id'])->groupby('patient_id')->get()->toArray();
+            if ($selfharmData) {
+                foreach ($selfharmData as $k => $v) {
+                    $jsonDecode = json_decode($v['section_value'], true);
+                    if (array_key_exists('Method of Self-Harm', $jsonDecode)) {
+                        $jsonDecode['Method of Self-Harm']['Firearms_or_explosives'] = $jsonDecode['Method of Self-Harm']['Firearms or explosives'];
+                        $jsonDecode['Method of Self-Harm']['Cutting_or_Piercing'] = $jsonDecode['Method of Self-Harm']['Cutting or Piercing'];
+                        $jsonDecode['Method of Self-Harm']['Jumping_from_height'] = $jsonDecode['Method of Self-Harm']['Jumping from height'];
+                        $jsonDecode['Method of Self-Harm']['Overdose_Poisoning'] = $jsonDecode['Method of Self-Harm']['Overdose/Poisoning'];
+                        $jsonDecode['Method of Self-Harm']['Hanging_Suffocation'] = $jsonDecode['Method of Self-Harm']['Hanging/Suffocation'];
+                        $jsonDecode['Method of Self-Harm']['Fire_flames'] = $jsonDecode['Method of Self-Harm']['Fire/flames'];
+                    }
+                }
+            }
+        } else if ($request->sharprace == "Religion") {
+            $shharpcaseSQL->where('religion_id', '!=', '0');
+            $shharpReligions = $shharpcaseSQL->groupBy('religion_id')->get()->toArray();
+            foreach ($shharpReligions as $key => $value) {
+                if ($value['religion_id']) {
+                    $religions = GeneralSetting::select('id', 'section_value')->where('id', $value['religion_id'])->where('status', '=', '1')->get()->toArray();
+                    if (isset($religions)) {
+                        $shharpReligions[$key]['section_value'] = $religions[0]['section_value'] ?? null;
+                    }
+                }
+            }
+        } else if ($request->sharprace == "Marital Status") {
+            $shharpcaseSQL->where('marital_id', '!=', '0');
+            $shharpMaritals = $shharpcaseSQL->groupBy('marital_id')->get()->toArray();
+            foreach ($shharpMaritals as $key => $value) {
+                if ($value['marital_id']) {
+                    $maritals = GeneralSetting::select('id', 'section_value')->where('id', $value['marital_id'])->where('status', '=', '1')->get()->toArray();
+                    if (isset($maritals)) {
+                        $shharpMaritals[$key]['section_value'] = $maritals[0]['section_value'] ?? null;
+                    }
+                }
+            }
+        } else if ($request->sharprace == "Range of Age") {
+            $shharpRangeAge = $shharpcaseSQL->select(DB::raw('(CASE WHEN `age` < 10 THEN "Less Than 10 Years" WHEN `age` BETWEEN 10 and 19 THEN "Between 10 and 19 Years" WHEN `age` BETWEEN 20 and 59 THEN "Between 20 and 59 Years" WHEN `age` > 59 THEN "60 Years and Above" ELSE "null" END) AS RANGE_AGE, count(`id`) as COUNT'))->groupBy('RANGE_AGE')->get()->toArray();
+            foreach ($shharpRangeAge as $key => $value) {
+                if ($value['RANGE_AGE']) {
+                    $rangeofage = GeneralSetting::select('id', 'section_value')->where('section_value', $value['RANGE_AGE'])->where('status', '=', '1')->get()->toArray();
+                    if (isset($rangeofage)) {
+                        $shharpRangeAge[$key]['section_value'] = $rangeofage[0]['section_value'] ?? null;
+                    }
+                }
+            }
         }
-        else if ($request->sharprace == "Religion")
-        $shharpcaseSQL->where('religion_id','!=','0');
-        else if ($request->sharprace == "Range Of Age")
-        $shharpcaseSQL->where('age','!=','0');
-        
+
 
         $shharpcase = $shharpcaseSQL->get();
-     
+        $Shharptotal = $ShharpOverall->get();
 
-        function random_color_part() {
-            return str_pad( dechex( mt_rand( 0, 255 ) ), 2, '0', STR_PAD_LEFT);
+        function random_color_part()
+        {
+            return str_pad(dechex(mt_rand(0, 255)), 2, '0', STR_PAD_LEFT);
         }
-        
-        function random_color() {
+
+        function random_color()
+        {
             return random_color_part() . random_color_part() . random_color_part();
         }
-        $clinicrepor1 = PatientRegistration::select('services_type',DB::raw('count( * ) as TotalPatient'))->groupBy('services_type');
+        $clinicrepor1 = PatientRegistration::select('services_type', DB::raw('count( * ) as TotalPatient'))->groupBy('services_type');
         if ($request->scryear != 0)
             $clinicrepor1->whereYear('created_at', '=', $request->scryear);
         if ($request->scrmonth != 0)
             $clinicrepor1->whereMonth('created_at', '=', $request->scrmonth);
         if ($request->scrmentari != 0)
             $clinicrepor1->where('branch_id', '=', $request->scrmentari);
-            $clini22 = $clinicrepor1->get();
-            foreach ($clini22 as $key => $value) {
-                if($value['services_type']){
-                    $aa=ServiceRegister::select('service_name')->where('id',$value['services_type'])->get();
-                    if(isset($aa)){
-                        $clini22[$key]['service_name'] = $aa[0]['service_name'] ?? null;
-                        $clini22[$key]['color'] = random_color();
-                    }
-                   
+        $clini22 = $clinicrepor1->get();
+        foreach ($clini22 as $key => $value) {
+            if ($value['services_type']) {
+                $aa = ServiceRegister::select('service_name')->where('id', $value['services_type'])->get();
+                if (isset($aa)) {
+                    $clini22[$key]['service_name'] = $aa[0]['service_name'] ?? null;
+                    $clini22[$key]['color'] = random_color();
                 }
-                
             }
-        // ----------------------------start for diagnosis---------------------------------------
+        }
 
         $id = IcdType::select('id')->where('icd_type_code', "=", 'ICD-10')->get();
 
@@ -426,7 +510,7 @@ class DashboardController extends Controller
         $qry = "";
         $id = IcdType::select('id')->where('icd_type_code', "=", 'ICD-10')->get();
 
-        foreach ($tabData as $key => $value) { 
+        foreach ($tabData as $key => $value) {
             if ($qry) {
                 $qry .= " union all ";
             }
@@ -446,20 +530,17 @@ class DashboardController extends Controller
         $clinicreportSeD = $clinicreportSQLseD->get();
 
 
-        // --------------------------end for Diagnosis graph-----------------------------
-
         $kpiSQL = SeProgressNote::select(DB::raw('count( employment_status ) as kpiTotalCaseLoad'));
         if ($request->kpiyear != 0)
             $kpiSQL->whereYear('created_at', '=', $request->kpiyear);
         if ($request->kpimonth != 0)
             $kpiSQL->whereMonth('created_at', '=', $request->kpimonth);
         if ($request->kpimentari != 0)
-        $kpiSQL = DB::table('se_progress_note')
-        ->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
-        ->select(DB::raw('count(se_progress_note.employment_status) as kpiTotalCaseLoad'))
-        ->where('se_progress_note.patient_id','=', $request->kpimentari);
+            $kpiSQL = DB::table('se_progress_note')
+                ->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
+                ->select(DB::raw('count(se_progress_note.employment_status) as kpiTotalCaseLoad'))
+                ->where('se_progress_note.patient_id', '=', $request->kpimentari);
         $kpi = $kpiSQL->get();
-
 
         $employid = 0;
         $unemployid = 0;
@@ -482,9 +563,9 @@ class DashboardController extends Controller
             $kpiEmployement1->whereMonth('created_at', '=', $request->kpimonth);
         if ($request->kpimentari != 0)
             $kpiEmployement1 = DB::table('se_progress_note')
-            ->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
-            ->select(DB::raw('count(se_progress_note.employment_status) as kpiTotalCaseLoad'))
-            ->where('se_progress_note.patient_id','=', $request->kpimentari);    
+                ->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
+                ->select(DB::raw('count(se_progress_note.employment_status) as kpiTotalCaseLoad'))
+                ->where('se_progress_note.patient_id', '=', $request->kpimentari);
         $kpiEmployement = $kpiEmployement1->get();
 
         $kpiUnemployement1 = SeProgressNote::select(DB::raw('count( employment_status ) as unemployed'))
@@ -495,9 +576,9 @@ class DashboardController extends Controller
             $kpiUnemployement1->whereMonth('created_at', '=', $request->kpimonth);
         if ($request->kpimentari != 0)
             $kpiUnemployement1 = DB::table('se_progress_note')
-            ->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
-            ->select(DB::raw('count(se_progress_note.employment_status) as kpiTotalCaseLoad'))
-            ->where('se_progress_note.patient_id','=', $request->kpimentari); 
+                ->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
+                ->select(DB::raw('count(se_progress_note.employment_status) as kpiTotalCaseLoad'))
+                ->where('se_progress_note.patient_id', '=', $request->kpimentari);
         $kpiUnemployement = $kpiUnemployement1->get();
 
         $kpiTerminated1 = SeProgressNote::select(DB::raw('count( employment_status ) as terminate'))
@@ -508,29 +589,33 @@ class DashboardController extends Controller
             $kpiTerminated1->whereMonth('created_at', '=', $request->kpimonth);
         if ($request->kpimentari != 0)
             $kpiTerminated1 = DB::table('se_progress_note')
-            ->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
-            ->select(DB::raw('count(se_progress_note.employment_status) as kpiTotalCaseLoad'))
-            ->where('se_progress_note.patient_id','=', $request->kpimentari); 
+                ->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
+                ->select(DB::raw('count(se_progress_note.employment_status) as kpiTotalCaseLoad'))
+                ->where('se_progress_note.patient_id', '=', $request->kpimentari);
         $kpiTerminated = $kpiTerminated1->get();
 
-
         $HLM = [];
-
 
         return response()->json([
             "message" => "High Level Mgt", 'TotalMintari' => $totalmentari,
             'TotalAppoitment' => $list, 'User1' => $users,
             'totalpatient' => $totalpatient,
             'totalmentarilocation' => $totalmentarilocation,
-            'totalsharp' => $shharpcase,
-            'male' =>$male,
-            'female' =>$female,
+            'totalsharp' => $Shharptotal,
+            'male' => $male,
+            'female' => $female,
             'kpi' => $kpi,
             "kpiEmployement" => $kpiEmployement,
             "kpiUnemployement" => $kpiUnemployement,
             "kpiTerminated" => $kpiTerminated,
 
             "summaryActivity" => $clini22,
+            "shharpRaces" => $shharpraces,
+            "rangeOfAge" => $shharpRangeAge,
+            "shharpReligions" => $shharpReligions,
+            "shharpMaritals" => $shharpMaritals,
+            "shharpEducation" => $shharpEducation,
+            "shharpEmployment" => $shharpEmployment,
             "diagnosis" => $diagnosis,
             "code" => 200
         ]);
@@ -546,79 +631,70 @@ class DashboardController extends Controller
     public function AdminSpeciallist(Request $request)
     {
 
-        //////////Today's Appointment///////////
-        $today_appointment=0;
+        $today_appointment = 0;
         $query = DB::table('patient_appointment_details as p')
-        ->select('p.id')
-        ->leftjoin('users as u', function($join) {
-            $join->on('u.id', '=', 'p.added_by');
-
-        })
-        ->leftjoin('staff_management as s', function($join) {
-            $join->on('u.email', '=', 's.email');
-
-        })    
-        ->Where("booking_date",'=',date('Y-m-d'))
-        ->Where("branch_id",'=',$request->branch)->get();  
+            ->select('p.id')
+            ->leftjoin('users as u', function ($join) {
+                $join->on('u.id', '=', 'p.added_by');
+            })
+            ->leftjoin('staff_management as s', function ($join) {
+                $join->on('u.email', '=', 's.email');
+            })
+            ->Where("booking_date", '=', date('Y-m-d'))
+            ->Where("branch_id", '=', $request->branch)->get();
         $today_appointment = $query->count();
 
 
-        //////////Personal Task///////////
-
-        $personal_task=0;
+        $personal_task = 0;
         $query2 = DB::table('von_appointment as v')
-        ->select('v.id')
-        ->leftjoin('staff_management as s', function($join) {
-            $join->on('v.interviewer_id', '=', 's.id');
+            ->select('v.id')
+            ->leftjoin('staff_management as s', function ($join) {
+                $join->on('v.interviewer_id', '=', 's.id');
+            })
+            ->Where("booking_date", '=', date('Y-m-d'))->get();
+        $personal_task = $query2->count();
 
-        })
-        ->Where("booking_date",'=',date('Y-m-d'))->get();
-        $personal_task = $query2->count();  
 
-
-        //////////Team Task///////////
-
-        $team_task=0;
-        $list= StaffManagement::select("team_id")->Where("email",'=',$request->email)->get();
+        $team_task = 0;
+        $list = StaffManagement::select("team_id")->Where("email", '=', $request->email)->get();
 
         $query3 = DB::table('patient_care_paln as p')
-        ->select('p.id')
-        ->leftjoin('patient_registration as r', function($join) {
-            $join->on('p.patient_id', '=', 'r.id');
-        })
-        ->Where("p.services",'=', $list[0]['team_id'])
-        ->Where("r.branch_id",'=',$request->branch)
-        ->Where("p.next_review_date",'=',date('Y-m-d'))->get();
+            ->select('p.id')
+            ->leftjoin('patient_registration as r', function ($join) {
+                $join->on('p.patient_id', '=', 'r.id');
+            })
+            ->Where("p.services", '=', $list[0]['team_id'])
+            ->Where("r.branch_id", '=', $request->branch)
+            ->Where("p.next_review_date", '=', date('Y-m-d'))->get();
         $team_task = $query3->count();
-        
+
         $request_appointment = 0;
         $query = DB::table('patient_appointment_details as p')
-        ->select('p.id')
-        ->leftjoin('users as u', function($join) {
-            $join->on('u.id', '=', 'p.added_by');
-        })
-        ->leftjoin('staff_management as s', function($join) {
-            $join->on('u.email', '=', 's.email');
-        })    
-        ->Where("branch_id",'=',$request->branch)
-        ->get();  
+            ->select('p.id')
+            ->leftjoin('users as u', function ($join) {
+                $join->on('u.id', '=', 'p.added_by');
+            })
+            ->leftjoin('staff_management as s', function ($join) {
+                $join->on('u.email', '=', 's.email');
+            })
+            ->Where("branch_id", '=', $request->branch)
+            ->get();
         $request_appointment = $query->count();
-        //////////Announcement Management///////////
-        ///////////kena tambah condition untuk status and designation/////////////////
+
         $date = date('Y-m-d');
-        
-        $list= Announcement::select("id","title", "start_date", "end_date")
-        ->Where("branch_id",'=',$request->branch)
-        ->Where("status", '=', "2")
-        ->Where("start_date", '<=', $date )
-        ->Where("end_date", '>=', $date)
-        ->OrderBy("start_date", 'DESC')
-        ->get();
 
-               
-        return response()->json(["message" => "Admin & Specialist inCharge", 'today_appointment' => $today_appointment,
-        'personal_task' => $personal_task, 'team_task'=> $team_task, 'request_appointment' => $request_appointment, 'list'=> $list,  "code" => 200]);
+        $list = Announcement::select("id", "title", "start_date", "end_date")
+            ->Where("branch_id", '=', $request->branch)
+            ->Where("status", '=', "2")
+            ->Where("start_date", '<=', $date)
+            ->Where("end_date", '>=', $date)
+            ->OrderBy("start_date", 'DESC')
+            ->get();
+
+
+        return response()->json([
+            "message" => "Admin & Specialist inCharge", 'today_appointment' => $today_appointment,
+            'personal_task' => $personal_task, 'team_task' => $team_task, 'request_appointment' => $request_appointment, 'list' => $list,  "code" => 200
+        ]);
     }
-
-
 }
