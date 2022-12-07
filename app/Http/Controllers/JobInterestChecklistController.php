@@ -20,7 +20,7 @@ class JobInterestChecklistController extends Controller
 
                 'interest_to_work' => $request->interest_to_work,
                 'agree_if_mentari_find_job_for_you' => $request->agree_if_mentari_find_job_for_you,
-                'complexity_of_services' => $request->complexity_of_services ?? null,
+                'complexity_of_services' => $request->complexity_of_services,
                 'clerk_job_interester' => $request->clerk_job_interester,
                 'clerk_job_notes' => $request->clerk_job_notes,
                 'factory_worker_job_interested' => $request->factory_worker_job_interested,
