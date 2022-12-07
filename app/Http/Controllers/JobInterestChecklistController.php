@@ -20,7 +20,7 @@ class JobInterestChecklistController extends Controller
 
                 'interest_to_work' => $request->interest_to_work,
                 'agree_if_mentari_find_job_for_you' => $request->agree_if_mentari_find_job_for_you,
-                'complexity_services' => $request->complexity_of_services,
+
                 'clerk_job_interester' => $request->clerk_job_interester,
                 'clerk_job_notes' => $request->clerk_job_notes,
                 'factory_worker_job_interested' => $request->factory_worker_job_interested,
@@ -54,7 +54,7 @@ class JobInterestChecklistController extends Controller
                 'sub_code_id' => $request->sub_code_id,
                 'type_diagnosis_id' => $request->type_diagnosis_id,
                 'category_services' => $request->category_services,
-                'complexity_services' => $request->complexity_services,
+                'complexity_services' => $request->complexity_of_services,
                 'outcome' => $request->outcome,
                 'medication_des' => $request->medication_prescription,
                 'status' => "0",
@@ -62,7 +62,6 @@ class JobInterestChecklistController extends Controller
                 'created_at' =>  date('Y-m-d H:i:s'),
                 'updated_at' =>  date('Y-m-d H:i:s'),
             ];
-
             $validateJobInterestChecklist = [];
 
             if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
@@ -124,7 +123,6 @@ class JobInterestChecklistController extends Controller
                 'note' => '',
                 'planning' => '',
                 'patient_consent_interested' => '',
-                'complexity_services' => '',
                 'location_services' => '',
                 'services_id' => '',
                 'code_id' => '',
@@ -149,7 +147,6 @@ class JobInterestChecklistController extends Controller
 
                 'interest_to_work' => $request->interest_to_work,
                 'agree_if_mentari_find_job_for_you' => $request->agree_if_mentari_find_job_for_you,
-                'complexity_services' => $request->complexity_of_services,
                 'clerk_job_interester' => $request->clerk_job_interester,
                 'clerk_job_notes' => $request->clerk_job_notes,
                 'factory_worker_job_interested' => $request->factory_worker_job_interested,
@@ -183,7 +180,7 @@ class JobInterestChecklistController extends Controller
                 'sub_code_id' => $request->sub_code_id,
                 'type_diagnosis_id' => $request->type_diagnosis_id,
                 'category_services' => $request->category_services,
-                'complexity_services' => $request->complexity_services,
+                'complexity_services' => $request->complexity_of_services,
                 'outcome' => $request->outcome,
                 'medication_des' => $request->medication_prescription,
                 'status' => "1",
@@ -191,7 +188,6 @@ class JobInterestChecklistController extends Controller
                 'created_at' =>  date('Y-m-d H:i:s'),
                 'updated_at' =>  date('Y-m-d H:i:s'),
             ];
-
             $validateJobInterestChecklist = [];
 
             if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
