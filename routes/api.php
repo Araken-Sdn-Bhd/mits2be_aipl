@@ -116,6 +116,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
 });
 Route::group(['prefix' => 'pass'], function () {
     Route::post('/forgetpass', [ForgetpasswordController::class, 'forgetpass']);
+    Route::post('/validatePasswordRule',[PasswordController::class, 'passwordRule']);
 });
 Route::group(['prefix' => 'email-setting'], function () {
     Route::post('/add', [EmailSettingController::class, 'store']);
