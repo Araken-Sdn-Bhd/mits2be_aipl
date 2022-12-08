@@ -20,23 +20,17 @@ class PatientByAgeReportController extends Controller
 
     public function getPatientByAgeReport(Request $request)
     {
-        $response = PatientAppointmentDetails::select('*')
-        ->whereBetween('booking_date', [$request->fromDate, $request->toDate])
-        ->where('appointment_status', '1')->get()->toArray();
-        $patient = [];
-        $result = [];
-        if ($response) {
-            foreach ($response as $key => $val) {
-                if ($val['booking_date']) {
-                    $patient[] = $val['patient_mrn_id'];
-                }
-            }
-
-            $patientArray = array_unique($patient);
-
             $demo = [];
+            $age=[];
+
             if ($request->age) {
-                $demo['age'] = $request->age;
+                $age = GeneralSetting::where('id', $request->age)->first();
+                if($age['min_age']!=NULL){
+                    $age['agemin']=$age['min_age'];
+                }
+                if($age['max_age']!=NULL){
+                    $age['agemax']=$age['max_age'];
+                }
             }
             if ($request->gender) {
                 $demo['sex'] = $request->gender;
@@ -44,37 +38,61 @@ class PatientByAgeReportController extends Controller
             if ($request->race) {
                 $demo['race_id'] = $request->race;
             }
+
+        $query = DB::table('patient_appointment_details as pad')
+        ->select('*')
+        ->join('patient_registration as p', function($join) {
+            $join->on('pad.patient_mrn_id', '=', 'p.id');
+        })
+        ->whereBetween('pad.booking_date', [$request->fromDate, $request->toDate])
+        ->where('appointment_status', '1');
+
+        if ($demo){
+        $query->where($demo);
+        }
+        
+        if ($age){
             
-            $patientDetails =  PatientRegistration::whereIn('id', $patientArray)->where($demo)->get()->toArray();
-             
-            if ($patientDetails) {
-                $patientInfo = [];
-                foreach ($patientDetails as $key => $val) {               
-                    $gn = GeneralSetting::where(['id' => $val['sex']])->get()->toArray();
-                    $patientInfo[$val['id']]['Gender'] = ($gn) ? $gn[0]['section_value'] : 'NA';
-                    $patientInfo[$val['id']]['gender_id'] = ($gn) ? $gn[0]['id'] : 'NA';
-                    $gn2 = GeneralSetting::where(['id' => $val['race_id']])->get()->toArray();
-                    $patientInfo[$val['id']]['race'] = ($gn2) ? $gn2[0]['section_value'] : 'NA';
-                    $patientInfo[$val['id']]['race_id'] = ($gn2) ? $gn2[0]['id'] : 'NA';
-                   
-                    $patientInfo[$val['id']]['Age'] = $val['age'];
-                }
-               
-                $index = 0;
-                foreach ($response as $k => $v) {
-                    $result[$index]['DATE'] = date('d/m/y', strtotime($v['booking_date']));
-                    $result[$index]['Gender'] = $patientInfo[$v['patient_mrn_id']]['Gender'] ?? 'NA';
-                    $result[$index]['race'] = $patientInfo[$v['patient_mrn_id']]['race'] ?? 'NA';
-                    $result[$index]['Age'] = $patientInfo[$v['patient_mrn_id']]['Age'] ?? 'NA';
+            if($age['agemin'] && $age['agemax']!=NULL){
+                
+            $query->whereBetween('age',[$age['agemin'],$age['agemax']]);
+            }
+            if($age['agemin']==NULL) {
 
-                    $result[$index]['race_id'] =$patientInfo[$v['patient_mrn_id']]['race_id'] ?? 'NA';
-                    $result[$index]['gender_id'] =$patientInfo[$v['patient_mrn_id']]['gender_id'] ?? 'NA';
-                    $index++;
-                }
-
+                $query->where('age','<=',$age['agemax']);
                 
             }
+            if($age['agemax']==NULL) {
+                $query->where('age','>=',$age['agemin']);
+            }
+        }
+        $query2=$query->get()->toArray();
+        $response  = json_decode(json_encode($query2), true);
 
+
+        $patient = [];
+        $result = [];
+        $index=0;
+        if ($response) {
+
+            foreach ($response as $key => $val) {
+                    if($val['sex']!=NULL && $val['race_id']!=NULL && $val['age']!=NULL){
+                        $gender = GeneralSetting::where(['id' => $val['sex']])->first();
+                        $race = GeneralSetting::where(['id' => $val['race_id']])->first();
+                        
+                        $result[$index]['DATE'] = date('d/m/y', strtotime($val['booking_date']));
+                        $result[$index]['Gender'] = $gender['section_value']  ?? 'NA';
+                        $result[$index]['race'] = $race['section_value'] ?? 'NA';
+                        $result[$index]['Age'] = $val['Age'] ?? 'NA';
+
+                        $result[$index]['race_id'] =$val['race_id'] ?? 'NA';
+                        $result[$index]['gender_id'] =$val['sex'] ?? 'NA';
+                        $index++;
+                    }else{
+                        continue;
+                    }
+            }
+            
             if ($result) {
                 $totalReports = count($result);
         $mainResult = [];
@@ -178,6 +196,8 @@ $listKey=[];
         } else {
             return response()->json(["message" => "Patient By Age Report", 'result' => [], 'filepath' => null, "code" => 200]);
         }
+    }else {
+        return response()->json(["message" => "Patient By Age Report", 'result' => [], 'filepath' => null, "code" => 200]);
     }
 }
 
