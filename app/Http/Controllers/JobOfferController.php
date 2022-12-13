@@ -541,7 +541,6 @@ class JobOfferController extends Controller
                                 'updated_at' =>  date('Y-m-d H:i:s'),
                                 'test_section_name' => $kk,
                                 'result' => $this->prepareLaserResult($vv),
-                                'appointment_details_id' => $request->appId,
                             ];
                             if ($request->test_name == 'laser') {
                                 $level[$kk] =  ['score' => $this->prepareLaserResult($vv)];
@@ -564,7 +563,6 @@ class JobOfferController extends Controller
                             'user_ip_address' => $request->user_ip_address,
                             'created_at' =>  date('Y-m-d H:i:s'),
                             'updated_at' =>  date('Y-m-d H:i:s'),
-                            'appointment_details_id' => $request->appId,
                         ];
                         $i++;
                     }
