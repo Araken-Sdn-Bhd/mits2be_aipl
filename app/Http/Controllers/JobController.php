@@ -144,7 +144,7 @@ class JobController extends Controller
                     'branch_id'=>$request->branch_id,
                     'role'=>'Admin/Clerk',
                     'patient_mrn' =>   $company->id,
-                    'url_route' => "/Modules/Intervention/company-job-approval-request?id=".$company->id.'&'.'company='.$company->company_name,
+                    'url_route' => "/Modules/Intervention/job-record",
                     'created_at' => $date->format('Y-m-d H:i:s'),
                     'message' =>  'New job approval request',
                 ];
