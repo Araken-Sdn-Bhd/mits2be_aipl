@@ -367,6 +367,7 @@ Route::group(['prefix' => 'staff-management'], function () {
     Route::post('/setSystemAdmin', [StaffManagementController::class, 'setSystemAdmin']);
     Route::post('/removeUserAccess', [StaffManagementController::class, 'removeUserAccess']);
     Route::post('/getRoleCode', [StaffManagementController::class, 'getRoleCode']);
+    Route::post('/getStaffDetailByBranch', [StaffManagementController::class, 'getStaffDetailByBranch']);
 });
 
 Route::group(['prefix' => 'calendar-management'], function () {
