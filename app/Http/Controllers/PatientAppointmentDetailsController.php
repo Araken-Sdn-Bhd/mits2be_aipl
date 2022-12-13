@@ -384,9 +384,11 @@ class PatientAppointmentDetailsController extends Controller
     {
         $resultSet = PatientAppointmentDetails::select('id', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'staff_id', 'appointment_status')
             ->with('service:service_name,id')
+            ->with('service:id,id')
             ->where('status', '1')
             ->get()
             ->toArray();
+
         $result = [];
         $list123 = HospitalBranchTeamManagement::select('id', 'hospital_branch_name', 'team_name', 'hospital_code')->where('status', '=', '1')->get();
         if (count($resultSet) > 0) {
@@ -413,6 +415,7 @@ class PatientAppointmentDetailsController extends Controller
 
                     if ($val['service'] != null) {
                         $resultChunk['service'] = $val['service']['service_name'];
+                        $resultChunk['serviceid'] = $val['service']['id'];
                     } else {
                         $resultChunk['service'] = 'NA';
                     }
@@ -466,6 +469,7 @@ class PatientAppointmentDetailsController extends Controller
                 'pad.staff_id',
                 'pad.appointment_status',
                 'service_register.service_name as service',
+                'service_register.id as serviceid',
                 'hospital_branch_team_details.team_name',
                 'patient_registration.*'
             )
@@ -568,6 +572,7 @@ class PatientAppointmentDetailsController extends Controller
                 'pad.staff_id',
                 'pad.appointment_status',
                 'service_register.service_name as service',
+                'service_register.id as serviceid',
                 'hospital_branch_team_details.team_name',
                 'patient_registration.*'
             )
@@ -670,7 +675,7 @@ class PatientAppointmentDetailsController extends Controller
             $resultSet = $sql->where(function ($query) use ($searchWord, $ids) {
                 $query->where('nric_or_passportno', 'LIKE', '%' . $searchWord . '%')
                     ->orWhereIn('patient_mrn_id',  $ids);
-            });
+            });        
         }
         $resultSet = $sql->get()->toArray();
         $result = [];
@@ -742,7 +747,6 @@ class PatientAppointmentDetailsController extends Controller
                 ['id' => $request->appointment_id]
             )->update([
                 'appointment_status' =>  $request->appointment_status,
-                'status' =>  '0',
             ]);
         } else {
             PatientAppointmentDetails::where(
