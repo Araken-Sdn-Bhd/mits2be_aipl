@@ -218,7 +218,6 @@ class StaffManagementController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
         if ($request->name == '' && $request->branch_id == '0') {
-
             $users = DB::table('staff_management')
                 ->leftjoin('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
                 ->join('users', 'users.email', '=', 'staff_management.email')
@@ -257,6 +256,7 @@ class StaffManagementController extends Controller
                 ->get();
             return response()->json(["message" => "Staff Management List", 'list' => $users, "code" => 200]);
         } else if ($request->branch_id == '0') {
+        
             $users = DB::table('staff_management')
                 ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
                 ->leftjoin('users', 'staff_management.email', '=', 'users.email')
@@ -274,7 +274,7 @@ class StaffManagementController extends Controller
                     'staff_management.status',
                     'staff_management.team_id'
                 )
-                ->where('staff_management.name', 'LIKE', "%{$request->name}%", '=', $request->name)
+                ->where('staff_management.name', 'LIKE', "%{$request->name}%")
                 ->orderBy('staff_management.name', 'asc')
                 ->get();
             return response()->json(["message" => "Staff Management List", 'list' => $users, "code" => 200]);
