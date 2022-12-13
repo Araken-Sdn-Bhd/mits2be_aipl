@@ -331,6 +331,16 @@ class HospitalManagementController extends Controller
 
     }
 
+    public function getStaffNamebyPatientTeamBranch(Request $request){
+        $list = StaffManagement::select('team_id','branch_id','role_id')
+        ->where('email','=', $request->email)->get();
+
+        $list2 = StaffManagement::select('id','name')
+        ->where('branch_id','=', $list[0]['branch_id'])
+        ->where('team_id','=', $request->team_id)->get();
+        return response()->json(["message" => "Staff Name", 'list' => $list2, "code" => 200]);
+    }
+    
     public function getServiceByBranchTeamId(Request $request)
     {
         $list = StaffManagement::select('id', 'team_id', 'branch_id')->where('email','=', $request->email)->get();
