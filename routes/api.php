@@ -476,6 +476,7 @@ Route::group(['prefix' => 'patient-suicidal-risk-assessment'], function () {
 Route::group(['prefix' => 'appointment-request'], function () {
     Route::post('/add', [AppointmentRequestController::class, 'addRequest']);
     Route::post('/get', [AppointmentRequestController::class, 'getRequestList']);
+    Route::post('/getAll', [AppointmentRequestController::class, 'getAllRequestList']);
 });
 
 Route::group(['prefix' => 'occt-referral'], function () {
