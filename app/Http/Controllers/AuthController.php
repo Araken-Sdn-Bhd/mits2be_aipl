@@ -22,7 +22,7 @@ class AuthController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['login', 'register','loginEmployer']]);
+        $this->middleware('auth:api', ['except' => ['login', 'register', 'loginEmployer']]);
     }
 
     /**
@@ -83,15 +83,15 @@ class AuthController extends Controller
         $useradmin = User::select('role')->where('email', $request->email)->pluck('role');
         $id = User::select('id')->where('email', $request->email)->pluck('id');
         $id_block_user = UserBlock::select('id')->where('user_id', $id)->pluck('id');
-        $branch= DB::table('staff_management as s')
-        ->select('s.branch_id','b.hospital_branch_name','b.hospital_id','h.hospital_name')
-        ->join('hospital_branch__details as b', function ($join) {
-            $join->on('b.id', '=', 's.branch_id');
-        })
-        ->join('hospital_management as h', function ($join) {
-            $join->on('h.id', '=', 'b.hospital_id');
-        })
-        ->where('s.email', $request->email)->first();
+        $branch = DB::table('staff_management as s')
+            ->select('s.branch_id', 'b.hospital_branch_name', 'b.hospital_id', 'h.hospital_name')
+            ->join('hospital_branch__details as b', function ($join) {
+                $join->on('b.id', '=', 's.branch_id');
+            })
+            ->join('hospital_management as h', function ($join) {
+                $join->on('h.id', '=', 'b.hospital_id');
+            })
+            ->where('s.email', $request->email)->first();
 
         $systemattempt = SystemSetting::select('variable_value')->where('section', 'login-attempt')->pluck('variable_value');
         $blocktime = SystemSetting::select('variable_value')->where('section', 'system-block-duration')->pluck('variable_value');
@@ -100,6 +100,12 @@ class AuthController extends Controller
         $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
         $newDate = $date->format('Y-m-d H:i:s');
         $currentdatetime = date('Y-m-d H:i:s', strtotime($newDate . '+' . 'hours'));
+        $userStatus = DB::table('staff_management as s')
+            ->select('s.status')
+            ->where('s.email', $request->email)->first();
+        if ($userStatus->status != 1) {
+            return response()->json(['message' => 'User is Inactive', "code" => 202], 202);
+        }
         if (!empty($no_of_attempts[0])) {
         } else {
             $no_of_attempts = "0";
@@ -115,7 +121,7 @@ class AuthController extends Controller
                 ]);
                 if (!$request->type == "Von") {
                     $screenroute = DB::table('screen_access_roles')
-                        ->select(DB::raw('screens.screen_route','screens.screen_route_alt'))
+                        ->select(DB::raw('screens.screen_route', 'screens.screen_route_alt'))
                         ->join('screens', function ($join) {
                             $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
                         })
@@ -129,30 +135,30 @@ class AuthController extends Controller
                     if (!empty($screenroute[0])) {
                         $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
                         $tmp_alt = json_decode(json_encode($screenroute[0]), true)['screen_route_alt'];
-                        return $this->createNewToken($token, $tmp,$tmp_alt, $branch);
+                        return $this->createNewToken($token, $tmp, $tmp_alt, $branch);
                     } else {
                         $tmp = "";
                         return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
                     }
-                }else{
-                    $screenroute = DB::table('screen_access_roles')
-                    ->select(DB::raw('screens.screen_route','screens,screen_route_alt'))
-                    ->join('screens', function ($join) {
-                        $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
-                    })
-                    ->where('screens.screen_route', 'like', '%Mod%')
-                    ->where('screen_access_roles.staff_id', '=', $id)
-                    ->where('screen_access_roles.status', '=', '1')
-                    ->get();
-
-                if (!empty($screenroute[0])) {
-                    $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
-                    $tmp_alt = json_decode(json_encode($screenroute[0]), true)['screen_route_alt'];
-                    return $this->createNewToken($token, $tmp,$tmp_alt, $branch);
                 } else {
-                    $tmp = "";
-                    return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
-                }
+                    $screenroute = DB::table('screen_access_roles')
+                        ->select(DB::raw('screens.screen_route', 'screens,screen_route_alt'))
+                        ->join('screens', function ($join) {
+                            $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
+                        })
+                        ->where('screens.screen_route', 'like', '%Mod%')
+                        ->where('screen_access_roles.staff_id', '=', $id)
+                        ->where('screen_access_roles.status', '=', '1')
+                        ->get();
+
+                    if (!empty($screenroute[0])) {
+                        $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
+                        $tmp_alt = json_decode(json_encode($screenroute[0]), true)['screen_route_alt'];
+                        return $this->createNewToken($token, $tmp, $tmp_alt, $branch);
+                    } else {
+                        $tmp = "";
+                        return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
+                    }
                 }
             } else {
                 return response()->json(['message' => 'Account has been blocked for next ' . $blocktime[0] . ' hour'], 401);
@@ -168,41 +174,41 @@ class AuthController extends Controller
                 ]);
             } catch (\Throwable $th) {
             }
-            if(!$request->type=="Von"){
-            $screenroute = DB::table('screen_access_roles')
-                ->select(DB::raw('screens.screen_route'))
-                ->join('screens', function ($join) {
-                    $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
-                })
-                ->where('screens.screen_route', 'like', '%Mod%')
-                ->where('screen_access_roles.staff_id', '=', $id)
-                ->orWhere('screen_access_roles.user_type', '=', $useradmin)
-                ->where('screen_access_roles.status', '=', '1')
-                ->get();
+            if (!$request->type == "Von") {
+                $screenroute = DB::table('screen_access_roles')
+                    ->select(DB::raw('screens.screen_route'))
+                    ->join('screens', function ($join) {
+                        $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
+                    })
+                    ->where('screens.screen_route', 'like', '%Mod%')
+                    ->where('screen_access_roles.staff_id', '=', $id)
+                    ->orWhere('screen_access_roles.user_type', '=', $useradmin)
+                    ->where('screen_access_roles.status', '=', '1')
+                    ->get();
 
-            $screenroutealt = DB::table('screen_access_roles')
-                ->select(DB::raw('screens.screen_route_alt'))
-                ->join('screens', function ($join) {
-                    $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
-                })
-                ->where('screens.screen_route_alt', 'like', '%Mod%')
-                ->where('screen_access_roles.staff_id', '=', $id)
-                ->orWhere('screen_access_roles.user_type', '=', $useradmin)
-                ->where('screen_access_roles.status', '=', '1')
-                ->get();
+                $screenroutealt = DB::table('screen_access_roles')
+                    ->select(DB::raw('screens.screen_route_alt'))
+                    ->join('screens', function ($join) {
+                        $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
+                    })
+                    ->where('screens.screen_route_alt', 'like', '%Mod%')
+                    ->where('screen_access_roles.staff_id', '=', $id)
+                    ->orWhere('screen_access_roles.user_type', '=', $useradmin)
+                    ->where('screen_access_roles.status', '=', '1')
+                    ->get();
 
-            if (!empty($screenroute[0])) {
-                $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
-                $tmp_alt = json_decode(json_encode($screenroutealt[0]), true)['screen_route_alt'];
+                if (!empty($screenroute[0])) {
+                    $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
+                    $tmp_alt = json_decode(json_encode($screenroutealt[0]), true)['screen_route_alt'];
 
-                return $this->createNewToken($token, $tmp,$tmp_alt, $branch);
+                    return $this->createNewToken($token, $tmp, $tmp_alt, $branch);
+                } else {
+                    $tmp = "";
+                    return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
+                }
             } else {
-                $tmp = "";
-                return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
-            }
-        }else{
-            $screenroute = DB::table('screen_access_roles')
-                    ->select(DB::raw('screens.screen_route','screens,screen_route_alt'))
+                $screenroute = DB::table('screen_access_roles')
+                    ->select(DB::raw('screens.screen_route', 'screens,screen_route_alt'))
                     ->join('screens', function ($join) {
                         $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
                     })
@@ -214,12 +220,12 @@ class AuthController extends Controller
                 if (!empty($screenroute[0])) {
                     $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
                     $tmp_alt = json_decode(json_encode($screenroute[0]), true)['screen_route_alt'];
-                    return $this->createNewToken($token, $tmp,$tmp_alt, $branch);
+                    return $this->createNewToken($token, $tmp, $tmp_alt, $branch);
                 } else {
                     $tmp = "";
                     return response()->json(['message' => 'User has not right to access any form. Please contact to Admin', 'code' => '201'], 201);
                 }
-        }
+            }
         }
     }
 
@@ -235,7 +241,7 @@ class AuthController extends Controller
         }
 
         if (!$token = auth()->attempt($validator->validated())) {
-           
+
             $id = User::select('id')->where('email', $request->email)->pluck('id');
 
             $systemattempt = SystemSetting::select('variable_value')->where('section', 'login-attempt')->pluck('variable_value');
@@ -283,10 +289,10 @@ class AuthController extends Controller
             }
             return response()->json(['message' => 'Unauthorized', "code" => 401], 401);
         }
-        
-        $id = User::select('id')->where('email', $request->email)->where('role','employer')->pluck('id');
+
+        $id = User::select('id')->where('email', $request->email)->where('role', 'employer')->pluck('id');
         $id_block_user = UserBlock::select('id')->where('user_id', $id)->pluck('id');
-        $branch= "";
+        $branch = "";
         $tmp = "/app/Modules/Dashboard/high-level-employer";
         $tmp_alt = "/Modules/Dashboard/high-level-employer";
 
@@ -314,7 +320,7 @@ class AuthController extends Controller
                     'block_untill' => $currentdatetime
                 ]);
 
-                return $this->createNewToken($token, $tmp,$tmp_alt, $branch);
+                return $this->createNewToken($token, $tmp, $tmp_alt, $branch);
             } else {
                 return response()->json(['message' => 'Account has been blocked for next ' . $blocktime[0] . ' hour'], 401);
             }
@@ -329,7 +335,7 @@ class AuthController extends Controller
                 ]);
             } catch (\Throwable $th) {
             }
-            return $this->createNewToken($token, $tmp,$tmp_alt, $branch);
+            return $this->createNewToken($token, $tmp, $tmp_alt, $branch);
         }
     }
 
