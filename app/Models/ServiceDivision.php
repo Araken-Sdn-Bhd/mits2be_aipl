@@ -17,7 +17,8 @@ class ServiceDivision extends Model
         'service_id',
         'hospital_id',
         'branch_id',
-        'division_order'
+        'division_order',
+        'status'
     ];
 
     public function hospitals()

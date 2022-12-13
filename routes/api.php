@@ -248,6 +248,7 @@ Route::group(['prefix' => 'service'], function () {
     Route::post('/update', [ServiceSettingController::class, 'update']);
     Route::post('/remove', [ServiceSettingController::class, 'remove']);
     Route::get('/list', [ServiceSettingController::class, 'getSerivceList']);
+    Route::get('/activeList', [ServiceSettingController::class, 'getActiveServiceList']);
     Route::post('/insertOrupdate-division', [ServiceSettingController::class, 'storeDivision']);
     Route::get('/division-list', [ServiceSettingController::class, 'getDivisionList']);
     Route::post('/get-division', [ServiceSettingController::class, 'getDivision']);
