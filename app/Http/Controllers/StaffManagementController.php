@@ -38,9 +38,7 @@ class StaffManagementController extends Controller
             'designation_id' => 'required|integer',
             'is_incharge' => '',
             'designation_period_start_date' => 'required',
-            'designation_period_end_date' => 'required',
             'start_date' => 'required',
-            'end_date' => 'required',
             'document' => '',
 
         ]);
