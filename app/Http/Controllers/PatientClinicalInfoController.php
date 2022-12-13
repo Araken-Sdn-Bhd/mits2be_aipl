@@ -54,6 +54,21 @@ class PatientClinicalInfoController extends Controller
 
         PatientClinicalInfo::create($module);
 
+        $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+        $patient_id = PatientAppointmentDetails::where('id','=',$request->appointment_id)->first();
+        $notifi=[
+            'added_by' => $request->added_by,
+            'staff_id' => $patient_id['assign_team'],
+            'branch_id'=>$request->branch_id,
+            'role'=>'',
+            'patient_mrn' =>   $patient_id ['patient_mrn_id'],
+            'url_route' => "/Modules/Patient/attendance-record",
+            'created_at' => $date->format('Y-m-d H:i:s'),
+            'message' =>  'New assigned patient',
+        ];
+        $HOD = Notifications::insert($notifi);
+
+        
         return response()->json(["message" => "Patient Clinical Information Created Successfully!", "code" => 200]);
     }
 
