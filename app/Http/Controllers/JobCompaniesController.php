@@ -167,6 +167,13 @@ class JobCompaniesController extends Controller
 
     public function getApprovalList(Request $request)
     {
+        $role = DB::table('staff_management')
+        ->select('roles.code')
+        ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+        ->where('staff_management.email', '=', $request->email)
+        ->first();
+
+     if($role->code == 'superadmin'){
         return  DB::table('job_offers')
         ->select(DB::raw("count('job_offers.id') as job_posted"), DB::raw("COUNT(CASE WHEN job_offers.approval_status = '1' THEN 1 END) NewJobs"),
          'jobs.company_id',DB::raw("MAX(employee_registration.company_name) as company_name"))
@@ -174,6 +181,16 @@ class JobCompaniesController extends Controller
         ->join('employee_registration', 'employee_registration.id', '=', 'jobs.company_id')
         ->groupBy('jobs.company_id')
         ->get();
+     }else{
+        return  DB::table('job_offers')
+        ->select(DB::raw("count('job_offers.id') as job_posted"), DB::raw("COUNT(CASE WHEN job_offers.approval_status = '1' THEN 1 END) NewJobs"),
+         'jobs.company_id',DB::raw("MAX(employee_registration.company_name) as company_name"))
+        ->join('jobs', 'jobs.id', '=', 'job_offers.job_id')
+        ->join('employee_registration', 'employee_registration.id', '=', 'jobs.company_id')
+        ->where('job_offers.branch_id',$request->branch_id)
+        ->groupBy('jobs.company_id')
+        ->get();
+     }
         
     }
     
