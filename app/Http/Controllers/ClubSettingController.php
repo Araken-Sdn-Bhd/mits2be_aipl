@@ -49,7 +49,7 @@ class ClubSettingController extends Controller
         $club_code = $request->club_code;
         $chkPoint =  ClubRegister::where(function ($query) use ($club_name, $club_code) {
             $query->where('club_name', '=', $club_name)->orWhere('club_code', '=', $club_code);
-        })->where('id', '!=', $request->club_id)->where('status', '1')->get();
+        })->where('id', '!=', $request->club_id)->get();
         if ($chkPoint->count() == 0) {
             ClubRegister::where(
                 ['id' => $request->club_id]
@@ -58,7 +58,8 @@ class ClubSettingController extends Controller
                 'club_name' => $club_name,
                 'club_order' => $request->club_order,
                 'club_description' => $request->club_description,
-                'added_by' => $request->added_by
+                'added_by' => $request->added_by,
+                'status' => $request->status,
             ]);
             return response()->json(["message" => "Club Updated Successfully!", "code" => 200]);
         } else {
@@ -88,7 +89,12 @@ class ClubSettingController extends Controller
 
    public function getClubList()
    {
-        $list = ClubRegister::where('status', '1')->orderBy('club_order', 'asc')->get();
+        $list = ClubRegister::orderBy('club_order', 'asc')->get();
+        return response()->json(["message" => "Club List.", 'list' => $list, "code" => 200]);
+   }
+   public function getActiveClubList()
+   {
+        $list = ClubRegister::where('status','1')->orderBy('club_order', 'asc')->get();
         return response()->json(["message" => "Club List.", 'list' => $list, "code" => 200]);
    }
 
@@ -137,7 +143,7 @@ class ClubSettingController extends Controller
             $query->select('hospital_name', 'id');
         }])->with(['branchs' => function ($query) {
             $query->select('hospital_branch_name', 'id');
-        }])->where('status','=', '1')->get();
+        }])->get();
         return response()->json(["message" => "Club List", 'list' => $list, 'code' => 200]);
    }
 
@@ -149,7 +155,7 @@ class ClubSettingController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        $list = ClubDivision::select('id', 'club_id', 'hospital_id', 'branch_id', 'division_order')->where('id', $request->division_id)->get();
+        $list = ClubDivision::select('id', 'club_id', 'hospital_id', 'branch_id', 'division_order','status')->where('id', $request->division_id)->get();
         return response()->json(["message" => "Club List", 'list' => $list, 'code' => 200]);
    }
 
@@ -171,7 +177,8 @@ class ClubSettingController extends Controller
             'club_id' => $request->club_id,
             'hospital_id' => $request->hospital_id,
             'branch_id' => $request->branch_id,
-            'division_order' => $request->division_order
+            'division_order' => $request->division_order,
+            'status' => $request->status
         ];
 
         $sd = ClubDivision::where('id', $request->division_id)->update($division);
@@ -201,7 +208,7 @@ class ClubSettingController extends Controller
 
    public function getClubListByID(Request $request,$id)
      {
-       $list = ClubRegister::select('club_name', 'club_code','club_description','club_order')
+       $list = ClubRegister::select('club_name', 'club_code','club_description','club_order','status')
        ->where('id','=', $id)
        ->get();
        return response()->json(["message" => "Club Details", 'list' => $list, "code" => 200]);
