@@ -158,7 +158,7 @@ class CalendarExceptionController extends Controller
     {
             $filename = 'exception_template'. '.xlsx';
             $filePath = 'CalendarExceptions/'.$filename;
-            $pathToFile = Storage::url($filePath);
-            return response()->json(["message" => "KPI Report",  'filepath' => env('APP_URL') . $pathToFile, "code" => 200]);
+            // $pathToFile = Storage::url($filePath);
+            return response()->json(["message" => "KPI Report",  'filepath' => env('APP_URL') .'/'. $filePath, "code" => 200]);
     }
 }

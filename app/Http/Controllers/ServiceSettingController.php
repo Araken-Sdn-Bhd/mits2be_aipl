@@ -37,6 +37,7 @@ class ServiceSettingController extends Controller
 
     public function update(Request $request)
     {
+       
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
             'service_code' => 'required|string',
@@ -61,7 +62,8 @@ class ServiceSettingController extends Controller
                 'service_name' => $service_name,
                 'service_order' => $request->service_order,
                 'service_description' => $request->service_description,
-                'added_by' => $request->added_by
+                'added_by' => $request->added_by,
+                'status' => $request->status
             ]);
             return response()->json(["message" => "Service Updated Successfully!", "code" => 200]);
         } else {
@@ -91,7 +93,12 @@ class ServiceSettingController extends Controller
 
     public function getSerivceList()
     {
-        $list = ServiceRegister::where('status', '1')->orderBy('service_order', 'asc')->get();
+        $list = ServiceRegister::orderBy('service_order', 'asc')->get();
+        return response()->json(["message" => "List.", 'list' => $list, "code" => 200]);
+    }
+    public function getActiveServiceList()
+    {
+        $list = ServiceRegister::where('status','=','1')->orderBy('service_order', 'asc')->get();
         return response()->json(["message" => "List.", 'list' => $list, "code" => 200]);
     }
 
@@ -169,7 +176,7 @@ class ServiceSettingController extends Controller
             $query->select('hospital_name', 'id');
         }])->with(['branchs' => function ($query) {
             $query->select('hospital_branch_name', 'hospital_code', 'id');
-        }])->where('status','=','1')->get();
+        }])->get();
         return response()->json(["message" => "List", 'list' => $list, 'code' => 200]);
     }
 
@@ -184,7 +191,9 @@ class ServiceSettingController extends Controller
 
         $users = DB::table('service_division')
             ->join('hospital_management', 'service_division.hospital_id', '=', 'hospital_management.id')
-            ->select('service_division.id', 'service_division.service_id', 'service_division.hospital_id', 'service_division.branch_id', 'service_division.division_order','hospital_management.hospital_code')
+            ->select('service_division.id', 'service_division.service_id', 'service_division.hospital_id', 'service_division.branch_id',
+             'service_division.division_order','hospital_management.hospital_code','service_division.status')
+
             ->where('service_division.id','=', $request->division_id)
             ->get();
         return response()->json(["message" => "Service List", 'list' => $users, 'code' => 200]);
@@ -208,7 +217,8 @@ class ServiceSettingController extends Controller
             'service_id' => $request->service_id,
             'hospital_id' => $request->hospital_id,
             'branch_id' => $request->branch_id,
-            'division_order' => $request->division_order
+            'division_order' => $request->division_order,
+            'status' => $request->status
         ];
 
         $sd = ServiceDivision::where('id', $request->division_id)->update($division);
@@ -240,7 +250,7 @@ class ServiceSettingController extends Controller
     {
         $validator = Validator::make($request->all(), ['id' => 'required|integer']);
         if ($validator->fails()) return  response()->json(["message" => $validator->errors(), "code" => 422]);
-        $list = ServiceRegister::select('id', 'service_code','service_name','service_description','service_order')->where('id', $request->id)->get();
+        $list = ServiceRegister::select('id', 'service_code','service_name','service_description','service_order','status')->where('id', $request->id)->get();
         return response()->json(["message" => "List", 'list' => $list, "code" => 200]);
     }
 }

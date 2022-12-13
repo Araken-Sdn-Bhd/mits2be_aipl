@@ -178,6 +178,7 @@ Route::group(['prefix' => 'hospital'], function () {
     Route::post('/removeBranchTeam', [HospitalManagementController::class, 'removeBranchTeam']);
     Route::get('/getServiceByBranchId', [HospitalManagementController::class, 'getHospitalBranchTeamListPatient']);
     Route::get('/getServiceByTeamId', [HospitalManagementController::class, 'getServiceByTeamId']);
+    Route::get('/getStaffNamebyPatientTeamBranch', [HospitalManagementController::class, 'getStaffNamebyPatientTeamBranch']);
     Route::get('/getServiceByBranchTeamId', [HospitalManagementController::class, 'getServiceByBranchTeamId']);
 });
 Route::group(['prefix' => 'screen-module'], function () {
@@ -248,6 +249,7 @@ Route::group(['prefix' => 'service'], function () {
     Route::post('/update', [ServiceSettingController::class, 'update']);
     Route::post('/remove', [ServiceSettingController::class, 'remove']);
     Route::get('/list', [ServiceSettingController::class, 'getSerivceList']);
+    Route::get('/activeList', [ServiceSettingController::class, 'getActiveServiceList']);
     Route::post('/insertOrupdate-division', [ServiceSettingController::class, 'storeDivision']);
     Route::get('/division-list', [ServiceSettingController::class, 'getDivisionList']);
     Route::post('/get-division', [ServiceSettingController::class, 'getDivision']);
@@ -295,6 +297,7 @@ Route::group(['prefix' => 'club'], function () {
     Route::post('/update', [ClubSettingController::class, 'update']);
     Route::post('/remove', [ClubSettingController::class, 'remove']);
     Route::get('/list', [ClubSettingController::class, 'getClubList']);
+    Route::get('/activelist', [ClubSettingController::class, 'getActiveClubList']);
     Route::post('/insertOrupdate-division', [ClubSettingController::class, 'storeDivision']);
     Route::get('/division-list', [ClubSettingController::class, 'getDivisionList']);
     Route::post('/get-division', [ClubSettingController::class, 'getDivision']);
