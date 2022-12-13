@@ -10,7 +10,7 @@ class NotificationController extends Controller
 {
     public function getNotification(Request $request)
     {
-        if($request->role=='Admin/Clerk' || $request->role=='Triage Personnel'){
+        if($request->role=='Admin/Clerk' || $request->role=='Triage Personnel'|| $request->role=='Staff Nurse'){
         $list = Notifications::select('*')
             ->where('branch_id', '=', $request->branch_id)
             ->where('role', '=', $request->role)

@@ -809,22 +809,42 @@ class PatientAppointmentDetailsController extends Controller
         );
         if ($request->service == "Consultation") {
             $status  = '1';
-        } else {
+
+
+            $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+            $patient_id = PatientAppointmentDetails::where('id','=',$request->appointment_id)->first();
+            $notifi=[
+                'added_by' => $request->added_by,
+                'staff_id' => $request->assign_team,
+                'branch_id'=>$request->branch_id,
+                'role'=>'Staff Nurse',
+                'patient_mrn' =>   $patient_id ['patient_mrn_id'],
+                'url_route' => "/Modules/Patient/attendance-record",
+                'created_at' => $date->format('Y-m-d H:i:s'),
+                'message' =>  'New assigned patient for vital',
+            ];
+            $HOD = Notifications::insert($notifi);
+
+        } else{
+
             $status = '4';
+
+            $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+            $patient_id = PatientAppointmentDetails::where('id','=',$request->appointment_id)->first();
+            $notifi=[
+                'added_by' => $request->added_by,
+                'staff_id' => $request->assign_team,
+                'branch_id'=>$request->branch_id,
+                'role'=>'',
+                'patient_mrn' =>   $patient_id ['patient_mrn_id'],
+                'url_route' => "/Modules/Patient/attendance-record",
+                'created_at' => $date->format('Y-m-d H:i:s'),
+                'message' =>  'New assigned patient',
+            ];
+            $HOD = Notifications::insert($notifi);
         }
-        $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-        $patient_id = PatientAppointmentDetails::where('id', '=', $request->appointment_id)->first();
-        $notifi = [
-            'added_by' => $request->added_by,
-            'staff_id' => $request->assign_team,
-            'branch_id' => $request->branch_id,
-            'role' => '',
-            'patient_mrn' =>   $patient_id['patient_mrn_id'],
-            'url_route' => "/Modules/Patient/attendance-record",
-            'created_at' => $date->format('Y-m-d H:i:s'),
-            'message' =>  'New assigned patient',
-        ];
-        $HOD = Notifications::insert($notifi);
+
+
 
         $patientAppointmentDetails = $patientAppointmentDetails->update([
             'appointment_status' => $status,
