@@ -1752,9 +1752,11 @@ class PatientAppointmentDetailsController extends Controller
                 ->get();
         }
         if ($request->type == "PatientIndexForm") {
+            
             $list = PatientIndexForm::select('*')
                 ->where('id', '=', $request->id)
                 ->get();
+           
         }
         if ($request->type == "PsychiatricProgressNote") {
             $list = PsychiatricProgressNote::select('*')
