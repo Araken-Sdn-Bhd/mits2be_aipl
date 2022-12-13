@@ -220,13 +220,14 @@ class StaffManagementController extends Controller
         if ($request->name == '' && $request->branch_id == '0') {
             $users = DB::table('staff_management')
                 ->leftjoin('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
+                ->leftjoin('service_register', 'staff_management.team_id', '=', 'service_register.id')
                 ->join('users', 'users.email', '=', 'staff_management.email')
                 ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
                 ->join('roles', 'staff_management.role_id', '=', 'roles.id')
                 ->select(
                     'roles.role_name',
                     'staff_management.id',
-                    'users.id as users_id',
+                    'users.id as users_id','service_register.service_name',
                     'staff_management.name',
                     'general_setting.section_value as designation_name',
                     'hospital_branch__details.hospital_branch_name'
@@ -260,9 +261,9 @@ class StaffManagementController extends Controller
             $users = DB::table('staff_management')
                 ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
                 ->leftjoin('users', 'staff_management.email', '=', 'users.email')
+                ->leftjoin('service_register', 'staff_management.team_id', '=', 'service_register.id')
                 ->join('hospital_branch__details', 'staff_management.branch_id', '=', 'hospital_branch__details.id')
                 ->join('roles', 'staff_management.role_id', '=', 'roles.id')
-                ->join('service_register', 'staff_management.team_id', '=', 'service_register.id')
                 ->select(
                     'roles.role_name',
                     'staff_management.id',

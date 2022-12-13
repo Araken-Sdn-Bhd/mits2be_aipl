@@ -500,23 +500,22 @@ class ScreenModuleController extends Controller
 
 
         $list = DB::table('screen_access_roles')
+        ->select('users.name',DB::raw("'Active' as status"))
+        
             ->join('users', 'screen_access_roles.staff_id', '=', 'users.id')
-            ->join('hospital_branch_team_details', 'screen_access_roles.team_id', '=', 'hospital_branch_team_details.id')
+            //->join('hospital_branch_team_details', 'screen_access_roles.team_id', '=', 'hospital_branch_team_details.id')
             ->join('screens', 'screen_access_roles.screen_id', '=', 'screens.id')
-            ->select('hospital_branch_team_details.team_name','users.name',
-            DB::raw("'Active' as status"))
             ->where('screen_access_roles.status','=', '1')
-            ->where('screen_access_roles.staff_id','=', $request->staff_id)
+            ->where('screen_access_roles.staff_id',$request->staff_id)
             ->first();
 
             $list1 = DB::table('screen_access_roles')
-            ->join('staff_management', 'screen_access_roles.staff_id', '=', 'staff_management.id')
-            ->join('hospital_branch_team_details', 'screen_access_roles.team_id', '=', 'hospital_branch_team_details.id')
-            ->leftjoin('screens', 'screen_access_roles.screen_id', '=', 'screens.id')
-            ->select('screen_access_roles.id','screen_access_roles.hospital_id','screen_access_roles.team_id','screen_access_roles.branch_id','screen_access_roles.module_id','screen_access_roles.sub_module_id',
+            ->select('screen_access_roles.id','screen_access_roles.hospital_id','screen_access_roles.team_id','screen_access_roles.branch_id',
+            'screen_access_roles.module_id','screen_access_roles.sub_module_id',
             DB::raw("'Active' as status"),'screens.screen_name','screens.screen_description','screen_access_roles.screen_id',
-            'screen_access_roles.access_screen','screen_access_roles.read_writes','screen_access_roles.read_only',)
-            ->where('screen_access_roles.staff_id','=', $request->staff_id) //staff_id refers to the user table usersid
+            'screen_access_roles.access_screen','screen_access_roles.read_writes','screen_access_roles.read_only')
+            ->leftjoin('screens', 'screen_access_roles.screen_id', '=', 'screens.id')
+            ->where('screen_access_roles.staff_id',$request->staff_id) //staff_id refers to the user table usersid
             ->get();
             $result1 = (array) json_decode($list1,true);
             $result=[];
