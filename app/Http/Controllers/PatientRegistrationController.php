@@ -149,7 +149,6 @@ class PatientRegistrationController extends Controller
         try {
             $Patient = PatientRegistration::firstOrCreate($patientregistration);
             if ($request->hasFile('referral_letter')) {
-                dd('has file');
                 $files = $request->file('referral_letter');
                 $fileName = $files->getClientOriginalName();
                 $isUploaded = upload_file($files, 'PatientRegistration');
@@ -162,19 +161,14 @@ class PatientRegistrationController extends Controller
                     'uploaded_path' => $filePath,
                 ];
 
-                $patientRefLetter = [
-                    'id' => $Patient['id'],
-                    'referral_letter'  => $request->referral_letter,
-                ];
 
                 PatientAttachment::insert($fileData);
-                PatientRegistration::firstOrCreate($patientRefLetter);
+                PatientRegistration::updateOrCreate(['id' => $Patient['id']], ['referral_letter'  => $request->referral_letter]);
             } else {
                 $patientRefLetter = [
-                    'id' => $Patient['id'],
                     'referral_letter'  => '',
                 ];
-                PatientRegistration::firstOrCreate($patientRefLetter);
+                PatientRegistration::updateOrCreate(['id' => $Patient['id']], [$patientRefLetter]);
             }
 
             $MRN = $this->generateMRNString(10, $Patient['id']);

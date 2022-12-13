@@ -69,7 +69,7 @@ class ScreenModuleController extends Controller
             'module_id' => 'required|not_in:0',
             'sub_module_id' => '',
             'screen_name' => 'required|string',
-            'screen_route' => 'required|string|unique:screens',
+            'screen_route' => 'required|string',
             'screen_description' => 'required|string',
             'icon' => 'required',
             'index' => 'required|integer',
@@ -78,7 +78,7 @@ class ScreenModuleController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
         $module_name = ScreensModule::select('module_name')->where(['id' => $request->module_id])->get();
-       
+
         if( $request->sub_module_id){
         $sub_module_name = ScreenSubModule::select('sub_module_name')->where(['id' => $request->sub_module_id])->get();
         $module = [
@@ -177,7 +177,7 @@ class ScreenModuleController extends Controller
         }else{
             return response()->json(["message" => "SubModule List", 'list' => "", "code" => 400]);
         }
-        
+
     }
 
     public function getSubModuleListBySubModuleId(Request $request)
@@ -235,9 +235,9 @@ class ScreenModuleController extends Controller
                     'read_writes' => '1',
                     'read_only' => '0',
                     'user_type' => $request->type,
-    
+
                 ];
-    
+
                 if (ScreenAccessRoles::where($screen)->count() == 0) {
                     $screen['added_by'] = $request->added_by;
                     ScreenAccessRoles::Create($screen);
@@ -259,17 +259,17 @@ class ScreenModuleController extends Controller
                         'read_only' => '0',
                         'added_by' => $request->added_by,
                         'user_type' => $request->type,
-        
-        
+
+
                     ];
-                
-                
+
+
                 ScreenAccessRoles::Create($screen);
                 return response()->json(["message" => "Roles has been assigned successfully!e", "code" => 200]);
             }
-           
+
         }
-       
+
     }
 
     public function updateModule(Request $request)
@@ -358,7 +358,8 @@ class ScreenModuleController extends Controller
             'sub_module_status' => '1'
             ]);
             return response()->json(["message" => "Module Updated Successfully!", "code" => 200]);
-        } else {
+        }
+        else {
             return response()->json(["message" => "Changed value already exists!", "code" => 400]);
         }
    }
@@ -425,7 +426,7 @@ class ScreenModuleController extends Controller
                 'screen_description' => $request->screen_description,
                 'icon' => $request->icon,
                 'index_val' => $request->index,
-                'screen_status' => 1
+                'screen_status' => '1'
                 ]);
                 return response()->json(["message" => "Screen Module Updated Successfully!", "code" => 200]);
             }else{
@@ -436,16 +437,17 @@ class ScreenModuleController extends Controller
                 'module_id' => $request->module_id,
                 'module_name' => $module_name[0]['module_name'],
                 'sub_module_id' => $request->sub_module_id,
+                'sub_module_name' => $sub_module_name[0]['sub_module_name'],
                 'screen_name' => $request->screen_name,
                 'screen_route' => $request->screen_route,
                 'screen_description' => $request->screen_description,
                 'icon' => $request->icon,
                 'index_val' => $request->index,
-                'screen_status' => 1
+                'screen_status' => '1'
                 ]);
                 return response()->json(["message" => "Screen Module Updated Successfully!", "code" => 200]);
             }
-           
+
         } else {
             return response()->json(["message" => "Changed value already exists!", "code" => 400]);
         }
@@ -481,7 +483,7 @@ class ScreenModuleController extends Controller
 
     public function getUserMatrixList(Request $request)
     {
-       
+
         $list = DB::table('screen_access_roles')
             ->join('users', 'screen_access_roles.staff_id', '=', 'users.id')
             ->join('hospital_branch_team_details', 'screen_access_roles.team_id', '=', 'hospital_branch_team_details.id')
@@ -490,12 +492,12 @@ class ScreenModuleController extends Controller
             ->where('screen_access_roles.status','=', '1')
             ->distinct('screen_access_roles.staff_id','screen_access_roles.team_id','users.name')
             ->get();
-       
+
         return response()->json(["message" => "User Matrix List", 'list' => $list, "code" => 200]);
     }
     public function getUserMatrixListById(Request $request)
     {
-       
+
 
         $list = DB::table('screen_access_roles')
             ->join('users', 'screen_access_roles.staff_id', '=', 'users.id')
@@ -506,7 +508,7 @@ class ScreenModuleController extends Controller
             ->where('screen_access_roles.status','=', '1')
             ->where('screen_access_roles.staff_id','=', $request->staff_id)
             ->first();
-        
+
             $list1 = DB::table('screen_access_roles')
             ->join('staff_management', 'screen_access_roles.staff_id', '=', 'staff_management.id')
             ->join('hospital_branch_team_details', 'screen_access_roles.team_id', '=', 'hospital_branch_team_details.id')
@@ -542,7 +544,7 @@ class ScreenModuleController extends Controller
         $validator = Validator::make($request->all(), ['staff_id' => 'required|integer']);
         if ($validator->fails()) return  response()->json(["message" => $validator->errors(), "code" => 422]);
 
-    
+
         $list1 = DB::table('screen_access_roles')
         ->join('screens', 'screen_access_roles.screen_id', '=', 'screens.id')
         ->join('screen_modules', 'screen_modules.id', '=', 'screen_access_roles.module_id')
@@ -555,7 +557,7 @@ class ScreenModuleController extends Controller
         ->groupBy('screen_access_roles.id','screen_modules.id','screen_access_roles.module_id','screen_access_roles.sub_module_id','screens.screen_name','screens.screen_route','screen_modules.module_name','screens.icon','screens.index_val','screen_access_roles.screen_id',
         'screen_access_roles.read_writes','screen_access_roles.read_only')
         ->get();
-   
+
         $result1 = (array) json_decode($list1,true);
         $result=[];
         $result2 = [];
@@ -570,8 +572,8 @@ class ScreenModuleController extends Controller
                     $result[$val['module_id']]['screen_name'] = $val['module_name'] ??  'NA';
                     $result[$val['module_id']]['icon'] = $val['icon'] ??  'NA';
                     $result[$val['module_id']]['read_writes'] = $val['read_writes'] ??  'NA';
-                    $result[$val['module_id']]['read_only'] = $val['read_only'] ??  'NA'; 
-                    $result[$val['module_id']]['screen_acess_role_id'] = $val['id'] ??  'NA';    
+                    $result[$val['module_id']]['read_only'] = $val['read_only'] ??  'NA';
+                    $result[$val['module_id']]['screen_acess_role_id'] = $val['id'] ??  'NA';
 
                     $result[$val['module_id']]['sub_module_id']=[];
                 }
@@ -595,7 +597,7 @@ class ScreenModuleController extends Controller
             return response()->json(["message" => "User Access List", 'list' => $result2, "code" => 400]);
         }
 
-        
+
     }
 
     public function getAccessScreenByUserId(Request $request)
@@ -621,7 +623,7 @@ class ScreenModuleController extends Controller
         ->groupBy('screen_access_roles.id','screen_modules.id','screen_access_roles.module_id','screen_access_roles.sub_module_id','screens.screen_name','screens.screen_route','screen_modules.module_name','screens.icon','screens.index_val','screen_access_roles.screen_id',
         'screen_access_roles.read_writes','screen_access_roles.read_only')
         ->get();
-   
+
         $result1 = (array) json_decode($list1,true);
         $result=[];
         $result2 = [];
@@ -635,8 +637,8 @@ class ScreenModuleController extends Controller
                     $result[$val['module_id']]['screen_name'] = $val['module_name'] ??  'NA';
                     $result[$val['module_id']]['icon'] = $val['icon'] ??  'NA';
                     $result[$val['module_id']]['read_writes'] = $val['read_writes'] ??  'NA';
-                    $result[$val['module_id']]['read_only'] = $val['read_only'] ??  'NA'; 
-                    $result[$val['module_id']]['screen_acess_role_id'] = $val['id'] ??  'NA';    
+                    $result[$val['module_id']]['read_only'] = $val['read_only'] ??  'NA';
+                    $result[$val['module_id']]['screen_acess_role_id'] = $val['id'] ??  'NA';
 
                     $result[$val['module_id']]['sub_module_id']=[];
                 }
@@ -688,11 +690,11 @@ class ScreenModuleController extends Controller
         ->where('screen_modules.id','!=', '26')//Workload Report
         ->where('screen_modules.id','!=', '27')//Activities Report
         ->where('screen_modules.id','!=', '28')//National KPI
-        ->where('screen_modules.id','!=', '29')//SHHARP 
+        ->where('screen_modules.id','!=', '29')//SHHARP
         ->groupBy('screen_access_roles.id','screen_modules.id','screen_access_roles.module_id','screen_access_roles.sub_module_id','screens.screen_name','screens.screen_route','screen_modules.module_name','screens.icon','screens.index_val','screen_access_roles.screen_id',
         'screen_access_roles.read_writes','screen_access_roles.read_only')
         ->get();
-   
+
         $result1 = (array) json_decode($list1,true);
         $result=[];
         $result2 = [];
@@ -706,8 +708,8 @@ class ScreenModuleController extends Controller
                     $result[$val['module_id']]['screen_name'] = $val['module_name'] ??  'NA';
                     $result[$val['module_id']]['icon'] = $val['icon'] ??  'NA';
                     $result[$val['module_id']]['read_writes'] = $val['read_writes'] ??  'NA';
-                    $result[$val['module_id']]['read_only'] = $val['read_only'] ??  'NA'; 
-                    $result[$val['module_id']]['screen_acess_role_id'] = $val['id'] ??  'NA';    
+                    $result[$val['module_id']]['read_only'] = $val['read_only'] ??  'NA';
+                    $result[$val['module_id']]['screen_acess_role_id'] = $val['id'] ??  'NA';
 
                     $result[$val['module_id']]['sub_module_id']=[];
                 }
@@ -744,7 +746,7 @@ class ScreenModuleController extends Controller
 
     }
 
-        
+
     }
 
     public function getAccessScreenByUserIdForReport(Request $request)
@@ -766,13 +768,13 @@ class ScreenModuleController extends Controller
             $query->orWhere('screen_modules.id','=', '26')//Workload Report
                   ->orWhere('screen_modules.id','=', '27')//Activities Report
                   ->orWhere('screen_modules.id','=', '28')//National KPI
-                  ->orWhere('screen_modules.id','=', '29');//SHHARP 
+                  ->orWhere('screen_modules.id','=', '29');//SHHARP
         })
         ->where('screen_access_roles.staff_id','=', $request->staff_id)
         ->groupBy('screen_access_roles.id','screen_modules.id','screen_access_roles.module_id','screen_access_roles.sub_module_id','screens.screen_name','screens.screen_route','screen_modules.module_name','screens.icon','screens.index_val','screen_access_roles.screen_id',
         'screen_access_roles.read_writes','screen_access_roles.read_only')
         ->get();
-   
+
         $result1 = (array) json_decode($list1,true);
         $result=[];
         $result2 = [];
@@ -786,8 +788,8 @@ class ScreenModuleController extends Controller
                     $result[$val['module_id']]['screen_name'] = $val['module_name'] ??  'NA';
                     $result[$val['module_id']]['icon'] = $val['icon'] ??  'NA';
                     $result[$val['module_id']]['read_writes'] = $val['read_writes'] ??  'NA';
-                    $result[$val['module_id']]['read_only'] = $val['read_only'] ??  'NA'; 
-                    $result[$val['module_id']]['screen_acess_role_id'] = $val['id'] ??  'NA';    
+                    $result[$val['module_id']]['read_only'] = $val['read_only'] ??  'NA';
+                    $result[$val['module_id']]['screen_acess_role_id'] = $val['id'] ??  'NA';
 
                     $result[$val['module_id']]['sub_module_id']=[];
                 }
@@ -805,7 +807,7 @@ class ScreenModuleController extends Controller
                             $query->orWhere('screen_modules.id','=', '26')//Workload Report
                                   ->orWhere('screen_modules.id','=', '27')//Activities Report
                                   ->orWhere('screen_modules.id','=', '28')//National KPI
-                                  ->orWhere('screen_modules.id','=', '29');//SHHARP 
+                                  ->orWhere('screen_modules.id','=', '29');//SHHARP
                         })
                         ->where('screen_access_roles.user_type','=', $request->type)
                         ->groupBy('screens.id','screens.added_by','screens.module_id','screens.module_name','screens.sub_module_id',
@@ -842,12 +844,12 @@ class ScreenModuleController extends Controller
             $query->orWhere('screen_modules.id','=', '26')//Workload Report
                   ->orWhere('screen_modules.id','=', '27')//Activities Report
                   ->orWhere('screen_modules.id','=', '28')//National KPI
-                  ->orWhere('screen_modules.id','=', '29');//SHHARP 
+                  ->orWhere('screen_modules.id','=', '29');//SHHARP
         })
         ->groupBy('screen_access_roles.id','screen_modules.id','screen_access_roles.module_id','screen_access_roles.sub_module_id','screens.screen_name','screens.screen_route','screen_modules.module_name','screens.icon','screens.index_val','screen_access_roles.screen_id',
         'screen_access_roles.read_writes','screen_access_roles.read_only')
         ->get();
-   
+
         $result1 = (array) json_decode($list1,true);
         $result=[];
         $result2 = [];
@@ -861,8 +863,8 @@ class ScreenModuleController extends Controller
                     $result[$val['module_id']]['screen_name'] = $val['module_name'] ??  'NA';
                     $result[$val['module_id']]['icon'] = $val['icon'] ??  'NA';
                     $result[$val['module_id']]['read_writes'] = $val['read_writes'] ??  'NA';
-                    $result[$val['module_id']]['read_only'] = $val['read_only'] ??  'NA'; 
-                    $result[$val['module_id']]['screen_acess_role_id'] = $val['id'] ??  'NA';    
+                    $result[$val['module_id']]['read_only'] = $val['read_only'] ??  'NA';
+                    $result[$val['module_id']]['screen_acess_role_id'] = $val['id'] ??  'NA';
 
                     $result[$val['module_id']]['sub_module_id']=[];
                 }
@@ -899,7 +901,7 @@ class ScreenModuleController extends Controller
 
     }
 
-        
+
     }
 
 
@@ -910,7 +912,7 @@ class ScreenModuleController extends Controller
         $validator = Validator::make($request->all(), [
             'screen_idss' => 'required',
             'userid'=>'required',
-           
+
         ]);
         if ($validator->fails()) return  response()->json(["message" => $validator->errors(), "code" => 422]);
         foreach ($request->screen_idss as $k => $v) {
@@ -944,7 +946,7 @@ class ScreenModuleController extends Controller
         return response()->json(["message" => "Screen Page Module List", 'list' => $list, "code" => 200]);
     }
 
-   
+
 
 
 }

@@ -374,6 +374,7 @@ Route::group(['prefix' => 'calendar-management'], function () {
     Route::post('/getAnnouncementListById', [CalendarExceptionController::class, 'getAnnouncementListById']);
     Route::get('/getAnnouncementList', [CalendarExceptionController::class, 'getAnnouncementList']);
     Route::post('/upload-exception', [CalendarExceptionController::class, 'readExceptions']);
+    Route::post('/download-excel', [CalendarExceptionController::class, 'getExcel']);
 });
 
 Route::group(['prefix' => 'mentari-staff-transfer'], function () {
