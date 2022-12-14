@@ -8,6 +8,7 @@ use App\Models\HospitalBranchTeamManagement;
 use App\Models\Notifications;
 use App\Models\PatientAttachment;
 use App\Models\TransactionLog;
+use App\Models\AppointmentRequest;
 use DateTime;
 use DateTimeZone;
 use Validator;
@@ -193,6 +194,9 @@ class PatientRegistrationController extends Controller
                     'message' =>  'Request for patient screening',
                 ];
                 $HOD = Notifications::insert($notifi);
+            }
+            if($request->patient_request_id){
+                AppointmentRequest::where('id',$request->patient_request_id)->delete();
             }
         } catch (Exception $e) {
             return response()->json(["message" => $e->getMessage(), 'Patient Registration' => $patientregistration, "code" => 200]);

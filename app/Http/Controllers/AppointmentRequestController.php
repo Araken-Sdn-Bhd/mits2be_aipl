@@ -78,4 +78,14 @@ class AppointmentRequestController extends Controller
  
        return response()->json(["message" => "Appointment Requested List", 'list' => $list, "code" => 200]);
     }
+
+    public function getAllRequestList(Request $request)
+    {
+        $list=[];
+        $list =AppointmentRequest::select('id', 'added_by','branch_id','name','nric_or_passportno', 'contact_no', 'address', 'address1', 'email','ip_address')
+        ->where('id',$request->id)
+        ->get();
+        
+       return response()->json(["message" => "Appointment Requested List", 'list' => $list, "code" => 200]);
+    }
 }

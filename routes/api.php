@@ -367,6 +367,7 @@ Route::group(['prefix' => 'staff-management'], function () {
     Route::post('/setSystemAdmin', [StaffManagementController::class, 'setSystemAdmin']);
     Route::post('/removeUserAccess', [StaffManagementController::class, 'removeUserAccess']);
     Route::post('/getRoleCode', [StaffManagementController::class, 'getRoleCode']);
+    Route::post('/getStaffDetailByBranch', [StaffManagementController::class, 'getStaffDetailByBranch']);
 });
 
 Route::group(['prefix' => 'calendar-management'], function () {
@@ -476,6 +477,7 @@ Route::group(['prefix' => 'patient-suicidal-risk-assessment'], function () {
 Route::group(['prefix' => 'appointment-request'], function () {
     Route::post('/add', [AppointmentRequestController::class, 'addRequest']);
     Route::post('/get', [AppointmentRequestController::class, 'getRequestList']);
+    Route::post('/getAll', [AppointmentRequestController::class, 'getAllRequestList']);
 });
 
 Route::group(['prefix' => 'occt-referral'], function () {
