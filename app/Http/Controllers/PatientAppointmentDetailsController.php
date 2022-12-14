@@ -477,8 +477,9 @@ class PatientAppointmentDetailsController extends Controller
             ->join('hospital_branch_team_details', 'pad.assign_team', '=', 'hospital_branch_team_details.id')
             ->where('pad.booking_date', date('Y-m-d'))
             ->where('patient_registration.branch_id', $request->branch_id);
-        dd(db::getQueryLog());
+        
         $resultSet = $query->get();
+        dd(db::getQueryLog());
 
         foreach ($resultSet as $key) {
             $key->patient_mrn = $key->patient_mrn ??  'NA';
