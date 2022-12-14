@@ -470,7 +470,6 @@ class PatientAppointmentDetailsController extends Controller
                 'pad.appointment_status',
                 'service_register.service_name as service',
                 'service_register.id as serviceid',
-                'hospital_branch_team_details.team_name',
                 'patient_registration.*'
             )
             ->join('service_register', 'pad.appointment_type', '=', 'service_register.id')
