@@ -1286,8 +1286,8 @@ class VounteerIndividualApplicationFormController extends Controller
             }
             if ($indi) {
                 foreach ($indi as $key => $val) {
-                     $statuscheck = VonAppointment::where('parent_section_id', $val['id'])->count();
-                     if ($statuscheck > 0) {
+                    //  $statuscheck = VonAppointment::where('parent_section_id', $val['id'])->count();
+                    //  if ($statuscheck > 0) {
                         $result[$k]['id'] = $val['id'];
                         $result[$k]['name'] = $val['name'];
                         $result[$k]['app_type'] = 'Individual';
@@ -1308,7 +1308,7 @@ class VounteerIndividualApplicationFormController extends Controller
                             $result[$k]['services'] = ($services) ? $services[0] : 'NA';
                         }
                         $k++;
-                     } 
+                    //  } 
                 } 
             }
         }
