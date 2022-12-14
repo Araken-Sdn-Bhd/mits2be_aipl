@@ -447,11 +447,11 @@ class PatientAppointmentDetailsController extends Controller
         // ** Note : patient_mrn_id in table patient appointment details is ID from table patient registration.
 
 
-        $role = DB::table('staff_management')
-            ->select('roles.code')
-            ->join('roles', 'staff_management.role_id', '=', 'roles.id')
-            ->where('staff_management.email', '=', $request->email)
-            ->first();
+        // $role = DB::table('staff_management')
+        //     ->select('roles.code')
+        //     ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+        //     ->where('staff_management.email', '=', $request->email)
+        //     ->first();
 
         $query = DB::table('patient_appointment_details as pad')
             ->select(
