@@ -477,12 +477,8 @@ class PatientAppointmentDetailsController extends Controller
             ->join('patient_registration', 'pad.patient_mrn_id', '=', 'patient_registration.id')
             ->join('hospital_branch_team_details', 'pad.assign_team', '=', 'hospital_branch_team_details.id')
             ->where('pad.status', '!=', '0')
-            ->where('pad.booking_date', date('Y-m-d'));
-
-        if ($role->code != 'superadmin') {
-
-            $query->where('patient_registration.branch_id', $request->branch_id);
-        }
+            ->where('pad.booking_date', date('Y-m-d'))
+            ->where('patient_registration.branch_id', $request->branch_id);
 
         $resultSet = $query->get();
 
@@ -579,12 +575,9 @@ class PatientAppointmentDetailsController extends Controller
             ->join('service_register', 'pad.appointment_type', '=', 'service_register.id')
             ->join('patient_registration', 'pad.patient_mrn_id', '=', 'patient_registration.id')
             ->join('hospital_branch_team_details', 'pad.assign_team', '=', 'hospital_branch_team_details.id')
-            ->where('pad.status', '!=', '0');
+            ->where('pad.status', '!=', '0')
+            ->where('patient_registration.branch_id', $request->branch_id);
 
-        if ($role->code != 'superadmin') {
-
-            $query->where('patient_registration.branch_id', $request->branch_id);
-        }
         if ($request->service_id != '0') {
             $query->where('pad.appointment_type', '=', $request->service_id);
         }
@@ -675,7 +668,7 @@ class PatientAppointmentDetailsController extends Controller
             $resultSet = $sql->where(function ($query) use ($searchWord, $ids) {
                 $query->where('nric_or_passportno', 'LIKE', '%' . $searchWord . '%')
                     ->orWhereIn('patient_mrn_id',  $ids);
-            });        
+            });
         }
         $resultSet = $sql->get()->toArray();
         $result = [];
@@ -1752,11 +1745,11 @@ class PatientAppointmentDetailsController extends Controller
                 ->get();
         }
         if ($request->type == "PatientIndexForm") {
-            
+
             $list = PatientIndexForm::select('*')
                 ->where('id', '=', $request->id)
                 ->get();
-           
+
         }
         if ($request->type == "PsychiatricProgressNote") {
             $list = PsychiatricProgressNote::select('*')
