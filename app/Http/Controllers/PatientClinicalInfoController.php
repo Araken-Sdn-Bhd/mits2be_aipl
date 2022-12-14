@@ -55,7 +55,8 @@ class PatientClinicalInfoController extends Controller
         PatientClinicalInfo::create($module);
 
         $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-        $patient_id = PatientAppointmentDetails::where('id','=',$request->appointment_id)->first();
+        $patient_id = PatientAppointmentDetails::where('id','=',$request->appointmentid)->first();
+
         $notifi=[
             'added_by' => $request->added_by,
             'staff_id' => $patient_id['assign_team'],
