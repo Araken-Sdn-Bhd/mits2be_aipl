@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\PatientRegistration;
 use App\Models\HospitalBranchTeamManagement;
+use App\Models\ServiceRegister;
 use App\Models\Notifications;
 use App\Models\PatientAttachment;
 use App\Models\TransactionLog;
@@ -791,11 +792,12 @@ class PatientRegistrationController extends Controller
             } else {
                 $result[$key]['service'] = 'NA';
             }
+            //dd($val['appointments'] != null);
             if ($val['appointments'] != null) {
                 $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
                 $team_id = $val['appointments'][0]['assign_team'];
-                $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get();
-                $result[$key]['team_name'] = $teamName[0]['team_name'];
+                $teamName = ServiceRegister::where('id', $team_id)->get();
+                $result[$key]['team_name'] = $teamName[0]['service_name'];
             } else {
                 $result[$key]['appointments'] = 'NA';
                 $result[$key]['team_name'] = 'NA';
