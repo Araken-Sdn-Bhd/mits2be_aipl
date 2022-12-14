@@ -447,11 +447,11 @@ class PatientAppointmentDetailsController extends Controller
         // ** Note : patient_mrn_id in table patient appointment details is ID from table patient registration.
 
 
-        // $role = DB::table('staff_management')
-        //     ->select('roles.code')
-        //     ->join('roles', 'staff_management.role_id', '=', 'roles.id')
-        //     ->where('staff_management.email', '=', $request->email)
-        //     ->first();
+        $role = DB::table('staff_management')
+            ->select('roles.code')
+            ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+            ->where('staff_management.email', '=', $request->email)
+            ->first();
 
         $query = DB::table('patient_appointment_details as pad')
             ->select(
@@ -474,12 +474,10 @@ class PatientAppointmentDetailsController extends Controller
             )
             ->join('service_register', 'pad.appointment_type', '=', 'service_register.id')
             ->join('patient_registration', 'pad.patient_mrn_id', '=', 'patient_registration.id')
-            ->join('hospital_branch_team_details', 'pad.assign_team', '=', 'hospital_branch_team_details.id')
             ->where('pad.booking_date', date('Y-m-d'))
             ->where('patient_registration.branch_id', $request->branch_id);
         
         $resultSet = $query->get();
-        dd(db::getQueryLog());
 
         foreach ($resultSet as $key) {
             $key->patient_mrn = $key->patient_mrn ??  'NA';
