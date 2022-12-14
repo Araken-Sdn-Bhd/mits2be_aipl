@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Mail\StaffReceiveMail;
+use App\Mail\UpdateEmail;
 use Illuminate\Http\Request;
 use App\Models\StaffManagement;
 use App\Models\Mentari_Staff_Transfer;
@@ -237,7 +238,8 @@ class StaffManagementController extends Controller
                 ->select(
                     'roles.role_name',
                     'staff_management.id',
-                    'users.id as users_id','service_register.service_name',
+                    'users.id as users_id',
+                    'service_register.service_name',
                     'staff_management.name',
                     'general_setting.section_value as designation_name',
                     'hospital_branch__details.hospital_branch_name'
@@ -267,7 +269,7 @@ class StaffManagementController extends Controller
                 ->get();
             return response()->json(["message" => "Staff Management List", 'list' => $users, "code" => 200]);
         } else if ($request->branch_id == '0') {
-        
+
             $users = DB::table('staff_management')
                 ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
                 ->leftjoin('users', 'staff_management.email', '=', 'users.email')
@@ -514,6 +516,11 @@ class StaffManagementController extends Controller
 
         if ($request->document == '') {
 
+            $staffEmail = StaffManagement::where(
+                ['id' => $request->id]
+            )
+                ->select('email')
+                ->first();
             StaffManagement::where(
                 ['id' => $request->id]
             )->update([
@@ -535,6 +542,19 @@ class StaffManagementController extends Controller
                 'document' =>  $request->document,
                 'status' => $request->account_status
             ]);
+            DB::table('users')
+                ->where('email', $staffEmail->email)
+                ->update(['email' => $request->email]);
+
+            if ($staffEmail->email != $request->email) {
+                $toEmail    =   $request->email;
+                $data       =   ['name' => $request->name];
+                try {
+                    Mail::to($toEmail)->send(new UpdateEmail($data));
+                } catch (Exception $e) {
+                    return response()->json(["message" => $e->getMessage(), "code" => 500]);
+                }
+            }
 
             $userId = DB::table('users')
                 ->select('id')
@@ -577,6 +597,13 @@ class StaffManagementController extends Controller
             $files = $request->file('document');
             $isUploaded = upload_file($files, 'StaffManagement');
 
+            $staffEmail = StaffManagement::where(
+                ['id' => $request->id]
+            )
+                ->select('email')
+                ->first();
+
+
             StaffManagement::where(
                 ['id' => $request->id]
             )->update([
@@ -598,6 +625,21 @@ class StaffManagementController extends Controller
                 'document' =>   $isUploaded->getData()->path,
                 'status' => $request->account_status
             ]);
+
+
+            DB::table('users')
+                ->where('email', $staffEmail->email)
+                ->update(['email' => $request->email]);
+
+            if ($staffEmail->email != $request->email) {
+                $toEmail    =   $request->email;
+                $data       =   ['name' => $request->name];
+                try {
+                    Mail::to($toEmail)->send(new UpdateEmail($data));
+                } catch (Exception $e) {
+                    return response()->json(["message" => $e->getMessage(), "code" => 500]);
+                }
+            }
 
             $userId = DB::table('users')
                 ->select('id')
