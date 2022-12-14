@@ -196,7 +196,7 @@ class PatientRegistrationController extends Controller
                 $HOD = Notifications::insert($notifi);
             }
             if($request->patient_request_id){
-                AppointmentRequest::where('id',$request->patient_request_id)->delete();
+                AppointmentRequest::where('id',$request->patient_request_id)->update(['status'=>'0']);
             }
         } catch (Exception $e) {
             return response()->json(["message" => $e->getMessage(), 'Patient Registration' => $patientregistration, "code" => 200]);

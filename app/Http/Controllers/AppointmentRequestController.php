@@ -66,13 +66,15 @@ class AppointmentRequestController extends Controller
 
      if($role->code == 'superadmin'){
        $list =AppointmentRequest::select('id', 'added_by','branch_id','name','nric_or_passportno', 'contact_no', 'address', 'address1', 'email','ip_address',DB::raw("DATE_FORMAT(created_at, '%d-%M-%y') as created"))
+       ->where('status', '1')
        ->get();
      }else{
         
         $list =AppointmentRequest::select('id', 'added_by','branch_id','name',
         'nric_or_passportno', 'contact_no', 'address', 'address1', 'email','ip_address',
         DB::raw("DATE_FORMAT(created_at, '%d-%M-%y') as created"))
-       ->where('branch_id',$request->branch_id)
+        ->where('status', '1')
+        ->where('branch_id',$request->branch_id)
         ->get();
      }
  
