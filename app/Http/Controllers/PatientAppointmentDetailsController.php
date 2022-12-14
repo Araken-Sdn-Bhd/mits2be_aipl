@@ -475,7 +475,6 @@ class PatientAppointmentDetailsController extends Controller
             ->join('service_register', 'pad.appointment_type', '=', 'service_register.id')
             ->join('patient_registration', 'pad.patient_mrn_id', '=', 'patient_registration.id')
             ->join('hospital_branch_team_details', 'pad.assign_team', '=', 'hospital_branch_team_details.id')
-            ->where('pad.status', '!=', '0')
             ->where('pad.booking_date', date('Y-m-d'))
             ->where('patient_registration.branch_id', $request->branch_id);
 
