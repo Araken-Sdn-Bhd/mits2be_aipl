@@ -15,17 +15,16 @@ class NotificationController extends Controller
             ->where('branch_id', '=', $request->branch_id)
             ->where('role', '=', $request->role)
             ->orderBy('id', 'DESC')
-            ->get()->toArray();
+            ->get();
 
-        $count = count($list);
-         
+         $count = count($list);
+    
         $ab = [];
         if (count($list) > 0) {
             foreach ($list as $key => $value) {
 
                 $datetime1 = new DateTime();
                 $datetime12 = new DateTime($value['created_at']);
-
                 if (DATE_FORMAT($datetime12, 'Y-m-d') == date('Y-m-d')) {
                     $ab[$key]['time']  = $datetime1->diff(new DateTime($value['created_at']))->format('%h hours %i minutes');
                 } else {

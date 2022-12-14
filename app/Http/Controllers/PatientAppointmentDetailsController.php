@@ -811,9 +811,9 @@ class PatientAppointmentDetailsController extends Controller
         $patientAppointmentDetails = PatientAppointmentDetails::where(
             ['id' => $request->appointment_id]
         );
-        if ($request->service == "Consultation") {
-            $status  = '1';
 
+        if ($request->service == '1') {
+            $status  = '1';
 
             $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
             $patient_id = PatientAppointmentDetails::where('id','=',$request->appointment_id)->first();
