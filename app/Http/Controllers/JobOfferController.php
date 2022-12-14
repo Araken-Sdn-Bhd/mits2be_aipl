@@ -1199,8 +1199,8 @@ class JobOfferController extends Controller
                 'status' => "1",
                 'appointment_details_id' => $request->appId,
             ];
-            if($request->patient_id){
-                JobTransitionReport::updateOrCreate( ['patient_id' => $request->patient_id], $jobtransition);
+            if($request->id){
+                JobTransitionReport::where(['id' => $request->id])->update($jobtransition);
                 return response()->json(["message" => "Updated", "code" => 200]);
             } else {
                 JobTransitionReport::create($jobtransition);
@@ -1263,8 +1263,8 @@ class JobOfferController extends Controller
                 'status' => "0",
                 'appointment_details_id' => $request->appId,
             ];
-            if($request->patient_id){
-                JobTransitionReport::updateOrCreate( ['patient_id' => $request->patient_id], $jobtransition);
+            if($request->id){
+                JobTransitionReport::where(['id' => $request->id])->update($jobtransition);
                 return response()->json(["message" => "Updated", "code" => 200]);
             } else {
                 JobTransitionReport::create($jobtransition);
