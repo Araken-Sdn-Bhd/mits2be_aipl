@@ -284,6 +284,7 @@ Route::group(['prefix' => 'etp'], function () {
     Route::post('/update', [EtpSettingController::class, 'update']);
     Route::post('/remove', [EtpSettingController::class, 'remove']);
     Route::get('/list', [EtpSettingController::class, 'getEtpList']);
+    Route::get('/activelist', [EtpSettingController::class, 'getActiveEtpList']);
     Route::post('/insertOrupdate-division', [EtpSettingController::class, 'storeDivision']);
     Route::get('/division-list', [EtpSettingController::class, 'getDivisionList']);
     Route::post('/get-division', [EtpSettingController::class, 'getDivision']);

@@ -49,7 +49,7 @@ class EtpSettingController extends Controller
         $etp_code = $request->etp_code;
         $chkPoint =  EtpRegister::where(function ($query) use ($etp_name, $etp_code) {
             $query->where('etp_name', '=', $etp_name)->orWhere('etp_code', '=', $etp_code);
-        })->where('id', '!=', $request->etp_id)->where('status', '1')->get();
+        })->where('id', '!=', $request->etp_id)->get();
         if ($chkPoint->count() == 0) {
             EtpRegister::where(
                 ['id' => $request->etp_id]
@@ -58,7 +58,8 @@ class EtpSettingController extends Controller
                 'etp_name' => $etp_name,
                 'etp_order' => $request->etp_order,
                 'etp_description' => $request->etp_description,
-                'added_by' => $request->added_by
+                'added_by' => $request->added_by,
+                'status' => $request->status
             ]);
             return response()->json(["message" => "Etp Updated Successfully!", "code" => 200]);
         } else {
@@ -88,7 +89,12 @@ class EtpSettingController extends Controller
 
    public function getEtpList()
    {
-        $list = EtpRegister::where('status', '1')->orderBy('etp_order', 'asc')->get();
+        $list = EtpRegister::orderBy('etp_order', 'asc')->get();
+        return response()->json(["message" => "Etp List.", 'list' => $list, "code" => 200]);
+   }
+   public function getActiveEtpList()
+   {
+        $list = EtpRegister::where('status','1')->orderBy('etp_order', 'asc')->get();
         return response()->json(["message" => "Etp List.", 'list' => $list, "code" => 200]);
    }
 
@@ -145,7 +151,7 @@ class EtpSettingController extends Controller
             $query->select('hospital_name', 'id');
         }])->with(['branchs' => function ($query) {
             $query->select('hospital_branch_name', 'id');
-        }])->where('status','=', '1')->get();
+        }])->get();
         return response()->json(["message" => "Etp Division List", 'list' => $list, 'code' => 200]);
    }
 
@@ -157,7 +163,7 @@ class EtpSettingController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        $list = EtpDivision::select('id', 'etp_id', 'hospital_id', 'branch_id', 'division_order')->where('id', $request->division_id)->get();
+        $list = EtpDivision::select('id', 'etp_id', 'hospital_id', 'branch_id', 'division_order','status')->where('id', $request->division_id)->get();
         return response()->json(["message" => "Etp List", 'list' => $list, 'code' => 200]);
    }
 
@@ -179,7 +185,8 @@ class EtpSettingController extends Controller
             'etp_id' => $request->etp_id,
             'hospital_id' => $request->hospital_id,
             'branch_id' => $request->branch_id,
-            'division_order' => $request->division_order
+            'division_order' => $request->division_order,
+            'status' => $request->status
         ];
 
         $sd = EtpDivision::where('id', $request->division_id)->update($division);
@@ -209,7 +216,7 @@ class EtpSettingController extends Controller
 
    public function editEtpType(Request $request,$id)
      {
-      $list = EtpRegister::select('etp_name', 'etp_code','etp_description','etp_order')
+      $list = EtpRegister::select('etp_name', 'etp_code','etp_description','etp_order','status')
       ->where('id','=', $id)
       ->get();
       return response()->json(["message" => "Etp Details", 'list' => $list, "code" => 200]);

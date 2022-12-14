@@ -10,7 +10,7 @@ class EtpRegister extends Model
 {
     use HasFactory;
     protected $table = 'etp_register';
-    protected $fillable = ['added_by', 'etp_code', 'etp_name', 'etp_description', 'etp_order'];
+    protected $fillable = ['added_by', 'etp_code', 'etp_name', 'etp_description', 'etp_order','status'];
 
     public function divisions()
     {
