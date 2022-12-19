@@ -303,6 +303,7 @@ Route::group(['prefix' => 'club'], function () {
     Route::get('/activelist', [ClubSettingController::class, 'getActiveClubList']);
     Route::post('/insertOrupdate-division', [ClubSettingController::class, 'storeDivision']);
     Route::get('/division-list', [ClubSettingController::class, 'getDivisionList']);
+    Route::post('/division-list-branch', [ClubSettingController::class, 'getDivisionListbyBranch']);
     Route::post('/get-division', [ClubSettingController::class, 'getDivision']);
     Route::post('/update-division', [ClubSettingController::class, 'updateDivision']);
     Route::post('/remove-division', [ClubSettingController::class, 'removeDivision']);
