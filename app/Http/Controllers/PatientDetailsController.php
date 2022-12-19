@@ -11,6 +11,7 @@ use App\Models\PatientAppointmentDetails;
 use App\Models\Postcode;
 use App\Models\SharpRegistrationFinalStep;
 use App\Models\StaffManagement;
+use App\Models\ServiceRegister;
 use App\Models\State;
 use Validator;
 use Exception;
@@ -160,8 +161,8 @@ class PatientDetailsController extends Controller
                 if ($val['appointments'] != null) {
                     $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
                     $team_id = $val['appointments'][0]['assign_team'];
-                    $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get();
-                    $result[$key]['team_name'] = $teamName[0]['team_name'];
+                    $teamName = ServiceRegister::where('id', $team_id)->get();
+                    $result[$key]['team_name'] = $teamName[0]['service_name'];
                 } else {
                     $result[$key]['appointments'] = 'NA';
                     $result[$key]['team_name'] = 'NA';
@@ -197,8 +198,8 @@ class PatientDetailsController extends Controller
                 if ($val['appointments'] != null) {
                     $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
                     $team_id = $val['appointments'][0]['assign_team'];
-                    $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get();
-                    $result[$key]['team_name'] = $teamName[0]['team_name'];
+                    $teamName = ServiceRegister::where('id', $team_id)->get();
+                    $result[$key]['team_name'] = $teamName[0]['service_name'];
                 } else {
                     $result[$key]['appointments'] = 'NA';
                     $result[$key]['team_name'] = 'NA';

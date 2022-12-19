@@ -347,7 +347,7 @@ class HospitalManagementController extends Controller
 
         $list2 = StaffManagement::select('id','name')
         ->where('branch_id','=', $list[0]['branch_id'])
-        ->where('team_id','=', $request->team_id)->get();
+        ->get();
         return response()->json(["message" => "Staff Name", 'list' => $list2, "code" => 200]);
     }
     
