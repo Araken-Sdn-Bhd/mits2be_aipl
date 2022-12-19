@@ -253,6 +253,7 @@ Route::group(['prefix' => 'service'], function () {
     Route::get('/activeList', [ServiceSettingController::class, 'getActiveServiceList']);
     Route::post('/insertOrupdate-division', [ServiceSettingController::class, 'storeDivision']);
     Route::get('/division-list', [ServiceSettingController::class, 'getDivisionList']);
+    Route::post('/division-list-branch', [ServiceSettingController::class, 'getDivisionListbyBranch']);
     Route::post('/get-division', [ServiceSettingController::class, 'getDivision']);
     Route::post('/update-division', [ServiceSettingController::class, 'updateDivision']);
     Route::post('/remove-division', [ServiceSettingController::class, 'removeDivision']);
@@ -287,6 +288,7 @@ Route::group(['prefix' => 'etp'], function () {
     Route::get('/activelist', [EtpSettingController::class, 'getActiveEtpList']);
     Route::post('/insertOrupdate-division', [EtpSettingController::class, 'storeDivision']);
     Route::get('/division-list', [EtpSettingController::class, 'getDivisionList']);
+    Route::post('/division-list-branch', [EtpSettingController::class, 'getDivisionListbyBranch']);
     Route::post('/get-division', [EtpSettingController::class, 'getDivision']);
     Route::post('/update-division', [EtpSettingController::class, 'updateDivision']);
     Route::post('/remove-division', [EtpSettingController::class, 'removeDivision']);
@@ -301,6 +303,7 @@ Route::group(['prefix' => 'club'], function () {
     Route::get('/activelist', [ClubSettingController::class, 'getActiveClubList']);
     Route::post('/insertOrupdate-division', [ClubSettingController::class, 'storeDivision']);
     Route::get('/division-list', [ClubSettingController::class, 'getDivisionList']);
+    Route::post('/division-list-branch', [ClubSettingController::class, 'getDivisionListbyBranch']);
     Route::post('/get-division', [ClubSettingController::class, 'getDivision']);
     Route::post('/update-division', [ClubSettingController::class, 'updateDivision']);
     Route::post('/remove-division', [ClubSettingController::class, 'removeDivision']);

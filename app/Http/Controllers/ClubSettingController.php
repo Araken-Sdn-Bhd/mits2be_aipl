@@ -146,6 +146,14 @@ class ClubSettingController extends Controller
         }])->get();
         return response()->json(["message" => "Club List", 'list' => $list, 'code' => 200]);
    }
+   public function getDivisionListbyBranch(Request $request)
+   {
+        $list = ClubDivision::where('branch_id',$request->branch_id)
+        ->with(['club' => function ($query) {
+            $query->select('club_name', 'id');
+        }])->get();
+        return response()->json(["message" => "Club List", 'list' => $list, 'code' => 200]);
+   }
 
    public function getDivision(Request $request)
    {
