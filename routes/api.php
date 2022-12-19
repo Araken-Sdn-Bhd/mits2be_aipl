@@ -253,6 +253,7 @@ Route::group(['prefix' => 'service'], function () {
     Route::get('/activeList', [ServiceSettingController::class, 'getActiveServiceList']);
     Route::post('/insertOrupdate-division', [ServiceSettingController::class, 'storeDivision']);
     Route::get('/division-list', [ServiceSettingController::class, 'getDivisionList']);
+    Route::post('/division-list-branch', [ServiceSettingController::class, 'getDivisionListbyBranch']);
     Route::post('/get-division', [ServiceSettingController::class, 'getDivision']);
     Route::post('/update-division', [ServiceSettingController::class, 'updateDivision']);
     Route::post('/remove-division', [ServiceSettingController::class, 'removeDivision']);
@@ -288,6 +289,7 @@ Route::group(['prefix' => 'etp'], function () {
     Route::get('/activelist', [EtpSettingController::class, 'getActiveEtpList']);
     Route::post('/insertOrupdate-division', [EtpSettingController::class, 'storeDivision']);
     Route::get('/division-list', [EtpSettingController::class, 'getDivisionList']);
+    Route::post('/division-list-branch', [EtpSettingController::class, 'getDivisionListbyBranch']);
     Route::post('/get-division', [EtpSettingController::class, 'getDivision']);
     Route::post('/update-division', [EtpSettingController::class, 'updateDivision']);
     Route::post('/remove-division', [EtpSettingController::class, 'removeDivision']);
