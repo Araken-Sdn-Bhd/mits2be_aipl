@@ -368,12 +368,14 @@ class PatientRegistrationController extends Controller
 
     public function getPatientRegistrationListMobile()
     {
+        db::enableQueryLog();
         $list = PatientRegistration::where('status', '=', '1')->where('sharp', '=', '0')
             ->with('salutation:section_value,id')->with('service:service_name,id')
             ->with('appointments', function ($query) {
                 $query->where('appointment_status', '=', '1');
             })
             ->get()->toArray();
+
         $result = [];
         foreach ($list as $key => $val) {
             $result[$key]['patient_mrn'] = $val['patient_mrn'] ?? 'NA';
@@ -393,8 +395,8 @@ class PatientRegistrationController extends Controller
 
                 $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
                 $team_id = $val['appointments'][0]['assign_team'];
-                $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get();
-                $result[$key]['team_name'] = $teamName[0]['team_name'];
+                $teamName = ServiceRegister::where('id', $team_id)->get();
+                $result[$key]['team_name'] = $teamName[0]['service_name'];
             } else {
                 $result[$key]['appointments'] = 'NA';
                 $result[$key]['team_name'] = 'NA';
@@ -478,7 +480,7 @@ class PatientRegistrationController extends Controller
 
     public function updatePatientRegistration(Request $request)
     {
-       
+
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|string',
             'salutation_id' => '',
@@ -567,7 +569,7 @@ class PatientRegistrationController extends Controller
             'other_accommodation' => $request->other_accommodation,
             'other_feeExemptionStatus' => $request->other_feeExemptionStatus,
             'other_occupationStatus' => $request->other_occupationStatus,
-            
+
         ];
 
         $validateCitizenship = [];
@@ -806,5 +808,5 @@ class PatientRegistrationController extends Controller
         return response()->json(["message" => "Patients List", 'list' => $result, "code" => 200]);
     }
 
-    
+
 }
