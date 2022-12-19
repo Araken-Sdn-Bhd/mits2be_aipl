@@ -155,6 +155,15 @@ class EtpSettingController extends Controller
         return response()->json(["message" => "Etp Division List", 'list' => $list, 'code' => 200]);
    }
 
+   public function getDivisionListbyBranch(Request $request)
+   {
+        $list = EtpDivision::where('branch_id',$request->branch_id)
+        ->with(['etp' => function ($query) {
+            $query->select('etp_name', 'id');
+        }])->get();
+        return response()->json(["message" => "Etp Division List", 'list' => $list, 'code' => 200]);
+   }
+
    public function getDivision(Request $request)
    {
         $validator = Validator::make($request->all(), [

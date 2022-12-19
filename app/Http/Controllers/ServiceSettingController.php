@@ -180,6 +180,16 @@ class ServiceSettingController extends Controller
         return response()->json(["message" => "List", 'list' => $list, 'code' => 200]);
     }
 
+    
+    public function getDivisionListbyBranch(Request $request)
+    {
+        $list = ServiceDivision::where('branch_id',$request->branch_id)
+        ->with(['services' => function ($query) {
+            $query->select('service_name', 'id');
+        }])->get();
+        return response()->json(["message" => "List", 'list' => $list, 'code' => 200]);
+    }
+
     public function getDivision(Request $request)
     {
         $validator = Validator::make($request->all(), [
