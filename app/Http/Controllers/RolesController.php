@@ -11,6 +11,12 @@ class RolesController extends Controller
 {
     public function index()
     {
+        $list= Roles::select('id', 'role_name', 'status')->orderBy('role_name','asc')->get();
+        return response()->json(["message" => "List.", 'list' => $list, "code" => 200]);
+    }
+
+    public function screenaccessroleslist()
+    {
         $list= Roles::select('id', 'role_name', 'status')->where('status','=','0')->orderBy('role_name','asc')->get();
         return response()->json(["message" => "List.", 'list' => $list, "code" => 200]);
     }
