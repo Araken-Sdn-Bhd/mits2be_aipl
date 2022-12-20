@@ -566,12 +566,11 @@ class PatientAppointmentDetailsController extends Controller
                 'pad.appointment_status',
                 'service_register.service_name as service',
                 'service_register.id as serviceid',
-                'hospital_branch_team_details.team_name',
+                'service_register.service_name as team_name',
                 'patient_registration.*'
             )
             ->join('service_register', 'pad.appointment_type', '=', 'service_register.id')
             ->join('patient_registration', 'pad.patient_mrn_id', '=', 'patient_registration.id')
-            ->join('hospital_branch_team_details', 'pad.assign_team', '=', 'hospital_branch_team_details.id')
             ->where('pad.status', '!=', '0')
             ->where('patient_registration.branch_id', $request->branch_id);
 
@@ -640,7 +639,7 @@ class PatientAppointmentDetailsController extends Controller
         }
         if ($request->branch_id != '0') {
             $list = DB::table('patient_appointment_details')
-                ->join('hospital_branch_team_details', 'patient_appointment_details.assign_team', '=', 'hospital_branch_team_details.id')
+                ->join('service_register', 'patient_appointment_details.assign_team', '=', 'service_register.id')
                 ->select(
                     'patient_appointment_details.id',
                     'patient_appointment_details.nric_or_passportno',

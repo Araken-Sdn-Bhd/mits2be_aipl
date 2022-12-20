@@ -92,6 +92,7 @@ use App\Http\Controllers\PasswordController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\DefaultRoleAccessController;
+use App\Http\Controllers\UserBlockController;
 use App\Models\DefaultRoleAccess;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Mail;
@@ -116,7 +117,7 @@ Route::group(['middleware' => 'api', 'prefix' => 'auth'], function ($router) {
 });
 Route::group(['prefix' => 'pass'], function () {
     Route::post('/forgetpass', [ForgetpasswordController::class, 'forgetpass']);
-    Route::post('/validatePasswordRule',[PasswordController::class, 'passwordRule']);
+    Route::post('/validatePasswordRule', [PasswordController::class, 'passwordRule']);
 });
 Route::group(['prefix' => 'email-setting'], function () {
     Route::post('/add', [EmailSettingController::class, 'store']);
@@ -138,7 +139,7 @@ Route::group(['prefix' => 'roles'], function () {
     Route::post('/assign', [RolesController::class, 'set_role']);
     Route::post('/role-byId', [RolesController::class, 'role_byId']);
 });
-Route::group([ 'prefix' => 'modules'], function () {
+Route::group(['prefix' => 'modules'], function () {
     Route::get('/list', [ModulesController::class, 'index']);
     Route::post('/add', [ModulesController::class, 'store']);
     Route::post('/update', [ModulesController::class, 'update']);
@@ -242,7 +243,6 @@ Route::group(['prefix' => 'address'], function () {
     Route::post('/{id}/getCityList', [AddressManagementController::class, 'getCityList']);
     Route::post('/{id}/getPostcodeListById', [AddressManagementController::class, 'getPostcodeListById']);
     Route::get('/getAllCityList', [AddressManagementController::class, 'getAllCityList']);
-
 });
 
 Route::group(['prefix' => 'service'], function () {
@@ -253,13 +253,13 @@ Route::group(['prefix' => 'service'], function () {
     Route::get('/activeList', [ServiceSettingController::class, 'getActiveServiceList']);
     Route::post('/insertOrupdate-division', [ServiceSettingController::class, 'storeDivision']);
     Route::get('/division-list', [ServiceSettingController::class, 'getDivisionList']);
+    Route::post('/division-list-branch', [ServiceSettingController::class, 'getDivisionListbyBranch']);
     Route::post('/get-division', [ServiceSettingController::class, 'getDivision']);
     Route::post('/update-division', [ServiceSettingController::class, 'updateDivision']);
     Route::post('/remove-division', [ServiceSettingController::class, 'removeDivision']);
     Route::post('/getServiceListById', [ServiceSettingController::class, 'getServiceListById']);
     Route::get('/servicelist', [ServiceSettingController::class, 'getServiceList']);
     Route::get('/getServiceListByBranch', [ServiceSettingController::class, 'getServiceListByBranch']);
-
 });
 Route::group(['prefix' => 'icd-setting'], function () {
     Route::post('/icdtype/add', [IcdSettingManagementController::class, 'addIcdType']);
@@ -288,6 +288,7 @@ Route::group(['prefix' => 'etp'], function () {
     Route::get('/activelist', [EtpSettingController::class, 'getActiveEtpList']);
     Route::post('/insertOrupdate-division', [EtpSettingController::class, 'storeDivision']);
     Route::get('/division-list', [EtpSettingController::class, 'getDivisionList']);
+    Route::post('/division-list-branch', [EtpSettingController::class, 'getDivisionListbyBranch']);
     Route::post('/get-division', [EtpSettingController::class, 'getDivision']);
     Route::post('/update-division', [EtpSettingController::class, 'updateDivision']);
     Route::post('/remove-division', [EtpSettingController::class, 'removeDivision']);
@@ -302,6 +303,7 @@ Route::group(['prefix' => 'club'], function () {
     Route::get('/activelist', [ClubSettingController::class, 'getActiveClubList']);
     Route::post('/insertOrupdate-division', [ClubSettingController::class, 'storeDivision']);
     Route::get('/division-list', [ClubSettingController::class, 'getDivisionList']);
+    Route::post('/division-list-branch', [ClubSettingController::class, 'getDivisionListbyBranch']);
     Route::post('/get-division', [ClubSettingController::class, 'getDivision']);
     Route::post('/update-division', [ClubSettingController::class, 'updateDivision']);
     Route::post('/remove-division', [ClubSettingController::class, 'removeDivision']);
@@ -364,7 +366,7 @@ Route::group(['prefix' => 'staff-management'], function () {
     Route::post('/getUserlist', [StaffManagementController::class, 'getUserlist']);
     Route::get('/getStaffManagementListOrById_', [StaffManagementController::class, 'getStaffManagementListOrById']);
     Route::get('/getListBy', [StaffManagementController::class, 'getStaffManagementList']);
-    Route::get('/getStaffDetailById',[StaffManagementController::class,'getStaffDetailById']);
+    Route::get('/getStaffDetailById', [StaffManagementController::class, 'getStaffDetailById']);
     Route::post('/getAdminList', [StaffManagementController::class, 'getAdminList']);
     Route::post('/setSystemAdmin', [StaffManagementController::class, 'setSystemAdmin']);
     Route::post('/removeUserAccess', [StaffManagementController::class, 'removeUserAccess']);
@@ -768,7 +770,7 @@ Route::group(['prefix' => 'reset'], function () {
 });
 Route::group(['prefix' => 'access'], function () {
     Route::post('/sidebar', [ScreenModuleController::class, 'getAccessScreenByUserId']);
-    Route::post('/sidebarReport', [ScreenModuleController::class, 'getAccessScreenByUserIdforReport']);//faiz
+    Route::post('/sidebarReport', [ScreenModuleController::class, 'getAccessScreenByUserIdforReport']); //faiz
 });
 Route::group(['prefix' => 'shharp-patient-list'], function () {
     Route::post('/list', [PatientDetailsController::class, 'getSharrpPatientList']);
@@ -797,23 +799,22 @@ Route::group(['prefix' => 'default-role-access'], function () {
 Route::group(['prefix' => 'systemadmin'], function () {
 
     Route::get('/get', [DashboardController::class, 'getsystemadmin']);
-
 });
 
 Route::group(['prefix' => 'all-mentari-staff'], function () {
 
-   Route::get('/get', [DashboardController::class, 'getallmentaristaff']);
+    Route::get('/get', [DashboardController::class, 'getallmentaristaff']);
 });
 
 Route::group(['prefix' => 'user-admin-clerk'], function () {
 
-   Route::get('/get', [DashboardController::class, 'getuseradminclerk']);
-   Route::get('/get_data', [DashboardController::class, 'AdminSpeciallist']);
+    Route::get('/get', [DashboardController::class, 'getuseradminclerk']);
+    Route::get('/get_data', [DashboardController::class, 'AdminSpeciallist']);
 });
 
 Route::group(['prefix' => 'shharp'], function () {
 
-   Route::get('/get', [DashboardController::class, 'getshharp']);
+    Route::get('/get', [DashboardController::class, 'getshharp']);
 });
 
 Route::group(['prefix' => 'high-level-mgt'], function () {
@@ -828,11 +829,12 @@ Route::group(['prefix' => 'Notification'], function () {
 
     Route::post('get', [NotificationController::class, 'getNotification']);
     Route::post('delete', [NotificationController::class, 'deleteNotification']);
-
 });
 Route::group(['prefix' => 'staffDesignatioDetail'], function () {
     Route::post('/get', [PatientDetailsController::class, 'staffDesignatioDetail']);
     Route::post('/staffInchargeDetail', [PatientDetailsController::class, 'staffInchargeDetail']);
- });
-
-
+});
+Route::group(['prefix' => 'userBlock'], function () {
+    Route::get('/get', [UserBlockController::class, 'getUserBlockList']);
+    Route::post('/update', [UserBlockController::class, 'updateUserBlockList']);
+});
