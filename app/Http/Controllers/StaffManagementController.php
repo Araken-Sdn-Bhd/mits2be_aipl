@@ -194,7 +194,7 @@ class StaffManagementController extends Controller
 
 
                     $toEmail    =   $request->email;
-                    $data       =   ['name' => $request->name, 'user_id' => $toEmail, 'password' => $default_pass->variable_value];
+                    $data       =   ['name' => $request->name, 'user_id' => $toEmail, 'password' => $default_pass2->variable_value];
                     try {
                         Mail::to($toEmail)->send(new StaffReceiveMail($data));
                         return response()->json(["message" => "Record Created Successfully!", "code" => 200]);

@@ -15,20 +15,23 @@ class GeneralSettingController extends Controller
             'section' => 'required|string',
             'section_value' => 'required|string',
             'section_order' => 'required|integer',
-            'request_type' => 'required|string'
+            'request_type' => 'required|string',
+            'status' =>'required'
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
 
         if ($request->request_type != 'update') {
-            if (GeneralSetting::where(['section' => $request->section, 'section_value' => $request->section_value])->where('status', '!=', 1)->count() == 0) {
+            if (GeneralSetting::where(['section' => $request->section, 'section_value' => $request->section_value])
+            ->where('status', '!=', 1)->count() == 0) {
                 GeneralSetting::create(
                     [
                         'section' => $request->section,
                         'section_value' => $request->section_value,
                         'section_order' =>  $request->section_order,
-                        'added_by' => $request->added_by
+                        'added_by' => $request->added_by,
+                        'status' => $request->status,
                     ]
                 );
                 return response()->json(["message" => "Setting has updated successfully", "code" => 200]);
@@ -36,7 +39,16 @@ class GeneralSettingController extends Controller
                 return response()->json(["message" => "Value Already Exists!", "code" => 200]);
             }
         } else if ($request->request_type == 'update') {
-            return $this->update($request);
+            GeneralSetting::where(
+                ['id' => $request->setting_id]
+            )->update([
+                'section' => $request->section,
+                'section_value' => $request->section_value,
+                'section_order' =>  $request->section_order,
+                'added_by' => $request->added_by,
+                'status' => $request->status,
+            ]);
+            return response()->json(["message" => "Setting has updated successfully", "code" => 200]);
         }
     }
 
@@ -49,12 +61,13 @@ class GeneralSettingController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
         $list = GeneralSetting::select('id', 'section', 'section_value', 'section_order','code', 'status')
-        ->where('section', $request->section)->where('status', '1')->orderBy('section_value', 'asc')->get();
+        ->where('section', $request->section)->orderBy('section_value', 'asc')->get();
         return response()->json(["message" => $request->section . " List", 'list' => $list, "code" => 200]);
     }
 
     public function getSettingById(Request $request)
     {
+        
         $validator = Validator::make($request->all(), [
             'setting_id' => 'required|integer'
         ]);
