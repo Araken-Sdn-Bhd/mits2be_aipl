@@ -131,6 +131,7 @@ Route::group(['middleware' => ['jwt.verify']], function () {
 });
 Route::group(['prefix' => 'roles'], function () {
     Route::get('/list', [RolesController::class, 'index']);
+    Route::get('/screenaccessroleslist', [RolesController::class, 'screenaccessroleslist']);
     Route::get('/branch-viewlist', [RolesController::class, 'branch_view_list']);
     Route::get('/system-admin-role', [RolesController::class, 'system_admin_role']);
     Route::post('/add', [RolesController::class, 'store']);
