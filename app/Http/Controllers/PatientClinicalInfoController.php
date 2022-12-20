@@ -11,6 +11,8 @@ use Exception;
 use Validator;
 use Illuminate\Support\Facades\DB;
 
+use function PHPUnit\Framework\isEmpty;
+
 class PatientClinicalInfoController extends Controller
 {
     public function store(Request $request)
@@ -18,7 +20,6 @@ class PatientClinicalInfoController extends Controller
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
             'patient_id' => 'required|integer',
-            'patient_mrn_id' => 'required|integer',
             'temperature' => 'required|string',
             'blood_pressure' => 'required|string',
             'pulse_rate' => 'required|string',
@@ -34,7 +35,6 @@ class PatientClinicalInfoController extends Controller
         $module = [
             'added_by' => $request->added_by,
             'patient_id' => $request->patient_id,
-            'patient_mrn_id' => $request->patient_mrn_id,
             'temperature' => $request->temperature,
             'blood_pressure' => $request->blood_pressure,
             'pulse_rate' => $request->pulse_rate,
@@ -55,21 +55,22 @@ class PatientClinicalInfoController extends Controller
         PatientClinicalInfo::create($module);
 
         $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-        $patient_id = PatientAppointmentDetails::where('id','=',$request->appointmentid)->first();
+        $patient_id = PatientAppointmentDetails::where('id', '=', $request->appointmentid)->first();
 
-        $notifi=[
-            'added_by' => $request->added_by,
-            'staff_id' => $patient_id['assign_team'],
-            'branch_id'=>$request->branch_id,
-            'role'=>'',
-            'patient_mrn' =>   $patient_id ['patient_mrn_id'],
-            'url_route' => "/Modules/Patient/attendance-record",
-            'created_at' => $date->format('Y-m-d H:i:s'),
-            'message' =>  'New assigned patient',
-        ];
-        $HOD = Notifications::insert($notifi);
+        if (!isEmpty($patient_id) || $patient_id != null) {
+            $notifi = [
+                'added_by' => $request->added_by,
+                'staff_id' => $patient_id['assign_team'],
+                'branch_id' => $request->branch_id,
+                'role' => '',
+                'patient_mrn' =>   $patient_id['patient_mrn_id'],
+                'url_route' => "/Modules/Patient/attendance-record",
+                'created_at' => $date->format('Y-m-d H:i:s'),
+                'message' =>  'New assigned patient',
+            ];
+            $HOD = Notifications::insert($notifi);
+        }
 
-        
         return response()->json(["message" => "Patient Clinical Information Created Successfully!", "code" => 200]);
     }
 
@@ -83,11 +84,18 @@ class PatientClinicalInfoController extends Controller
         }
         $list = DB::table('patient_clinical_information')
             ->join('users', 'users.id', '=', 'patient_clinical_information.added_by')
-            ->select('patient_clinical_information.id', 'patient_clinical_information.temperature',
-            'patient_clinical_information.blood_pressure', 'patient_clinical_information.pulse_rate',
-            'patient_clinical_information.weight', 'patient_clinical_information.height', 'patient_clinical_information.bmi',
-            'patient_clinical_information.waist_circumference', DB::raw("DATE_FORMAT(patient_clinical_information.created_at, '%d/%m/%Y %H:%i') as date_time")
-            ,'users.name')
+            ->select(
+                'patient_clinical_information.id',
+                'patient_clinical_information.temperature',
+                'patient_clinical_information.blood_pressure',
+                'patient_clinical_information.pulse_rate',
+                'patient_clinical_information.weight',
+                'patient_clinical_information.height',
+                'patient_clinical_information.bmi',
+                'patient_clinical_information.waist_circumference',
+                DB::raw("DATE_FORMAT(patient_clinical_information.created_at, '%d/%m/%Y %H:%i') as date_time"),
+                'users.name'
+            )
             ->where('patient_clinical_information.patient_id', $request->patient_id)
             ->where('patient_clinical_information.status', '=', '1')
             ->orderBy('patient_clinical_information.created_at', 'desc')
