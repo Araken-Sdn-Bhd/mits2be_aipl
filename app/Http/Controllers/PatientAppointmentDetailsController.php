@@ -96,11 +96,18 @@ class PatientAppointmentDetailsController extends Controller
             $booking_date = $request->booking_date;
             $booking_time = $request->booking_time;
             $assign_team = $request->assign_team;
-            $endTime = date("H:i", strtotime('+30 minutes', strtotime($booking_time)));
+            $branch_id = $request->branch_id;
+            $duration = "+" . $request->duration . " minutes";
+            $endTime = date("H:i", strtotime($duration, strtotime($booking_time)));
 
-            $chkPoint =  PatientAppointmentDetails::where(function ($query) use ($booking_date, $booking_time, $assign_team, $endTime) {
-                $query->where('booking_date', '=', $booking_date)->whereBetween('booking_time', [$booking_time, $endTime])->where('assign_team', '=', $assign_team);
-            })->where('status', '1')->get();
+            $chkPoint =  PatientRegistration::join('patient_appointment_details','patient_appointment_details.patient_mrn_id','=','patient_registration.id')
+                        ->where('patient_registration.branch_id', '=', $branch_id)
+                        ->where('patient_appointment_details.booking_date', '=', $booking_date)
+                        ->whereBetween('patient_appointment_details.booking_time', [$booking_time, $endTime])
+                        ->where('patient_appointment_details.status','=', '1')
+                        ->where('patient_appointment_details.assign_team','=', $assign_team)
+                        ->get();
+            
             if ($chkPoint->count() == 0) {
                 $service = [
                     'added_by' => $request->added_by,
