@@ -475,7 +475,8 @@ class PatientAppointmentDetailsController extends Controller
             ->join('service_register', 'pad.appointment_type', '=', 'service_register.id')
             ->join('patient_registration', 'pad.patient_mrn_id', '=', 'patient_registration.id')
             ->where('pad.booking_date', date('Y-m-d'))
-            ->where('patient_registration.branch_id', $request->branch_id);
+            ->where('patient_registration.branch_id', $request->branch_id)
+            ->where('pad.status', '1');
         
         $resultSet = $query->get();
 
@@ -744,6 +745,34 @@ class PatientAppointmentDetailsController extends Controller
                 'appointment_status' =>  $request->appointment_status,
             ]);
         }
+
+        return response()->json(["message" => "Appointment Status Updated Successfully!", "code" => 200]);
+    }
+
+    public function cancelappointmentstatus(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'appointment_id' => 'required|integer',
+            'appointment_status' => 'required|integer'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+        if($request->appointment_status == 2 || $request->appointment_status == '2'){
+        PatientAppointmentDetails::where(
+            ['id' => $request->appointment_id]
+        )->update([
+            'appointment_status' =>  $request->appointment_status,
+            'status' =>  '0',
+        ]);
+        
+    }else{
+        PatientAppointmentDetails::where(
+            ['id' => $request->appointment_id]
+        )->update([
+            'appointment_status' =>  $request->appointment_status,
+        ]);
+    }
 
         return response()->json(["message" => "Appointment Status Updated Successfully!", "code" => 200]);
     }
