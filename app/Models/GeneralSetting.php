@@ -9,5 +9,5 @@ class GeneralSetting extends Model
 {
     use HasFactory;
     protected $table = 'general_setting';
-    protected $fillable = ['added_by', 'section', 'section_value', 'section_order'];
+    protected $fillable = ['added_by', 'section', 'section_value', 'section_order','status'];
 }
