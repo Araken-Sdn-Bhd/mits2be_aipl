@@ -207,6 +207,18 @@ class StaffManagementController extends Controller
         return response()->json(["message" => "Staff Management List", 'list' => $users, "code" => 200]);
     }
 
+    public function getStaffDetailByRole(Request $request)
+    {
+        $users = DB::table('staff_management')
+            ->select('id', 'name', 'role_id')
+            ->where('status', '=', '1')
+            ->where('branch_id', '=', $request->branch_id)
+            ->where('role_name', '=', 'Medical Officer')
+            ->orWhere('role_name', '=', 'Psychiatrist')
+            ->get();
+        return response()->json(["message" => "Staff Role List", 'list' => $users, "code" => 200]);
+    }
+
     public function getStaffDetailById(Request $request)
     {
         $users = DB::table('staff_management')
