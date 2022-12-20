@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PatientAppointmentDetails;
 use Illuminate\Http\Request;
 use App\Models\PatientClinicalInfo;
+use App\Models\Notifications;
 use DateTime;
 use DateTimeZone;
 use Exception;
