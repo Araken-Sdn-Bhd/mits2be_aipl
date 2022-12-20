@@ -58,26 +58,14 @@ class AppointmentRequestController extends Controller
 
     public function getRequestList(Request $request)
     {
-        $role = DB::table('staff_management')
-        ->select('roles.code')
-        ->join('roles', 'staff_management.role_id', '=', 'roles.id')
-        ->where('staff_management.email', '=', $request->email)
-        ->first();
 
-     if($role->code == 'superadmin'){
-       $list =AppointmentRequest::select('id', 'added_by','branch_id','name','nric_or_passportno', 'contact_no', 'address', 'address1', 'email','ip_address',DB::raw("DATE_FORMAT(created_at, '%d-%M-%y') as created"))
-       ->where('status', '1')
-       ->get();
-     }else{
-        
         $list =AppointmentRequest::select('id', 'added_by','branch_id','name',
         'nric_or_passportno', 'contact_no', 'address', 'address1', 'email','ip_address',
         DB::raw("DATE_FORMAT(created_at, '%d-%M-%y') as created"))
         ->where('status', '1')
         ->where('branch_id',$request->branch_id)
         ->get();
-     }
- 
+     
        return response()->json(["message" => "Appointment Requested List", 'list' => $list, "code" => 200]);
     }
 
@@ -86,6 +74,7 @@ class AppointmentRequestController extends Controller
         $list=[];
         $list =AppointmentRequest::select('id', 'added_by','branch_id','name','nric_or_passportno', 'contact_no', 'address', 'address1', 'email','ip_address')
         ->where('id',$request->id)
+        ->where('status', '1')
         ->get();
         
        return response()->json(["message" => "Appointment Requested List", 'list' => $list, "code" => 200]);
