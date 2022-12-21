@@ -17,6 +17,7 @@ class CpsPoliceReferralForm extends Model
         'the_above_patient_ongoing',
         'name',
         'designation',
-        'created_at'
+        'created_at',
+        'appointment_details_id'
     ];
 }
