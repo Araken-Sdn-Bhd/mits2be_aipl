@@ -107,7 +107,7 @@ class PatientAppointmentDetailsController extends Controller
                         ->where('patient_appointment_details.status','=', '1')
                         ->where('patient_appointment_details.assign_team','=', $assign_team)
                         ->get();
-            
+
             if ($chkPoint->count() == 0) {
                 $service = [
                     'added_by' => $request->added_by,
@@ -484,7 +484,7 @@ class PatientAppointmentDetailsController extends Controller
             ->where('pad.booking_date', date('Y-m-d'))
             ->where('patient_registration.branch_id', $request->branch_id)
             ->where('pad.status', '1');
-        
+
         $resultSet = $query->get();
 
         foreach ($resultSet as $key) {
@@ -772,7 +772,7 @@ class PatientAppointmentDetailsController extends Controller
             'appointment_status' =>  $request->appointment_status,
             'status' =>  '0',
         ]);
-        
+
     }else{
         PatientAppointmentDetails::where(
             ['id' => $request->appointment_id]
@@ -913,7 +913,7 @@ class PatientAppointmentDetailsController extends Controller
             ->select(
                 DB::raw("(CASE WHEN TIME(patient_counsellor_clerking_notes.created_at) BETWEEN '00:00:00' AND '11:59:59' THEN DATE_FORMAT(patient_counsellor_clerking_notes.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(patient_counsellor_clerking_notes.created_at, '%h:%i PM')
-       END)  as time1"),
+       END)  as time"),
                 DB::raw("DATE_FORMAT(patient_counsellor_clerking_notes.created_at, '%d-%m-%Y') as date"),
                 'patient_counsellor_clerking_notes.status',
                 'patient_counsellor_clerking_notes.id',
