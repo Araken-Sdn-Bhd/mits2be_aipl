@@ -14,6 +14,7 @@ class CpsHomevisitWithdrawalForm extends Model
         'added_by',
         'patient_id',
         'community_psychiatry_services',
-        'created_at'
+        'created_at',
+        'appointment_details_id'
     ];
 }

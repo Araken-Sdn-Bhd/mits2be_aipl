@@ -14,6 +14,7 @@ class EtpConsentForm extends Model
         'patient_id',
         'consent_for_participation',
         'consent_for_disclosure',
-        'created_at'
+        'created_at',
+        'appointment_details_id'
     ];
 }

@@ -13,6 +13,7 @@ class PhotographyConsentForm extends Model
         'added_by',
         'patient_id',
         'photography_consent_form_agree',
-        'created_at'
+        'created_at',
+        'appointment_details_id'
     ];
 }
