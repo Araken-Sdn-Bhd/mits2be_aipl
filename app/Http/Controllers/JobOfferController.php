@@ -407,7 +407,6 @@ class JobOfferController extends Controller
                 'added_by' => $request->added_by,
                 'consent_for_participation' => $request->consent_for_participation,
                 'consent_for_disclosure' => (string) $request->consent_for_disclosure,
-                'appointment_details_id' => $request->appId,
                 'created_at' => date('Y-m-d H:i:s')
             ]);
             return response()->json(["message" => "Updated", "code" => 200]);
@@ -417,7 +416,6 @@ class JobOfferController extends Controller
             'added_by' => $request->added_by,
             'consent_for_participation' => $request->consent_for_participation,
             'consent_for_disclosure' => (string) $request->consent_for_disclosure,
-            'appointment_details_id' => $request->appId,
             'created_at' => date('Y-m-d H:i:s')
         ]);
         return response()->json(["message" => "Created", "code" => 200]);
@@ -745,7 +743,6 @@ class JobOfferController extends Controller
                 'added_by' => $request->added_by,
                 'consent_for_homevisit' => $request->consent_for_homevisit,
                 'consent_for_hereby_already_give_explanation' =>(string) $request->consent_for_hereby_already_give_explanation,
-                'appointment_details_id' => $request->appId,
                 'created_at' => date('Y-m-d H:i:s')
             ]);
             return response()->json(["message" => "Created", "code" => 200]);
@@ -755,7 +752,6 @@ class JobOfferController extends Controller
             'added_by' => $request->added_by,
             'consent_for_homevisit' => $request->consent_for_homevisit,
             'consent_for_hereby_already_give_explanation' =>(string) $request->consent_for_hereby_already_give_explanation,
-            'appointment_details_id' => $request->appId,
             'created_at' => date('Y-m-d H:i:s')
         ]);
         return response()->json(["message" => "Created", "code" => 200]);
@@ -830,7 +826,6 @@ class JobOfferController extends Controller
                 'patient_id' => $request->patient_id,
                 'added_by' => $request->added_by,
                 'consent_for_participation' => $request->consent_for_participation,
-                'appointment_details_id' => $request->appId,
                 'created_at' => date('Y-m-d H:i:s')
             ]);
             return response()->json(["message" => "Update", "code" => 200]);
@@ -839,7 +834,6 @@ class JobOfferController extends Controller
             'patient_id' => $request->patient_id,
             'added_by' => $request->added_by,
             'consent_for_participation' => $request->consent_for_participation,
-            'appointment_details_id' => $request->appId,
             'created_at' => date('Y-m-d H:i:s')
         ]);
         return response()->json(["message" => "Created", "code" => 200]);
@@ -869,7 +863,6 @@ class JobOfferController extends Controller
                 'added_by' => $request->added_by,
                 'consent_for_participation' => $request->consent_for_participation,
                 'consent_for_disclosure' =>(string) $request->consent_for_disclosure,
-                'appointment_details_id' => $request->appId,
                 'created_at' => date('Y-m-d H:i:s')
             ]);
             return response()->json(["message" => "Updated", "code" => 200]);
@@ -879,7 +872,6 @@ class JobOfferController extends Controller
             'added_by' => $request->added_by,
             'consent_for_participation' => $request->consent_for_participation,
             'consent_for_disclosure' =>(string) $request->consent_for_disclosure,
-            'appointment_details_id' => $request->appId,
             'created_at' => date('Y-m-d H:i:s')
         ]);
         return response()->json(["message" => "Created", "code" => 200]);
@@ -893,7 +885,6 @@ class JobOfferController extends Controller
                 'patient_id' => $request->patient_id,
                 'added_by' => $request->added_by,
                 'community_psychiatry_services' => $request->community_psychiatry_services,
-                'appointment_details_id' => $request->appId,
                 'created_at' => date('Y-m-d H:i:s')
             ]);
             return response()->json(["message" => "Updated", "code" => 200]);
@@ -902,7 +893,6 @@ class JobOfferController extends Controller
             'patient_id' => $request->patient_id,
             'added_by' => $request->added_by,
             'community_psychiatry_services' => $request->community_psychiatry_services,
-            'appointment_details_id' => $request->appId,
             'created_at' => date('Y-m-d H:i:s')
         ]);
         return response()->json(["message" => "Created", "code" => 200]);
@@ -971,7 +961,6 @@ class JobOfferController extends Controller
                 'patient_id' => $request->patient_id,
                 'added_by' => $request->added_by,
                 'photography_consent_form_agree' => $request->photography_consent_form_agree,
-                'appointment_details_id' => $request->appId,
                 'created_at' => date('Y-m-d H:i:s')
             ]);
             return response()->json(["message" => "Created", "code" => 200]);
@@ -980,7 +969,6 @@ class JobOfferController extends Controller
             'patient_id' => $request->patient_id,
             'added_by' => $request->added_by,
             'photography_consent_form_agree' => $request->photography_consent_form_agree,
-            'appointment_details_id' => $request->appId,
             'created_at' => date('Y-m-d H:i:s')
         ]);
         return response()->json(["message" => "Created", "code" => 200]);

@@ -15,6 +15,5 @@ class EtpConsentForm extends Model
         'consent_for_participation',
         'consent_for_disclosure',
         'created_at',
-        'appointment_details_id'
     ];
 }
