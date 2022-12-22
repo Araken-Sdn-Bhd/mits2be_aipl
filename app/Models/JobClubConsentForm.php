@@ -15,6 +15,5 @@ class JobClubConsentForm extends Model
         'patient_id',
         'consent_for_participation',
         'created_at',
-        'appointment_details_id'
     ];
 }

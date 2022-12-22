@@ -16,6 +16,5 @@ class CpsHomevisitConsentForm extends Model
         'consent_for_homevisit',
         'consent_for_hereby_already_give_explanation',
         'created_at',
-        'appointment_details_id'
     ];
 }
