@@ -24,13 +24,30 @@ class RequestAppointmentReportController extends Controller
 
     public function getRequestAppointmentReport(Request $request)
     {
+        $users = DB::table('staff_management')
+        ->select('roles.code')
+        ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+        ->where('staff_management.email', '=', $request->email)
+        ->first();
+        $users2  = json_decode(json_encode($users), true);
  
-        $response = AppointmentRequest::select('*')
-        ->whereBetween('created_at', [$request->fromDate, $request->toDate])
-            ->where('branch_id','=', $request->branch_id)
-        ->where('status', '1');
+        if($users2['code']!='superadmin'){
+            $response = AppointmentRequest::select('*')
+            ->whereBetween('created_at', [$request->fromDate, $request->toDate])
+            ->where('status', '1')
+            ->where('branch_id','=',$request->branch_id);
+            
+            $ssh= $response->get()->toArray();
+
+        }else{
+
+            $response = AppointmentRequest::select('*')
+            ->whereBetween('created_at', [$request->fromDate, $request->toDate])
+            ->where('status', '1');            
+            $ssh= $response->get()->toArray();
+        }
         
-        $ssh= $response->get()->toArray();
+
         $result = [];
         $index=0;
         foreach ($ssh as $k => $v) {
