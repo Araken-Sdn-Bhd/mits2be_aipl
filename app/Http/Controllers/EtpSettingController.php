@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\EtpRegister;
 use App\Models\EtpDivision;
 use Validator;
+use DB;
 
 class EtpSettingController extends Controller
 {
@@ -140,7 +141,7 @@ class EtpSettingController extends Controller
 	         return response()->json(["message" => "Etp Registered Successfully!", "code" => 200]);
         }
 
-            
+
    }
 
    public function getDivisionList()
@@ -161,7 +162,14 @@ class EtpSettingController extends Controller
         ->with(['etp' => function ($query) {
             $query->select('etp_name', 'id');
         }])->get();
-        return response()->json(["message" => "Etp Division List", 'list' => $list, 'code' => 200]);
+
+        $etp = DB::table('etp_division')
+        ->select('etp_register.etp_name', 'etp_register.id')
+        ->join('etp_register', 'etp_division.etp_id', '=', 'etp_register.id')
+        ->where('branch_id',$request->branch_id)
+        ->get();
+
+        return response()->json(["message" => "Etp Division List", 'list' => $list, 'etp' => $etp, 'code' => 200]);
    }
 
    public function getDivision(Request $request)

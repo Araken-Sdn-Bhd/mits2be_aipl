@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\ClubRegister;
 use App\Models\ClubDivision;
+use DB;
 use Validator;
 
 class ClubSettingController extends Controller
@@ -152,7 +153,14 @@ class ClubSettingController extends Controller
         ->with(['club' => function ($query) {
             $query->select('club_name', 'id');
         }])->get();
-        return response()->json(["message" => "Club List", 'list' => $list, 'code' => 200]);
+
+        $club = DB::table('club_division')
+        ->select('club_register.club_name', 'club_register.id')
+        ->join('club_register', 'club_division.club_id', '=', 'club_register.id')
+        ->where('branch_id',$request->branch_id)
+        ->get();
+
+        return response()->json(["message" => "Club List", 'list' => $list, 'club' => $club, 'code' => 200]);
    }
 
    public function getDivision(Request $request)
