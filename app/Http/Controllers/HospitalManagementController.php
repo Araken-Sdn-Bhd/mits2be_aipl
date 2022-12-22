@@ -197,7 +197,7 @@ class HospitalManagementController extends Controller
             'branch_contact_number_mobile' =>  $request->branch_contact_number_mobile,
             'branch_email' => $request->branch_email,
             'branch_fax_no' => $request->branch_fax_no,
-            'branch_status' => 1
+            'branch_status' => $request->branch_status,
         ];
         try {
             HospitalBranchManagement::firstOrCreate($branch);
@@ -247,8 +247,11 @@ class HospitalManagementController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        $branchs = HospitalBranchManagement::select('id', 'hospital_branch_name')->where('hospital_code', $request->hospital_code)
-        ->orWhere('hospital_id', $request->hospital_code)->get();
+        $branchs = HospitalBranchManagement::select('id', 'hospital_branch_name')
+                    ->where('hospital_code', $request->hospital_code)
+                    ->orWhere('hospital_id', $request->hospital_code)
+                    ->where('branch_status','=', '1')
+                    ->get();
         return response()->json(["message" => "Branch List", 'branches' => $branchs, "code" => 200]);
     }
 
@@ -260,8 +263,7 @@ class HospitalManagementController extends Controller
 
     public function getHospitalBranchList()
     {
-        $list = HospitalBranchManagement::select('id', 'hospital_branch_name', 'branch_adrress_1', 'hospital_code', 'branch_adrress_2', 'branch_adrress_3', 'branch_contact_number_office', 'branch_fax_no')
-        ->where('branch_status','=', '1')
+        $list = HospitalBranchManagement::select('id', 'hospital_branch_name', 'branch_adrress_1', 'hospital_code', 'branch_adrress_2', 'branch_adrress_3', 'branch_contact_number_office', 'branch_fax_no', 'branch_status')
         ->get();
         return response()->json(["message" => "Hospital Branch List", 'list' => $list, "code" => 200]);
     }
@@ -438,6 +440,7 @@ class HospitalManagementController extends Controller
         $branch['branch_contact_number_office'] = $hm['branch_contact_number_office'];
         $branch['branch_contact_number_mobile'] = $hm['branch_contact_number_mobile'];
         $branch['branch_fax_no'] = $hm['branch_fax_no'];
+        $branch['branch_status'] = $hm['branch_status'];
 
         return response()->json(["message" => "Branch List", 'list' => $branch, "code" => 200]);
     }
@@ -481,7 +484,7 @@ class HospitalManagementController extends Controller
 
         $chkPoint =  HospitalBranchManagement::where(function ($query) use ($branch_city, $branch_postcode) {
         $query->where('branch_city', '=', $branch_city)->where('branch_postcode', '=', $branch_postcode);
-        })->where('id', '!=', $request->id)->where('branch_status', '1')->get();
+        })->where('id', '=', $request->id)->where('branch_status', '=', $request->branch_status )->get();
          if ($chkPoint->count() == 0) {
             HospitalBranchManagement::where(
             ['id' => $request->id]
@@ -501,11 +504,11 @@ class HospitalManagementController extends Controller
             'branch_contact_number_mobile' =>  $request->branch_contact_number_mobile,
             'branch_email' => $request->branch_email,
             'branch_fax_no' => $request->branch_fax_no,
-            'branch_status' => 1
+            'branch_status' => $request->branch_status,
             ]);
             return response()->json(["message" => "Branch has updated successfully", "code" => 200]);
         } else {
-            return response()->json(["message" =>"Changed value already exists!", "code" => 200]);
+            return response()->json(["message" =>"Changed value already exists!", "code" => 400]);
         }
 
       }
@@ -543,7 +546,7 @@ class HospitalManagementController extends Controller
             ]);
             return response()->json(["message" => "Branch Team has updated successfully", "code" => 200]);
         } else {
-            return response()->json(["message" =>"Changed value already exists!", "code" => 200]);
+            return response()->json(["message" =>"Changed value already exists!", "code" => 400]);
         }
 
       }

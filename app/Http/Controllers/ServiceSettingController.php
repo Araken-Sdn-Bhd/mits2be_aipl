@@ -161,7 +161,8 @@ class ServiceSettingController extends Controller
                 'service_id' => $request->service_id,
                 'hospital_id' => $request->hospital_id,
                 'branch_id' => $request->branch_id,
-                'division_order' => $request->division_order
+                'division_order' => $request->division_order,
+                'status' => $request->status
             ]
         );
         if ($ss)

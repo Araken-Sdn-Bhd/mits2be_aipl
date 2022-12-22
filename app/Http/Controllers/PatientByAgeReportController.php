@@ -68,7 +68,7 @@ class PatientByAgeReportController extends Controller
         }
         $query2=$query->get()->toArray();
         $response  = json_decode(json_encode($query2), true);
-
+        
 
         $patient = [];
         $result = [];
@@ -79,11 +79,10 @@ class PatientByAgeReportController extends Controller
                     if($val['sex']!=NULL && $val['race_id']!=NULL && $val['age']!=NULL){
                         $gender = GeneralSetting::where(['id' => $val['sex']])->first();
                         $race = GeneralSetting::where(['id' => $val['race_id']])->first();
-                        
                         $result[$index]['DATE'] = date('d/m/y', strtotime($val['booking_date']));
                         $result[$index]['Gender'] = $gender['section_value']  ?? 'NA';
                         $result[$index]['race'] = $race['section_value'] ?? 'NA';
-                        $result[$index]['Age'] = $val['Age'] ?? 'NA';
+                        $result[$index]['Age'] = $val['age'] ?? 'NA';
 
                         $result[$index]['race_id'] =$val['race_id'] ?? 'NA';
                         $result[$index]['gender_id'] =$val['sex'] ?? 'NA';
@@ -94,6 +93,7 @@ class PatientByAgeReportController extends Controller
             }
             
             if ($result) {
+
                 $totalReports = count($result);
         $mainResult = [];
 
@@ -156,7 +156,9 @@ class PatientByAgeReportController extends Controller
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['20-59']['female'] +=1;
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['female'] +=1;
         }
+        
     }
+    
     if($val['Age']>=60){
         if($val['gender_id'] == $male['id']){
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['greater_60']['male'] +=1;

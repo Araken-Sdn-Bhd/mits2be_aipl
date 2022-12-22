@@ -21,7 +21,7 @@ class PatientAppointmentDetails extends Model
 
     public function service()
     {
-        return $this->belongsTo(ServiceRegister::class, "appointment_type", "id");
+        return $this->belongsTo(ServiceRegister::class, "appointment_type", "id")->select('id','service_code','service_name');
     }
 
     public function team()
