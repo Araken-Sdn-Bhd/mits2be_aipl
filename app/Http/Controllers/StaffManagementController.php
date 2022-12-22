@@ -285,6 +285,7 @@ class StaffManagementController extends Controller
                 ->select(
                     'roles.role_name',
                     'staff_management.id',
+                    'staff_management.branch_id',
                     'users.id as users_id',
                     'service_register.service_name',
                     'staff_management.name',
@@ -326,7 +327,6 @@ class StaffManagementController extends Controller
                 ->select(
                     'roles.role_name',
                     'staff_management.id',
-                    'staff_management.branch_id',
                     'users.id as users_id',
                     'staff_management.name',
                     'general_setting.section_value as designation_name',
@@ -338,7 +338,7 @@ class StaffManagementController extends Controller
                 ->where('staff_management.name', 'LIKE', "%{$request->name}%")
                 ->orderBy('staff_management.name', 'asc')
                 ->get();
-            return response()->json(["message" => "Staff Management List Mobile", 'list' => $users, "code" => 200]);
+            return response()->json(["message" => "Staff Management List", 'list' => $users, "code" => 200]);
         } else {
             $users = DB::table('staff_management')
                 ->join('general_setting', 'staff_management.designation_id', '=', 'general_setting.id')
