@@ -387,15 +387,13 @@ class PatientAppointmentDetailsController extends Controller
         return response()->json(["message" => "Appointment Deleted Successfully!", "code" => 200]);
     }
 
-    public function getPatientAppointmentDetailsList()
+    public function getPatientAppointmentDetailsList(Request $request)
     {
         $resultSet = PatientAppointmentDetails::select('id', 'nric_or_passportno', 'patient_mrn_id', 'booking_date', 'booking_time', 'duration', 'appointment_type', 'type_visit', 'patient_category', 'assign_team', 'staff_id', 'appointment_status')
-            ->with('service:service_name,id')
-            ->with('service:id,id')
+            ->with('service:id,service_name')
             ->where('status', '1')
             ->get()
             ->toArray();
-
         $result = [];
         $list123 = HospitalBranchTeamManagement::select('id', 'hospital_branch_name', 'team_name', 'hospital_code')->where('status', '=', '1')->get();
         if (count($resultSet) > 0) {
@@ -403,6 +401,7 @@ class PatientAppointmentDetailsController extends Controller
                 $patient = [];
                 $patient =  PatientRegistration::select('id', 'patient_mrn', 'name_asin_nric', 'passport_no', 'nric_no', 'salutation_id')
                     ->where('id', $val['patient_mrn_id'])
+                    ->where('branch_id',$request->branch_id)
                     ->with('salutation:section_value,id')
                     ->get()
                     ->toArray();
