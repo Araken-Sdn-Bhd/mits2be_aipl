@@ -107,12 +107,12 @@ class ServiceSettingController extends Controller
         $list = StaffManagement::select('id', 'branch_id')
         ->where('email','=', $request->email)->get();
 
-        $list2 = DB::table('service_register')
-        ->join('service_division', 'service_register.id', '=', 'service_id')
+        $list2 = DB::table('service_division')
+        ->join('service_register', 'service_register.id', '=', 'service_division.service_id')
         ->select('service_register.id', 'service_register.service_name', 'service_division.branch_id')
         ->where('service_register.status','=', '1')
         ->where('service_division.branch_id','=', $list[0]['branch_id'])
-        ->orderBy('service_order', 'asc')
+        ->orderBy('service_register.service_order', 'asc')
         ->get();
 
         return response()->json(["message" => "List.", 'list' => $list2, "code" => 200]);
@@ -120,12 +120,13 @@ class ServiceSettingController extends Controller
 
     public function getServiceListByBranch(Request $request)
     {
-        $listService = DB::table('service_register')
-        ->join('service_division', 'service_register.id', '=', 'service_id')
+        $listService = DB::table('service_division')
+        ->join('service_register', 'service_register.id', '=', 'service_division.service_id')
         ->select('service_register.id', 'service_register.service_name', 'service_division.branch_id')
         ->where('service_register.status','=', '1')
+        ->where('service_division.status','=', '1')
         ->where('service_division.branch_id','=', $request->branchId)
-        ->orderBy('service_order', 'asc')
+        ->orderBy('service_register.service_order', 'asc')
         ->get();
 
         return response()->json(["message" => "List.", 'list' => $listService, "code" => 200]);

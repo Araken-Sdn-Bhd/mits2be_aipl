@@ -165,6 +165,7 @@ Route::group(['prefix' => 'hospital'], function () {
     Route::get('/list', [HospitalManagementController::class, 'getHospitalList']);
     Route::get('/list/{hospital_id}', [HospitalManagementController::class, 'getHospitalListById']);
     Route::get('/branch-list', [HospitalManagementController::class, 'getHospitalBranchList']);
+    Route::get('/branch-list-regardless-status', [HospitalManagementController::class, 'getHospitalBranchListRegardlessStatus']);
     Route::get('/branch-excluded-hospital-list', [HospitalManagementController::class, 'getBranchExcludedHospitalList']);
     Route::get('/branch-team-list', [HospitalManagementController::class, 'getHospitalBranchTeamList']);
     Route::get('/branch-team-serv-div-list', [HospitalManagementController::class, 'getHospitalBranchTeamByServiceDivisionList']);
