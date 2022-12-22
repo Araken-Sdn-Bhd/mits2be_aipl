@@ -11,46 +11,42 @@ class NotificationController extends Controller
     public function getNotification(Request $request)
     {
         if($request->role=='Admin/Clerk' || $request->role=='Triage Personnel'|| $request->role=='Staff Nurse'){
-        $list = Notifications::select('*')
+        $result = Notifications::select('*')
             ->where('branch_id', '=', $request->branch_id)
             ->where('role', '=', $request->role)
             ->orderBy('id', 'DESC')
             ->get();
 
-         $count = count($list);
-    
-        $ab = [];
-        if (count($list) > 0) {
-            foreach ($list as $key => $value) {
+     
 
-                $datetime1 = new DateTime();
-                $datetime12 = new DateTime($value['created_at']);
-                if (DATE_FORMAT($datetime12, 'Y-m-d') == date('Y-m-d')) {
-                    $ab[$key]['time']  = $datetime1->diff(new DateTime($value['created_at']))->format('%h hours %i minutes');
-                } else {
-                    $ab[$key]['time']  = $datetime1->diff(new DateTime($value['created_at']))->format('%a days %h hours %i minutes');
-                }
-                $ab[$key]['id']  = $value['id'];
-                $ab[$key]['message']  = $value['message'];
-                $ab[$key]['patient_mrn']  = $value['patient_mrn'];
-                $ab[$key]['url_route']  = $value['url_route'];
-
-            }
-        }
-        return response()->json(["message" => "Notifications List", 'list' => $ab, 'notification_count' => $count, "code" => 200]);
     }else{
             $staff_id = StaffManagement::select('id')->where('email',$request->email)->first();
-            $list = Notifications::select('*')
+            $result = Notifications::select('*')
                 ->where('branch_id', '=', $request->branch_id)
                 ->where('staff_id', '=', $staff_id['id'])
                 ->orderBy('id', 'DESC')
                 ->get()->toArray();
+    }
+   
     
-            $count = count($list);
-             
+    if($request->role=='Doctor'||$request->role=='SHHARP'||$request->role=='Doctor'||$request->role=='High Level Mgt'||$request->role=='Medical Officer'||$request->role=='Psychiatrist'||$request->role=='System Admin'||$request->role=='Counsellor') {
+
+            $staff_id = StaffManagement::select('id')->where('email',$request->email)->first();
+            $list2 = Notifications::select('*')
+                ->where('branch_id', '=', $request->branch_id)
+                ->where('message', '=', 'New assigned patient for vital')
+                ->orderBy('id', 'DESC')
+                ->get()->toArray();
+    
+            if(count($list2)>0){
+                $result=array_merge($result, $list2);
+                
+            }
+    }
             $ab = [];
-            if (count($list) > 0) {
-                foreach ($list as $key => $value) {
+            $count=count($result);
+            if (count($result) > 0) {
+                foreach ($result as $key => $value) {
     
                     $datetime1 = new DateTime();
                     $datetime12 = new DateTime($value['created_at']);
@@ -70,7 +66,7 @@ class NotificationController extends Controller
             return response()->json(["message" => "Notifications List", 'list' => $ab, 'notification_count' => $count, "code" => 200]);
 
             }
-        }
+        
     }
 
 
