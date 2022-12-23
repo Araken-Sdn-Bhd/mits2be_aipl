@@ -72,6 +72,7 @@ class AnnouncementManagementController extends Controller
             ->orWhere('status', '=', '0')
             ->orderBy('id','desc')
             ->get();
+
         return response()->json(["message" => "List", 'list' => $list, "code" => 200]);
     }
 
