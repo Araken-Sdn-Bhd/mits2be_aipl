@@ -118,6 +118,12 @@ class ReportController extends Controller
                 $demo['occupation_sector'] = $request->occupation_sector;
             }
 
+            $users = DB::table('staff_management')
+            ->select('roles.code')
+            ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+            ->where('staff_management.email', '=', $request->email)
+            ->first();
+            $users2  = json_decode(json_encode($users), true);
 
 
 
@@ -132,6 +138,11 @@ class ReportController extends Controller
                 ->whereBetween('harm_date', [$request->fromDate, $request->toDate])
                 ->where('srfs.hospital_mgmt', '!=','')
                 ->where('srfs.status', '=','1');
+
+                if($users2['code']!='superadmin'){
+                    $query->where('p.branch_id','=',$request->branch_id);
+                }
+
                 if ($demo)
                 $query->where($demo);
                 
@@ -889,7 +900,8 @@ class ReportController extends Controller
     
     public function getTotalPatientTypeRefferalReport(Request $request)
     {
-        $appointments = PatientAppointmentDetails::whereBetween('booking_date', [$request->fromDate, $request->toDate]);
+        $appointments = PatientAppointmentDetails::whereBetween('booking_date', [$request->fromDate, $request->toDate])
+        ->where('status','=',1);
         if ($request->type_visit != 0)
             $ssh = $appointments->where('type_visit', $request->type_visit);
         if ($request->patient_category != 0)
@@ -906,6 +918,17 @@ class ReportController extends Controller
                 $query = PatientRegistration::where('id', $v['patient_mrn_id']);
                 if ($request->referral_type != 0)
                     $query->where('referral_type', $request->referral_type);
+
+                    $users = DB::table('staff_management')
+                    ->select('roles.code')
+                    ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+                    ->where('staff_management.email', '=', $request->email)
+                    ->first();
+                    $users2  = json_decode(json_encode($users), true);
+    
+                    if($users2['code']!='superadmin'){
+                        $query->where('branch_id','=',$request->branch_id);
+                    }    
 
                 $patientInfon = $query->get()->toArray();
                 if ($patientInfon) {
@@ -1024,6 +1047,17 @@ class ReportController extends Controller
                 $join->on('pad.patient_mrn_id', '=', 'p.id');
             })     
             ->whereBetween('booking_date', [$request->fromDate, $request->toDate]);
+
+            $users = DB::table('staff_management')
+                ->select('roles.code')
+                ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+                ->where('staff_management.email', '=', $request->email)
+                ->first();
+            $users2  = json_decode(json_encode($users), true);
+
+                if($users2['code']!='superadmin'){
+                    $query->where('branch_id','=',$request->branch_id);
+                }
             if ($demo)
             $query->where($demo);
 
@@ -1618,7 +1652,18 @@ class ReportController extends Controller
                 }
 
                 $staff = StaffManagement::select('name')->where('id', $v['assign_team'])->get()->toArray();
+
+                $users = DB::table('staff_management')
+                ->select('roles.code')
+                ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+                ->where('staff_management.email', '=', $request->email)
+                ->first();
+                $users2  = json_decode(json_encode($users), true);
+
                 $query = PatientRegistration::where('id', $v['patient_mrn_id']);
+                if($users2['code']!='superadmin'){
+                    $query->where('branch_id','=',$request->branch_id);
+                }
                 if ($demo)
                     $query->where($demo);
                 if ($age)

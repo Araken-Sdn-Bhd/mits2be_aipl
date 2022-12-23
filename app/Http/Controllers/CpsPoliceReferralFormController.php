@@ -19,8 +19,8 @@ class CpsPoliceReferralFormController extends Controller
             'officer_in_charge' => 'required|string',
             'the_above_patient_ongoing' => 'required|string',
             'name' => 'required|string',
-            'designation' => 'required|string',
-            'appId' => '',
+            'designation' => 'required|string'
+
         ]);
 
         $validator = Validator::make($request->all(), []);
@@ -35,8 +35,7 @@ class CpsPoliceReferralFormController extends Controller
             'officer_in_charge' =>  $request->officer_in_charge,
             'the_above_patient_ongoing' =>  $request->the_above_patient_ongoing,
             'name' =>  $request->name,
-            'designation' =>  $request->designation,
-            'appointment_details_id' => $request->appId,
+            'designation' =>  $request->designation
         ];
 
         try {
@@ -62,8 +61,7 @@ class CpsPoliceReferralFormController extends Controller
             'officer_in_charge' =>  $request->officer_in_charge,
             'the_above_patient_ongoing' =>  $request->the_above_patient_ongoing,
             'name' =>  $request->name,
-            'designation' =>  $request->designation,
-            'appointment_details_id' => $request->appId,
+            'designation' =>  $request->designation
         ];
 
         try {

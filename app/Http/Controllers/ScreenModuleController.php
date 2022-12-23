@@ -477,7 +477,15 @@ class ScreenModuleController extends Controller
     {
         $validator = Validator::make($request->all(), ['hospital_id' => 'required|integer','branch_id' => 'required|integer']);
         if ($validator->fails()) return  response()->json(["message" => $validator->errors(), "code" => 422]);
-        $list = HospitalBranchTeamManagement::select('id', 'team_name')->where('hospital_id', $request->hospital_id)->where('hospital_branch_id', $request->branch_id)->get();
+        $list =DB::table('service_division')
+                ->select('service_division.id', 'service_register.service_name as team_name')
+                ->join('service_register', 'service_register.id', '=', 'service_division.service_id')
+                ->join('hospital_branch__details','hospital_branch__details.id','=','service_division.branch_id')
+                ->where('service_division.hospital_id', '=', $request->hospital_id)
+                ->where('hospital_branch__details.id', '=', $request->branch_id)
+                ->where('service_division.status', '=', '1')
+                ->get();
+
         return response()->json(["message" => "Team List", 'list' => $list, "code" => 200]);
     }
 

@@ -44,7 +44,7 @@ table {
         <td colspan="2">&lt; 10 years</td>
         <td colspan="2">10-19 years</td>
         <td colspan="2">20-59 years</td>
-        <td colspan="2">&gt;=60 10 years</td>
+        <td colspan="2">&gt;=60 years</td>
         <td colspan="2">Total by Gender</td>
         <td rowspan="2">Total by Race</td>
       </tr>

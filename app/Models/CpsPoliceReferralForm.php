@@ -18,6 +18,5 @@ class CpsPoliceReferralForm extends Model
         'name',
         'designation',
         'created_at',
-        'appointment_details_id'
     ];
 }

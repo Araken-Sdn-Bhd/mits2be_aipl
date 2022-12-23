@@ -385,6 +385,7 @@ class PatientRegistrationController extends Controller
             $result[$key]['nric_no'] = $val['nric_no'] ?? 'NA';
             $result[$key]['passport_no'] = $val['passport_no'] ?? 'NA';
             $result[$key]['salutation'] = $val['salutation'][0]['section_value'] ?? 'NA';
+            $result[$key]['branch_id'] = $val['branch_id'];
 
             if ($val['service'] != null) {
                 $result[$key]['service'] = $val['service']['service_name'];

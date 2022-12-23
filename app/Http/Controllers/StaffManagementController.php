@@ -285,6 +285,7 @@ class StaffManagementController extends Controller
                 ->select(
                     'roles.role_name',
                     'staff_management.id',
+                    'staff_management.branch_id',
                     'users.id as users_id',
                     'service_register.service_name',
                     'staff_management.name',
@@ -383,6 +384,23 @@ class StaffManagementController extends Controller
                 ->where('staff_management.branch_id', '=', $request->branch_id)
                 ->get();
         }
+        return response()->json(["message" => "Users List", 'list' => $users, "code" => 200]);
+    }
+
+    public function getUserlistbyTeam(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'branch_id' => 'required|integer'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+            $users = DB::table('users')
+                ->leftjoin('staff_management', 'users.email', '=', 'staff_management.email')
+                ->select('staff_management.id', 'users.id as users_id', 'users.name', 'users.role')
+                ->where('staff_management.branch_id', '=', $request->branch_id)
+                ->where('staff_management.team_id', '=', $request->team_id)
+                ->get();
         return response()->json(["message" => "Users List", 'list' => $users, "code" => 200]);
     }
 

@@ -46,6 +46,17 @@ class PatientByAgeReportController extends Controller
         })
         ->whereBetween('pad.booking_date', [$request->fromDate, $request->toDate])
         ->where('appointment_status', '1');
+        
+        $users = DB::table('staff_management')
+        ->select('roles.code')
+        ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+        ->where('staff_management.email', '=', $request->email)
+        ->first();
+        $users2  = json_decode(json_encode($users), true);
+
+        if($users2['code']!='superadmin'){
+            $query->where('p.branch_id','=',$request->branch_id);
+        }    
 
         if ($demo){
         $query->where($demo);
@@ -73,6 +84,7 @@ class PatientByAgeReportController extends Controller
         $patient = [];
         $result = [];
         $index=0;
+        dd($response);
         if ($response) {
 
             foreach ($response as $key => $val) {
