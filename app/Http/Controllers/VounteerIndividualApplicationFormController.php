@@ -631,6 +631,7 @@ class VounteerIndividualApplicationFormController extends Controller
 
     public function getList()
     {
+      
         $result = [];
         $k = 0;
         $indi = VonOrgRepresentativeBackground::where('section', 'individual')->where('status', '0')->get();
