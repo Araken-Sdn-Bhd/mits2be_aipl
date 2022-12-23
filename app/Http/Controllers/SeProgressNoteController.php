@@ -472,7 +472,7 @@ class SeProgressNoteController extends Controller
                         $patient_category = 150;
                         $type_visit = 153;
 
-                        $PatientDetails = PatientRegistration::where('id', $request->patient_id)->where('patient_mrn_id', $request->patient_mrn_id)->first();
+                        $PatientDetails = PatientRegistration::where('id', $request->patient_id)->where('patient_mrn', $request->patient_mrn_id)->first();
                         if ($PatientDetails->nric_no != null || $PatientDetails->nric_no != '') {
                             $nric_or_passportno = $PatientDetails->nric_no;
                         } else if ($PatientDetails->passport_no != null && $PatientDetails->nric_no == null && $PatientDetails->nric_no != '') {
