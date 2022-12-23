@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CalendarException;
+use App\Models\HospitalBranchManagement;
 use Carbon\Exceptions\Exception;
 use Validator;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +22,6 @@ class CalendarExceptionController extends Controller
             'start_date' => 'required',
             'end_date' => 'required',
             'description' => 'required|string',
-            'state' => 'required|string',
             'type' => 'required|string',
             'branch_id' => 'required|integer'
         ]);
@@ -41,7 +41,6 @@ class CalendarExceptionController extends Controller
                     'end_date' =>  $request->end_date,
                     'description' =>  $request->description,
                     'branch_id' =>  $request->branch_id,
-                    'state' =>  $val
                 ];
             }
             try {
@@ -62,7 +61,6 @@ class CalendarExceptionController extends Controller
             'start_date' => 'required',
             'end_date' => 'required',
             'description' => 'required|string',
-            'state' => 'required|string',
             'branch_id' => 'required|integer'
         ]);
         if ($validator->fails()) {
@@ -77,7 +75,6 @@ class CalendarExceptionController extends Controller
             'start_date' =>  $request->start_date,
             'end_date' =>  $request->end_date,
             'description' =>  $request->description,
-            'state' =>  $request->state,
             'branch_id' =>  $request->branch_id,
             'status' => "1"
         ]);
@@ -103,9 +100,72 @@ class CalendarExceptionController extends Controller
 
     public function getAnnouncementList()
     {
-        $list = CalendarException::select('id', 'name', 'start_date', 'end_date')
-            ->where('status', '=', '1')
-            ->get();
+
+        $list = DB::table('calendar_exception as c')    
+        ->select('c.id', 'c.name', 'c.start_date', DB::raw("DATE_ADD(c.end_date, INTERVAL 1 DAY) as end_date"),
+        'c.end_date as until_date','c.branch_id','c.description')
+        
+        ->get();
+
+        foreach($list as $item){
+         if ($item->branch_id != 0){
+           $branch = HospitalBranchManagement::where('id',$item->branch_id)
+            ->select('hospital_branch_name')->first();
+            $item->branch_id = $branch->hospital_branch_name;
+         }else if ($item->branch_id == 0){
+            $item->branch_id ='ALL BRANCH';
+         }else{
+            $item->branch_id ="";
+         }
+        }
+
+        return response()->json(["message" => "Announcement List", 'list' => $list, "code" => 200]);
+    }
+    public function getAnnouncementListBranch(Request $request)
+    {
+
+        $list = DB::table('calendar_exception')    
+        ->select('id', 'name', 'start_date', DB::raw("DATE_ADD(end_date, INTERVAL 1 DAY) as end_date"),
+        'end_date as until_date','branch_id','description')
+        ->where('branch_id','=',$request->branch_id)
+        ->get();
+
+        foreach($list as $item){
+         if ($item->branch_id != 0){
+           $branch = HospitalBranchManagement::where('id',$item->branch_id)
+            ->select('hospital_branch_name')->first();
+            $item->branch_id = $branch->hospital_branch_name;
+         }else if ($item->branch_id == 0){
+            $item->branch_id ='ALL BRANCH';
+         }else{
+            $item->branch_id ="";
+         }
+        }
+
+        return response()->json(["message" => "Announcement List", 'list' => $list, "code" => 200]);
+    }
+    public function calendarview(Request $request)
+    {
+
+        $list = DB::table('calendar_exception')    
+        ->select('id', 'name', 'start_date', DB::raw("DATE_ADD(end_date, INTERVAL 1 DAY) as end_date"),
+        'end_date as until_date','branch_id','description')
+        ->where('branch_id','=',$request->branch_id)
+        ->orWhere('branch_id',0)
+        ->get();
+
+        foreach($list as $item){
+         if ($item->branch_id != 0){
+           $branch = HospitalBranchManagement::where('id',$item->branch_id)
+            ->select('hospital_branch_name')->first();
+            $item->branch_id = $branch->hospital_branch_name;
+         }else if ($item->branch_id == 0){
+            $item->branch_id ='ALL BRANCH';
+         }else{
+            $item->branch_id ="";
+         }
+        }
+
         return response()->json(["message" => "Announcement List", 'list' => $list, "code" => 200]);
     }
 
@@ -117,7 +177,7 @@ class CalendarExceptionController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        $list = CalendarException::select('id', 'name', 'start_date', 'end_date','description','branch_id','state')
+        $list = CalendarException::select('id', 'name', 'start_date', 'end_date','description','branch_id')
             ->where('id', '=', $request->id)
             ->get();
         return response()->json(["message" => "Announcement List", 'list' => $list, "code" => 200]);
@@ -133,20 +193,59 @@ class CalendarExceptionController extends Controller
             $data = Excel::toArray([], $file);
             foreach ($data as $k => $v) {
                 foreach ($v as $key => $val) {
+                    
                     if ($key != 0) {
+
+                        if( $val[2] != ""){
                         $addexception[] = [
                             'added_by' =>  $request->added_by,
-                            'name' =>  $val[3],
-                            'start_date' =>  Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[1])),
-                            'end_date' =>   Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[2])),
+                            'branch_id' =>  $val[1],
+                            'name' =>  $val[2],
+                            'start_date' =>  Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[3])),
+                            'end_date' =>   Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[4])),
                             'description' =>  $val[5],
-                            'state' =>  $val[4]
                         ];
+                        $HOD = CalendarException::insert($addexception);
+                    }
                     }
                 }
             }
             try {
-                $HOD = CalendarException::insert($addexception);
+                unlink($file);
+            } catch (Exception $e) {
+                return response()->json(["message" => $e->getMessage(), 'Exception' => $addexception, "code" => 200]);
+            }
+            return response()->json(["message" => "Exception Uploaded Successfully!", "code" => 200]);
+        }
+    }
+    public function readExceptionsBranch(Request $request)
+    {
+        if ($request->hasFile('exceptions')) {
+            $files = $request->file('exceptions');
+            $isUploaded = upload_exception_file($files, 'CalenderExceptions');
+            $file = Storage::path('public/' . $isUploaded->getData()->path);
+            $addexception = [];
+            $data = Excel::toArray([], $file);
+            foreach ($data as $k => $v) {
+                foreach ($v as $key => $val) {
+                    
+                    if ($key != 0) {
+
+                        if( $val[2] != ""){
+                        $addexception[] = [
+                            'added_by' =>  $request->added_by,
+                            'branch_id' =>  $request->branch_id,
+                            'name' =>  $val[1],
+                            'start_date' =>  Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[2])),
+                            'end_date' =>   Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[3])),
+                            'description' =>  $val[4],
+                        ];
+                        $HOD = CalendarException::insert($addexception);
+                    }
+                    }
+                }
+            }
+            try {
                 unlink($file);
             } catch (Exception $e) {
                 return response()->json(["message" => $e->getMessage(), 'Exception' => $addexception, "code" => 200]);
@@ -158,7 +257,12 @@ class CalendarExceptionController extends Controller
     {
             $filename = 'exception_template'. '.xlsx';
             $filePath = 'CalendarExceptions/'.$filename;
-            // $pathToFile = Storage::url($filePath);
-            return response()->json(["message" => "KPI Report",  'filepath' => env('APP_URL') .'/'. $filePath, "code" => 200]);
+            return response()->json(["message" => "Excel Template",  'filepath' => env('APP_URL') .'/'. $filePath, "code" => 200]);
+    }
+    public function getExcelBranch(Request $request)
+    {
+            $filename = 'exception_template_branch'. '.xlsx';
+            $filePath = 'CalendarExceptions/'.$filename;
+            return response()->json(["message" => "Excel Template",  'filepath' => env('APP_URL') .'/'. $filePath, "code" => 200]);
     }
 }

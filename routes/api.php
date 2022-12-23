@@ -385,8 +385,12 @@ Route::group(['prefix' => 'calendar-management'], function () {
     Route::post('/remove', [CalendarExceptionController::class, 'remove']);
     Route::post('/getAnnouncementListById', [CalendarExceptionController::class, 'getAnnouncementListById']);
     Route::get('/getAnnouncementList', [CalendarExceptionController::class, 'getAnnouncementList']);
+    Route::post('/getAnnouncementList-branch', [CalendarExceptionController::class, 'getAnnouncementListBranch']);
+    Route::post('/calendar-view', [CalendarExceptionController::class, 'calendarview']);
     Route::post('/upload-exception', [CalendarExceptionController::class, 'readExceptions']);
+    Route::post('/upload-exception-branch', [CalendarExceptionController::class, 'readExceptionsBranch']);
     Route::post('/download-excel', [CalendarExceptionController::class, 'getExcel']);
+    Route::post('/download-excel-branch', [CalendarExceptionController::class, 'getExcelBranch']);
 });
 
 Route::group(['prefix' => 'mentari-staff-transfer'], function () {
