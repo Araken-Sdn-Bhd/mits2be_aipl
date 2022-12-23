@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\DB;
 use App\Models\SeProgressNote;
 use App\Models\PatientRegistration;
 use App\Models\StaffManagement;
+use DateTime;
+use App\Models\TransactionLog;
+use DateTimeZone;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\AppointmentRequestMail as AppointmentRequestMail;
 
 class SeProgressNoteController extends Controller
 {
