@@ -163,7 +163,7 @@ class WorkAnalysisFormController extends Controller
                  'complexity_services' => '',
                  'outcome' => '',
                  'medication_des' => '',
-                 'jobs' =>'required',
+                 'jobs' =>'',
                  'job_specification' =>'',
                  'appointment_details_id'=>'',
             ]);
