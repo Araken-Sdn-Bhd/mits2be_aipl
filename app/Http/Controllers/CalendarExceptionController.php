@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\CalendarException;
+use App\Models\HospitalBranchManagement;
 use Carbon\Exceptions\Exception;
 use Validator;
 use Illuminate\Support\Facades\DB;
@@ -103,9 +104,21 @@ class CalendarExceptionController extends Controller
 
     public function getAnnouncementList()
     {
-        $list = CalendarException::select('id', 'name', 'start_date', 'end_date')
-            ->where('status', '=', '1')
-            ->get();
+        $list = DB::table('calendar_exception as c')    
+        ->select('c.id', 'c.name', 'c.start_date', DB::raw("DATE_ADD(c.end_date, INTERVAL 1 DAY) as end_date"),
+        'c.end_date as until_date','c.branch_id','c.description')
+        ->get();
+
+        foreach($list as $item){
+         if ($item->branch_id != 0){
+           $branch = HospitalBranchManagement::where('id',$item->branch_id)
+            ->select('hospital_branch_name')->first();
+            $item->branch_id = $branch->hospital_branch_name;
+         }else{
+            $item->branch_id ='ALL BRANCH';
+         }
+        }
+
         return response()->json(["message" => "Announcement List", 'list' => $list, "code" => 200]);
     }
 
@@ -117,7 +130,7 @@ class CalendarExceptionController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        $list = CalendarException::select('id', 'name', 'start_date', 'end_date','description','branch_id','state')
+        $list = CalendarException::select('id', 'name', 'start_date', 'end_date','description','branch_id')
             ->where('id', '=', $request->id)
             ->get();
         return response()->json(["message" => "Announcement List", 'list' => $list, "code" => 200]);
