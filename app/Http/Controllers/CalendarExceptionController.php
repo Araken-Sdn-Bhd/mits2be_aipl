@@ -42,7 +42,6 @@ class CalendarExceptionController extends Controller
                     'end_date' =>  $request->end_date,
                     'description' =>  $request->description,
                     'branch_id' =>  $request->branch_id,
-                    'state' =>  $val
                 ];
             }
             try {
@@ -63,7 +62,6 @@ class CalendarExceptionController extends Controller
             'start_date' => 'required',
             'end_date' => 'required',
             'description' => 'required|string',
-            'state' => 'required|string',
             'branch_id' => 'required|integer'
         ]);
         if ($validator->fails()) {
@@ -78,7 +76,6 @@ class CalendarExceptionController extends Controller
             'start_date' =>  $request->start_date,
             'end_date' =>  $request->end_date,
             'description' =>  $request->description,
-            'state' =>  $request->state,
             'branch_id' =>  $request->branch_id,
             'status' => "1"
         ]);
@@ -114,8 +111,10 @@ class CalendarExceptionController extends Controller
            $branch = HospitalBranchManagement::where('id',$item->branch_id)
             ->select('hospital_branch_name')->first();
             $item->branch_id = $branch->hospital_branch_name;
-         }else{
+         }else if ($item->branch_id == 0){
             $item->branch_id ='ALL BRANCH';
+         }else{
+            $item->branch_id ="";
          }
         }
 
@@ -146,20 +145,24 @@ class CalendarExceptionController extends Controller
             $data = Excel::toArray([], $file);
             foreach ($data as $k => $v) {
                 foreach ($v as $key => $val) {
+                    
                     if ($key != 0) {
+
+                        if( $val[2] != ""){
                         $addexception[] = [
                             'added_by' =>  $request->added_by,
-                            'name' =>  $val[3],
-                            'start_date' =>  Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[1])),
-                            'end_date' =>   Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[2])),
+                            'branch_id' =>  $val[1],
+                            'name' =>  $val[2],
+                            'start_date' =>  Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[3])),
+                            'end_date' =>   Carbon::instance(\PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($val[4])),
                             'description' =>  $val[5],
-                            'state' =>  $val[4]
                         ];
+                        $HOD = CalendarException::insert($addexception);
+                    }
                     }
                 }
             }
             try {
-                $HOD = CalendarException::insert($addexception);
                 unlink($file);
             } catch (Exception $e) {
                 return response()->json(["message" => $e->getMessage(), 'Exception' => $addexception, "code" => 200]);
