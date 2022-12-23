@@ -760,7 +760,7 @@ class PatientRegistrationController extends Controller
                 ->where('branch_id', $request->branch_id)
                 ->with('salutation:section_value,id')->with('service:service_name,id')
                 ->with('appointments', function ($query) {
-                    $query->where('appointment_status', '=', '1');
+                    $query->where('appointment_status', '=', '0');
                 })
                 ->get()->toArray();
         } else if ($request->branch_id == 0) {
@@ -768,7 +768,7 @@ class PatientRegistrationController extends Controller
                 ->where('sharp', '=', '0')
                 ->with('salutation:section_value,id')->with('service:service_name,id')
                 ->with('appointments', function ($query) {
-                    $query->where('appointment_status', '=', '1');
+                    $query->where('appointment_status', '=', '0');
                 })
                 ->get()->toArray();
         }

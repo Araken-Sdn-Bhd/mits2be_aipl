@@ -16,7 +16,7 @@ class PatientRegistration extends Model
     use HasFactory;
     protected $table = 'patient_registration';
     protected $fillable = [
-        'added_by', 'branch_id', 'salutation_id', 'name_asin_nric', 'citizenship', 'nric_type', 'nric_no', 'passport_no', 'expiry_date', 'country_id', 'sex', 'birth_date', 'age', 'mobile_no', 'house_no', 'added_by', 'hospital_mrn_no', 'mintari_mrn_no', 'services_type', 'referral_type', 'referral_letter', 'address1', 'address2', 'address3', 'state_id', 'city_id', 'postcode', 'race_id', 'religion_id', 'marital_id',
+        'id','added_by', 'branch_id', 'salutation_id', 'name_asin_nric', 'citizenship', 'nric_type', 'nric_no', 'passport_no', 'expiry_date', 'country_id', 'sex', 'birth_date', 'age', 'mobile_no', 'house_no', 'added_by', 'hospital_mrn_no', 'mintari_mrn_no', 'services_type', 'referral_type', 'referral_letter', 'address1', 'address2', 'address3', 'state_id', 'city_id', 'postcode', 'race_id', 'religion_id', 'marital_id',
         'accomodation_id', 'education_level', 'occupation_status', 'fee_exemption_status', 'occupation_sector',
         'kin_name_asin_nric', 'kin_relationship_id', 'kin_mobile_no', 'kin_house_no', 'kin_address1',
         'kin_address2', 'kin_address3', 'kin_state_id', 'kin_city_id', 'kin_postcode', 'drug_allergy',
@@ -87,5 +87,5 @@ class PatientRegistration extends Model
     {
         return $this->hasMany(GeneralSetting::class, "id", "accomodation_id");
     }
-    
+
 }
