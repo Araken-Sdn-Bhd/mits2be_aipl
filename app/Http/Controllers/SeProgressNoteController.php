@@ -34,7 +34,6 @@ class SeProgressNoteController extends Controller
     }
     public function store(Request $request)
     {
-        dd($request);
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
         ]);
