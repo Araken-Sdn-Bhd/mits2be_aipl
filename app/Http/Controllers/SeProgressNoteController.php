@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\DB;
 use App\Models\SeProgressNote;
 use App\Models\PatientRegistration;
 use App\Models\StaffManagement;
+use App\Models\Notifications;
+use App\Models\AppointmentRequest;
+use App\Models\HospitalBranchManagement;
 use DateTime;
 use App\Models\TransactionLog;
 use DateTimeZone;
@@ -34,7 +37,6 @@ class SeProgressNoteController extends Controller
     }
     public function store(Request $request)
     {
-        dd($request);
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
         ]);
@@ -460,10 +462,10 @@ class SeProgressNoteController extends Controller
                 }
             } else {
                 if ($request->appId == null || $request->appId == '') {
-                    // $checkTodayAppointment = PatientAppointmentDetails::where('patient_mrn_id', $request->patient_mrn_id)->latest("updated_at")->get();
-                    // if ($checkTodayAppointment) {
-                    //     $request->appId = $checkTodayAppointment->id;
-                    // } else {
+                    $checkTodayAppointment = PatientAppointmentDetails::where('patient_mrn_id', $request->patient_id)->latest("created_at")->first();
+                    if ($checkTodayAppointment) {
+                        $request->appId = $checkTodayAppointment->id;
+                    } else {
                         $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
                         $duration_set = 30;
                         $booking_date_set = $date->format('Y-m-d H:i:s');
@@ -489,7 +491,7 @@ class SeProgressNoteController extends Controller
                         if (count($getmnr_id) == 0) {
                             return response()->json(["message" => "This user is not registered", "code" => 401]);
                         } else {
-                            $booking_date = new Time('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+                            $booking_date = $booking_date_set;
                             $booking_time = $booking_time_set;
                             $assign_team = $assign_team_set;
                             $branch_id = $userDetails->branch_id;
@@ -558,12 +560,11 @@ class SeProgressNoteController extends Controller
                                         ]);
                                     }
                                 };
-                                return response()->json(["message" => "Patient Appointment Created Successfully!", "code" => 200]);
                             } else {
                                 return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
                             }
                         }
-                    // }
+                    }
                 }
 
                 if ($request->service_category == 'assisstance' || $request->service_category == 'external') {
@@ -571,14 +572,10 @@ class SeProgressNoteController extends Controller
                     $seprogressnote = [
                         'services_id' =>  $request->services_id,
                         'added_by' =>  $request->added_by,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
+                        'patient_mrn_id' =>  $request->patient_id,
                         'patient_id' =>  $request->patient_id,
                         'name' =>  $request->name,
-                        'ds
-
-
-
-                        ' =>  $request->mrn,
+                        'mrn' =>  $request->mrn,
                         'date' =>  $request->date,
                         'time' =>  $request->time,
                         'staff_name' =>  $request->staff_name,
