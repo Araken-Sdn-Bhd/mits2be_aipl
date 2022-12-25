@@ -112,62 +112,33 @@ class VonAppointmentController extends Controller
     public function listAppointment(Request $request)
     {
 
-        $role = DB::table('staff_management')
-        ->select('roles.code')
-        ->join('roles', 'staff_management.role_id', '=', 'roles.id')
-        ->where('staff_management.email', '=', $request->email)
-        ->first();
+        $record= DB::table('von_appointment')
+        ->select('von_appointment.*','staff_management.name as dr_name','areas_of_involvement.name as aoi')
 
-        $search = [];
-        if ($request->date) {
-            $search['booking_date'] = $request->date;
-        }
-        if ($request->service) {
-            $search['services_type'] = $request->service;
-        }
-        $list = [];
+        ->leftJoin('von_org_representative_background', 'von_org_representative_background.id', '=', 'von_appointment.parent_section_id')
+        ->leftJoin('staff_management','von_appointment.interviewer_id','=','staff_management.id')
+        ->leftJoin('areas_of_involvement','areas_of_involvement.id','=','von_appointment.area_of_involvement')
+        ->where('von_org_representative_background.branch_id',$request->branch_id)
+        ->where('von_appointment.status','0');
+        
         if($request->name != "" || $request->name != null) {
-            $sql = VonAppointment::query();
-            $sql = $sql->where('name', 'LIKE', '%' . $request->name. '%');
-            if ($request->date != null || $request->date != ""){
-                $sql = $sql->where('booking_date','=', $request->date);
-            }
-            if ($request->service != null || $request->service != ""){
-                $sql = $sql->where('services_type','=', $request->service);
-            }
-            $records = $sql->get();
-           
-        }else{
-            $sql = VonAppointment::query();
-            $sql = $sql->where('status','=','0');
-            if ($request->date != null || $request->date != ""){
-                $sql = $sql->where('booking_date','=', $request->date);
-            }
-            if ($request->service != null || $request->service != ""){
-                $sql = $sql->where('services_type','=', $request->service);
-            }
-            $records = $sql->get();
+           $record->where('von_appointment.name', 'like', '%'.$request->name.'%');
+          
         }
-        if ($records) {
-            foreach ($records as $key => $val) {
-                $list[$key]['id'] = $val['id'];
-                $list[$key]['name'] = $val['name'];
-                $list[$key]['app_date'] = date('d/m/Y', strtotime($val['booking_date']));
-                $list[$key]['app_time'] = date('H:i a', strtotime($val['booking_time']));
-                $dr = StaffManagement::where('id', $val['interviewer_id'])->get()->pluck('name')->toArray();
-                if (!$dr){
-                    $list[$key]['dr_name'] = 'NA';
-                } else {
+        if ($request->date != null || $request->date != ""){
+            $record->where('von_appointment.booking_date','=', $request->date);
+        }
+        if ($request->service != null || $request->service != ""){
+            $record->where('von_appointment.services_type','=', $request->service);
+        }
 
-                    $list[$key]['dr_name'] = $dr[0];
+        $list = $record->get();
+
+        foreach ($list as $item) { 
+                    $item->app_date = date('d/m/Y', strtotime($item->booking_date));
+                    $item->app_time = date('H:i a', strtotime($item->booking_time));    
                 }
-                $aoi = AreasOfInvolvement::where('id', $val['area_of_involvement'])->get()->pluck('name')->toArray();
-                $list[$key]['aoi'] = $aoi[0];
-                $list[$key]['service'] = $val['services_type'];
-                
-            }
-        }
-
+       
         return response()->json(["message" => "Von List", "list" => $list, "code" => 200]);
     }
 
