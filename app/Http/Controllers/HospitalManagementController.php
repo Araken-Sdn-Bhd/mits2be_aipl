@@ -284,6 +284,16 @@ class HospitalManagementController extends Controller
         return response()->json(["message" => "Hospital Branch Excluded Hospital List", 'list' => $list, "code" => 200]);
     }
 
+    
+    public function getBranchExcludedMentariList()
+    {
+        $list = HospitalBranchManagement::select('id', 'hospital_branch_name', 'branch_adrress_1', 'hospital_code', 'branch_adrress_2', 'branch_adrress_3', 'branch_contact_number_office', 'branch_fax_no')
+        ->where('branch_status','=', '1')
+        ->where('hospital_branch_name', 'not like', '%mentari%')
+        ->get();
+        return response()->json(["message" => "Hospital Branch Excluded Mentari List", 'list' => $list, "code" => 200]);
+    }
+
     public function getHospitalBranchTeamList()
     {
         $list = HospitalBranchTeamManagement::select('id', 'hospital_branch_name', 'team_name', 'hospital_code')->where('status','=', '1')->get();
