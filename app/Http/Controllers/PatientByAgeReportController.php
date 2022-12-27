@@ -84,7 +84,7 @@ class PatientByAgeReportController extends Controller
         $patient = [];
         $result = [];
         $index=0;
-        dd($response);
+   
         if ($response) {
 
             foreach ($response as $key => $val) {
