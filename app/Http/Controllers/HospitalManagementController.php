@@ -351,9 +351,14 @@ class HospitalManagementController extends Controller
         $stafflist = StaffManagement::select('id', 'name')
         ->where('branch_id','=', $list[0]['branch_id'])->get();
 
-        $role_id=7;
-        $rolelist = StaffManagement::select('id', 'name')
-        ->where('role_id','=', $role_id)->get();
+        $rolelist = DB::table('staff_management')
+        ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+        ->where(function ($query){
+			$query->where('role_name', 'LIKE', "%Medical Officer%")
+                        ->orWhere('role_name', 'LIKE', "%Psychiatrist%");
+                    })
+        ->where('branch_id','=', $list[0]['branch_id'])
+        ->get();
 
         return response()->json(["message" => "Staff Name", 'list' => $list2, 'stafflist' => $stafflist, 'rolelist' => $rolelist, "code" => 200]);
 
@@ -368,7 +373,7 @@ class HospitalManagementController extends Controller
         ->get();
         return response()->json(["message" => "Staff Name", 'list' => $list2, "code" => 200]);
     }
-    
+
     public function getServiceByBranchTeamId(Request $request)
     {
         $list = StaffManagement::select('id', 'team_id', 'branch_id')->where('email','=', $request->email)->get();
