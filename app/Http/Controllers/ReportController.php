@@ -894,9 +894,7 @@ class ReportController extends Controller
         }
         
     
-    
-
-    
+        
     
     public function getTotalPatientTypeRefferalReport(Request $request)
     {
@@ -936,7 +934,7 @@ class ReportController extends Controller
                     $pc = Postcode::where(['id' => $patientInfo['postcode']])->get()->toArray();
                     $st = State::where(['id' => $patientInfo['state_id']])->get()->toArray();
                     $vt = PatientAppointmentVisit::where('id', $v['type_visit'])->get()->toArray();
-                    $cp = PatientAppointmentCategory::where('id', $v['patient_category'])->get()->toArray();
+                    $cp = GeneralSetting::where('id', $v['patient_category'])->get()->toArray();
                     $reftyp = GeneralSetting::where(['id' => $patientInfo['referral_type']])->get()->toArray();
                     $city_name = ($pc) ? $pc[0]['city_name'] : 'NA';
                     $state_name = ($st) ? $st[0]['state_name'] : 'NA';
@@ -1710,7 +1708,7 @@ class ReportController extends Controller
                     $occupation_sectorValue = ($occupation_sector) ? $occupation_sector[0]['section_value'] : 'NA';
                     $apt = ServiceRegister::where(['id' => $v['appointment_type']])->get()->toArray();
                     $vt = PatientAppointmentVisit::where('id', $v['type_visit'])->get()->toArray();
-                    $cp = PatientAppointmentCategory::where('id', $v['patient_category'])->get()->toArray();
+                    $cp = GeneralSetting::where('id', $v['patient_category'])->get()->toArray();
                     
                     if ($notes)
                         $icd = IcdCode::where('id', $notes[0]['code_id'])->get()->toArray();
