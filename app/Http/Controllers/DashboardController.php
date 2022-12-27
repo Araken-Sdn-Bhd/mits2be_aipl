@@ -261,29 +261,28 @@ class DashboardController extends Controller
             ->groupBy('appointment_request.created_at', 'Month', 'hospital_name')
             ->get();
 
-        $listSQL = PatientAppointmentDetails::select(DB::raw('count(*) as total_appointments_request'));
+        $listSQL = AppointmentRequest::select(DB::raw('count(*) as total_appointments_request'));
         if ($request->taryear != 0)
             $listSQL->whereYear('created_at', $request->taryear);
         if ($request->tarmonth != 0)
             $listSQL->whereMonth('created_at', $request->tarmonth);
+        if ($request->tarmentari != 0)
+            $listSQL->where('branch_id', $request->tarmentari);
 
         $list = $listSQL->get();
 
-        $totalmentarilocationSQL = HospitalBranchManagement::select(DB::raw('count(*) as TotalMentariLocation'));
-        if ($request->taryear != 0)
-            $totalmentarilocationSQL->whereYear('created_at', $request->taryear);
-        if ($request->tarmonth != 0)
-            $totalmentarilocationSQL->whereMonth('created_at', $request->tarmonth);
-        if ($request->tarmentari != 0)
-            $totalmentarilocationSQL->where('hospital_id', $request->tarmentari);
+        $totalmentarilocationSQL = HospitalBranchManagement::select(DB::raw('count(*) as TotalMentariLocation'))
+                                                            ->where('hospital_branch_name', 'LIKE', '%mentari%');
         if ($request->branch_stateid != 0)
             $totalmentarilocationSQL->where('branch_state', $request->branch_stateid);
+        if($request->branch_stateid == 0)
+            $totalmentarilocationSQL->where('branch_state', '0');
 
         $totalmentarilocation = $totalmentarilocationSQL->get();
 
 
 
-        $totalmentariSQL = HospitalManagement::select(DB::raw('count(*) as TotalMentari'));
+        $totalmentariSQL = HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->where('branch_status', '=', '1')->select(DB::raw('count(*) as TotalMentari'));
         if ($request->tmpyear != 0)
             $totalmentariSQL->whereYear('created_at', $request->tmpyear);
         if ($request->tmpmonth != 0)
@@ -477,50 +476,64 @@ class DashboardController extends Controller
 
 
         $tabData = [
-            array("tab" => "psychiatry_clerking_note", "col" => "type_diagnosis_id"),
-            array("tab" => "patient_counsellor_clerking_notes", "col" => "type_diagnosis_id"),
-            array("tab" => "psychiatric_progress_note", "col" => "type_diagnosis_id"),
-            array("tab" => "cps_progress_note", "col" => "diagnosis_type"),
-            array("tab" => "se_progress_note", "col" => "diagnosis_type"),
-            array("tab" => "counselling_progress_note", "col" => "type_diagnosis_id"),
-            array("tab" => "etp_progress_note", "col" => "diagnosis_type"),
-            array("tab" => "job_club_progress_note", "col" => "diagnosis_type"),
-            array("tab" => "consultation_discharge_note", "col" => "type_diagnosis_id"),
-            array("tab" => "rehab_discharge_note", "col" => "diagnosis_type"),
-            array("tab" => "cps_discharge_note", "col" => "diagnosis_type"),
-            array("tab" => "patient_care_paln", "col" => "type_of_diagnosis"),
-            array("tab" => "job_start_form", "col" => "type_of_diagnosis"),
-            array("tab" => "job_end_report", "col" => "type_of_diagnosis"),
-            array("tab" => "job_transition_report", "col" => "type_of_diagnosis"),
-            array("tab" => "laser_assesmen_form", "col" => "type_of_diagnosis"),
-            array("tab" => "triage_form", "col" => "type_diagnosis_id"),
-            array("tab" => "work_analysis_forms", "col" => "type_diagnosis_id"),
-            array("tab" => "list_job_club", "col" => "type_diagnosis_id"),
-            array("tab" => "list_of_etp", "col" => "type_diagnosis_id"),
-            array("tab" => "list_of_job_search", "col" => "type_diagnosis_id"),
-            array("tab" => "log_meeting_with_employer", "col" => "type_diagnosis_id"),
-            array("tab" => "list_previous_current_job", "col" => "type_diagnosis_id"),
-            array("tab" => "internal_referral_form", "col" => "type_diagnosis_id"),
-            array("tab" => "external_referral_form", "col" => "type_diagnosis_id"),
-            array("tab" => "cps_referral_form", "col" => "type_of_diagnosis"),
-            array("tab" => "occt_referral_form", "col" => "type_diagnosis_id"),
-            array("tab" => "psychology_referral", "col" => "type_diagnosis_id"),
-            array("tab" => "rehab_referral_and_clinical_form", "col" => "type_diagnosis_id"),
+            array("tab" => "psychiatry_clerking_note", "col" => "type_diagnosis_id" , "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "patient_counsellor_clerking_notes", "col" => "type_diagnosis_id", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "psychiatric_progress_note", "col" => "type_diagnosis_id", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "cps_progress_note", "col" => "diagnosis_type", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "se_progress_note", "col" => "diagnosis_type", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "counselling_progress_note", "col" => "type_diagnosis_id", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "etp_progress_note", "col" => "diagnosis_type", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "job_club_progress_note", "col" => "diagnosis_type", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "consultation_discharge_note", "col" => "type_diagnosis_id", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "rehab_discharge_note", "col" => "diagnosis_type", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "cps_discharge_note", "col" => "diagnosis_type", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "patient_care_paln", "col" => "type_of_diagnosis", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "job_start_form", "col" => "type_of_diagnosis", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "job_end_report", "col" => "type_of_diagnosis", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "job_transition_report", "col" => "type_of_diagnosis", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "laser_assesmen_form", "col" => "type_of_diagnosis", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "triage_form", "col" => "type_diagnosis_id", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "work_analysis_forms", "col" => "type_diagnosis_id", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "list_job_club", "col" => "type_diagnosis_id", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "list_of_etp", "col" => "type_diagnosis_id", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "list_of_job_search", "col" => "type_diagnosis_id", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "log_meeting_with_employer", "col" => "type_diagnosis_id", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "list_previous_current_job", "col" => "type_diagnosis_id", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "internal_referral_form", "col" => "type_diagnosis_id", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "external_referral_form", "col" => "type_diagnosis_id", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "cps_referral_form", "col" => "type_of_diagnosis", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "occt_referral_form", "col" => "type_diagnosis_id", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "psychology_referral", "col" => "type_diagnosis_id", "created_at" => "created_at", "added_by" => "added_by"),
+            array("tab" => "rehab_referral_and_clinical_form", "col" => "type_diagnosis_id", "created_at" => "created_at", "added_by" => "added_by"),
         ];
         $qry = "";
         $id = IcdType::select('id')->where('icd_type_code', "=", 'ICD-10')->get();
 
         foreach ($tabData as $key => $value) {
-            if ($qry) {
-                $qry .= " union all ";
-            }
-            $qry .= "SELECT count(cpn.{$value['col']}) count_ , cpn.{$value['col']} id_
-            FROM {$value['tab']} cpn
-            WHERE cpn.{$value['col']} in (select ic.id  from icd_category ic where ic.icd_type_id={$id[0]['id']} ) group by cpn.{$value['col']}";
+                $qry .= ($qry == "") ? ' ' : ' union all ';
+                $qry .= "SELECT count(cpn.{$value['col']}) count_ , cpn.{$value['col']} id_
+                FROM {$value['tab']} cpn
+                JOIN icd_code ic on ic.id = cpn.{$value['col']}
+                JOIN icd_category icdcat on icdcat.id = ic.icd_category_id ";
+                
+                if($request->scryear != 0){
+                    $qry .= " AND YEAR(cpn.{$value['created_at']}) = $request->scryear";
+                }
+
+                if($request->scrmonth != 0){
+                    $qry .= " AND MONTH(cpn.{$value['created_at']}) = $request->scrmonth";
+                }
+
+                if($request->scrmentari != 0){
+                    $qry .= " JOIN staff_management sm on sm.id = cpn.{$value['added_by']} AND sm.branch_id = $request->scrmentari";
+                }
+
+                $qry .= " WHERE cpn.{$value['col']} in (select ic.id  from icd_code ic where ic.icd_type_id={$id[0]['id']} ) group by icdcat.icd_category_code";
         }
 
 
-        $diagnosis  = DB::select("SELECT sum(bb.count_) sum_, bb.id_ , icd.icd_category_code from ( $qry ) bb , icd_category icd where bb.id_=icd.id group by icd.id,bb.id_,icd.icd_category_code;");
+
+        $diagnosis  = DB::select("SELECT sum(bb.count_) sum_, bb.id_ , icd.icd_code, icdcat.icd_category_code from ( $qry ) bb , icd_code icd join icd_category icdcat on icdcat.id = icd.icd_category_id where bb.id_=icd.id group by icdcat.icd_category_code;");
 
         $clinicreportSQLseD = JobInterestList::select(DB::raw('count( * ) as SeProgressNote'));
         if ($request->scryear != 0)
@@ -530,16 +543,15 @@ class DashboardController extends Controller
         $clinicreportSeD = $clinicreportSQLseD->get();
 
 
-        $kpiSQL = SeProgressNote::select(DB::raw('count( employment_status ) as kpiTotalCaseLoad'));
+        $kpiSQL = SeProgressNote::select(DB::raw('count( se_progress_note.employment_status ) as kpiTotalCaseLoad'));
         if ($request->kpiyear != 0)
-            $kpiSQL->whereYear('created_at', '=', $request->kpiyear);
+            $kpiSQL->whereYear('se_progress_note.created_at', '=', $request->kpiyear);
         if ($request->kpimonth != 0)
-            $kpiSQL->whereMonth('created_at', '=', $request->kpimonth);
+            $kpiSQL->whereMonth('se_progress_note.created_at', '=', $request->kpimonth);
         if ($request->kpimentari != 0)
-            $kpiSQL = DB::table('se_progress_note')
-                ->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
-                ->select(DB::raw('count(se_progress_note.employment_status) as kpiTotalCaseLoad'))
-                ->where('se_progress_note.patient_id', '=', $request->kpimentari);
+            $kpiSQL->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
+                   ->where('patient_registration.branch_id', '=', $request->kpimentari);
+
         $kpi = $kpiSQL->get();
 
         $employid = 0;
@@ -555,43 +567,40 @@ class DashboardController extends Controller
                 $terminateid = $value['id'];
             }
         }
-        $kpiEmployement1 = SeProgressNote::select(DB::raw('count( employment_status ) as employed'))
-            ->where('employment_status', '=', $employid);
+        $kpiEmployement1 = SeProgressNote::select(DB::raw('count( se_progress_note.employment_status ) as employed'))
+            ->where('se_progress_note.employment_status', '=', $employid);
         if ($request->kpiyear != 0)
-            $kpiEmployement1->whereYear('created_at', '=', $request->kpiyear);
+            $kpiEmployement1->whereYear('se_progress_note.created_at', '=', $request->kpiyear);
         if ($request->kpimonth != 0)
-            $kpiEmployement1->whereMonth('created_at', '=', $request->kpimonth);
+            $kpiEmployement1->whereMonth('se_progress_note.created_at', '=', $request->kpimonth);
         if ($request->kpimentari != 0)
-            $kpiEmployement1 = DB::table('se_progress_note')
-                ->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
-                ->select(DB::raw('count(se_progress_note.employment_status) as kpiTotalCaseLoad'))
-                ->where('se_progress_note.patient_id', '=', $request->kpimentari);
+            $kpiEmployement1->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
+                            ->where('patient_registration.branch_id', '=', $request->kpimentari);
+
         $kpiEmployement = $kpiEmployement1->get();
 
-        $kpiUnemployement1 = SeProgressNote::select(DB::raw('count( employment_status ) as unemployed'))
-            ->where('employment_status', '=', $unemployid);
+        $kpiUnemployement1 = SeProgressNote::select(DB::raw('count( se_progress_note.employment_status ) as unemployed'))
+            ->where('se_progress_note.employment_status', '=', $unemployid);
         if ($request->kpiyear != 0)
-            $kpiUnemployement1->whereYear('created_at', '=', $request->kpiyear);
+            $kpiUnemployement1->whereYear('se_progress_note.created_at', '=', $request->kpiyear);
         if ($request->kpimonth != 0)
-            $kpiUnemployement1->whereMonth('created_at', '=', $request->kpimonth);
+            $kpiUnemployement1->whereMonth('se_progress_note.created_at', '=', $request->kpimonth);
         if ($request->kpimentari != 0)
-            $kpiUnemployement1 = DB::table('se_progress_note')
-                ->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
-                ->select(DB::raw('count(se_progress_note.employment_status) as kpiTotalCaseLoad'))
-                ->where('se_progress_note.patient_id', '=', $request->kpimentari);
+            $kpiUnemployement1->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
+                              ->where('patient_registration.branch_id', '=', $request->kpimentari);
+
         $kpiUnemployement = $kpiUnemployement1->get();
 
-        $kpiTerminated1 = SeProgressNote::select(DB::raw('count( employment_status ) as terminate'))
-            ->where('employment_status', '=', $terminateid);
+        $kpiTerminated1 = SeProgressNote::select(DB::raw('count( se_progress_note.employment_status ) as terminate'))
+            ->where('se_progress_note.employment_status', '=', $terminateid);
         if ($request->kpiyear != 0)
-            $kpiTerminated1->whereYear('created_at', '=', $request->kpiyear);
+            $kpiTerminated1->whereYear('se_progress_note.created_at', '=', $request->kpiyear);
         if ($request->kpimonth != 0)
-            $kpiTerminated1->whereMonth('created_at', '=', $request->kpimonth);
+            $kpiTerminated1->whereMonth('se_progress_note.created_at', '=', $request->kpimonth);
         if ($request->kpimentari != 0)
-            $kpiTerminated1 = DB::table('se_progress_note')
-                ->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
-                ->select(DB::raw('count(se_progress_note.employment_status) as kpiTotalCaseLoad'))
-                ->where('se_progress_note.patient_id', '=', $request->kpimentari);
+            $kpiTerminated1->join('patient_registration', 'se_progress_note.patient_id', '=', 'patient_registration.id')
+                           ->where('patient_registration.branch_id', '=', $request->kpimentari);
+
         $kpiTerminated = $kpiTerminated1->get();
 
         $HLM = [];
