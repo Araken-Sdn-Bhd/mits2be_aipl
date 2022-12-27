@@ -29,7 +29,7 @@ class NotificationController extends Controller
     }
    
     
-    if($request->role=='Doctor'||$request->role=='SHHARP'||$request->role=='Doctor'||$request->role=='High Level Mgt'||$request->role=='Medical Officer'||$request->role=='Psychiatrist'||$request->role=='System Admin'||$request->role=='Counsellor') {
+    if($request->role=='Healthcare Assistant'||$request->role=='Triage Personnel'||$request->role=='Occupational Therapy'||$request->role=='Admin/Clerk') {
 
             $staff_id = StaffManagement::select('id')->where('email',$request->email)->first();
             $list2 = Notifications::select('*')
