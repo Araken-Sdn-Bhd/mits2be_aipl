@@ -131,7 +131,6 @@ class CalendarExceptionController extends Controller
     }
     public function getAnnouncementListBranch(Request $request)
     {
-
         $list = DB::table('calendar_exception')
             ->select(
                 'id',
@@ -143,6 +142,7 @@ class CalendarExceptionController extends Controller
                 'description'
             )
             ->where('branch_id', '=', $request->branch_id)
+            ->orWhere('branch_id', 0)
             ->get();
 
         foreach ($list as $item) {
