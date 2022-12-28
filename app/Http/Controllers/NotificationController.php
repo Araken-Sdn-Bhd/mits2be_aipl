@@ -15,7 +15,7 @@ class NotificationController extends Controller
             ->where('branch_id', '=', $request->branch_id)
             ->where('role', '=', $request->role)
             ->orderBy('id', 'DESC')
-            ->get();
+            ->get()->toArray();
 
      
 
@@ -37,8 +37,9 @@ class NotificationController extends Controller
                 ->where('message', '=', 'New assigned patient for vital')
                 ->orderBy('id', 'DESC')
                 ->get()->toArray();
-    
+
             if(count($list2)>0){
+
                 $result=array_merge($result, $list2);
                 
             }
