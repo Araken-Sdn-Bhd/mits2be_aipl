@@ -191,9 +191,10 @@ class PatientAppointmentDetailsController extends Controller
                 return response()->json(["message" => $validator->errors(), "code" => 422]);
             }
 
-            $getPatientIC = PatientRegistration::select('nric_no')
+            $getPatientIC = PatientRegistration::select('nric_no', 'passport_no')
                 ->where('id', $request->patient_mrn_id)->get()
-                ->pluck('nric_no');
+                ->map->only('nric_no', 'passport_no');
+
             if (count($getPatientIC) == 0 || $getPatientIC == null) {
                 return response()->json(["message" => "This user is not registered", "code" => 401]);
             } else {
@@ -206,19 +207,35 @@ class PatientAppointmentDetailsController extends Controller
                     $query->where('booking_date', '=', $booking_date)->whereBetween('booking_time', [$booking_time, $endTime])->where('assign_team', '=', $assign_team);
                 })->where('status', '1')->get();
                 if ($chkPoint->count() == 0) {
-                    $service = [
-                        'added_by' => $request->added_by,
-                        'nric_or_passportno' => $getPatientIC[0],
-                        'booking_date' => $request->booking_date,
-                        'booking_time' => $request->booking_time,
-                        'patient_mrn_id' => $request->patient_mrn_id,
-                        'duration' => $request->duration,
-                        'appointment_type' => $request->appointment_type,
-                        'type_visit' => $request->type_visit,
-                        'patient_category' => $request->patient_category,
-                        'assign_team' => $request->assign_team,
-                        'status' => "1",
-                    ];
+                    if($getPatientIC[0]['nric_no']) {
+                        $service = [
+                            'added_by' => $request->added_by,
+                            'nric_or_passportno' => $getPatientIC[0]['nric_no'],
+                            'booking_date' => $request->booking_date,
+                            'booking_time' => $request->booking_time,
+                            'patient_mrn_id' => $request->patient_mrn_id,
+                            'duration' => $request->duration,
+                            'appointment_type' => $request->appointment_type,
+                            'type_visit' => $request->type_visit,
+                            'patient_category' => $request->patient_category,
+                            'assign_team' => $request->assign_team,
+                            'status' => "1",
+                        ];
+                    } else {
+                        $service = [
+                            'added_by' => $request->added_by,
+                            'nric_or_passportno' => $getPatientIC[0]['passport_no'],
+                            'booking_date' => $request->booking_date,
+                            'booking_time' => $request->booking_time,
+                            'patient_mrn_id' => $request->patient_mrn_id,
+                            'duration' => $request->duration,
+                            'appointment_type' => $request->appointment_type,
+                            'type_visit' => $request->type_visit,
+                            'patient_category' => $request->patient_category,
+                            'assign_team' => $request->assign_team,
+                            'status' => "1",
+                        ];
+                    }
                     $patient = PatientAppointmentDetails::create($service);
                     $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
                     $notifi = [
