@@ -7,23 +7,23 @@ use Maatwebsite\Excel\Concerns\FromView;
 
 class KPIReportExport implements FromView
 {
-    private $reportSet;
-    private $yearArray;
-    private $months;
-
-    public function __construct($record, $yearArray,  $months)
+    private $mainResult;
+    private $averageResult;
+    public function __construct($mainResult,$averageResult,$year)
     {
-        $this->reportSet = $record;
-        $this->yearArray = $yearArray;
-        $this->months =  $months;
+        $this->reportSet = $mainResult;
+        $this->averageSet = $averageResult;
+        $this->yearSet = $year;
+
     }
 
     public function view(): View
     {
         return view('kpi_report',  [
-            'shharpRecords' => $this->reportSet,
-            'yearArray' => $this->yearArray,
-            'months' =>  $this->months
+            'kpirecord' => $this->reportSet,
+            'kpiaverage' => $this->averageSet,
+            'kpiyear' => $this->yearSet,
+
         ]);
     }
 }

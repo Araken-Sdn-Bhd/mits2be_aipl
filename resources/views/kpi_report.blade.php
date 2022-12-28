@@ -1,140 +1,287 @@
-<!-- <table>
-    <tr>
-        <td colspan="2" style="border-bottom:none"></td>
-        @foreach($yearArray as $i => $year)
-        <td colspan="{{ count($year)}}" style="text-align:center">{{ $i }}</td>
-        @endforeach
-    </tr>
-    <tr>
-        <td colspan="2" style="border-top:none">dddd</td>
-        @foreach($yearArray as $i => $year)
-        @foreach($year as $month)
-        <td>{{ $month }}</td>
-        @endforeach
-        @endforeach
-    </tr>
-    <tr>
-        <td>Bill</td>
-        <td>Mentari</td>
-        <td>
-            <table>
-                <tr>
-                    <td style="writing-mode: tb-rl;">1st dsd dsdsd</td>
-                    <td>1st</td>
-                    <td>1st</td>
-                    <td>1st</td>
-                    <td>1st</td>
-                </tr>
-            </table>
-        </td>
-        <td>
-            <table>
-                <tr>
-                    <td>1st</td>
-                    <td>1st</td>
-                    <td>1st</td>
-                    <td>1st</td>
-                    <td>1st</td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-
-</table> -->
-
 <style type="text/css">
-table td {
-    border: 1px solid #000;
-    padding: 5px;
-    opacity: 0.8;
-    font-weight: 500;
-}
 
-table {
-    width: auto;
-    border-spacing: 0;
-    border: 1px solid #000;
-    text-align: center;
-}
-
-.tr-box td:first-child {
-    text-align: left;
-}
-
-.last-tr td {
-    font-weight: 600;
-    opacity: 1
-}
-
-.vertical td {
-    transform: rotate(-180deg);
-    writing-mode: vertical-lr;
-    text-orientation: mixed;
-}
-.bg{
-        background: #b8cce4;
-}
-</style>
-<table>
+   </style>
+   
+   
+  
+   
+   <table>
+    
     <tbody>
-        <tr class="bg">
-            <td rowspan="3">Bil</td>
-            <td rowspan="3">Mentari</td>
-            @foreach($yearArray as $i => $year)
-                <td colspan="{{ count($year)*5 }}" style="text-align:center">{{ $i }}</td>
-            @endforeach
-        </tr>
-        <tr  class="bg">
-        <!-- <td colspan="2" style="border-top:none"></td> -->
-        @foreach($yearArray as $i => $year)
-            @foreach($year as $month)
-            <td colspan="5" style="text-align:center">{{  $months[$month-1] }}</td>
-            @endforeach
-        @endforeach
-        </tr>
-       
-        <tr class="vertical bg">
-        @foreach($yearArray as $i => $year)
-        @foreach($year as $month)
-            <td class="first-td" style=" transform: rotate(-180deg);writing-mode: vertical-lr;text-orientation: mixed;">Newly Job Place(a)</td>
-            <td>ongoing Job Placement(b)</td>
-            <td>Total Caseload(c)</td>
-            <td>Total Dismissed(d)</td>
-            <td class="fifth-td">KPI(%)</td>
-            @endforeach
-        @endforeach
-        </tr>
-        @php ($index = 1)
-        @foreach($shharpRecords as $mentari => $yearArr)
-            @foreach($yearArr as $year => $MonthArr)
-            <tr class="tr-box">
-            <td>{{$index++}}</td>
-                <td>{{$mentari}}</td>
-            @foreach($MonthArr as $month => $rec)
             
-                
-                <td>{{(string)$rec['new_job']}}</td>
-                <td>{{$rec['ongoing_job']}}</td>
-                <td>{{$rec['total_caseload']}}</td>
-                <td>{{$rec['total_dismissed']}}</td>
-                <td>{{$rec['kpi']}}</td>
-               
-               
-                @endforeach
-                </tr>
-            @endforeach
-        @endforeach
-       
-       
-        <!-- <tr class="tr-box last-tr">
-            <td></td>
-            <td></td>
-            <td colspan="4">AVERAGE</td>
-            <td>65.3</td>
-            <td colspan="4">AVERAGE</td>
-            <td>65.3</td>
-            <td colspan="4">AVERAGE</td>
-            <td>65.3</td>
-        </tr> -->
-    </tbody>
-</table>
+<tr class="tr-box">
+            <td rowspan="3">BIL</td>
+            <td rowspan="3" colspan="3">MENTARI</td>
+            <td colspan="12" rowspan="1"> YEAR {{ $kpiyear }} </td>       
+</tr>
+
+
+
+<tr>
+    @foreach($kpirecord as $i => $record)
+@foreach($record as $r => $branch)
+@endforeach
+@foreach($branch as $m => $month)
+
+
+    {{-- foreach untuk month akan mula dekat sini --}}
+    @if($m ==1)
+    <td colspan="5">January</td>
+    @endif
+    @if($m ==2)
+    <td colspan="5">February</td>
+    @endif
+    @if($m ==3)
+    <td colspan="5">March</td>
+    @endif
+    @if($m ==4)
+    <td colspan="5">April</td>
+    @endif
+    @if($m ==5)
+    <td colspan="5">May</td>
+    @endif
+    @if($m ==6)
+    <td colspan="5">June</td>
+    @endif
+    @if($m ==7)
+    <td colspan="5">July</td>
+    @endif
+    @if($m ==8)
+    <td colspan="5">August</td>
+    @endif
+    @if($m ==9)
+    <td colspan="5">September</td>
+    @endif
+    @if($m ==10)
+    <td colspan="5">October</td>
+    @endif
+    @if($m ==11)
+    <td colspan="5">November</td>
+    @endif
+    @if($m ==12)
+    <td colspan="5">December</td>
+    @endif
+
+@endforeach
+@endforeach
+</tr>
+<tr>
+    @foreach($kpiaverage as $a => $average)
+    @foreach($average as $av => $ave)
+
+
+    {{-- foreach untuk month akan mula dekat sini --}}
+    @if($av==1)
+    <td>Newly Job Placed</td> {{-- Jan --}}
+    <td>Ongoing Job Placement</td>
+    <td>Total Caseload</td>
+    <td>Total Dismissed</td>
+    <td>KPI (%)</td>
+    @endif
+
+    @if($av==2)
+    <td>Newly Job Placed</td> {{-- Feb --}}
+    <td>Ongoing Job Placement</td>
+    <td>Total Caseload</td>
+    <td>Total Dismissed</td>
+    <td>KPI (%)</td>
+    @endif
+
+    @if($av==3)
+    <td>Newly Job Placed</td> {{-- Mar --}}
+    <td>Ongoing Job Placement</td>
+    <td>Total Caseload</td>
+    <td>Total Dismissed</td>
+    <td>KPI (%)</td>
+    @endif
+
+    @if($av==4)
+    <td>Newly Job Placed</td> {{-- Apr --}}
+    <td>Ongoing Job Placement</td>
+    <td>Total Caseload</td>
+    <td>Total Dismissed</td>
+    <td>KPI (%)</td>
+    @endif
+
+    @if($av==5)
+    <td>Newly Job Placed</td> {{-- May --}}
+    <td>Ongoing Job Placement</td>
+    <td>Total Caseload</td>
+    <td>Total Dismissed</td>
+    <td>KPI (%)</td>
+    @endif
+
+    @if($av==6)
+    <td>Newly Job Placed</td> {{-- Jun --}}
+    <td>Ongoing Job Placement</td>
+    <td>Total Caseload</td>
+    <td>Total Dismissed</td>
+    <td>KPI (%)</td>
+    @endif
+
+    @if($av==7)
+    <td>Newly Job Placed</td> {{-- Jul --}}
+    <td>Ongoing Job Placement</td>
+    <td>Total Caseload</td>
+    <td>Total Dismissed</td>
+    <td>KPI (%)</td>
+    @endif
+
+    @if($av==8)
+    <td>Newly Job Placed</td> {{-- Aug --}}
+    <td>Ongoing Job Placement</td>
+    <td>Total Caseload</td>
+    <td>Total Dismissed</td>
+    <td>KPI (%)</td>
+    @endif
+
+    @if($av==9)
+    <td>Newly Job Placed</td> {{-- Sep --}}
+    <td>Ongoing Job Placement</td>
+    <td>Total Caseload</td>
+    <td>Total Dismissed</td>
+    <td>KPI (%)</td>
+    @endif
+
+    @if($av==10)
+    <td>Newly Job Placed</td> {{-- Oct --}}
+    <td>Ongoing Job Placement</td>
+    <td>Total Caseload</td>
+    <td>Total Dismissed</td>
+    <td>KPI (%)</td>
+    @endif
+
+    @if($av==11)
+    <td>Newly Job Placed</td> {{-- Nov --}}
+    <td>Ongoing Job Placement</td>
+    <td>Total Caseload</td>
+    <td>Total Dismissed</td>
+    <td>KPI (%)</td>
+    @endif
+
+    @if($av==12)
+    <td>Newly Job Placed</td> {{-- Dec --}}
+    <td>Ongoing Job Placement</td>
+    <td>Total Caseload</td>
+    <td>Total Dismissed</td>
+    <td>KPI (%)</td>
+    @endif
+
+@endforeach
+@endforeach
+
+</tr>
+
+    @foreach($kpirecord as $i => $record)
+   @foreach($record as $r => $branch)
+  
+   <tr>
+    <td>{{$loop->iteration}}</td>
+   <td colspan="3">{{ $r }} </td>
+   @foreach($branch as $m => $month)
+   @foreach($month as $v => $value)
+   <td>{{ $value }} </td>
+   @endforeach
+   @endforeach
+   @endforeach
+   @endforeach
+
+</tr>
+<tr>
+    <td colspan="4"></td>
+
+    
+    @foreach($kpiaverage as $a => $average)
+    @foreach($average as $av => $ave)
+
+        @if($av==1)
+        <td colspan="4">Average</td>
+        <td>{{ $ave }}</td>
+        @endif
+
+        @if($av==2)
+        <td colspan="4">Average</td>
+        <td>{{ $ave }}</td>
+        @endif
+
+        @if($av==3)
+        <td colspan="4">Average</td>
+        <td>{{ $ave }}</td>
+        @endif
+
+        @if($av==4)
+        <td colspan="4">Average</td>
+        <td>{{ $ave }}</td>
+        @endif
+
+        @if($av==5)
+        <td colspan="4">Average</td>
+        <td>{{ $ave }}</td>
+        @endif
+
+        @if($av==6)
+        <td colspan="4">Average</td>
+        <td>{{ $ave }}</td>
+        @endif
+
+        @if($av==7)
+        <td colspan="4">Average</td>
+        <td>{{ $ave }}</td>
+        @endif
+
+        @if($av==8)
+        <td colspan="4">Average</td>
+        <td>{{ $ave }}</td>
+        @endif
+
+        @if($av==9)
+        <td colspan="4">Average</td>
+        <td>{{ $ave }}</td>
+        @endif
+
+        @if($av==10)
+        <td colspan="4">Average</td>
+        <td>{{ $ave }}</td>
+        @endif
+
+        @if($av==11)
+        <td colspan="4">Average</td>
+        <td>{{ $ave }}</td>
+        @endif
+
+        @if($av==12)
+        <td colspan="4">Average</td>
+        <td>{{ $ave }}</td>
+        @endif
+        
+        
+
+    @endforeach
+    @endforeach
+
+</tr>
+     </tbody>
+   </table>
+
+   {{-- @foreach($shharpRecords as $i => $year)
+   @foreach($year as $month => $year1)
+   @foreach($year1 as $ethnic_group => $year2)
+   <tr class="tr-box">
+   <td>{{$ethnic_group}}</td> --}}
+   {{-- <!-- @foreach($year2 as $data1 => $year3) --> --}}
+
+   {{-- <td>{{$year2['below_10']['male']}}</td>
+   <td>{{$year2['below_10']['female']}}</td>
+   <td>{{$year2['10-19']['male']}}</td>
+   <td>{{$year2['10-19']['female']}}</td>
+   <td>{{$year2['20-59']['male']}}</td>
+   <td>{{$year2['20-59']['female']}}</td>
+   <td>{{$year2['greater_60']['male']}}</td>
+   <td>{{$year2['greater_60']['female']}}</td>
+   <td>{{$year2['total']['male']}}</td>
+   <td>{{$year2['total']['female']}}</td>
+   <td>{{$year2['jumlah_besar']}}</td> --}}
+
+   {{-- <!-- @endforeach --> --}}
+   {{-- </tr>
+   @endforeach --}}
