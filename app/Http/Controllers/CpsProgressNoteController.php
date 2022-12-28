@@ -768,7 +768,6 @@ class CpsProgressNoteController extends Controller
                         $type_visit = 153;
 
                         $PatientDetails = PatientRegistration::where('id', $request->patient_id)->orWhere('patient_mrn',$request->mrn_id)->first();
-                        dd($PatientDetails);
                         if ($PatientDetails->nric_no != null || $PatientDetails->nric_no != '') {
                             $nric_or_passportno = $PatientDetails->nric_no;
                         } else if ($PatientDetails->passport_no != null && $PatientDetails->nric_no == null && $PatientDetails->nric_no != '') {
