@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+
 use Illuminate\Http\Request;
 use App\Models\CalendarException;
 use App\Models\HospitalBranchManagement;
@@ -277,15 +278,13 @@ class CalendarExceptionController extends Controller
     public function getExcel(Request $request)
     {
         $filename = 'exception_template' . '.xlsx';
-        $filePath = 'CalendarExceptions/' . $filename;
-        $pathToFile = Storage::url($filePath);
-        return response()->json(["message" => "Excel Template",  'filepath' => env('APP_URL') . $pathToFile, "code" => 200]);
+        $filePath = '/storage/' . $filename;
+        return response()->json(["message" => "Excel Template",  'filepath' => env('APP_URL') . $filePath, "code" => 200]);
     }
     public function getExcelBranch(Request $request)
     {
         $filename = 'exception_template_branch' . '.xlsx';
-        $filePath = '/assets/CalendarExceptions/' . $filename;
-        // return response()->json(["message" => "Excel Template",  'filepath' => env('APP_URL') . $filePath, "code" => 200]);
-        return Storage::download($filename);
+        $filePath = '/storage/' . $filename;
+        return response()->json(["message" => "Excel Template",  'filepath' => env('APP_URL') . $filePath, "code" => 200]);
     }
 }

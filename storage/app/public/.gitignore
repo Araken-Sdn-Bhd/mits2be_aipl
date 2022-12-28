@@ -1,7 +1,7 @@
 /assets/*
 /downloads/report
 !/downloads/calendar_exception/*
-!/downloads/calendar_exception/exception_excel_branch.xlsx
-!/downloads/calendar_exception/exception_excel.xlsx
+!/downloads/calendar_exception/exception_template_branch.xlsx
+!/downloads/calendar_exception/exception_template.xlsx
 .gitignore
 
