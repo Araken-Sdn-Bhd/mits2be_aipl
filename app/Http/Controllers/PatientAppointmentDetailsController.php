@@ -845,7 +845,7 @@ class PatientAppointmentDetailsController extends Controller
                 'added_by' => $request->added_by,
                 'staff_id' => $request->assign_team,
                 'branch_id'=>$request->branch_id,
-                'role'=>'Staff Nurse',
+                'role'=>'',
                 'patient_mrn' =>   $patient_id ['patient_mrn_id'],
                 'url_route' => "/Modules/Patient/attendance-record",
                 'created_at' => $date->format('Y-m-d H:i:s'),
