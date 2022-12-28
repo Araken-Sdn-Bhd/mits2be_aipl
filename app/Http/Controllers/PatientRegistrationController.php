@@ -468,8 +468,8 @@ class PatientRegistrationController extends Controller
             if ($val['appointments'] != null) {
                 $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
                 $team_id = $val['appointments'][0]['assign_team'];
-                $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get();
-                $result[$key]['team_name'] = $teamName[0]['team_name'];
+                $teamName = ServiceRegister::where('id', $team_id)->get();
+                $result[$key]['team_name'] = $teamName[0]['service_name'];
             } else {
                 $result[$key]['appointments'] = 'NA';
                 $result[$key]['team_name'] = 'NA';
