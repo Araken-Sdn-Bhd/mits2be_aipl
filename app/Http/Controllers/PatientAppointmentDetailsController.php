@@ -3726,6 +3726,7 @@ class PatientAppointmentDetailsController extends Controller
             array("tab" => "occt_referral_form", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "OcctRefferalForm", "id" => "id", "patient_mrn_id" => "patient_mrn_id", "ca" => "created_at"),
             array("tab" => "psychology_referral", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "PsychologyRefferalForm", "id" => "id", "patient_mrn_id" => "patient_id", "ca" => "created_at"),
             array("tab" => "rehab_referral_and_clinical_form", "col" => "type_diagnosis_id", "cos" => "category_services", "cs" => "complexity_services", "outcome" => "outcome", "ls" => "location_services", "type" => "RehabRefferalAndClinicalForm", "id" => "id", "patient_mrn_id" => "patient_mrn_id", "ca" => "created_at"),
+            array("tab" => "etp_progress_note", "col" => "diagnosis_type", "cos" => "service_category", "cs" => "complexity_service", "outcome" => "outcome", "ls" => "location_service", "type" => "EtpProgressNote", "id" => "id", "patient_mrn_id" => "patient_mrn_id", "ca" => "created_at"),
         ];
         $id = PatientAppointmentDetails::select('id', 'patient_mrn_id')->get()->toArray();
 
