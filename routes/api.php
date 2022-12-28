@@ -546,6 +546,7 @@ Route::group(['prefix' => 'consultation-discharge-note'], function () {
 
 Route::group(['prefix' => 'triage-form'], function () {
     Route::post('/add', [TriageFormController::class, 'store']);
+    Route::post('/add-without-appt', [TriageFormController::class, 'storeTriage']);
 });
 
 Route::group(['prefix' => 'psychology-referral'], function () {
