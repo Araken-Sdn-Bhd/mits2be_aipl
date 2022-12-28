@@ -1,6 +1,7 @@
 /node_modules
 /public/hot
 /public/storage
+!/public/assets/downloads/calendar_exception/*
 /storage/*.key
 /vendor
 .env
