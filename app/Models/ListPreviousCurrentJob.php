@@ -13,7 +13,7 @@ class ListPreviousCurrentJob extends Model
     protected $fillable = [
         'added_by',
         'patient_id',
-        'appointment_details_ids',
+        'appointment_details_id',
         'is_deleted',
         'job_list_current_previous',
         'location_services',
