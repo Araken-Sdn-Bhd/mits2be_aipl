@@ -54,9 +54,9 @@ class PatientByAgeReportController extends Controller
         ->first();
         $users2  = json_decode(json_encode($users), true);
 
-        if($users2['code']!='superadmin'){
-            $query->where('p.branch_id','=',$request->branch_id);
-        }    
+        // if($users2['code']!='superadmin'){
+        //     $query->where('p.branch_id','=',$request->branch_id);
+        // }    
 
         if ($demo){
         $query->where($demo);
@@ -145,17 +145,17 @@ class PatientByAgeReportController extends Controller
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['male'] +=1;
     }
         if($val['gender_id'] == $female['id']){
-            $mainResult[0][$raceName[0]['group_name']['section_value']]['10-19']['female'] +=1;
+            $mainResult[0]['group_name'][$raceName[0]['section_value']]['10-19']['female'] +=1;
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['female'] +=1;
         }
     }
     if($val['Age']>=10 && $val['Age']<=19){
         if($val['gender_id'] == $male['id']){
-            $mainResult[0][$raceName[0]['group_name']['section_value']]['10-19']['male'] +=1;
+            $mainResult[0]['group_name'][$raceName[0]['section_value']]['10-19']['male'] +=1;
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['male'] +=1;
         }
         if($val['gender_id'] == $female['id']){
-            $mainResult[0][$raceName[0]['group_name']['section_value']]['10-19']['female'] +=1;
+            $mainResult[0]['group_name'][$raceName[0]['section_value']]['10-19']['female'] +=1;
             $mainResult[0]['group_name'][$raceName[0]['section_value']]['total']['female'] +=1;
         }
     }
