@@ -96,7 +96,8 @@ class ListOfJobSearchController extends Controller
             'complexity_services' => $request->complexity_services,
             'outcome' => $request->outcome,
             'medication_des' => $request->medication_des,
-            'status' => "1"
+            'status' => "1",
+            'appointment_details_id'=> $request->appId
             ];
 
             $validateListOfJobSearch = [];
