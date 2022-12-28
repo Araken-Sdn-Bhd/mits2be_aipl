@@ -678,15 +678,9 @@ class DashboardController extends Controller
         $team_task = $query3->count();
 
         $request_appointment = 0;
-        $query = DB::table('patient_appointment_details as p')
-            ->select('p.id')
-            ->leftjoin('users as u', function ($join) {
-                $join->on('u.id', '=', 'p.added_by');
-            })
-            ->leftjoin('staff_management as s', function ($join) {
-                $join->on('u.email', '=', 's.email');
-            })
+        $query = DB::table('appointment_request')
             ->Where("branch_id", '=', $request->branch)
+            ->Where("status", '=', '1')
             ->get();
         $request_appointment = $query->count();
 
