@@ -939,17 +939,17 @@ class ReportController extends Controller
                     $city_name = ($pc) ? $pc[0]['city_name'] : 'NA';
                     $state_name = ($st) ? $st[0]['state_name'] : 'NA';
                     $postcode = ($pc) ? $pc[0]['postcode'] : 'NA';
-                    $visit_type = ($vt) ? $vt[0]['appointment_visit_name'] : 'NA';
-                    $category = ($cp) ? $cp[0]['appointment_category_name'] : 'NA';
-                    if (array_key_exists($cp[0]['appointment_category_name'], $cpa)) {
-                        $cpa[$cp[0]['appointment_category_name']] = $cpa[$cp[0]['appointment_category_name']] + 1;
+                    $visit_type = ($vt) ? $vt[0]['section_value'] : 'NA';
+                    $category = ($cp) ? $cp[0]['section_value'] : 'NA';
+                    if (array_key_exists($cp[0]['section_value'], $cpa)) {
+                        $cpa[$cp[0]['section_value']] = $cpa[$cp[0]['section_value']] + 1;
                     } else {
-                        $cpa[$cp[0]['appointment_category_name']] = 1;
+                        $cpa[$cp[0]['section_value']] = 1;
                     }
-                    if (array_key_exists($vt[0]['appointment_visit_name'], $vta)) {
-                        $vta[$vt[0]['appointment_visit_name']] = $vta[$vt[0]['appointment_visit_name']] + 1;
+                    if (array_key_exists($vt[0]['section_value'], $vta)) {
+                        $vta[$vt[0]['section_value']] = $vta[$vt[0]['section_value']] + 1;
                     } else {
-                        $vta[$vt[0]['appointment_visit_name']] = 1;
+                        $vta[$vt[0]['section_value']] = 1;
                     }
 
                     if (in_array($request->referral_type, [7, 253])) {
@@ -1267,8 +1267,8 @@ class ReportController extends Controller
                     $nxtAppointments = ($nap) ? $nap->toArray() : [];
                     $gender = ($pc) ? $pc[0]['section_value'] : 'NA';
                     $appointment_type = ($st) ? $st[0]['service_name'] : 'NA';
-                    $visit_type = ($vt) ? $vt[0]['appointment_visit_name'] : 'NA';
-                    $category = ($cp) ? $cp[0]['appointment_category_name'] : 'NA';
+                    $visit_type = ($vt) ? $vt[0]['section_value'] : 'NA';
+                    $category = ($cp) ? $cp[0]['section_value'] : 'NA';
                     $result[$index]['No']=$index+1;
                     $result[$index]['Next_visit'] = ($nxtAppointments) ? date('d/m/Y', strtotime($nxtAppointments['booking_date'])) : '-';
                     $result[$index]['time_registered'] = ($nxtAppointments) ? date('h:i:s A', strtotime($nxtAppointments['booking_time'])) : '-';
@@ -1713,8 +1713,8 @@ class ReportController extends Controller
                     if ($notes)
                         $icd = IcdCode::where('id', $notes[0]['code_id'])->get()->toArray();
                     $appointment_type = ($apt) ? $apt[0]['service_name'] : 'NA';
-                    $visit_type = ($vt) ? $vt[0]['appointment_visit_name'] : 'NA';
-                    $category = ($cp) ? $cp[0]['appointment_category_name'] : 'NA';
+                    $visit_type = ($vt) ? $vt[0]['section_value'] : 'NA';
+                    $category = ($cp) ? $cp[0]['section_value'] : 'NA';
                     $result[$index]['No']=$index+1;
                     $result[$index]['Registration_date'] = date('d/m/Y', strtotime($patientInfo['created_at']));
                     $result[$index]['Registration_Time'] = date('h:i:s A', strtotime($patientInfo['created_at']));
