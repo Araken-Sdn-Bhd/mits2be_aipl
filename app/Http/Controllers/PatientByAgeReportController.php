@@ -54,9 +54,9 @@ class PatientByAgeReportController extends Controller
         ->first();
         $users2  = json_decode(json_encode($users), true);
 
-        // if($users2['code']!='superadmin'){
-        //     $query->where('p.branch_id','=',$request->branch_id);
-        // }    
+        if($users2['code']!='superadmin'){
+            $query->where('p.branch_id','=',$request->branch_id);
+        }    
 
         if ($demo){
         $query->where($demo);
