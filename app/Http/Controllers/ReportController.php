@@ -933,7 +933,7 @@ class ReportController extends Controller
                     $patientInfo = $patientInfon[0];
                     $pc = Postcode::where(['id' => $patientInfo['postcode']])->get()->toArray();
                     $st = State::where(['id' => $patientInfo['state_id']])->get()->toArray();
-                    $vt = PatientAppointmentVisit::where('id', $v['type_visit'])->get()->toArray();
+                    $vt = GeneralSetting::where('id', $v['type_visit'])->get()->toArray();
                     $cp = GeneralSetting::where('id', $v['patient_category'])->get()->toArray();
                     $reftyp = GeneralSetting::where(['id' => $patientInfo['referral_type']])->get()->toArray();
                     $city_name = ($pc) ? $pc[0]['city_name'] : 'NA';
@@ -1255,7 +1255,7 @@ class ReportController extends Controller
 
                     $pc = GeneralSetting::where(['id' => $v['sex']])->get()->toArray();
                     $st = ServiceRegister::where(['id' => $v['appointment_type']])->get()->toArray();
-                    $vt = PatientAppointmentVisit::where('id', $v['type_visit'])->get()->toArray();
+                    $vt = GeneralSetting::where('id', $v['type_visit'])->get()->toArray();
                     $cp = PatientAppointmentCategory::where('id', $v['patient_category'])->get()->toArray();
                     $reftyp = GeneralSetting::where(['id' => $v['referral_type']])->get()->toArray();
                     
@@ -1707,7 +1707,7 @@ class ReportController extends Controller
                     $fee_exemption_statusValue = ($fee_exemption_status) ? $fee_exemption_status[0]['section_value'] : 'NA';
                     $occupation_sectorValue = ($occupation_sector) ? $occupation_sector[0]['section_value'] : 'NA';
                     $apt = ServiceRegister::where(['id' => $v['appointment_type']])->get()->toArray();
-                    $vt = PatientAppointmentVisit::where('id', $v['type_visit'])->get()->toArray();
+                    $vt = GeneralSetting::where('id', $v['type_visit'])->get()->toArray();
                     $cp = GeneralSetting::where('id', $v['patient_category'])->get()->toArray();
                     
                     if ($notes)
