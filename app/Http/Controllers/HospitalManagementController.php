@@ -284,7 +284,7 @@ class HospitalManagementController extends Controller
         return response()->json(["message" => "Hospital Branch Excluded Hospital List", 'list' => $list, "code" => 200]);
     }
 
-    
+
     public function getBranchExcludedMentariList()
     {
         $list = HospitalBranchManagement::select('id', 'hospital_branch_name', 'branch_adrress_1', 'hospital_code', 'branch_adrress_2', 'branch_adrress_3', 'branch_contact_number_office', 'branch_fax_no')
@@ -505,7 +505,20 @@ class HospitalManagementController extends Controller
 
         $chkPoint =  HospitalBranchManagement::where(function ($query) use ($branch_city, $branch_postcode) {
         $query->where('branch_city', '=', $branch_city)->where('branch_postcode', '=', $branch_postcode);
-        })->where('id', '=', $request->id)->where('branch_status', '=', $request->branch_status )->get();
+        })->where('id', '=', $request->id)
+        ->where('hospital_code', '=', $request->hospital_code )
+        ->where('hospital_branch_name', '=', $request->hospital_branch_name )
+        ->where('branch_state', '=', $request->branch_state )
+        ->where('branch_adrress_1', '=', $request->branch_adrress_1)
+        ->where('branch_adrress_2', '=', $request->branch_adrress_2)
+        ->where('branch_adrress_3', '=', $request->branch_adrress_3)
+        ->where('branch_email', '=', $request->branch_email)
+        ->where('branch_contact_number_office', '=', $request->branch_contact_number_office)
+        ->where('branch_contact_number_mobile', '=', $request->branch_contact_number_mobile)
+        ->where('branch_fax_no', '=', $request->branch_fax_no)
+        ->where('branch_status', '=', $request->branch_status )
+
+        ->get();
          if ($chkPoint->count() == 0) {
             HospitalBranchManagement::where(
             ['id' => $request->id]
