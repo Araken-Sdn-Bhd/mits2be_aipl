@@ -193,7 +193,7 @@ class PatientRegistrationController extends Controller
                     'branch_id' => $request->branch_id,
                     'role' => 'Triage Personnel',
                     'patient_mrn' =>   $Patient['id'],
-                    'url_route' => "/Modules/Intervention/patient-summary?id=" . $Patient['id'],
+                    'url_route' => "/Modules/Intervention/patient-summary-patient?id=" . $Patient['id'],
                     'created_at' => $date->format('Y-m-d H:i:s'),
                     'message' =>  'Request for patient screening',
                 ];
