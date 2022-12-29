@@ -1961,7 +1961,28 @@ class PatientAppointmentDetailsController extends Controller
                 foreach ($result as $key => $val) {
                     if ($val['id']) {
                         $ab = WorkAnalysisJobSpecification::select('*')->where('work_analysis_form_id', $val['id'])->where('patient_id', $val['patient_id'])
-                            ->get();
+                            ->get()
+                            ->toArray();
+
+                            $a=0;
+
+                            foreach($ab as $k => $abk){
+
+                            $comment_array[$a]['comment']=$abk['comment'];
+
+                                            foreach(explode(',', $abk['comment']) as $c){
+                                            $comment_array[$a]['comment']= $c;
+                                            }
+
+                            $ab_Array=$abk['answer'];
+                            $count=0;
+                                            foreach (explode(',',$ab_Array) as $p) {
+                                                $abArray[$a][$count]['answer']=$p;
+                                            $count++;
+                                            }
+                        $a++;
+                        }
+
                         $jobdes = JobDescription::select('*')->where('work_analysis_form_id', $val['id'])->where('patient_id', $val['patient_id'])
                             ->get();
                     }
@@ -2011,7 +2032,23 @@ class PatientAppointmentDetailsController extends Controller
                     $list[$key]['medication_des'] = $val['medication_des'] ??  'NA';
                     $list[$key]['status'] = $val['status'] ??  'NA';
 
-                    $list[$key]['jobs'] = $ab ??  'NA';
+                    $list[$key]['jobs'] = $abArray ??  'NA';
+                    $list[$key]['comment'] = $comment_array ??  'NA';
+                    // if($ab != null ) {
+                    //     if($abArray[0][0]['answer'] != null) {
+                    //         $list[$key]['work_schedule_a'] = $abArray[0][0]['answer'];
+                    //     }
+                    //     if($abArray[0][1]['answer'] != null) {
+                    //         $list[$key]['work_schedule_b'] = $abArray[0][1]['answer'];
+                    //     }
+                    //     if($abArray[0][2]['answer'] != null) {
+                    //         $list[$key]['work_schedule_c'] = $abArray[0][2]['answer'];
+                    //     }
+                    //     if($abArray[0][3]['answer'] != null) {
+                    //         $list[$key]['work_schedule_d'] = $abArray[0][3]['answer'];
+                    //     }
+                    // }
+
                     $list[$key]['jobs_des'] = $jobdes ??  'NA';
                 }
             }
