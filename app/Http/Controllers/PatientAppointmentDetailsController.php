@@ -606,12 +606,14 @@ class PatientAppointmentDetailsController extends Controller
         }
         if ($request->keyword != 'no-keyword') {
             $searchWord = $request->keyword;
-            $query->where('patient_registration.patient_mrn', 'LIKE', '%' . $searchWord . '%')
-                ->orWhere('patient_registration.name_asin_nric', 'LIKE', '%' . $searchWord . '%')
-                ->orWhere('patient_registration.nric_no', 'LIKE', '%' . $searchWord . '%')
-                ->orWhere('patient_registration.passport_no', 'LIKE', '%' . $searchWord . '%');
+            $query->where(function ($qry) use($searchWord){
+                $qry->where('patient_registration.patient_mrn', 'LIKE', '%' . $searchWord . '%')
+                    ->orWhere('patient_registration.name_asin_nric', 'LIKE', '%' . $searchWord . '%')
+                    ->orWhere('patient_registration.nric_no', 'LIKE', '%' . $searchWord . '%')
+                    ->orWhere('patient_registration.passport_no', 'LIKE', '%' . $searchWord . '%');
+                    });
         }
-
+        
         $resultSet = $query->get();
         foreach ($resultSet as $key) {
             $key->patient_mrn = $key->patient_mrn ??  'NA';
