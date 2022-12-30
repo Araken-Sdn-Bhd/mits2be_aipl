@@ -145,9 +145,15 @@ class TriageFormController extends Controller
                     }
                     if ($request->id) {
                         TriageForm::where(['id' => $request->id])->update($triageform);
+                        if($request->patient_mrn_id){
+                            PatientRegistration::where(['id' => $request->patient_mrn_id])->update(['patient_need_triage_screening' => '0']);
+                        }
                         return response()->json(["message" => "Triage Updated Successfully!", "code" => 200]);
                     } else {
                         TriageForm::firstOrCreate($triageform);
+                        if($request->patient_mrn_id){
+                            PatientRegistration::where(['id' => $request->patient_mrn_id])->update(['patient_need_triage_screening' => '0']);
+                        }
                         return response()->json(["message" => "Triage Created Successfully!", "code" => 200]);
                     }
                 } else {
