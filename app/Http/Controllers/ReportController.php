@@ -1960,7 +1960,7 @@ class ReportController extends Controller
             ->first();
             $users2  = json_decode(json_encode($users), true);
         $index=0;
-        if($users2['code']!='superadmin'){
+        if($users2['code']=='superadmin'){
             if($request->hospital!=NULL){
                     if($request->state!=NULL){
                         $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->where('branch_state','=', $request->state)
