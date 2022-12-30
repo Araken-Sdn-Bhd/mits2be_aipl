@@ -1784,6 +1784,7 @@ class ReportController extends Controller
         $fromMonth=$month[$request->fromMonth];
         $toMonth=$month[$request->toMonth];
 
+        if ($request->report_type == 'excel') { //If EXCEL
         for ($m=$fromMonth; $m<=$toMonth; $m++){
 
             $month_array=[];
@@ -1805,21 +1806,21 @@ class ReportController extends Controller
         if($users2['code']=='superadmin'){
             if($request->hospital!=NULL){
                     if($request->state!=NULL){
-                        $branchName=HospitalBranchManagement::where('branch_state','=', $request->state)
+                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->where('branch_state','=', $request->state)
                         ->where('branch_state','=', $request->state)->get()->toArray();
                     }else{
-                        $branchName=HospitalBranchManagement::get()->toArray();
+                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->get()->toArray();
                     }   
             } else{
                     if($request->state!=NULL){
-                        $branchName=HospitalBranchManagement::where('branch_state','=', $request->state)->get()->toArray();
+                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->where('branch_state','=', $request->state)->get()->toArray();
                     }else{
-                        $branchName=HospitalBranchManagement::get()->toArray();
+                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->get()->toArray();
                     }              
             }
 
         }else{
-            $branchName=HospitalBranchManagement::where('id',$request->branch_id)->get()->toArray();
+            $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->where('id',$request->branch_id)->get()->toArray();
         }
 
         $totalBranch=count($branchName);
@@ -1939,7 +1940,166 @@ class ReportController extends Controller
 
             
         }
-     
+    }else{//IF  PDF
+
+        for ($m=$fromMonth; $m<=$toMonth; $m++){
+
+            $month_array=[];
+        if(!in_array($m, $month_array, true)){
+            array_push($month_array, $m);
+               
+            $averageResult['average'][$m]=0;
+
+            }
+        }
+
+        $users = DB::table('staff_management')
+            ->select('roles.code')
+            ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+            ->where('staff_management.email', '=', $request->email)
+            ->first();
+            $users2  = json_decode(json_encode($users), true);
+        $index=0;
+        if($users2['code']!='superadmin'){
+            if($request->hospital!=NULL){
+                    if($request->state!=NULL){
+                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->where('branch_state','=', $request->state)
+                        ->where('branch_state','=', $request->state)->get()->toArray();
+                    }else{
+                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->get()->toArray();
+                    }   
+            } else{
+                    if($request->state!=NULL){
+                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->where('branch_state','=', $request->state)->get()->toArray();
+                    }else{
+                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->get()->toArray();
+                    }              
+            }
+
+        }else{ 
+            $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->where('id',$request->branch_id)->get()->toArray();
+        }
+
+        $totalBranch=count($branchName);
+
+        foreach($branchName as $v =>$val){
+
+        for ($m=$fromMonth; $m<=$toMonth; $m++){
+           
+            $a1 = DB::table('job_start_form as jsf')
+            ->select('jsf.id')
+            ->join('patient_registration as p', function($join) {
+                $join->on('jsf.patient_id', '=', 'p.id');
+            })
+            ->whereYear('jsf.created_at', '=', $request->year)     
+            ->whereMonth('jsf.created_at', '=', $m)
+            ->where('jsf.status', '=', '1')
+            ->where('p.branch_id',$val['id']);
+
+            if($request->state!=NULL){
+                $a1->where('p.state_id','=', $request->state);
+            }
+
+            $a2=$a1->get()->toArray();
+            $a  = json_decode(json_encode($a2), true);
+
+            $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['a'] = count($a);
+
+
+            $b1 = DB::table('se_progress_note as spn')
+            ->select('spn.id')
+            ->join('general_setting as gs', function($join) {
+                $join->on('gs.id', '=', 'spn.employment_status');
+            })
+            ->join('patient_registration as p', function($join) {
+                $join->on('p.id', '=', 'spn.patient_mrn_id');
+            })
+            ->whereYear('spn.created_at', '=', $request->year)     
+            ->whereMonth('spn.created_at', '=', $m)
+            ->where('gs.section_value','=','Employed')
+            ->where('spn.status', '=', '1')
+            ->where('p.branch_id',$val['id']);
+
+            if($request->state!=NULL){
+                $b1->where('p.state_id','=', $request->state);
+            }
+
+
+            $b2=$b1->get()->toArray();
+            $b  = json_decode(json_encode($b2), true);
+            $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['b'] = count($b);
+
+
+            $c1 = DB::table('se_progress_note as spn')
+            ->select('spn.id')
+            ->join('patient_registration as p', function($join) {
+                $join->on('p.id', '=', 'spn.patient_mrn_id');
+            })
+            ->whereYear('spn.created_at', '=', $request->year)
+            ->whereMonth('spn.created_at', '=', $m)
+            ->where('spn.status', '=','1')
+            ->where('p.branch_id',$val['id']);
+
+            if($request->state!=NULL){
+                $c1->where('p.state_id','=', $request->state);
+            }
+
+
+            $c2=$c1->get()->toArray();
+            $c  = json_decode(json_encode($c2), true);
+
+            $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['c'] = count($c);
+
+
+            $d1 = DB::table('se_progress_note as spn')
+            ->select('spn.id')
+            ->join('general_setting as gs', function($join) {
+                $join->on('gs.id', '=', 'spn.employment_status');
+            })
+            ->join('patient_registration as p', function($join) {
+                $join->on('p.id', '=', 'spn.patient_mrn_id');
+            })
+            ->whereYear('spn.created_at', '=', $request->year)     
+            ->whereMonth('spn.created_at', '=', $m)
+            ->where('gs.section_value','!=','Employed')
+            ->where('spn.status', '=', '1')
+            ->where('p.branch_id',$val['id']);
+
+            if($request->state!=NULL){
+                $d1->where('p.state_id','=', $request->state);
+            }
+
+            $d2=$d1->get()->toArray();
+            $d  = json_decode(json_encode($d2), true);
+            $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['d'] = count($d);
+        
+            
+        if((count($a)!=0 || count($b)!=0) && count($c)!=0){
+            $kpi=(($mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['a']+$mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['b'])
+            /$mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['c'])*(100);
+            $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['kpi'] = number_format($kpi,2);
+            $averagekpi[$index]=number_format($kpi,2);
+            
+            
+        }else{
+            $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['kpi'] = 0;
+            $averagekpi[$index]=0;
+        }
+    
+        $averageResult['average'][$m] += $averagekpi[$index];
+        $index++;
+    }
+        }
+        for ($m=$fromMonth; $m<=$toMonth; $m++){
+
+               
+            $averageResult['average'][$m]= number_format(($averageResult['average'][$m]/$totalBranch),2);
+
+            
+        }
+
+    }
+
        
         if ($mainResult) {
             $headers = [
@@ -1951,14 +2111,16 @@ class ReportController extends Controller
                 'Access-Control-Allow-Headers'     => 'Content-Type, Authorization, X-Requested-With'
             ];
             $filePath = '';
-            if (isset($request->report_type) && $request->report_type == 'excel') {
+            if ($request->report_type == 'excel') {
                 $filename = 'kpi-report-rg-'.time() . '.xlsx';
                 $filePath = 'downloads/report/'.$filename;
                 $KPIExcel = Excel::store(new KPIReportExport($mainResult,$averageResult,$year), $filePath, 'public');
                 $pathToFile = Storage::url($filePath);
                 return response()->json(["message" => "KPI Report", 'result' => $mainResult, 'averageResult'=>$averageResult, 'year'=>$year ,'filepath' => env('APP_URL') . $pathToFile, "code" => 200]);
             } else {
+
                 return response()->json(["message" => "KPI Report", 'result' => $mainResult, 'averageResult'=>$averageResult, 'year'=>$year , "code" => 200]);
+            
             }
 
         }return response()->json(["message" => "KPI Report", 'result' => [], 'filepath' => null, "code" => 200]);
