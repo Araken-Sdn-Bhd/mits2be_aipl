@@ -299,19 +299,37 @@ class DashboardController extends Controller
 
         $totalpatient = $totalpatientSQL->get();
 
-        $ShharpOverall = PatientRegistration::select(DB::raw('count(*) as Sharptotal'))->where('sharp', '1');
-        $shharpcaseSQL = PatientRegistration::select('id', 'race_id', 'age', 'religion_id', 'marital_id', 'education_level', 'employment_status', DB::raw('count(*) as Sharptotal'))->where('sharp', '1');
+        $ShharpOverall = PatientRegistration::select(DB::raw('count(*) as Sharptotal'))
+                                             ->join('sharp_registraion_final_step as srfs',function($join) {
+                                                $join->on('srfs.patient_id', '=', 'patient_registration.id');
+                                                })
+                                            ->where('srfs.status', '=', '1')
+                                            ->where('srfs.hospital_mgmt', '!=', "")
+                                            ->where('patient_registration.status', '=', '1')
+                                            ->groupby('patient_registration.id');
+                                            
+        $shharpcaseSQL = PatientRegistration::distinct()
+                                            ->select('patient_registration.id', 'patient_registration.race_id', 'patient_registration.age', 'patient_registration.sex', 'patient_registration.religion_id', 'patient_registration.marital_id', 'patient_registration.education_level', 'patient_registration.occupation_status', DB::raw('count(distinct patient_registration.id) as Sharptotal'))
+                                            ->join('sharp_registraion_final_step as srfs',function($join) {
+                                                $join->on('srfs.patient_id', '=', 'patient_registration.id');
+                                                })
+                                            ->where('srfs.status', '=', '1')
+                                            ->where('srfs.hospital_mgmt', '!=', "")
+                                            ->where('patient_registration.status', '=', '1');
+                                            
+
+        
         if ($request->sharpyear != 0) {
-            $ShharpOverall->whereYear('created_at', $request->sharpyear);
-            $shharpcaseSQL->whereYear('created_at', $request->sharpyear);
+            $ShharpOverall->whereYear('srfs.created_at', $request->sharpyear);
+            $shharpcaseSQL->whereYear('srfs.created_at', $request->sharpyear);
         }
         if ($request->sharpmonth != 0) {
-            $ShharpOverall->whereMonth('created_at', $request->sharpmonth);
-            $shharpcaseSQL->whereMonth('created_at', $request->sharpmonth);
+            $ShharpOverall->whereMonth('srfs.created_at', $request->sharpmonth);
+            $shharpcaseSQL->whereMonth('srfs.created_at', $request->sharpmonth);
         }
         if ($request->sharpmentari != 0) {
-            $ShharpOverall->where('branch_id', $request->sharpmentari);
-            $shharpcaseSQL->where('branch_id', $request->sharpmentari);
+            $ShharpOverall->where('patient_registration.branch_id', $request->sharpmentari);
+            $shharpcaseSQL->where('patient_registration.branch_id', $request->sharpmentari);
         }
 
         $shharpraces = [];
@@ -320,6 +338,7 @@ class DashboardController extends Controller
         $shharpMaritals = [];
         $shharpEducation = [];
         $shharpEmployment = [];
+        $shharpGender = [];
         $education = [];
         $maritals = [];
         $religions = [];
@@ -333,7 +352,7 @@ class DashboardController extends Controller
         $male = null;
         $female = null;
         if ($request->sharprace == "Race") {
-            $shharpraces = $shharpcaseSQL->groupBy('race_id')->get()->toArray();
+            $shharpraces = $shharpcaseSQL->groupBy('patient_registration.race_id')->get()->toArray();
             foreach ($shharpraces as $key => $value) {
                 if ($value['race_id']) {
                     $races = GeneralSetting::select('id', 'section_value')->where('id', $value['race_id'])->where('status', '=', '1')->get()->toArray();
@@ -343,19 +362,19 @@ class DashboardController extends Controller
                 }
             }
         } else if ($request->sharprace == "Employment Status") {
-            $shharpcaseSQL->where('employment_status', '!=', '0');
-            $shharpEmployment = $shharpcaseSQL->groupBy('employment_status')->get()->toArray();
+            $shharpcaseSQL->where('patient_registration.occupation_status', '!=', '0');
+            $shharpEmployment = $shharpcaseSQL->groupBy('patient_registration.occupation_status')->get()->toArray();
             foreach ($shharpEmployment as $key => $value) {
-                if ($value['employment_status']) {
-                    $employment = GeneralSetting::select('id', 'section_value')->where('id', $value['employment_status'])->where('status', '=', '1')->get()->toArray();
+                if ($value['occupation_status']) {
+                    $employment = GeneralSetting::select('id', 'section_value')->where('id', $value['occupation_status'])->where('status', '=', '1')->get()->toArray();
                     if (isset($employment)) {
                         $shharpEmployment[$key]['section_value'] = $employment[0]['section_value'] ?? null;
                     }
                 }
             }
         } else if ($request->sharprace == "Education") {
-            $shharpcaseSQL->where('education_level', '!=', '0');
-            $shharpEducation = $shharpcaseSQL->groupBy('education_level')->get()->toArray();
+            $shharpcaseSQL->where('patient_registration.education_level', '!=', '0');
+            $shharpEducation = $shharpcaseSQL->groupBy('patient_registration.education_level')->get()->toArray();
             foreach ($shharpEducation as $key => $value) {
                 if ($value['education_level']) {
                     $education = GeneralSetting::select('id', 'section_value')->where('id', $value['education_level'])->where('status', '=', '1')->get()->toArray();
@@ -365,31 +384,15 @@ class DashboardController extends Controller
                 }
             }
         } else if ($request->sharprace == "Gender") {
-            $ShharpOverall->where('sharp', 1);
-            $shharpcaseSQL->where('sharp', 1);
-            $getmalefemale = GeneralSetting::select('id', 'section_value')->where('section', 'gender')->where('status', '=', '1')->get();
-            if ($getmalefemale[0]['section_value']) {
-
-                $male1 = PatientRegistration::select(DB::raw('count(*) as Sharptotal'))->where('sharp', '1')->where('sex', '71');
-
-                $female1 = PatientRegistration::select(DB::raw('count(*) as Sharptotal'))->where('sharp', '1')->where('sex', '72');
-
-                if ($request->sharpyear != 0)
-                    $male1->whereYear('created_at', $request->sharpyear);
-                if ($request->sharpmonth != 0)
-                    $male1->whereMonth('created_at', $request->sharpmonth);
-                if ($request->sharpmentari != 0)
-                    $male1->where('branch_id', $request->sharpmentari);
-
-                if ($request->sharpyear != 0)
-                    $female1->whereYear('created_at', $request->sharpyear);
-                if ($request->sharpmonth != 0)
-                    $female1->whereMonth('created_at', $request->sharpmonth);
-                if ($request->sharpmentari != 0)
-                    $female1->where('branch_id', $request->sharpmentari);
-
-                $female = $female1->get();
-                $male = $male1->get();
+            $shharpcaseSQL->where('patient_registration.sex', '!=', '0');
+            $shharpGender = $shharpcaseSQL->groupBy('patient_registration.sex')->get()->toArray();
+            foreach ($shharpGender as $key => $value) {
+                if ($value['sex']) {
+                    $gender = GeneralSetting::select('id', 'section_value')->where('id', $value['sex'])->where('status', '=', '1')->get()->toArray();
+                    if (isset($gender)) {
+                        $shharpGender[$key]['section_value'] = $gender[0]['section_value'] ?? null;
+                    }
+                }
             }
         } else if ($request->sharprace == "Method of Self harm") {
             $shharpSelfHarm = $shharpcaseSQL->get()->toArray();
@@ -408,8 +411,8 @@ class DashboardController extends Controller
                 }
             }
         } else if ($request->sharprace == "Religion") {
-            $shharpcaseSQL->where('religion_id', '!=', '0');
-            $shharpReligions = $shharpcaseSQL->groupBy('religion_id')->get()->toArray();
+            $shharpcaseSQL->where('patient_registration.religion_id', '!=', '0');
+            $shharpReligions = $shharpcaseSQL->groupBy('patient_registration.religion_id')->get()->toArray();
             foreach ($shharpReligions as $key => $value) {
                 if ($value['religion_id']) {
                     $religions = GeneralSetting::select('id', 'section_value')->where('id', $value['religion_id'])->where('status', '=', '1')->get()->toArray();
@@ -419,8 +422,8 @@ class DashboardController extends Controller
                 }
             }
         } else if ($request->sharprace == "Marital Status") {
-            $shharpcaseSQL->where('marital_id', '!=', '0');
-            $shharpMaritals = $shharpcaseSQL->groupBy('marital_id')->get()->toArray();
+            $shharpcaseSQL->where('patient_registration.marital_id', '!=', '0');
+            $shharpMaritals = $shharpcaseSQL->groupBy('patient_registration.marital_id')->get()->toArray();
             foreach ($shharpMaritals as $key => $value) {
                 if ($value['marital_id']) {
                     $maritals = GeneralSetting::select('id', 'section_value')->where('id', $value['marital_id'])->where('status', '=', '1')->get()->toArray();
@@ -430,7 +433,7 @@ class DashboardController extends Controller
                 }
             }
         } else if ($request->sharprace == "Range of Age") {
-            $shharpRangeAge = $shharpcaseSQL->select(DB::raw('(CASE WHEN `age` < 10 THEN "Less Than 10 Years" WHEN `age` BETWEEN 10 and 19 THEN "Between 10 and 19 Years" WHEN `age` BETWEEN 20 and 59 THEN "Between 20 and 59 Years" WHEN `age` > 59 THEN "60 Years and Above" ELSE "null" END) AS RANGE_AGE, count(`id`) as COUNT'))->groupBy('RANGE_AGE')->get()->toArray();
+            $shharpRangeAge = $shharpcaseSQL->select(DB::raw('(CASE WHEN `age` < 10 THEN "Less Than 10 Years" WHEN `age` BETWEEN 10 and 19 THEN "Between 10 and 19 Years" WHEN `age` BETWEEN 20 and 59 THEN "Between 20 and 59 Years" WHEN `age` > 59 THEN "60 Years and Above" ELSE "null" END) AS RANGE_AGE, count(distinct patient_registration.id) as COUNT'))->groupBy('RANGE_AGE')->orderBy('patient_registration.age')->get()->toArray();
             foreach ($shharpRangeAge as $key => $value) {
                 if ($value['RANGE_AGE']) {
                     $rangeofage = GeneralSetting::select('id', 'section_value')->where('section_value', $value['RANGE_AGE'])->where('status', '=', '1')->get()->toArray();
@@ -611,13 +614,11 @@ class DashboardController extends Controller
             'totalpatient' => $totalpatient,
             'totalmentarilocation' => $totalmentarilocation,
             'totalsharp' => $Shharptotal,
-            'male' => $male,
-            'female' => $female,
             'kpi' => $kpi,
             "kpiEmployement" => $kpiEmployement,
             "kpiUnemployement" => $kpiUnemployement,
             "kpiTerminated" => $kpiTerminated,
-
+            "shharpGender" => $shharpGender,
             "summaryActivity" => $clini22,
             "shharpRaces" => $shharpraces,
             "rangeOfAge" => $shharpRangeAge,
