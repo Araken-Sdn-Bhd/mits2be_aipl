@@ -13,21 +13,25 @@ class NotificationController extends Controller
     public function getNotification(Request $request)
     {
         $staff_id=$request->user_id; //staff id is user id 
-        $screen_access= ScreenAccessRoles::select('id','screen_id','branch_id')->where('staff_id',$staff_id)->get()->toArray();
+        $screen_access= ScreenAccessRoles::select('id','screen_id')->where('staff_id',$staff_id)->where('branch_id',$request->branch_id)->get()->toArray();
         $ab=[];
         $count=0;
+        dd($screen_access);
         foreach ($screen_access as $key => $v){
 
             $result = Notifications::select('*')
-            ->where('branch_id', '=', $v['branch_id'])
+            ->where('branch_id', '=', $request->branch_id)
             ->where(function ($query) use ($v,$staff_id){
                 $query->where('staff_id', '=', $staff_id)
                 ->orWhere('screen_id', '=', $v['id']);
                         })
             ->orderBy('id', 'DESC')
             ->first();
-// dd($result);
-            if($result){
+            
+            
+            if ($result){
+  
+
             $count++;
             $datetime1 = new DateTime();
             $datetime12 = new DateTime($result['created_at']);
@@ -44,10 +48,10 @@ class NotificationController extends Controller
             $ab[$key]['message']  = $result['message'];
             $ab[$key]['patient_mrn']  = $result['patient_mrn'];
             $ab[$key]['url_route']  = $result['url_route'];
-        }
         
+}
         }
-
+ 
 
             return response()->json(["message" => "Notifications List", 'list' => $ab, 'notification_count' => $count, "code" => 200]);
 
