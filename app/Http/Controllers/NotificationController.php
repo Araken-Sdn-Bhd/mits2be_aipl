@@ -16,7 +16,7 @@ class NotificationController extends Controller
         $screen_access= ScreenAccessRoles::select('id','screen_id')->where('staff_id',$staff_id)->where('branch_id',$request->branch_id)->get()->toArray();
         $ab=[];
         $count=0;
-        dd($screen_access);
+
         foreach ($screen_access as $key => $v){
 
             $result = Notifications::select('*')
