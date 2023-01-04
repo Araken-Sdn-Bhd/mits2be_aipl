@@ -74,15 +74,15 @@ class TriageFormController extends Controller
                 $appointment_date = $request->appointment_date;
                 $appointment_time = $request->appointment_time;
                 $appointment_assign_team = $request->appointment_assign_team;
-                $chkPoint =  PatientAppointmentDetails::where(function ($query) use ($appointment_date, $appointment_time, $appointment_assign_team) {
-                    $query->where('booking_date', '=', $appointment_date)->where('booking_time', '=', $appointment_time)->where('assign_team', '=', $appointment_assign_team);
-                })->where('status', '1')->get();
+                // $chkPoint =  PatientAppointmentDetails::where(function ($query) use ($appointment_date, $appointment_time, $appointment_assign_team) {
+                //     $query->where('booking_date', '=', $appointment_date)->where('booking_time', '=', $appointment_time)->where('assign_team', '=', $appointment_assign_team);
+                // })->where('status', '1')->get();
 
                 $chkPointfortriage =  TriageForm::where(function ($query) use ($appointment_date, $appointment_time, $appointment_assign_team) {
                     $query->where('appointment_date', '=', $appointment_date)->where('appointment_time', '=', $appointment_time)->where('appointment_assign_team', '=', $appointment_assign_team);
                 })->where('status', '1')->get();
 
-                if ($chkPoint->count() == 0 && $chkPointfortriage->count() == 0) {
+                if ($chkPointfortriage->count() == 0) {
                     $triageform = [
                         'added_by' => $request->added_by,
                         'patient_mrn_id' => $request->patient_mrn_id,
