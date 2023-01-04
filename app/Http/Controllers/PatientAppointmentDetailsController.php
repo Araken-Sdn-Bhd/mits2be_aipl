@@ -124,16 +124,16 @@ class PatientAppointmentDetailsController extends Controller
                 ];
                 $patient = PatientAppointmentDetails::create($service);
                 $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-                $notifi = [
-                    'added_by' => $request->added_by,
-                    'branch_id' => $request->branch_id,
-                    'role' => 'Admin/Clerk',
-                    'patient_mrn' =>   $getmnr_id[0],
-                    'url_route' => "/Modules/Patient/list-of-appointment",
-                    'created_at' => $date->format('Y-m-d H:i:s'),
-                    'message' =>  'Request for appointment(s)',
-                ];
-                $HOD = Notifications::insert($notifi);
+                // $notifi = [
+                //     'added_by' => $request->added_by,
+                //     'branch_id' => $request->branch_id,
+                //     'role' => 'Admin/Clerk',
+                //     'patient_mrn' =>   $getmnr_id[0],
+                //     'url_route' => "/Modules/Patient/list-of-appointment",
+                //     'created_at' => $date->format('Y-m-d H:i:s'),
+                //     'message' =>  'Request for appointment(s)',
+                // ];
+                // $HOD = Notifications::insert($notifi);
 
                 // EMAIL
                 $app_request = AppointmentRequest::where('nric_or_passportno', $nric_or_passportno)
@@ -239,16 +239,16 @@ class PatientAppointmentDetailsController extends Controller
                     }
                     $patient = PatientAppointmentDetails::create($service);
                     $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-                    $notifi = [
-                        'added_by' => $request->added_by,
-                        'branch_id' => $request->branch_id,
-                        'role' => 'Admin/Clerk',
-                        'patient_mrn' =>   $request->patient_mrn_id,
-                        'url_route' => "/Modules/Patient/list-of-appointment",
-                        'created_at' => $date->format('Y-m-d H:i:s'),
-                        'message' =>  'Request for appointment(s)',
-                    ];
-                    $HOD = Notifications::insert($notifi);
+                    // $notifi = [
+                    //     'added_by' => $request->added_by,
+                    //     'branch_id' => $request->branch_id,
+                    //     'role' => 'Admin/Clerk',
+                    //     'patient_mrn' =>   $request->patient_mrn_id,
+                    //     'url_route' => "/Modules/Patient/list-of-appointment",
+                    //     'created_at' => $date->format('Y-m-d H:i:s'),
+                    //     'message' =>  'Request for appointment(s)',
+                    // ];
+                    // $HOD = Notifications::insert($notifi);
 
                     //EMAIL
                     $app_request = AppointmentRequest::where('nric_or_passportno', $getPatientIC[0])
@@ -368,16 +368,16 @@ class PatientAppointmentDetailsController extends Controller
             $patient_id = PatientRegistration::select('id')
                 ->where('nric_no', $request->nric_or_passportno)
                 ->orWhere('passport_no', $request->nric_or_passportno)->get();
-            $notifi = [
-                'added_by' => $request->added_by,
-                'branch_id' => $request->branch_id,
-                'role' => 'Admin/Clerk',
-                'patient_mrn' =>   $patient_id,
-                'url_route' => "/Modules/Patient/list-of-appointment",
-                'created_at' => $date->format('Y-m-d H:i:s'),
-                'message' =>  'Request for appointment(s)',
-            ];
-            $HOD = Notifications::insert($notifi);
+            // $notifi = [
+            //     'added_by' => $request->added_by,
+            //     'branch_id' => $request->branch_id,
+            //     'role' => 'Admin/Clerk',
+            //     'patient_mrn' =>   $patient_id,
+            //     'url_route' => "/Modules/Patient/list-of-appointment",
+            //     'created_at' => $date->format('Y-m-d H:i:s'),
+            //     'message' =>  'Request for appointment(s)',
+            // ];
+            // $HOD = Notifications::insert($notifi);
             $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
             return response()->json(["message" => "Appointment Updated Successfully!", "code" => 200]);
         } else {
