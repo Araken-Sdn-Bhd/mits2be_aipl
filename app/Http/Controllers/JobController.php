@@ -8,6 +8,7 @@ use Validator;
 use DateTime;
 use App\Models\Notifications;
 use DateTimeZone;
+use App\Models\ScreenPageModule;
 use DB;
 
 use Illuminate\Http\Request;
@@ -75,14 +76,18 @@ class JobController extends Controller
                 
                 JobOffers::create($jobOffer);
                 $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+                $notifi_code='JAR';
+                $screen_id=ScreenPageModule::select('id','screen_route_alt')->where('notifi_code',$notifi_code)->first();
                 $notifi=[
-                    'added_by' => $request->user_id ,
-                    'branch_id'=>$request->branch_id,
-                    'role'=>'Admin/Clerk',
+                    'added_by' => $request->user_id,
                     'patient_mrn' =>   $company->id,
-                    'url_route' => "/Modules/Intervention/company-job-approval-request?id=".$company->id.'&'.'company='.$company->company_name,
-                    'created_at' => $date->format('Y-m-d H:i:s'),
+                    'branch_id' => $request->branch_id,
+                    'screen_id' => $screen_id['id'],
+                    'staff_id'=> '',
+                    'notifi_code' => '',
+                    'url_route' => $screen_id['screen_route_alt'].'?id='.$company->id.'&'.'company='.$company->company_name,
                     'message' =>  'New job approval request',
+                    'created_at' => $date->format('Y-m-d H:i:s'),
                 ];
                 $HOD = Notifications::insert($notifi);
 
@@ -139,14 +144,19 @@ class JobController extends Controller
         $company = DB::table('employee_registration')->select('id','company_name')->where('user_id', '=', $request->user_id)->first();
                 JobOffers::create($jobOffer);
                 $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+                $notifi_code='JAR R';
+                $screen_id=ScreenPageModule::select('id','screen_route_alt')->where('notifi_code',$notifi_code)->first();
                 $notifi=[
-                    'added_by' => $request->user_id ,
-                    'branch_id'=>$request->branch_id,
-                    'role'=>'Admin/Clerk',
+
+                    'added_by' => $request->user_id,
                     'patient_mrn' =>   $company->id,
-                    'url_route' => "/Modules/Intervention/job-record",
-                    'created_at' => $date->format('Y-m-d H:i:s'),
+                    'branch_id' => $request->branch_id,
+                    'screen_id' => $screen_id['id'],
+                    'staff_id'=> '',
+                    'notifi_code' => '',
+                    'url_route' => $screen_id['screen_route_alt'],
                     'message' =>  'New job approval request',
+                    'created_at' => $date->format('Y-m-d H:i:s'),
                 ];
                 $HOD = Notifications::insert($notifi);
                 return response()->json(["message" => "Job Created", "result" => $jobOffer, "code" => 200]);
