@@ -703,13 +703,13 @@ class JobOfferController extends Controller
             }else{
                 $HOD=PatientCarePaln::create($patientcarepln);
                 $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-                $notifi=[
-                    'added_by' => $HOD['added_by'],
-                    'patient_mrn' =>   $HOD['patient_id'],
-                    'created_at' => $date->format('Y-m-d H:i:s'),    //$date->format
-                    'message' =>  'upcoming review for Patient Care Plan',
-                ];
-                $HOD1 = Notifications::insert($notifi);
+                // $notifi=[
+                //     'added_by' => $HOD['added_by'],
+                //     'patient_mrn' =>   $HOD['patient_id'],
+                //     'created_at' => $date->format('Y-m-d H:i:s'),    //$date->format
+                //     'message' =>  'upcoming review for Patient Care Plan',
+                // ];
+                // $HOD1 = Notifications::insert($notifi);
             return response()->json(["message" => "Created", "code" => 200]);
             }
         }
