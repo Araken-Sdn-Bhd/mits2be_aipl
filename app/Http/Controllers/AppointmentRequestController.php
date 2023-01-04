@@ -49,7 +49,6 @@ class AppointmentRequestController extends Controller
                 'branch_id' => $request->branch_id,
                 'screen_id' => $screen_id['id'],
                 'staff_id'=> '',
-                 'notifi_code' => '',
                 'url_route' => $screen_id['screen_route_alt'],
                 'message' =>  'Request for appointment(s)',
                 'created_at' => $date->format('Y-m-d H:i:s'),
