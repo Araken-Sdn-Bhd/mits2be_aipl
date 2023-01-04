@@ -10,6 +10,7 @@ use App\Models\Notifications;
 use App\Models\PatientAttachment;
 use App\Models\TransactionLog;
 use App\Models\AppointmentRequest;
+use App\Models\ScreenPageModule;
 use DateTime;
 use DateTimeZone;
 use Validator;
@@ -188,14 +189,21 @@ class PatientRegistrationController extends Controller
             $HOD = TransactionLog::insert($tran);
             $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
             if ($Patient['patient_need_triage_screening']) {
+
+            $notifi_code='RPC';
+            $screen_id=ScreenPageModule::select('id','screen_route_alt')->where('notifi_code',$notifi_code)->first();
+
                 $notifi = [
                     'added_by' => $Patient['added_by'],
-                    'branch_id' => $request->branch_id,
-                    'role' => 'Triage Personnel',
                     'patient_mrn' =>   $Patient['id'],
-                    'url_route' => "/Modules/Intervention/patient-summary-patient?id=" . $Patient['id'],
-                    'created_at' => $date->format('Y-m-d H:i:s'),
+                    'branch_id' => $request->branch_id,
+                    'screen_id' => $screen_id['id'],
+                    'staff_id'=> '',
+                     'notifi_code' => '',
+                    'url_route' => $screen_id['screen_route_alt']."?id=" . $Patient['id'],
                     'message' =>  'Request for patient screening',
+                    'created_at' => $date->format('Y-m-d H:i:s'),
+                    
                 ];
                 $HOD = Notifications::insert($notifi);
             }

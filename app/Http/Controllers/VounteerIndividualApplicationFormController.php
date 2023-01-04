@@ -18,6 +18,7 @@ use App\Models\HospitalBranchManagement;
 use Exception;
 use Validator;
 use DB;
+use App\Models\ScreenPageModule;
 use DateTime;
 use DateTimeZone;
 use App\Models\Notifications;
@@ -189,14 +190,21 @@ class VounteerIndividualApplicationFormController extends Controller
         $vorbId = VonOrgRepresentativeBackground::create($orgRepBackground);
         $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
         $Org_id = VonOrgRepresentativeBackground::latest()->first();
+
+        $notifi_code='OAVC';
+        $screen_id=ScreenPageModule::select('id','screen_route_alt')->where('notifi_code',$notifi_code)->first();
+
         $notifi=[
             'added_by' => $request->added_by,
-            'branch_id'=>$request->branch_id,
-            'role'=>'Admin/Clerk ',
             'patient_mrn' =>   $Org_id['id'],
-            'url_route' => "/Modules/Von/view-organization?id=".$Org_id['id'],
-            'created_at' => $date->format('Y-m-d H:i:s'),
+            'branch_id' => $request->branch_id,
+            'screen_id' => $screen_id['id'],
+            'staff_id'=> '',
+            'notifi_code' => '',
+            'url_route' => $screen_id['screen_route_alt'].'?id='.$Org_id['id'],
             'message' =>  'New organization application for VON collaboration',
+            'created_at' => $date->format('Y-m-d H:i:s'),
+            
         ];
         $HOD = Notifications::insert($notifi);
         if ($request->area_of_involvement == 'Volunteerism') {
@@ -325,14 +333,19 @@ class VounteerIndividualApplicationFormController extends Controller
         $vorbId = VonOrgRepresentativeBackground::create($orgRepBackground);
         $Org_id = VonOrgRepresentativeBackground::latest()->first();
         $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+
+        $notifi_code='IAVC';
+        $screen_id=ScreenPageModule::select('id','screen_route_alt')->where('notifi_code',$notifi_code)->first();
         $notifi=[
             'added_by' => $request->added_by,
-            'branch_id'=>$request->branch_id,
-            'role'=>'Admin/Clerk ',
             'patient_mrn' =>   $Org_id['id'],
-            'url_route' => "/Modules/Von/view-individual?id=".$Org_id['id'],
-            'created_at' => $date->format('Y-m-d H:i:s'),
+            'branch_id' => $request->branch_id,
+            'screen_id' => $screen_id['id'],
+            'staff_id'=> '',
+            'notifi_code' => '',
+            'url_route' => $screen_id['screen_route_alt'].'?id='.$Org_id['id'],
             'message' =>  'New individual application for VON collaboration',
+            'created_at' => $date->format('Y-m-d H:i:s'),
         ];
         $HOD = Notifications::insert($notifi);
         if ($request->area_of_involvement == 'Volunteerism') {
@@ -463,14 +476,19 @@ class VounteerIndividualApplicationFormController extends Controller
             $vorbId = VonOrgRepresentativeBackground::create($orgRepBackground);
             $Org_id = VonOrgRepresentativeBackground::latest()->first();
             $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+
+            $notifi_code='GAVC';
+            $screen_id=ScreenPageModule::select('id','screen_route_alt')->where('notifi_code',$notifi_code)->first();
             $notifi=[
                 'added_by' => $request->added_by,
-                'branch_id'=>$request->branch_id,
-                'role'=>'Admin/Clerk ',
                 'patient_mrn' =>   $Org_id['id'],
-                'url_route' => "/Modules/Von/view-group?id=".$Org_id['id'],
-                'created_at' => $date->format('Y-m-d H:i:s'),
+                'branch_id' => $request->branch_id,
+                'screen_id' => $screen_id['id'],
+                'staff_id'=> '',
+                'notifi_code' => '',
+                'url_route' => $screen_id['screen_route_alt'].'?id='.$Org_id['id'],
                 'message' =>  'New group application for VON collaboration',
+                'created_at' => $date->format('Y-m-d H:i:s'),
             ];
             $HOD = Notifications::insert($notifi);
             if ($request->area_of_involvement == 'Volunteerism') {

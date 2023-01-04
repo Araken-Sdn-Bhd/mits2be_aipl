@@ -2,72 +2,56 @@
 
 namespace App\Http\Controllers;
 use App\Models\Notifications;
+use App\Models\ScreenAccessRoles;
 use App\Models\StaffManagement;
 use DateTime;
 use Illuminate\Http\Request;
+
 
 class NotificationController extends Controller
 {
     public function getNotification(Request $request)
     {
-        if($request->role=='Admin/Clerk' || $request->role=='Triage Personnel'|| $request->role=='Staff Nurse'){
-        $result = Notifications::select('*')
-            ->where('branch_id', '=', $request->branch_id)
-            ->where('role', '=', $request->role)
-            ->orderBy('id', 'DESC')
-            ->get()->toArray();
+        $staff_id=$request->user_id; //staff id is user id 
+        $screen_access= ScreenAccessRoles::select('id','screen_id','branch_id')->where('staff_id',$staff_id)->get()->toArray();
+        $ab=[];
+        $count=0;
+        foreach ($screen_access as $key => $v){
 
-     
-
-    }else{
-            $staff_id = StaffManagement::select('id')->where('email',$request->email)->first();
             $result = Notifications::select('*')
-                ->where('branch_id', '=', $request->branch_id)
-                ->where('staff_id', '=', $staff_id['id'])
-                ->orderBy('id', 'DESC')
-                ->get()->toArray();
-    }
-   
-    
-    if($request->role=='Healthcare Assistant'||$request->role=='Triage Personnel'||$request->role=='Occupational Therapy'||
-    $request->role=='Admin/Clerk'||$request->role=='Staff Nurse') {
+            ->where('branch_id', '=', $v['branch_id'])
+            ->where(function ($query) use ($v,$staff_id){
+                $query->where('staff_id', '=', $staff_id)
+                ->orWhere('screen_id', '=', $v['id']);
+                        })
+            ->orderBy('id', 'DESC')
+            ->first();
+// dd($result);
+            if($result){
+            $count++;
+            $datetime1 = new DateTime();
+            $datetime12 = new DateTime($result['created_at']);
 
-            $staff_id = StaffManagement::select('id')->where('email',$request->email)->first();
-            $list2 = Notifications::select('*')
-                ->where('branch_id', '=', $request->branch_id)
-                ->where('message', '=', 'New assigned patient for vital')
-                ->orderBy('id', 'DESC')
-                ->get()->toArray();
-
-            if(count($list2)>0){
-
-                $result=array_merge($result, $list2);
-                
+            if (DATE_FORMAT($datetime12, 'Y-m-d') == date('Y-m-d')) {
+                $ab[$key]['time']  = $datetime1->diff(new DateTime($result['created_at']))->format('%h hours %i minutes');
+                $ab[$key]['time_order']=$datetime1->diff(new DateTime($result['created_at']));
+            } else {
+                $ab[$key]['time_order']=$datetime1->diff(new DateTime($result['created_at']));
+                $ab[$key]['time']  = $datetime1->diff(new DateTime($result['created_at']))->format('%a days %h hours %i minutes');
             }
-    }
-            $ab = [];
-            $count=count($result);
-            if (count($result) > 0) {
-                foreach ($result as $key => $value) {
-    
-                    $datetime1 = new DateTime();
-                    $datetime12 = new DateTime($value['created_at']);
-    
-                    if (DATE_FORMAT($datetime12, 'Y-m-d') == date('Y-m-d')) {
-                        $ab[$key]['time']  = $datetime1->diff(new DateTime($value['created_at']))->format('%h hours %i minutes');
-                    } else {
-                        $ab[$key]['time']  = $datetime1->diff(new DateTime($value['created_at']))->format('%a days %h hours %i minutes');
-                    }
-                    $ab[$key]['id']  = $value['id'];
-                    $ab[$key]['message']  = $value['message'];
-                    $ab[$key]['patient_mrn']  = $value['patient_mrn'];
-                    $ab[$key]['url_route']  = $value['url_route'];
-    
-                }
             
+            $ab[$key]['id']  = $result['id'];
+            $ab[$key]['message']  = $result['message'];
+            $ab[$key]['patient_mrn']  = $result['patient_mrn'];
+            $ab[$key]['url_route']  = $result['url_route'];
+        }
+        
+        }
+
+
             return response()->json(["message" => "Notifications List", 'list' => $ab, 'notification_count' => $count, "code" => 200]);
 
-            }
+          
         
     }
 

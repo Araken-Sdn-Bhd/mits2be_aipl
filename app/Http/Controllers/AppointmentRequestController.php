@@ -8,6 +8,7 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use App\Models\Notifications;
+use App\Models\ScreenPageModule;
 use Validator;
 use Illuminate\Support\Facades\DB;
 
@@ -40,14 +41,18 @@ class AppointmentRequestController extends Controller
             $HOD = AppointmentRequest::firstOrCreate($appointmentrequest);
 
             $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+            $notifi_code='RA';
+            $screen_id=ScreenPageModule::select('id','screen_route_alt')->where('notifi_code',$notifi_code)->first();
             $notifi=[
                 'added_by' => $request->added_by,
-                'branch_id'=>$request->branch_id,
-                'role'=>'Admin/Clerk',
                 'patient_mrn' =>   '',
-                'url_route' => "/Modules/Patient/list-of-appointment",
-                'created_at' => $date->format('Y-m-d H:i:s'),
+                'branch_id' => $request->branch_id,
+                'screen_id' => $screen_id['id'],
+                'staff_id'=> '',
+                 'notifi_code' => '',
+                'url_route' => $screen_id['screen_route_alt'],
                 'message' =>  'Request for appointment(s)',
+                'created_at' => $date->format('Y-m-d H:i:s'),
             ];
             $HOD2 = Notifications::insert($notifi);
         } catch (Exception $e) {
