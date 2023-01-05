@@ -389,7 +389,7 @@ class AddressManagementController extends Controller
             ->get();
         return response()->json(["message" => "stateWisePostcode List", 'list' => $users, "code" => 200]);
     }
-    
+
     public function getStateCityByPostcode(Request $request)
     {
         $list = Postcode::select('id', 'state_id', 'country_id', 'state_name', 'city_name')
@@ -406,7 +406,7 @@ class AddressManagementController extends Controller
     {
         $city = DB::table('state')
             ->join('postcode', 'postcode.state_id', '=', 'state.id')
-            ->select('postcode.city_name')
+            ->select('postcode.city_name','postcode.id')
             ->where('state.id', '=', $id)
             ->groupBy('postcode.city_name')
             ->orderBy('postcode.city_name', 'ASC')
@@ -418,7 +418,7 @@ class AddressManagementController extends Controller
     {
         $postcode = DB::table('postcode')
             ->select('id', 'postcode')
-            ->where('city_name', '=', $id)
+            ->where('id', '=', $id)
             ->orderBy('postcode', 'ASC')
             ->get();
         return response()->json(["message" => "postcode List", 'list' => $postcode, "code" => 200]);
