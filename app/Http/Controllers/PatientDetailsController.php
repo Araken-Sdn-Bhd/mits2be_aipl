@@ -399,7 +399,8 @@ class PatientDetailsController extends Controller
             $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
             (select patient_id,harm_time,harm_date,status from sharp_registraion_final_step
             where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
-            d on pr.id=d.patient_id order by patient_mrn;");
+            d on pr.id=d.patient_id order by pr.name_asin_nric;");
+
         } else {
             if ($request->fromDate != 'dd-mm-yyyy' && $request->toDate != 'dd-mm-yyyy') {
                 $query = DB::select("SELECT pr.*,d.* FROM patient_registration pr join
@@ -409,14 +410,15 @@ class PatientDetailsController extends Controller
                 group by patient_id))
                 d on pr.id=d.patient_id
 
-                order by pr.patient_mrn;");//where d.patient_id = 1
+                order by pr.name_asin_nric;");//where d.patient_id = 1
             } else if ($request->keyword != 'no-keyword') {
                 $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
                 (select id,patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
                 where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
                 d on pr.id=d.patient_id
                 where pr.name_asin_nric like '%$request->keyword%' or pr.nric_no like '%$request->keyword%'
-                order by pr.patient_mrn;");
+                order by pr.name_asin_nric;");
+
             } else if ($request->keyword != 'no-keyword' && $request->fromDate != 'dd-mm-yyyy' && $request->toDate != 'dd-mm-yyyy') {
                 $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
                 (select id,patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
@@ -425,13 +427,13 @@ class PatientDetailsController extends Controller
                 group by patient_id))
                 d on pr.id=d.patient_id
                 where pr.name_asin_nric like '%$request->keyword%' or pr.nric_no like '%$request->keyword%'
-                order by prpatient_mrn;");
+                order by pr.name_asin_nric;");
             } else {
                 $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
                 (select id,patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
                 where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
                 d on pr.id=d.patient_id
-                order by pr.patient_mrn;");
+                order by pr.name_asin_nric;");
             }
         }
 
@@ -446,11 +448,42 @@ class PatientDetailsController extends Controller
                     $result[$key]['age'] = $val->age ??  'NA';
                     $result[$key]['name_asin_nric'] = $val->name_asin_nric ??  'NA';
                     $result[$key]['nric_no'] = $val->nric_no ??  'NA';
-                    if ($val->status) {
-                        $result[$key]['status'] = "Completed" ??  '-';
-                    } else {
-                        $result[$key]['status'] = "Draft" ??  '-';
+                    if ($val->nric_no == null || $val->nric_no == ''){
+                        $result[$key]['nric_no'] = $val->passport_no ?? 'NA';
                     }
+
+                    if ($val->status == '1') {
+                        $result[$key]['status'] = 'Completed';
+                    } else if ($val->status == '0') {
+                        $result[$key]['status'] = 'Draft';
+                    }else{
+                        $result[$key]['status'] = '-';
+                    }
+
+                    $appDate = PatientAppointmentDetails::select('booking_date')->where('patient_mrn_id',$val->id)->get();
+                    $result[$key]['booking_date']  = $appDate[0]['booking_date'] ?? '-';
+
+                    if ($val->added_by) {
+                        $users = DB::table('patient_registration')
+                            ->join('users', 'patient_registration.added_by', '=', 'users.id')
+                            ->select('users.email')
+                            ->where('patient_registration.added_by', '=', $val->added_by)
+                            ->get();
+                        if (count($users)) {
+                            $tmp = json_decode(json_encode($users[0]), true)['email'];
+                            $branchid =  StaffManagement::select('branch_id')->where('email', '=', $tmp)
+                                ->get();
+                            if (!empty($branchid[0]['branch_id'])) {
+                                $pc = HospitalBranchManagement::where(['id' => $branchid[0]['branch_id']])->get()->toArray();
+                                $result[$key]['hospital_branch_name'] = ($pc) ? $pc[0]['hospital_branch_name'] : 'NA';
+                            } else {
+                                $result[$key]['hospital_branch_name'] = 'NA';
+                            }
+                        }
+                    } else {
+                        $result[$key]['hospital_branch_name'] = 'NA';
+                    }
+    
                 }
             } else {
                 $result[$key]['harm_time'] = $val->harm_time ??  '-';
@@ -460,11 +493,20 @@ class PatientDetailsController extends Controller
                 $result[$key]['age'] = $val->age ??  'NA';
                 $result[$key]['name_asin_nric'] = $val->name_asin_nric ??  'NA';
                 $result[$key]['nric_no'] = $val->nric_no ??  'NA';
-                if ($val->status) {
-                    $result[$key]['status'] = "Completed" ??  '-';
-                } else {
-                    $result[$key]['status'] = "Draft" ??  '-';
+
+                if ($val->nric_no == null || $val->nric_no == ''){
+                    $result[$key]['nric_no'] = $val->passport_no ?? 'NA';
                 }
+
+                if ($val->status == '1') {
+                    $result[$key]['status'] = 'Completed';
+                } else if ($val->status == '0') {
+                    $result[$key]['status'] = 'Draft';
+                }else{
+                    $result[$key]['status'] = '-';
+                }
+                
+
                 if ($val->added_by) {
                     $users = DB::table('patient_registration')
                         ->join('users', 'patient_registration.added_by', '=', 'users.id')
@@ -485,6 +527,11 @@ class PatientDetailsController extends Controller
                 } else {
                     $result[$key]['hospital_branch_name'] = 'NA';
                 }
+
+
+
+                $appDate = PatientAppointmentDetails::select('booking_date')->where('patient_mrn_id',$val->id)->get();
+                $result[$key]['booking_date']  = $appDate[0]['booking_date'] ?? '-';
             }
         }
         return response()->json(["message" => "Patient List.", 'list' => $result, "code" => 200]);
