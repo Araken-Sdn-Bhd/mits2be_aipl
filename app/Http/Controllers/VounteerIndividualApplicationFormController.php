@@ -191,8 +191,8 @@ class VounteerIndividualApplicationFormController extends Controller
         $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
         $Org_id = VonOrgRepresentativeBackground::latest()->first();
 
-        $notifi_code='OAVC';
-        $screen_id=ScreenPageModule::select('id','screen_route_alt')->where('notifi_code',$notifi_code)->first();
+        $notifi_code='AVC';
+        $screen_id=ScreenPageModule::select('id','notifi_route')->where('notifi_code',$notifi_code)->first();
 
         $notifi=[
             'added_by' => $request->added_by,
@@ -200,7 +200,7 @@ class VounteerIndividualApplicationFormController extends Controller
             'branch_id' => $request->branch_id,
             'screen_id' => $screen_id['id'],
             'staff_id'=> '',
-            'url_route' => $screen_id['screen_route_alt'].'?id='.$Org_id['id'],
+            'url_route' => $screen_id['notifi_route'].'view-organization?id='.$Org_id['id'],
             'message' =>  'New organization application for VON collaboration',
             'created_at' => $date->format('Y-m-d H:i:s'),
             
@@ -333,15 +333,15 @@ class VounteerIndividualApplicationFormController extends Controller
         $Org_id = VonOrgRepresentativeBackground::latest()->first();
         $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
 
-        $notifi_code='IAVC';
-        $screen_id=ScreenPageModule::select('id','screen_route_alt')->where('notifi_code',$notifi_code)->first();
+        $notifi_code='AVC';
+        $screen_id=ScreenPageModule::select('id','notifi_route')->where('notifi_code',$notifi_code)->first();
         $notifi=[
             'added_by' => $request->added_by,
             'patient_mrn' =>   $Org_id['id'],
             'branch_id' => $request->branch_id,
             'screen_id' => $screen_id['id'],
             'staff_id'=> '',
-            'url_route' => $screen_id['screen_route_alt'].'?id='.$Org_id['id'],
+            'url_route' => $screen_id['notifi_route'].'view-individual?id='.$Org_id['id'],
             'message' =>  'New individual application for VON collaboration',
             'created_at' => $date->format('Y-m-d H:i:s'),
         ];
@@ -476,14 +476,14 @@ class VounteerIndividualApplicationFormController extends Controller
             $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
 
             $notifi_code='GAVC';
-            $screen_id=ScreenPageModule::select('id','screen_route_alt')->where('notifi_code',$notifi_code)->first();
+            $screen_id=ScreenPageModule::select('id','notifi_route')->where('notifi_code',$notifi_code)->first();
             $notifi=[
                 'added_by' => $request->added_by,
                 'patient_mrn' =>   $Org_id['id'],
                 'branch_id' => $request->branch_id,
                 'screen_id' => $screen_id['id'],
                 'staff_id'=> '',
-                'url_route' => $screen_id['screen_route_alt'].'?id='.$Org_id['id'],
+                'url_route' => $screen_id['notifi_route'].'view-group?id='.$Org_id['id'],
                 'message' =>  'New group application for VON collaboration',
                 'created_at' => $date->format('Y-m-d H:i:s'),
             ];

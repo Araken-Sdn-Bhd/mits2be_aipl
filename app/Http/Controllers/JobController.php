@@ -77,14 +77,14 @@ class JobController extends Controller
                 JobOffers::create($jobOffer);
                 $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
                 $notifi_code='JAR';
-                $screen_id=ScreenPageModule::select('id','screen_route_alt')->where('notifi_code',$notifi_code)->first();
+                $screen_id=ScreenPageModule::select('id','notifi_route')->where('notifi_code',$notifi_code)->first();
                 $notifi=[
                     'added_by' => $request->user_id,
                     'patient_mrn' =>   $company->id,
                     'branch_id' => $request->branch_id,
                     'screen_id' => $screen_id['id'],
                     'staff_id'=> '',
-                    'url_route' => $screen_id['screen_route_alt'].'?id='.$company->id.'&'.'company='.$company->company_name,
+                    'url_route' => $screen_id['notifi_route'].'?id='.$company->id.'&'.'company='.$company->company_name,
                     'message' =>  'New job approval request',
                     'created_at' => $date->format('Y-m-d H:i:s'),
                 ];
@@ -143,8 +143,8 @@ class JobController extends Controller
         $company = DB::table('employee_registration')->select('id','company_name')->where('user_id', '=', $request->user_id)->first();
                 JobOffers::create($jobOffer);
                 $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-                $notifi_code='JAR R';
-                $screen_id=ScreenPageModule::select('id','screen_route_alt')->where('notifi_code',$notifi_code)->first();
+                $notifi_code='JAR';
+                $screen_id=ScreenPageModule::select('id','notifi_route')->where('notifi_code',$notifi_code)->first();
                 $notifi=[
 
                     'added_by' => $request->user_id,
@@ -152,7 +152,7 @@ class JobController extends Controller
                     'branch_id' => $request->branch_id,
                     'screen_id' => $screen_id['id'],
                     'staff_id'=> '',
-                    'url_route' => $screen_id['screen_route_alt'],
+                    'url_route' => $screen_id['notifi_route'],
                     'message' =>  'New job approval request',
                     'created_at' => $date->format('Y-m-d H:i:s'),
                 ];
