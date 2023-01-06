@@ -143,7 +143,7 @@ class JobController extends Controller
         $company = DB::table('employee_registration')->select('id','company_name')->where('user_id', '=', $request->user_id)->first();
                 JobOffers::create($jobOffer);
                 $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-                $notifi_code='JAR';
+                $notifi_code='JAR R';
                 $screen_id=ScreenPageModule::select('id','notifi_route')->where('notifi_code',$notifi_code)->first();
                 $notifi=[
 
