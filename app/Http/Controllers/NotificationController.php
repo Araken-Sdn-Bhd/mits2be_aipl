@@ -13,7 +13,7 @@ class NotificationController extends Controller
     public function getNotification(Request $request)
     {
         $staff_id=$request->user_id; //staff id is user id 
-        $screen_access= ScreenAccessRoles::select('id','screen_id')->where('staff_id',$staff_id)->where('branch_id',$request->branch_id)->get()->toArray();
+        $screen_access= ScreenAccessRoles::select('screen_id')->where('staff_id',$staff_id)->where('branch_id',$request->branch_id)->get()->toArray();
         $ab=[];
         $count=0;
 
@@ -23,7 +23,7 @@ class NotificationController extends Controller
             ->where('branch_id', '=', $request->branch_id)
             ->where(function ($query) use ($v,$staff_id){
                 $query->where('staff_id', '=', $staff_id)
-                ->orWhere('screen_id', '=', $v['id']);
+                ->orWhere('screen_id', '=', $v['screen_id']);
                         })
             ->orderBy('id', 'DESC')
             ->first();
