@@ -26,11 +26,12 @@ class NotificationController extends Controller
                 ->orWhere('screen_id', '=', $v['screen_id']);
                         })
             ->orderBy('id', 'DESC')
-            ->first();
+            ->get()->toArray();
             
             
             if ($result){
-  
+
+
 
             $count++;
             $datetime1 = new DateTime();
