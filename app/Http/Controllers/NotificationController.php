@@ -27,28 +27,28 @@ class NotificationController extends Controller
                         })
             ->orderBy('id', 'DESC')
             ->get()->toArray();
-            
+                    }
             
             if ($result){
 
-
+foreach($result as $key=>$r){
 
             $count++;
             $datetime1 = new DateTime();
-            $datetime12 = new DateTime($result['created_at']);
+            $datetime12 = new DateTime($r['created_at']);
 
             if (DATE_FORMAT($datetime12, 'Y-m-d') == date('Y-m-d')) {
-                $ab[$key]['time']  = $datetime1->diff(new DateTime($result['created_at']))->format('%h hours %i minutes');
-                $ab[$key]['time_order']=$datetime1->diff(new DateTime($result['created_at']));
+                $ab[$key]['time']  = $datetime1->diff(new DateTime($r['created_at']))->format('%h hours %i minutes');
+                $ab[$key]['time_order']=$datetime1->diff(new DateTime($r['created_at']));
             } else {
-                $ab[$key]['time_order']=$datetime1->diff(new DateTime($result['created_at']));
-                $ab[$key]['time']  = $datetime1->diff(new DateTime($result['created_at']))->format('%a days %h hours %i minutes');
+                $ab[$key]['time_order']=$datetime1->diff(new DateTime($r['created_at']));
+                $ab[$key]['time']  = $datetime1->diff(new DateTime($r['created_at']))->format('%a days %h hours %i minutes');
             }
             
-            $ab[$key]['id']  = $result['id'];
-            $ab[$key]['message']  = $result['message'];
-            $ab[$key]['patient_mrn']  = $result['patient_mrn'];
-            $ab[$key]['url_route']  = $result['url_route'];
+            $ab[$key]['id']  = $r['id'];
+            $ab[$key]['message']  = $r['message'];
+            $ab[$key]['patient_mrn']  = $r['patient_mrn'];
+            $ab[$key]['url_route']  = $r['url_route'];
         
 }
         }
