@@ -6,7 +6,7 @@ use App\Models\ScreenAccessRoles;
 use App\Models\StaffManagement;
 use DateTime;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Collection;
 
 class NotificationController extends Controller
 {
@@ -16,6 +16,7 @@ class NotificationController extends Controller
         $screen_access= ScreenAccessRoles::select('screen_id')->where('staff_id',$staff_id)->where('branch_id',$request->branch_id)->get()->toArray();
         $ab=[];
         $count=0;
+$index=0;
 
         foreach ($screen_access as $key => $v){
 
@@ -27,34 +28,43 @@ class NotificationController extends Controller
                         })
             ->orderBy('id', 'DESC')
             ->get()->toArray();
-                    }
+                    
             
             if ($result){
 
-foreach($result as $key=>$r){
+foreach($result as $k=>$r){
 
-            $count++;
+    
             $datetime1 = new DateTime();
             $datetime12 = new DateTime($r['created_at']);
 
             if (DATE_FORMAT($datetime12, 'Y-m-d') == date('Y-m-d')) {
-                $ab[$key]['time']  = $datetime1->diff(new DateTime($r['created_at']))->format('%h hours %i minutes');
-                $ab[$key]['time_order']=$datetime1->diff(new DateTime($r['created_at']));
+                $ab[$count]['time']  = $datetime1->diff(new DateTime($r['created_at']))->format('%h hours %i minutes');
+                $ab[$count]['time_order']=$datetime1->diff(new DateTime($r['created_at']));
             } else {
-                $ab[$key]['time_order']=$datetime1->diff(new DateTime($r['created_at']));
-                $ab[$key]['time']  = $datetime1->diff(new DateTime($r['created_at']))->format('%a days %h hours %i minutes');
+                $ab[$count]['time_order']=$datetime1->diff(new DateTime($r['created_at']));
+                $ab[$count]['time']  = $datetime1->diff(new DateTime($r['created_at']))->format('%a days %h hours %i minutes');
             }
             
-            $ab[$key]['id']  = $r['id'];
-            $ab[$key]['message']  = $r['message'];
-            $ab[$key]['patient_mrn']  = $r['patient_mrn'];
-            $ab[$key]['url_route']  = $r['url_route'];
-        
+            $ab[$count]['id']  = $r['id'] ??= $r;
+            $ab[$count]['message']  = $r['message'];
+            $ab[$count]['patient_mrn']  = $r['patient_mrn'];
+            $ab[$count]['url_route']  = $r['url_route'];
+            $count++;
+    
+           
 }
+            }
         }
- 
 
-            return response()->json(["message" => "Notifications List", 'list' => $ab, 'notification_count' => $count, "code" => 200]);
+        $result = array_reverse(array_values(array_column(
+            array_reverse($ab),
+            null,
+            'id'
+        )));
+        $index=count($result);
+  
+            return response()->json(["message" => "Notifications List", 'list' => $result, 'notification_count' => $index, "code" => 200]);
 
           
         
