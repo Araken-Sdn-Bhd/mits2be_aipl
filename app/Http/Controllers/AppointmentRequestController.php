@@ -42,14 +42,14 @@ class AppointmentRequestController extends Controller
 
             $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
             $notifi_code='RA';
-            $screen_id=ScreenPageModule::select('id','screen_route_alt')->where('notifi_code',$notifi_code)->first();
+            $screen_id=ScreenPageModule::select('id','notifi_route')->where('notifi_code',$notifi_code)->first();
             $notifi=[
                 'added_by' => $request->added_by,
                 'patient_mrn' =>   '',
                 'branch_id' => $request->branch_id,
                 'screen_id' => $screen_id['id'],
                 'staff_id'=> '',
-                'url_route' => $screen_id['screen_route_alt'],
+                'url_route' => $screen_id['notifi_route'],
                 'message' =>  'Request for appointment(s)',
                 'created_at' => $date->format('Y-m-d H:i:s'),
             ];

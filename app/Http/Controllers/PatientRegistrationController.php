@@ -191,7 +191,7 @@ class PatientRegistrationController extends Controller
             if ($Patient['patient_need_triage_screening']) {
 
             $notifi_code='RPC';
-            $screen_id=ScreenPageModule::select('id','screen_route_alt')->where('notifi_code',$notifi_code)->first();
+            $screen_id=ScreenPageModule::select('id','notifi_route')->where('notifi_code',$notifi_code)->first();
 
                 $notifi = [
                     'added_by' => $Patient['added_by'],
@@ -199,7 +199,7 @@ class PatientRegistrationController extends Controller
                     'branch_id' => $request->branch_id,
                     'screen_id' => $screen_id['id'],
                     'staff_id'=> '',
-                    'url_route' => $screen_id['screen_route_alt']."?id=" . $Patient['id'],
+                    'url_route' => $screen_id['notifi_route']."?id=" . $Patient['id'],
                     'message' =>  'Request for patient screening',
                     'created_at' => $date->format('Y-m-d H:i:s'),
                     
