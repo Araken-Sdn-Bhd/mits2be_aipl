@@ -857,11 +857,16 @@ class VounteerIndividualApplicationFormController extends Controller
     public function getRecord(Request $request)
     {
         $result = [];
+        if ($request->type == 'Organization'){
+            $response = VonOrgRepresentativeBackground::where('org_background_id', $request->id)->where('section','org')
+            ->get();
+        }else{
         $response = VonOrgRepresentativeBackground::where('id', $request->id)
         ->get();
+        }
         $section = $response[0]['section'];
         if ($section == 'org') {
-            $org =  VonOrgBackground::where('id', $response[0]['org_background_id'])->get();
+            $org =  VonOrgBackground::where('id', $request->id)->get();
             $result['org_name'] = $org[0]['org_name'];
             $result['org_reg_number'] = $org[0]['org_reg_number'];
             $result['org_desc'] = $org[0]['org_desc'];
