@@ -9,6 +9,7 @@ use Validator;
 use Exception;
 use Response;
 use Illuminate\Support\Facades\DB;
+use DateTime;
 
 class AnnouncementManagementController extends Controller
 {
@@ -179,5 +180,18 @@ class AnnouncementManagementController extends Controller
             ->where('id', '=', $request->id)
             ->get();
         return response()->json(["message" => "List", 'list' => $list, "code" => 200]);
+    }
+
+    public function getAnnouncementPublishedList()
+    {
+        $date = date('Y-m-d');
+        $list = Announcement::select("id", "title", "start_date")
+            ->Where("status", '=', "2")
+            ->Where("start_date", '<=', $date)
+            ->Where("end_date", '>=', $date)
+            ->OrderBy("start_date", 'DESC')
+            ->get();
+
+        return response()->json(["message" => "Announcement Published List", 'list' => $list, "code" => 200]);
     }
 }
