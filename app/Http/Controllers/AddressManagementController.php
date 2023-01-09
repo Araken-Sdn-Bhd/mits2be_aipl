@@ -418,7 +418,7 @@ class AddressManagementController extends Controller
     {
         $postcode = DB::table('postcode')
             ->select('id', 'postcode')
-            ->where('id', '=', $id)
+            ->where('city_name', '=', $id)
             ->orderBy('postcode', 'ASC')
             ->get();
         return response()->json(["message" => "postcode List", 'list' => $postcode, "code" => 200]);
