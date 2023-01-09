@@ -203,7 +203,7 @@ class VounteerIndividualApplicationFormController extends Controller
             'url_route' => $screen_id['notifi_route'].'view-organization?id='.$Org_id['id'],
             'message' =>  'New organization application for VON collaboration',
             'created_at' => $date->format('Y-m-d H:i:s'),
-            
+
         ];
         $HOD = Notifications::insert($notifi);
         if ($request->area_of_involvement == 'Volunteerism') {
@@ -646,7 +646,7 @@ class VounteerIndividualApplicationFormController extends Controller
 
     public function getList()
     {
-      
+
         $result = [];
         $k = 0;
         $indi = VonOrgRepresentativeBackground::where('section', 'individual')->where('status', '0')->get();
@@ -758,6 +758,7 @@ class VounteerIndividualApplicationFormController extends Controller
         if ($indi) {
             foreach ($indi as $key => $val) {
                 $result[$k]['id'] = $val['id'];
+                $result[$k]['org_background_id'] = $val['org_background_id'];
                 $result[$k]['name'] = $val['name'];
                 $result[$k]['app_type'] = 'Individual';
                 $result[$k]['area_of_involvment'] = $val['area_of_involvement'];
@@ -791,6 +792,7 @@ class VounteerIndividualApplicationFormController extends Controller
         if ($group) {
             foreach ($group as $key => $val) {
                 $result[$k]['id'] = $val['id'];
+                $result[$k]['org_background_id'] = $val['org_background_id'];
                 $result[$k]['name'] = $val['name'];
                 $result[$k]['app_type'] = 'Group';
                 $result[$k]['area_of_involvment'] = $val['area_of_involvement'];
@@ -825,6 +827,7 @@ class VounteerIndividualApplicationFormController extends Controller
         if ($org) {
             foreach ($org as $key => $val) {
                 $result[$k]['id'] = $val['id'];
+                $result[$k]['org_background_id'] = $val['org_background_id'];
                 $name = VonOrgBackground::where('id', $val['org_background_id'])->get()->pluck('org_name')->toArray();
                 $result[$k]['name'] = ($name) ? $name[0] : 'NA';
                 $result[$k]['app_type'] = 'Organization';
