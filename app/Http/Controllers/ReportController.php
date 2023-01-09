@@ -1412,7 +1412,7 @@ class ReportController extends Controller
         $result = [];
         $index = 0;
         $toc = ['individual' => 'INDIVIDUAL', 'org' => 'ORGANIZATION', 'group' => 'GROUP'];
-        $toi = ['Volunteerism' => 'VOLUNTEERISM', 'Networking  Make a Contribution' => 'NETWORKING', 'Outreach  Project Collaboration' => 'OUTREACH'];
+        $toi = ['Volunteerism' => 'VOLUNTEERISM', 'Networking Make a Contribution' => 'NETWORKING', 'Outreach  Project Collaboration' => 'OUTREACH'];
         $toiArr = ['VOLUNTEER' => 0, 'OUTREACH' => 0, 'NETWORKING' => 0];
         $ssh = VonOrgRepresentativeBackground::whereBetween('created_at', [$from, $to]);
         if ($request->toc != NULL){
@@ -1491,7 +1491,7 @@ class ReportController extends Controller
                     $toiArr['OUTREACH'] = $toiArr['OUTREACH'] + 1;
                     $orp = OutReachProjects::where('parent_section_id', $v['id'])->get()->toArray();
                 }
-                if ($v['area_of_involvement'] == 'Networking  Make a Contribution') {
+                if ($v['area_of_involvement'] == 'Networking Make a Contribution') {
                     $toiArr['NETWORKING'] = $toiArr['NETWORKING'] + 1;
                     $orp = NetworkingContribution::where('parent_section_id', $v['id'])->get()->toArray();
                 }
@@ -1526,7 +1526,7 @@ class ReportController extends Controller
                         if ($v['area_of_involvement'] == 'Outreach  Project Collaboration') {
                             $toiArr['OUTREACH'] = $toiArr['OUTREACH'] - 1;
                         }
-                        if ($v['area_of_involvement'] == 'Networking  Make a Contribution') {
+                        if ($v['area_of_involvement'] == 'Networking Make a Contribution') {
                             $toiArr['NETWORKING'] = $toiArr['NETWORKING'] - 1;
                         }
                         if ($v['area_of_involvement'] == 'Volunteerism') {
