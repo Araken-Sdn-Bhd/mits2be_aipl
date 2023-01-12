@@ -813,16 +813,6 @@ class CpsProgressNoteController extends Controller
                                 ];
                                 $patient = PatientAppointmentDetails::create($service);
                                 $request->appId = $patient->id;
-                                $notifi = [
-                                    'added_by' => $request->added_by,
-                                    'branch_id' => $userDetails->branch_id,
-                                    'role' => 'Admin/Clerk',
-                                    'patient_mrn' =>   $getmnr_id[0],
-                                    'url_route' => "/Modules/Patient/list-of-appointment",
-                                    'created_at' => $date->format('Y-m-d H:i:s'),
-                                    'message' =>  'Request for appointment(s)',
-                                ];
-                                $HOD = Notifications::insert($notifi);
 
                                 // EMAIL
                                 $app_request = AppointmentRequest::where('nric_or_passportno', $nric_or_passportno)
