@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PatientAppointmentDetails;
+use App\Models\ScreenPageModule;
 use Illuminate\Http\Request;
 use App\Models\PatientClinicalInfo;
 use App\Models\Notifications;
@@ -58,11 +59,11 @@ class PatientClinicalInfoController extends Controller
         $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
         $patient_id = PatientAppointmentDetails::where('id', '=', $request->appointmentid)->first();
         $notifi_code='APV';
-        
+
         $screen_id=ScreenPageModule::select('id','screen_route_alt')->where('notifi_code',$notifi_code)->first();
 
         if (!isEmpty($patient_id) || $patient_id != null) {
-             $notifi = [           
+             $notifi = [
             'added_by' => $request->added_by,
             'patient_mrn' =>   $patient_id['patient_mrn_id'],
             'branch_id' => $request->branch_id,
