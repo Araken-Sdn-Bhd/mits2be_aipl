@@ -57,6 +57,7 @@ use App\Models\WorkAnalysisJobSpecification;
 use App\Models\AppointmentRequest;
 use App\Models\HospitalBranchManagement;
 use App\Models\ScreenPageModule;
+use App\Models\ServiceRegister;
 use Exception;
 use Validator;
 use DateTime;
@@ -413,7 +414,7 @@ class PatientAppointmentDetailsController extends Controller
             ->get()
             ->toArray();
         $result = [];
-        $list123 = HospitalBranchTeamManagement::select('id', 'hospital_branch_name', 'team_name', 'hospital_code')->where('status', '=', '1')->get();
+        $list123 = ServiceRegister::select('id', 'service_name as team_name')->where('status', '=', '1')->get();
         if (count($resultSet) > 0) {
             foreach ($resultSet as $key => $val) {
                 $patient = [];
@@ -453,7 +454,7 @@ class PatientAppointmentDetailsController extends Controller
                         $staffName = StaffManagement::where('id', $staff_id)->get()->pluck('name');
                         $resultChunk['team_name'] = (count($staffName) > 0) ? $staffName[0] : 'NA';
                     } else {
-                        $teamName = HospitalBranchTeamManagement::where('id', $team_id)->get()->pluck('team_name');
+                        $teamName = ServiceRegister::where('id', $team_id)->get()->pluck('service_name');
                         $resultChunk['team_name'] = (count($teamName) > 0) ? $teamName[0] : 'NA';
                     }
                     $resultChunk['team_id'] = $team_id ?: 'NA';
