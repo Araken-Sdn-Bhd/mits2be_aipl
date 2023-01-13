@@ -509,7 +509,7 @@ class ScreenModuleController extends Controller
 
         $list = DB::table('screen_access_roles')
         ->select('users.name',DB::raw("'Active' as status"))
-        
+
             ->join('users', 'screen_access_roles.staff_id', '=', 'users.id')
             //->join('hospital_branch_team_details', 'screen_access_roles.team_id', '=', 'hospital_branch_team_details.id')
             ->join('screens', 'screen_access_roles.screen_id', '=', 'screens.id')
@@ -629,6 +629,7 @@ class ScreenModuleController extends Controller
         ->orWhere('screen_access_roles.staff_id','=', $request->staff_id)
         ->groupBy('screen_access_roles.id','screen_modules.id','screen_access_roles.module_id','screen_access_roles.sub_module_id','screens.screen_name','screens.screen_route','screen_modules.module_name','screens.icon','screens.index_val','screen_access_roles.screen_id',
         'screen_access_roles.read_writes','screen_access_roles.read_only')
+        ->orderBy('screen_access_roles.module_id','ASC')
         ->get();
 
         $result1 = (array) json_decode($list1,true);
@@ -667,6 +668,7 @@ class ScreenModuleController extends Controller
         ->groupBy('screens.id','screens.added_by','screens.module_id','screens.module_name','screens.sub_module_id',
         'screens.sub_module_name','screens.screen_name','screens.screen_route','screens.icon',
         'screen_access_roles.id','screen_access_roles.read_writes','screen_access_roles.read_only')
+        ->orderBy('screens.sub_module_id','ASC')
         ->get();
                    $result_tmp = (array) json_decode($ab,true);
                    foreach ($result_tmp as $key => $val_) {
@@ -700,6 +702,7 @@ class ScreenModuleController extends Controller
         ->where('screen_modules.id','!=', '29')//SHHARP
         ->groupBy('screen_access_roles.id','screen_modules.id','screen_access_roles.module_id','screen_access_roles.sub_module_id','screens.screen_name','screens.screen_route','screen_modules.module_name','screens.icon','screens.index_val','screen_access_roles.screen_id',
         'screen_access_roles.read_writes','screen_access_roles.read_only')
+        ->orderBy('screen_access_roles.module_id','ASC')
         ->get();
 
         $result1 = (array) json_decode($list1,true);
@@ -734,6 +737,7 @@ class ScreenModuleController extends Controller
         ->groupBy('screens.id','screens.added_by','screens.module_id','screens.module_name','screens.sub_module_id',
         'screens.sub_module_name','screens.screen_name','screens.screen_route','screens.icon',
         'screen_access_roles.id','screen_access_roles.read_writes','screen_access_roles.read_only')
+        ->orderBy('screens.sub_module_id','ASC')
         ->get();
                    $result_tmp = (array) json_decode($ab,true);
                    foreach ($result_tmp as $key => $val_) {
