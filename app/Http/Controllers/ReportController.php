@@ -1099,11 +1099,11 @@ class ReportController extends Controller
 
                 if($request->appointment_type == 1){
                 $notes = PatientCounsellorClerkingNotes::where('patient_mrn_id', $v['patient_mrn_id'])
-                    ->where(DB::raw("(STR_TO_DATE(created_at,'%Y-%m-%d'))"), $v['booking_date'])
+                    ->where(DB::raw("(STR_TO_DATE(created_at,'%Y-%m-%d'))"), $v['booking_date'])->where('status','=','1')
                     ->get()->toArray();
                 if (count($notes) == 0) {
                     $notes = PsychiatryClerkingNote::where('patient_mrn_id', $v['patient_mrn_id'])
-                        ->where(DB::raw("(STR_TO_DATE(created_at,'%Y-%m-%d'))"), $v['booking_date'])
+                        ->where(DB::raw("(STR_TO_DATE(created_at,'%Y-%m-%d'))"), $v['booking_date'])->where('status','=','1')
                         ->get()->toArray();
                 }
                 }elseif($request->appointment_type == 3){
@@ -1154,14 +1154,14 @@ class ReportController extends Controller
                         }
                         $empStatus = GeneralSetting::where('id', $notes[0]['employment_status'])->get()->toArray();
                     }               
-                        $log_meeting = LogMeetingWithEmployer::where(['patient_id' => $v['patient_mrn_id']])->get()->toArray();
+                        $log_meeting = LogMeetingWithEmployer::where(['patient_id' => $v['patient_mrn_id']])->where('status','=','1')->get()->toArray();
                     if($log_meeting){
                         $jv = $jv + count($log_meeting);
                     }
                 }
                 elseif($request->appointment_type == 4){
                     if($request->work_readiness){
-                        $work_readiness = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        $work_readiness = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                         ->where('work_readiness',$request->work_readiness)
                         ->where('status', '1')
                         ->where('is_deleted', 0)
@@ -1171,7 +1171,7 @@ class ReportController extends Controller
                         }   
                     }
                     if($request->case_manager){
-                        $staff_name = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        $staff_name = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                         ->where('status', '1')
                         ->where('is_deleted', 0)
                         ->first();
@@ -1182,7 +1182,7 @@ class ReportController extends Controller
                             continue;
                         }   
                     }
-                    $notes = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                    $notes = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                     ->get()->toArray();
 
 
@@ -1190,7 +1190,7 @@ class ReportController extends Controller
 
                 }elseif($request->appointment_type == 5){
                     if($request->work_readiness){
-                        $work_readiness = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        $work_readiness = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                         ->where('work_readiness',$request->work_readiness)
                         ->where('status', 1)
                         ->where('is_deleted', 0)
@@ -1200,7 +1200,7 @@ class ReportController extends Controller
                         }   
                     }
                     if($request->case_manager){
-                        $staff_name = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        $staff_name = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                         ->where('status', 1)
                         ->where('is_deleted', 0)
                         ->first();
@@ -1211,13 +1211,13 @@ class ReportController extends Controller
                             continue;
                         }   
                     }
-                    $notes = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                    $notes = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                     ->get()->toArray();
 
                 }elseif($request->appointment_type == 6){
 
                     if($request->current_intervention){
-                        $current_intervention = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        $current_intervention = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                         ->where('current_intervention',$request->current_intervention)
                         ->where('status', 1)
                         ->where('is_deleted', 0)
@@ -1239,14 +1239,15 @@ class ReportController extends Controller
                         }   
                     }
 
-                    $notes = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                    $notes = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                     ->get()->toArray();
                     if(count($notes) != 0){
                         $curr_interv = GeneralSetting::where('id', $notes[0]['current_intervention'])->get()->toArray();
+                        
                     }
                 }
 
-                $job_search = ListOfJobSearch::where('id', $v['patient_mrn_id'])
+                $job_search = ListOfJobSearch::where('id', $v['patient_mrn_id'])->where('status','=','1')
                     ->whereBetween('created_at', [$request->fromDate, $request->toDate])
                     ->get()->toArray();
 
@@ -1256,7 +1257,7 @@ class ReportController extends Controller
                     $pc = GeneralSetting::where(['id' => $v['sex']])->get()->toArray();
                     $st = ServiceRegister::where(['id' => $v['appointment_type']])->get()->toArray();
                     $vt = GeneralSetting::where('id', $v['type_visit'])->get()->toArray();
-                    $cp = PatientAppointmentCategory::where('id', $v['patient_category'])->get()->toArray();
+                    $cp = GeneralSetting::where('id', $v['patient_category'])->get()->toArray();
                     $reftyp = GeneralSetting::where(['id' => $v['referral_type']])->get()->toArray();
                     
 
