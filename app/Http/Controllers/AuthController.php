@@ -32,6 +32,7 @@ class AuthController extends Controller
      */
     public function login(Request $request)
     {
+        DB::enableQueryLog();
         app('log')->debug($request->all());
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
@@ -130,8 +131,6 @@ class AuthController extends Controller
                         ->where('screen_access_roles.status', '=', '1')
                         ->get();
 
-
-
                     if (!empty($screenroute[0])) {
                         $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
                         $tmp_alt = json_decode(json_encode($screenroute[0]), true)['screen_route_alt'];
@@ -150,7 +149,6 @@ class AuthController extends Controller
                         ->where('screen_access_roles.staff_id', '=', $id)
                         ->where('screen_access_roles.status', '=', '1')
                         ->get();
-
                     if (!empty($screenroute[0])) {
                         $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
                         $tmp_alt = json_decode(json_encode($screenroute[0]), true)['screen_route_alt'];
@@ -182,7 +180,6 @@ class AuthController extends Controller
                     })
                     ->where('screens.screen_route', 'like', '%Mod%')
                     ->where('screen_access_roles.staff_id', '=', $id)
-                    ->orWhere('screen_access_roles.user_type', '=', $useradmin)
                     ->where('screen_access_roles.status', '=', '1')
                     ->get();
 
@@ -193,7 +190,6 @@ class AuthController extends Controller
                     })
                     ->where('screens.screen_route_alt', 'like', '%Mod%')
                     ->where('screen_access_roles.staff_id', '=', $id)
-                    ->orWhere('screen_access_roles.user_type', '=', $useradmin)
                     ->where('screen_access_roles.status', '=', '1')
                     ->get();
 
