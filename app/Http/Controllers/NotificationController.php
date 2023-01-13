@@ -20,19 +20,49 @@ $index=0;
 
         foreach ($screen_access as $key => $v){
 
-            $result = Notifications::select('*')
+            $result1 = Notifications::select('*')
             ->where('branch_id', '=', $request->branch_id)
-            ->where(function ($query) use ($v,$staff_id){
-                $query->where('staff_id', '=', $staff_id)
-                ->orWhere('screen_id', '=', $v['screen_id']);
-                        })
+            ->where('staff_id', '=', $staff_id)
             ->orderBy('id', 'DESC')
             ->get()->toArray();
                     
             
-            if ($result){
+            if ($result1){
 
-foreach($result as $k=>$r){
+foreach($result1 as $k=>$r){
+
+    
+            $datetime1 = new DateTime();
+            $datetime12 = new DateTime($r['created_at']);
+
+            if (DATE_FORMAT($datetime12, 'Y-m-d') == date('Y-m-d')) {
+                $ab[$count]['time']  = $datetime1->diff(new DateTime($r['created_at']))->format('%h hours %i minutes');
+                $ab[$count]['time_order']=$datetime1->diff(new DateTime($r['created_at']));
+            } else {
+                $ab[$count]['time_order']=$datetime1->diff(new DateTime($r['created_at']));
+                $ab[$count]['time']  = $datetime1->diff(new DateTime($r['created_at']))->format('%a days %h hours %i minutes');
+            }
+            
+            $ab[$count]['id']  = $r['id'] ??= $r;
+            $ab[$count]['message']  = $r['message'];
+            $ab[$count]['patient_mrn']  = $r['patient_mrn'];
+            $ab[$count]['url_route']  = $r['url_route'];
+            $count++;
+    
+           
+}
+            }
+            $result2 = Notifications::select('*')
+            ->where('branch_id', '=', $request->branch_id)
+            ->where('staff_id', '=', 0)
+            ->Where('screen_id', '=', $v['screen_id'])
+            ->orderBy('id', 'DESC')
+            ->get()->toArray();
+                    
+            
+            if ($result2){
+
+foreach($result2 as $k=>$r){
 
     
             $datetime1 = new DateTime();
