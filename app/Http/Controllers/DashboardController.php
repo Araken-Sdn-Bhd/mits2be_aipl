@@ -229,13 +229,15 @@ class DashboardController extends Controller
             ////Review Patient////
             $dateReview = Carbon::now()->subDays(7)->toDateString();
             $team_id = StaffManagement::select("id","team_id")->Where("email", '=', $request->email)->get();
+            $screen_id_review=ScreenPageModule::select('id','notifi_route')->where('notifi_code','=','RPC')->first();
+            $route_review_patient=$screen_id_review->notifi_route;
 
             $review_patient = DB::table('patient_care_paln as p')
            ->select('p.id','r.name_asin_nric','p.next_review_date')
             ->leftjoin('patient_registration as r', function ($join) {
                 $join->on('p.patient_id', '=', 'r.id');
             })
-            ->Where("p.services", '=', $team_id [0]['team_id'])
+            ->Where("r.services_type", '=', $team_id [0]['team_id'])
             ->Where("r.branch_id", '=', $request->branch)
             ->Where("p.next_review_date", '>=', $dateReview)->get()->toArray();
 
@@ -245,7 +247,8 @@ class DashboardController extends Controller
         $dateDraft = Carbon::now()->subDays(2)->toDateString();
         $screen_id=ScreenPageModule::select('id','notifi_route')->where('notifi_code','=','RPC')->first();
         $route=$screen_id->notifi_route;
-
+        $draft_array=[];
+        $index=0;
         ///// patient care plan /////
         $draft1 = DB::table('patient_care_paln as p')
             ->select('p.id','p.patient_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
@@ -259,9 +262,7 @@ class DashboardController extends Controller
              
             $cd  = json_decode(json_encode($draft1), true);
 
-            $draft_array=[];
-
-            $index=0;
+                       
 
         if($cd){
             foreach($cd as $dr => $d) {
@@ -287,10 +288,6 @@ class DashboardController extends Controller
          
         $cd2  = json_decode(json_encode($draft2), true);
 
-        $draft_array=[];
-
-        $index=0;
-
     if($cd2){
         foreach($cd2 as $dr => $d) {
             $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -315,10 +312,7 @@ class DashboardController extends Controller
              ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
              
             $cd3  = json_decode(json_encode($draft3), true);
-    
-            $draft_array=[];
-    
-            $index=0;
+   
     
         if($cd3){
             foreach($cd3 as $dr => $d) {
@@ -345,10 +339,7 @@ class DashboardController extends Controller
                      
                     $cd4  = json_decode(json_encode($draft4), true);
             
-                    $draft_array=[];
-            
-                    $index=0;
-            
+                        
                 if($cd4){
                     foreach($cd4 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -371,13 +362,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+ 
                                     $cd5  = json_decode(json_encode($draft5), true);
                             
-                                    $draft_array=[];
-                            
-                                    $index=0;
-                            
+                                                        
                                 if($cd5){
                                     foreach($cd5 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -403,10 +391,7 @@ class DashboardController extends Controller
                      
                     $cd6  = json_decode(json_encode($draft6), true);
             
-                    $draft_array=[];
-            
-                    $index=0;
-            
+                        
                 if($cd6){
                     foreach($cd6 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -432,10 +417,7 @@ class DashboardController extends Controller
                                      
                                     $cd7  = json_decode(json_encode($draft7), true);
                             
-                                    $draft_array=[];
-                            
-                                    $index=0;
-                            
+                                                        
                                 if($cd7){
                                     foreach($cd7 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -461,10 +443,7 @@ class DashboardController extends Controller
                      
                     $cd8  = json_decode(json_encode($draft8), true);
             
-                    $draft_array=[];
-            
-                    $index=0;
-            
+                        
                 if($cd8){
                     foreach($cd8 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -490,10 +469,7 @@ class DashboardController extends Controller
                                      
                                     $cd9  = json_decode(json_encode($draft9), true);
                             
-                                    $draft_array=[];
-                            
-                                    $index=0;
-                            
+                                                        
                                 if($cd9){
                                     foreach($cd9 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -519,10 +495,7 @@ class DashboardController extends Controller
                      
                     $cd10  = json_decode(json_encode($draft10), true);
             
-                    $draft_array=[];
-            
-                    $index=0;
-            
+                        
                 if($cd10){
                     foreach($cd10 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -548,10 +521,7 @@ class DashboardController extends Controller
                                      
                                     $cd11  = json_decode(json_encode($draft11), true);
                             
-                                    $draft_array=[];
-                            
-                                    $index=0;
-                            
+                                                        
                                 if($cd11){
                                     foreach($cd11 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -577,10 +547,7 @@ class DashboardController extends Controller
                      
                     $cd12  = json_decode(json_encode($draft4), true);
             
-                    $draft_array=[];
-            
-                    $index=0;
-            
+                        
                 if($cd12){
                     foreach($cd12 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -606,10 +573,7 @@ class DashboardController extends Controller
                                      
                                     $cd13  = json_decode(json_encode($draft13), true);
                             
-                                    $draft_array=[];
-                            
-                                    $index=0;
-                            
+                                                        
                                 if($cd13){
                                     foreach($cd13 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -635,10 +599,7 @@ class DashboardController extends Controller
                      
                     $cd14  = json_decode(json_encode($draft14), true);
             
-                    $draft_array=[];
-            
-                    $index=0;
-            
+                        
                 if($cd14){
                     foreach($cd14 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -664,10 +625,7 @@ class DashboardController extends Controller
                                      
                                     $cd15  = json_decode(json_encode($draft15), true);
                             
-                                    $draft_array=[];
-                            
-                                    $index=0;
-                            
+                                                        
                                 if($cd15){
                                     foreach($cd15 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -693,10 +651,7 @@ class DashboardController extends Controller
                      
                     $cd16  = json_decode(json_encode($draft16), true);
             
-                    $draft_array=[];
-            
-                    $index=0;
-            
+                        
                 if($cd16){
                     foreach($cd16 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -722,10 +677,7 @@ class DashboardController extends Controller
                                      
                                     $cd17  = json_decode(json_encode($draft17), true);
                             
-                                    $draft_array=[];
-                            
-                                    $index=0;
-                            
+                                                        
                                 if($cd17){
                                     foreach($cd17 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -751,10 +703,8 @@ class DashboardController extends Controller
                      
                     $cd18  = json_decode(json_encode($draft18), true);
             
-                    $draft_array=[];
-            
-                    $index=0;
-            
+                    
+                        
                 if($cd18){
                     foreach($cd18 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -780,10 +730,8 @@ class DashboardController extends Controller
                                      
                                     $cd19  = json_decode(json_encode($draft19), true);
                             
-                                    $draft_array=[];
-                            
-                                    $index=0;
-                            
+                                    
+                                                        
                                 if($cd19){
                                     foreach($cd19 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -809,9 +757,6 @@ class DashboardController extends Controller
                      
                     $cd20  = json_decode(json_encode($draft20), true);
             
-                    $draft_array=[];
-            
-                    $index=0;
             
                 if($cd20){
                     foreach($cd20 as $dr => $d) {
@@ -836,12 +781,9 @@ class DashboardController extends Controller
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
                                      
-                                    $cd21  = json_decode(json_encode($draft21), true);
-                            
-                                    $draft_array=[];
-                            
-                                    $index=0;
-                            
+                                    $cd21  = json_decode(json_encode($draft21), true);                            
+                                    
+                                                        
                                 if($cd21){
                                     foreach($cd21 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -867,9 +809,6 @@ class DashboardController extends Controller
                      
                     $cd22  = json_decode(json_encode($draft22), true);
             
-                    $draft_array=[];
-            
-                    $index=0;
             
                 if($cd22){
                     foreach($cd22 as $dr => $d) {
@@ -895,11 +834,8 @@ class DashboardController extends Controller
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
                                      
                                     $cd23  = json_decode(json_encode($draft23), true);
-                            
-                                    $draft_array=[];
-                            
-                                    $index=0;
-                            
+                                                             
+                                                        
                                 if($cd23){
                                     foreach($cd23 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -924,11 +860,8 @@ class DashboardController extends Controller
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
                      
                     $cd24  = json_decode(json_encode($draft24), true);
-            
-                    $draft_array=[];
-            
-                    $index=0;
-            
+                               
+                        
                 if($cd24){
                     foreach($cd24 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -953,10 +886,8 @@ class DashboardController extends Controller
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
                                      
                                     $cd25  = json_decode(json_encode($draft25), true);
+                                                              
                             
-                                    $draft_array=[];
-                            
-                                    $index=0;
                             
                                 if($cd25){
                                     foreach($cd25 as $dr => $d) {
@@ -982,10 +913,7 @@ class DashboardController extends Controller
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
                      
                     $cd26  = json_decode(json_encode($draft26), true);
-            
-                    $draft_array=[];
-            
-                    $index=0;
+                                           
             
                 if($cd26){
                     foreach($cd26 as $dr => $d) {
@@ -1003,12 +931,11 @@ class DashboardController extends Controller
                     array_reverse($draft_array),
                     null,
                     'patient_id'
-                )));
-                                    
+                )));                             
 
 
         return response()->json([
-            "message" => "All Mentari Staffams", 'review_patient'=> $review_patient, 'cd_draft'=>$draft_array2,'list' => $list, 'today_appointment' => $today_appointment,
+            "message" => "All Mentari Staffams", 'review_patient'=> $review_patient, 'route'=>$route_review_patient,'cd_draft'=>$draft_array2,'list' => $list, 'today_appointment' => $today_appointment,
             'team_task' => $team_task, 'personal_task' => $personal_task, "code" => 200
         ]);
     }
@@ -1566,10 +1493,718 @@ class DashboardController extends Controller
             ->OrderBy("start_date", 'DESC')
             ->get();
 
+            ////Review Patient////
+            $dateReview = Carbon::now()->subDays(7)->toDateString();
+            $team_id = StaffManagement::select("id","team_id")->Where("email", '=', $request->email)->get();
+            $screen_id_review=ScreenPageModule::select('id','notifi_route')->where('notifi_code','=','RPC')->first();
+            $route_review_patient=$screen_id_review->notifi_route;
+
+            $review_patient = DB::table('patient_care_paln as p')
+           ->select('p.id','r.name_asin_nric','p.next_review_date')
+            ->leftjoin('patient_registration as r', function ($join) {
+                $join->on('p.patient_id', '=', 'r.id');
+            })
+            ->Where("r.services_type", '=', $team_id [0]['team_id'])
+            ->Where("r.branch_id", '=', $request->branch)
+            ->Where("p.next_review_date", '>=', $dateReview)->get()->toArray();
+
+
+            ////All Clinical Documentation Draft////
+
+        $dateDraft = Carbon::now()->subDays(2)->toDateString();
+        $screen_id=ScreenPageModule::select('id','notifi_route')->where('notifi_code','=','RPC')->first();
+        $route=$screen_id->notifi_route;
+        $draft_array=[];
+        $index=0;
+        ///// patient care plan /////
+        $draft1 = DB::table('patient_care_paln as p')
+            ->select('p.id','p.patient_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+             ->leftjoin('patient_registration as r', function ($join) {
+                 $join->on('p.patient_id', '=', 'r.id');
+             })
+             ->Where("p.added_by", '=', $team_id [0]['id'])
+             ->Where("r.branch_id", '=', $request->branch)
+             ->Where("p.status", '=', '0')
+             ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+             
+            $cd  = json_decode(json_encode($draft1), true);
+
+                       
+
+        if($cd){
+            foreach($cd as $dr => $d) {
+                $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
+                $draft_array[$index]['name']=$d['name_asin_nric'];
+                $draft_array[$index]['updated_at']=$d['updated_at'];
+                $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
+                $index++;
+            }
+        }
+
+        ///// psychiatry clerking note /////
+
+        $draft2 = DB::table('psychiatry_clerking_note as p')
+        ->select('p.id','p.patient_mrn_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+         ->leftjoin('patient_registration as r', function ($join) {
+             $join->on('p.patient_mrn_id', '=', 'r.id');
+         })
+         ->Where("p.added_by", '=', $team_id [0]['id'])
+         ->Where("r.branch_id", '=', $request->branch)
+         ->Where("p.status", '=', '0')
+         ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+         
+        $cd2  = json_decode(json_encode($draft2), true);
+
+    if($cd2){
+        foreach($cd2 as $dr => $d) {
+            $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
+            $draft_array[$index]['name']=$d['name_asin_nric'];
+            $draft_array[$index]['updated_at']=$d['updated_at'];
+            $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
+            $index++;
+    
+        }
+    }
+
+            ///// patient counsellor clerking notes /////
+
+            $draft3 = DB::table('patient_counsellor_clerking_notes as p')
+            ->select('p.id','p.patient_mrn_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+             ->leftjoin('patient_registration as r', function ($join) {
+                 $join->on('p.patient_mrn_id', '=', 'r.id');
+             })
+             ->Where("p.added_by", '=', $team_id [0]['id'])
+             ->Where("r.branch_id", '=', $request->branch)
+             ->Where("p.status", '=', '0')
+             ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+             
+            $cd3  = json_decode(json_encode($draft3), true);
+   
+    
+        if($cd3){
+            foreach($cd3 as $dr => $d) {
+                $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
+                $draft_array[$index]['name']=$d['name_asin_nric'];
+                $draft_array[$index]['updated_at']=$d['updated_at'];
+                $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
+                $index++;
+        
+            }
+        }
+
+                    ///// psychiatric progress note /////
+
+                    $draft4 = DB::table('psychiatric_progress_note as p')
+                    ->select('p.id','p.patient_mrn_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                     ->leftjoin('patient_registration as r', function ($join) {
+                         $join->on('p.patient_mrn_id', '=', 'r.id');
+                     })
+                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                     ->Where("r.branch_id", '=', $request->branch)
+                     ->Where("p.status", '=', '0')
+                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                     
+                    $cd4  = json_decode(json_encode($draft4), true);
+            
+                        
+                if($cd4){
+                    foreach($cd4 as $dr => $d) {
+                        $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
+                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                        $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
+                        $index++;
+                
+                    }
+                }
+
+                                    ///// cps progress note/////
+
+                                    $draft5 = DB::table('cps_progress_note as p')
+                                    ->select('p.id','p.patient_mrn_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                                     ->leftjoin('patient_registration as r', function ($join) {
+                                         $join->on('p.patient_mrn_id', '=', 'r.id');
+                                     })
+                                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                                     ->Where("r.branch_id", '=', $request->branch)
+                                     ->Where("p.status", '=', '0')
+                                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+ 
+                                    $cd5  = json_decode(json_encode($draft5), true);
+                            
+                                                        
+                                if($cd5){
+                                    foreach($cd5 as $dr => $d) {
+                                        $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
+                                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                                        $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
+                                        $index++;
+                                
+                                    }
+                                }
+
+                                                    ///// se progress note /////
+
+                    $draft6 = DB::table('se_progress_note as p')
+                    ->select('p.id','p.patient_mrn_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                     ->leftjoin('patient_registration as r', function ($join) {
+                         $join->on('p.patient_mrn_id', '=', 'r.id');
+                     })
+                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                     ->Where("r.branch_id", '=', $request->branch)
+                     ->Where("p.status", '=', '0')
+                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                     
+                    $cd6  = json_decode(json_encode($draft6), true);
+            
+                        
+                if($cd6){
+                    foreach($cd6 as $dr => $d) {
+                        $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
+                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                        $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
+                        $index++;
+                
+                    }
+                }
+
+                                    ///// patient index form /////
+
+                                    $draft7 = DB::table('patient_index_form as p')
+                                    ->select('p.id','p.patient_mrn_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                                     ->leftjoin('patient_registration as r', function ($join) {
+                                         $join->on('p.patient_mrn_id', '=', 'r.id');
+                                     })
+                                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                                     ->Where("r.branch_id", '=', $request->branch)
+                                     ->Where("p.status", '=', '0')
+                                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                                     
+                                    $cd7  = json_decode(json_encode($draft7), true);
+                            
+                                                        
+                                if($cd7){
+                                    foreach($cd7 as $dr => $d) {
+                                        $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
+                                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                                        $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
+                                        $index++;
+                                
+                                    }
+                                }
+
+                                                    ///// counselling progress note /////
+
+                    $draft8 = DB::table('counselling_progress_note as p')
+                    ->select('p.id','p.patient_mrn_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                     ->leftjoin('patient_registration as r', function ($join) {
+                         $join->on('p.patient_mrn_id', '=', 'r.id');
+                     })
+                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                     ->Where("r.branch_id", '=', $request->branch)
+                     ->Where("p.status", '=', '0')
+                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                     
+                    $cd8  = json_decode(json_encode($draft8), true);
+            
+                        
+                if($cd8){
+                    foreach($cd8 as $dr => $d) {
+                        $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
+                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                        $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
+                        $index++;
+                
+                    }
+                }
+
+                                    ///// etp progress note /////
+
+                                    $draft9 = DB::table('etp_progress_note as p')
+                                    ->select('p.id','p.patient_mrn_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                                     ->leftjoin('patient_registration as r', function ($join) {
+                                         $join->on('p.patient_mrn_id', '=', 'r.id');
+                                     })
+                                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                                     ->Where("r.branch_id", '=', $request->branch)
+                                     ->Where("p.status", '=', '0')
+                                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                                     
+                                    $cd9  = json_decode(json_encode($draft9), true);
+                            
+                                                        
+                                if($cd9){
+                                    foreach($cd9 as $dr => $d) {
+                                        $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
+                                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                                        $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
+                                        $index++;
+                                
+                                    }
+                                }
+
+                                                    ///// job club progress note /////
+
+                    $draft10 = DB::table('job_club_progress_note as p')
+                    ->select('p.id','p.patient_mrn_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                     ->leftjoin('patient_registration as r', function ($join) {
+                         $join->on('p.patient_mrn_id', '=', 'r.id');
+                     })
+                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                     ->Where("r.branch_id", '=', $request->branch)
+                     ->Where("p.status", '=', '0')
+                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                     
+                    $cd10  = json_decode(json_encode($draft10), true);
+            
+                        
+                if($cd10){
+                    foreach($cd10 as $dr => $d) {
+                        $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
+                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                        $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
+                        $index++;
+                
+                    }
+                }
+
+                                    ///// consultation discharge note /////
+
+                                    $draft11 = DB::table('consultation_discharge_note as p')
+                                    ->select('p.id','p.patient_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                                     ->leftjoin('patient_registration as r', function ($join) {
+                                         $join->on('p.patient_id', '=', 'r.id');
+                                     })
+                                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                                     ->Where("r.branch_id", '=', $request->branch)
+                                     ->Where("p.status", '=', '0')
+                                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                                     
+                                    $cd11  = json_decode(json_encode($draft11), true);
+                            
+                                                        
+                                if($cd11){
+                                    foreach($cd11 as $dr => $d) {
+                                        $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
+                                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                                        $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
+                                        $index++;
+                                
+                                    }
+                                }
+
+                                                    ///// rehab discharge note /////
+
+                    $draft12 = DB::table('rehab_discharge_note as p')
+                    ->select('p.id','p.patient_mrn_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                     ->leftjoin('patient_registration as r', function ($join) {
+                         $join->on('p.patient_mrn_id', '=', 'r.id');
+                     })
+                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                     ->Where("r.branch_id", '=', $request->branch)
+                     ->Where("p.status", '=', '0')
+                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                     
+                    $cd12  = json_decode(json_encode($draft4), true);
+            
+                        
+                if($cd12){
+                    foreach($cd12 as $dr => $d) {
+                        $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
+                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                        $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
+                        $index++;
+                
+                    }
+                }
+
+                                    ///// cps discharge note /////
+
+                                    $draft13 = DB::table('cps_discharge_note as p')
+                                    ->select('p.id','p.patient_mrn_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                                     ->leftjoin('patient_registration as r', function ($join) {
+                                         $join->on('p.patient_mrn_id', '=', 'r.id');
+                                     })
+                                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                                     ->Where("r.branch_id", '=', $request->branch)
+                                     ->Where("p.status", '=', '0')
+                                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                                     
+                                    $cd13  = json_decode(json_encode($draft13), true);
+                            
+                                                        
+                                if($cd13){
+                                    foreach($cd13 as $dr => $d) {
+                                        $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
+                                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                                        $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
+                                        $index++;
+                                
+                                    }
+                                }
+
+                                                    ///// job start form /////
+
+                    $draft14 = DB::table('job_start_form as p')
+                    ->select('p.id','p.patient_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                     ->leftjoin('patient_registration as r', function ($join) {
+                         $join->on('p.patient_id', '=', 'r.id');
+                     })
+                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                     ->Where("r.branch_id", '=', $request->branch)
+                     ->Where("p.status", '=', '0')
+                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                     
+                    $cd14  = json_decode(json_encode($draft14), true);
+            
+                        
+                if($cd14){
+                    foreach($cd14 as $dr => $d) {
+                        $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
+                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                        $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
+                        $index++;
+                
+                    }
+                }
+
+                                    ///// job end report /////
+
+                                    $draft15 = DB::table('job_end_report as p')
+                                    ->select('p.id','p.patient_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                                     ->leftjoin('patient_registration as r', function ($join) {
+                                         $join->on('p.patient_id', '=', 'r.id');
+                                     })
+                                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                                     ->Where("r.branch_id", '=', $request->branch)
+                                     ->Where("p.status", '=', '0')
+                                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                                     
+                                    $cd15  = json_decode(json_encode($draft15), true);
+                            
+                                                        
+                                if($cd15){
+                                    foreach($cd15 as $dr => $d) {
+                                        $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
+                                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                                        $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
+                                        $index++;
+                                
+                                    }
+                                }
+
+                                                    ///// job_transition_report /////
+
+                    $draft16 = DB::table('job_transition_report as p')
+                    ->select('p.id','p.patient_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                     ->leftjoin('patient_registration as r', function ($join) {
+                         $join->on('p.patient_id', '=', 'r.id');
+                     })
+                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                     ->Where("r.branch_id", '=', $request->branch)
+                     ->Where("p.status", '=', '0')
+                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                     
+                    $cd16  = json_decode(json_encode($draft16), true);
+            
+                        
+                if($cd16){
+                    foreach($cd16 as $dr => $d) {
+                        $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
+                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                        $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
+                        $index++;
+                
+                    }
+                }
+
+                                    ///// triage form /////
+
+                                    $draft17 = DB::table('triage_form as p')
+                                    ->select('p.id','p.patient_mrn_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                                     ->leftjoin('patient_registration as r', function ($join) {
+                                         $join->on('p.patient_mrn_id', '=', 'r.id');
+                                     })
+                                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                                     ->Where("r.branch_id", '=', $request->branch)
+                                     ->Where("p.status", '=', '0')
+                                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                                     
+                                    $cd17  = json_decode(json_encode($draft17), true);
+                            
+                                                        
+                                if($cd17){
+                                    foreach($cd17 as $dr => $d) {
+                                        $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
+                                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                                        $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
+                                        $index++;
+                                
+                                    }
+                                }
+
+                                                    ///// job interest checklist /////
+
+                    $draft18 = DB::table('job_interest_checklist as p')
+                    ->select('p.id','p.patient_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                     ->leftjoin('patient_registration as r', function ($join) {
+                         $join->on('p.patient_id', '=', 'r.id');
+                     })
+                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                     ->Where("r.branch_id", '=', $request->branch)
+                     ->Where("p.status", '=', '0')
+                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                     
+                    $cd18  = json_decode(json_encode($draft18), true);
+            
+                    
+                        
+                if($cd18){
+                    foreach($cd18 as $dr => $d) {
+                        $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
+                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                        $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
+                        $index++;
+                
+                    }
+                }
+
+                                    ///// work analysis forms /////
+
+                                    $draft19 = DB::table('work_analysis_forms as p')
+                                    ->select('p.id','p.patient_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                                     ->leftjoin('patient_registration as r', function ($join) {
+                                         $join->on('p.patient_id', '=', 'r.id');
+                                     })
+                                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                                     ->Where("r.branch_id", '=', $request->branch)
+                                     ->Where("p.status", '=', '0')
+                                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                                     
+                                    $cd19  = json_decode(json_encode($draft19), true);
+                            
+                                    
+                                                        
+                                if($cd19){
+                                    foreach($cd19 as $dr => $d) {
+                                        $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
+                                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                                        $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
+                                        $index++;
+                                
+                                    }
+                                }
+
+                                                    ///// log meeting with employer /////
+
+                    $draft20 = DB::table('log_meeting_with_employer as p')
+                    ->select('p.id','p.patient_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                     ->leftjoin('patient_registration as r', function ($join) {
+                         $join->on('p.patient_id', '=', 'r.id');
+                     })
+                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                     ->Where("r.branch_id", '=', $request->branch)
+                     ->Where("p.status", '=', '0')
+                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                     
+                    $cd20  = json_decode(json_encode($draft20), true);
+            
+            
+                if($cd20){
+                    foreach($cd20 as $dr => $d) {
+                        $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
+                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                        $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
+                        $index++;
+                
+                    }
+                }
+
+                                    ///// internal referral form /////
+
+                                    $draft21 = DB::table('internal_referral_form as p')
+                                    ->select('p.id','p.patient_mrn_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                                     ->leftjoin('patient_registration as r', function ($join) {
+                                         $join->on('p.patient_mrn_id', '=', 'r.id');
+                                     })
+                                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                                     ->Where("r.branch_id", '=', $request->branch)
+                                     ->Where("p.status", '=', '0')
+                                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                                     
+                                    $cd21  = json_decode(json_encode($draft21), true);                            
+                                    
+                                                        
+                                if($cd21){
+                                    foreach($cd21 as $dr => $d) {
+                                        $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
+                                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                                        $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
+                                        $index++;
+                                
+                                    }
+                                }
+
+                                                    ///// external referral form /////
+
+                    $draft22 = DB::table('external_referral_form as p')
+                    ->select('p.id','p.patient_mrn_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                     ->leftjoin('patient_registration as r', function ($join) {
+                         $join->on('p.patient_mrn_id', '=', 'r.id');
+                     })
+                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                     ->Where("r.branch_id", '=', $request->branch)
+                     ->Where("p.status", '=', '0')
+                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                     
+                    $cd22  = json_decode(json_encode($draft22), true);
+            
+            
+                if($cd22){
+                    foreach($cd22 as $dr => $d) {
+                        $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
+                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                        $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
+                        $index++;
+                
+                    }
+                }
+
+                                    ///// cps referral form /////
+
+                                    $draft23 = DB::table('cps_referral_form as p')
+                                    ->select('p.id','p.patient_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                                     ->leftjoin('patient_registration as r', function ($join) {
+                                         $join->on('p.patient_id', '=', 'r.id');
+                                     })
+                                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                                     ->Where("r.branch_id", '=', $request->branch)
+                                     ->Where("p.status", '=', '0')
+                                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                                     
+                                    $cd23  = json_decode(json_encode($draft23), true);
+                                                             
+                                                        
+                                if($cd23){
+                                    foreach($cd23 as $dr => $d) {
+                                        $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
+                                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                                        $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
+                                        $index++;
+                                
+                                    }
+                                }
+
+                                                    ///// occt referral form /////
+
+                    $draft24 = DB::table('occt_referral_form as p')
+                    ->select('p.id','p.patient_mrn_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                     ->leftjoin('patient_registration as r', function ($join) {
+                         $join->on('p.patient_mrn_id', '=', 'r.id');
+                     })
+                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                     ->Where("r.branch_id", '=', $request->branch)
+                     ->Where("p.status", '=', '0')
+                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                     
+                    $cd24  = json_decode(json_encode($draft24), true);
+                               
+                        
+                if($cd24){
+                    foreach($cd24 as $dr => $d) {
+                        $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
+                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                        $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
+                        $index++;
+                
+                    }
+                }
+
+                                    ///// psychology referral /////
+
+                                    $draft25 = DB::table('psychology_referral as p')
+                                    ->select('p.id','p.patient_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                                     ->leftjoin('patient_registration as r', function ($join) {
+                                         $join->on('p.patient_id', '=', 'r.id');
+                                     })
+                                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                                     ->Where("r.branch_id", '=', $request->branch)
+                                     ->Where("p.status", '=', '0')
+                                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                                     
+                                    $cd25  = json_decode(json_encode($draft25), true);
+                                                              
+                            
+                            
+                                if($cd25){
+                                    foreach($cd25 as $dr => $d) {
+                                        $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
+                                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                                        $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
+                                        $index++;
+                                
+                                    }
+                                }
+
+                                                    ///// rehab referral and clinical form /////
+
+                    $draft26 = DB::table('rehab_referral_and_clinical_form as p')
+                    ->select('p.id','p.patient_mrn_id','p.appointment_details_id','r.name_asin_nric','p.updated_at')
+                     ->leftjoin('patient_registration as r', function ($join) {
+                         $join->on('p.patient_mrn_id', '=', 'r.id');
+                     })
+                     ->Where("p.added_by", '=', $team_id [0]['id'])
+                     ->Where("r.branch_id", '=', $request->branch)
+                     ->Where("p.status", '=', '0')
+                     ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
+                     
+                    $cd26  = json_decode(json_encode($draft26), true);
+                                           
+            
+                if($cd26){
+                    foreach($cd26 as $dr => $d) {
+
+                        $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
+                        $draft_array[$index]['name']=$d['name_asin_nric'];
+                        $draft_array[$index]['updated_at']=$d['updated_at'];
+                        $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
+                        $index++;
+                
+                    }
+                }
+
+                $draft_array2 = array_reverse(array_values(array_column(
+                    array_reverse($draft_array),
+                    null,
+                    'patient_id'
+                )));                             
+
 
         return response()->json([
-            "message" => "Admin & Specialist inCharge", 'today_appointment' => $today_appointment,
+            "message" => "Admin & Specialist inCharge", 'today_appointment' => $today_appointment, 'route'=>$route_review_patient, 'review_patient'=> $review_patient,'cd_draft'=>$draft_array2,
             'personal_task' => $personal_task, 'team_task' => $team_task, 'request_appointment' => $request_appointment, 'list' => $list,  "code" => 200
         ]);
     }
 }
+
