@@ -509,7 +509,7 @@ class ScreenModuleController extends Controller
 
         $list = DB::table('screen_access_roles')
         ->select('users.name',DB::raw("'Active' as status"))
-        
+
             ->join('users', 'screen_access_roles.staff_id', '=', 'users.id')
             //->join('hospital_branch_team_details', 'screen_access_roles.team_id', '=', 'hospital_branch_team_details.id')
             ->join('screens', 'screen_access_roles.screen_id', '=', 'screens.id')
