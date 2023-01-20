@@ -615,7 +615,7 @@ class PatientAppointmentDetailsController extends Controller
                     ->orWhere('patient_registration.passport_no', 'LIKE', '%' . $searchWord . '%');
                     });
         }
-        
+
         $resultSet = $query->get();
         foreach ($resultSet as $key) {
             $key->patient_mrn = $key->patient_mrn ??  'NA';
@@ -835,7 +835,7 @@ class PatientAppointmentDetailsController extends Controller
 
         $next = PatientAppointmentDetails::where('appointment_status', '0')->where('patient_mrn_id', $request->patient_id)->orderBy('booking_date', 'asc')
             ->get()->pluck('booking_date')->toArray();
-        $prev = PatientAppointmentDetails::where('appointment_status', '1')->where('patient_mrn_id', $request->patient_id)->orderBy('booking_date', 'desc')
+        $prev = PatientAppointmentDetails::where('appointment_status', '3')->where('patient_mrn_id', $request->patient_id)->orderBy('booking_date', 'desc')
             ->get()->pluck('booking_date')->toArray();
 
         $result = ['next' => ((empty($next))  ? 'NA' : date('d/m/Y', strtotime($next[0]))), 'prev' => ((empty($prev)) ? 'NA' : date('d/m/Y', strtotime($prev[0])))];
