@@ -102,7 +102,6 @@ class StaffManagementController extends Controller
                 $default_pass =  SystemSetting::select('status')
                 ->where('variable_name', "=", 'system-generate')
                 ->first();
-                
                 if ($default_pass->status == '1') {
 
                     $user = User::create(
@@ -151,7 +150,6 @@ class StaffManagementController extends Controller
                         return response()->json(["message" => $e->getMessage(), "code" => 500]);
                     }
                 } else if ($default_pass->status == '0') {
-                    
                     $default_pass2 =  SystemSetting::select('variable_value')
                     ->where('variable_name', "=", 'set-the-default-password-value')
                     ->first();
@@ -567,7 +565,7 @@ class StaffManagementController extends Controller
             'branch_id' => 'required|integer',
             'contact_no' => 'required|string',
             'designation_id' => 'required|integer',
-            'is_incharge' => 'required|string',
+            'is_incharge' => '',
             'designation_period_start_date' => 'required',
             'designation_period_end_date' => 'required',
             'start_date' => 'required',
@@ -776,7 +774,7 @@ class StaffManagementController extends Controller
             'new_branch_id' => 'required|integer',
             'staff_id' => 'required|integer',
             'start_date' => 'required',
-            'end_date' => 'required',
+            'end_date' => '',
             'document' => ''
 
         ]);
