@@ -66,6 +66,7 @@ use DateTimeZone;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AppointmentRequestMail as AppointmentRequestMail;
+use App\Models\Postcode;
 
 class PatientAppointmentDetailsController extends Controller
 {
@@ -2020,7 +2021,17 @@ class PatientAppointmentDetailsController extends Controller
                     $list[$key]['id'] = $val['id'] ??  'NA';
                     $list[$key]['company_address3'] = $val['company_address3'] ??  'NA';
                     $list[$key]['state_id'] = $val['state_id'] ??  'NA';
+
+
                     $list[$key]['city_id'] = $val['city_id'] ??  'NA';
+                     
+                    if ( $val['city_id'] != null ||  $val['city_id'] != ""){
+                        $list[$key]['city_name'] = Postcode::where('id',$val['city_id'])->select('city_name')->first();
+                    }else{
+                        $list[$key]['city_name']=0;
+                    }
+
+
                     $list[$key]['postcode_id'] = $val['postcode_id'] ??  'NA';
                     $list[$key]['supervisor_name'] = $val['supervisor_name'] ?? 'NA';
                     $list[$key]['email'] = $val['email'] ??  'NA';
@@ -2059,20 +2070,7 @@ class PatientAppointmentDetailsController extends Controller
 
                     $list[$key]['jobs'] = $abArray ??  'NA';
                     $list[$key]['comment'] = $comment_array ??  'NA';
-                    // if($ab != null ) {
-                    //     if($abArray[0][0]['answer'] != null) {
-                    //         $list[$key]['work_schedule_a'] = $abArray[0][0]['answer'];
-                    //     }
-                    //     if($abArray[0][1]['answer'] != null) {
-                    //         $list[$key]['work_schedule_b'] = $abArray[0][1]['answer'];
-                    //     }
-                    //     if($abArray[0][2]['answer'] != null) {
-                    //         $list[$key]['work_schedule_c'] = $abArray[0][2]['answer'];
-                    //     }
-                    //     if($abArray[0][3]['answer'] != null) {
-                    //         $list[$key]['work_schedule_d'] = $abArray[0][3]['answer'];
-                    //     }
-                    // }
+                   
 
                     $list[$key]['jobs_des'] = $jobdes ??  'NA';
                 }
