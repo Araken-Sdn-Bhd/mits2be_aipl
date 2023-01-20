@@ -27,7 +27,7 @@ class VonAppointmentController extends Controller
             'booking_time' => 'required',
             'duration' => 'required|integer',
             'interviewer_id' => 'required|integer',
-            'area_of_involvement' => 'required|integer',
+            'area_of_involvement' => 'required|string',
             'services_type' => 'required'
         ]);
         if ($validator->fails()) {
@@ -76,7 +76,7 @@ class VonAppointmentController extends Controller
             'booking_time' => 'required',
             'duration' => 'required|integer',
             'interviewer_id' => 'required|integer',
-            'area_of_involvement' => 'required|integer',
+            'area_of_involvement' => 'required|string',
             'services_type' => 'required',
             'id' => 'required|integer'
         ]);
@@ -111,15 +111,29 @@ class VonAppointmentController extends Controller
 
     public function listAppointment(Request $request)
     {
+        $role = DB::table('staff_management')
+        ->select('roles.code')
+        ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+        ->where('staff_management.email', '=', $request->email)
+        ->first();
 
+     if($role->code == 'superadmin'){
         $record= DB::table('von_appointment')
-        ->select('von_appointment.*','staff_management.name as dr_name','areas_of_involvement.name as aoi')
+        ->select('von_appointment.*','staff_management.name as dr_name')
 
         ->leftJoin('von_org_representative_background', 'von_org_representative_background.id', '=', 'von_appointment.parent_section_id')
         ->leftJoin('staff_management','von_appointment.interviewer_id','=','staff_management.id')
-        ->leftJoin('areas_of_involvement','areas_of_involvement.id','=','von_appointment.area_of_involvement')
+        ->where('von_appointment.status','0');
+     }else{
+
+        $record= DB::table('von_appointment')
+        ->select('von_appointment.*','staff_management.name as dr_name')
+
+        ->leftJoin('von_org_representative_background', 'von_org_representative_background.id', '=', 'von_appointment.parent_section_id')
+        ->leftJoin('staff_management','von_appointment.interviewer_id','=','staff_management.id')
         ->where('von_org_representative_background.branch_id',$request->branch_id)
         ->where('von_appointment.status','0');
+     }
         
         if($request->name != "" || $request->name != null) {
            $record->where('von_appointment.name', 'like', '%'.$request->name.'%');

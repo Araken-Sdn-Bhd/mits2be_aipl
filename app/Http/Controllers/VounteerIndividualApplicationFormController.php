@@ -1864,4 +1864,49 @@ class VounteerIndividualApplicationFormController extends Controller
         }
         return response()->json(["message" => "Application List", 'list' => $results, "code" => 200]);
     }
+
+    public function collaborationList(Request $request){
+
+        $role = DB::table('staff_management')
+        ->select('roles.code')
+        ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+        ->where('staff_management.email', '=', $request->email)
+        ->first();
+
+        if($role->code == 'superadmin'){
+            $record= DB::table('von_appointment')
+        ->select('von_appointment.*','von_appointment.area_of_involvement as aoi','staff_management.name as dr_name','von_org_representative_background.*')
+
+        ->leftJoin('von_org_representative_background', 'von_org_representative_background.id', '=', 'von_appointment.parent_section_id')
+        ->leftJoin('staff_management','von_appointment.interviewer_id','=','staff_management.id')
+        ->where('von_appointment.status','1');
+     }else{
+
+        $record= DB::table('von_appointment')
+        ->select('von_appointment.*','von_appointment.area_of_involvement as aoi','staff_management.name as dr_name','von_org_representative_background.*')
+
+        ->leftJoin('von_org_representative_background', 'von_org_representative_background.id', '=', 'von_appointment.parent_section_id')
+        ->leftJoin('staff_management','von_appointment.interviewer_id','=','staff_management.id')
+        ->where('von_org_representative_background.branch_id',$request->branch_id)
+        ->where('von_appointment.status','1');
+     }
+     if($request->name != "" || $request->name != null) {
+        $record->where('von_appointment.name', 'like', '%'.$request->name.'%');
+       
+     }
+     if ($request->section != null || $request->section != ""){
+         $record->where('von_org_representative_background.section','=', $request->section);
+     }
+     if ($request->service != null || $request->service != ""){
+         $record->where('von_appointment.services_type','=', $request->service);
+     }
+     if ($request->aoi != null || $request->aoi != ""){
+        $record->where('von_appointment.area_of_involvement','=', $request->aoi);
+    }
+    
+
+     $list = $record->get();
+     return response()->json(["message" => "Von List", "list" => $list, "code" => 200]);
+
+    }
 }
