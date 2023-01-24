@@ -475,7 +475,7 @@ class VounteerIndividualApplicationFormController extends Controller
             $Org_id = VonOrgRepresentativeBackground::latest()->first();
             $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
 
-            $notifi_code='GAVC';
+            $notifi_code='AVC';
             $screen_id=ScreenPageModule::select('id','notifi_route')->where('notifi_code',$notifi_code)->first();
             $notifi=[
                 'added_by' => $request->added_by,
