@@ -67,6 +67,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AppointmentRequestMail as AppointmentRequestMail;
 use App\Models\Postcode;
+use Carbon\Carbon;
 
 class PatientAppointmentDetailsController extends Controller
 {
@@ -928,7 +929,7 @@ class PatientAppointmentDetailsController extends Controller
             ->select(DB::raw("(CASE WHEN TIME(psychiatry_clerking_note.created_at) BETWEEN '00:00:00' AND '11:59:59' THEN DATE_FORMAT(psychiatry_clerking_note.created_at, '%h:%i AM')
             ELSE DATE_FORMAT(psychiatry_clerking_note.created_at, '%h:%i PM') END) as time"),
             DB::raw("DATE_FORMAT(psychiatry_clerking_note.created_at, '%d-%m-%Y') as date"), 'psychiatry_clerking_note.status', 'psychiatry_clerking_note.id', 'users.name',
-            DB::raw("'PsychiatryClerkingNote' as type"), DB::raw("'Psychiatry Clerking Note' as section_name"), "psychiatry_clerking_note.created_at")
+            DB::raw("'PsychiatryClerkingNote' as type"), DB::raw("'Psychiatry Clerking Note' as section_name"), "psychiatry_clerking_note.created_at",DB::raw("DATE_FORMAT(psychiatry_clerking_note.updated_at, '%d-%m-%Y') as updated_at"))
             ->where('psychiatry_clerking_note.patient_mrn_id', $request->patient_id)
             ->orderBy('psychiatry_clerking_note.created_at', 'asc')
             ->get();
@@ -945,7 +946,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'CounsellorClerkingNote' as type"),
                 DB::raw("'Counsellor Clerking Note' as section_name"),
-                "patient_counsellor_clerking_notes.created_at"
+                "patient_counsellor_clerking_notes.created_at",
+                DB::raw("DATE_FORMAT(patient_counsellor_clerking_notes.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('patient_counsellor_clerking_notes.patient_mrn_id', $request->patient_id)
             ->orderBy('patient_counsellor_clerking_notes.created_at', 'asc')
@@ -965,7 +967,10 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("'PatientIndexForm' as type"),
                 DB::raw("1 as editstatus"),
                 DB::raw("'Patient Index Form' as section_name"),
-                "patient_index_form.created_at"
+                "patient_index_form.created_at",
+                DB::raw("DATE_FORMAT(patient_index_form.updated_at, '%d-%m-%Y') as updated_at")
+
+                
             )
             ->where('patient_index_form.patient_mrn_id', $request->patient_id)
             ->orderBy("patient_index_form.created_at", 'asc')
@@ -984,7 +989,9 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'PsychiatricProgressNote' as type"),
                 DB::raw("'Psychiatric Progress Note' as section_name"),
-                "psychiatric_progress_note.created_at"
+                "psychiatric_progress_note.created_at",
+                DB::raw("DATE_FORMAT(psychiatric_progress_note.updated_at, '%d-%m-%Y') as updated_at")
+                
             )
             ->where('psychiatric_progress_note.patient_mrn_id', $request->patient_id)
             ->orderBy('psychiatric_progress_note.created_at', 'asc')
@@ -1003,7 +1010,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'CPSProgressNote' as type"),
                 DB::raw("'CPS Progress Note' as section_name"),
-                "cps_progress_note.created_at"
+                "cps_progress_note.created_at",
+                DB::raw("DATE_FORMAT(cps_progress_note.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('cps_progress_note.patient_mrn_id', $request->patient_id)
             ->orderBy('cps_progress_note.created_at', 'asc')
@@ -1022,7 +1030,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'SEProgressNote' as type"),
                 DB::raw("'SE Progress Note' as section_name"),
-                "se_progress_note.created_at"
+                "se_progress_note.created_at",
+                DB::raw("DATE_FORMAT(se_progress_note.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('se_progress_note.patient_mrn_id', $request->patient_id)
             ->orderBy('se_progress_note.created_at', 'asc')
@@ -1041,7 +1050,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'CounsellingProgressNote' as type"),
                 DB::raw("'Counselling Progress Note' as section_name"),
-                "counselling_progress_note.created_at"
+                "counselling_progress_note.created_at",
+                DB::raw("DATE_FORMAT(counselling_progress_note.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('counselling_progress_note.patient_mrn_id', $request->patient_id)
             ->orderBy('counselling_progress_note.created_at', 'asc')
@@ -1060,7 +1070,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'EtpProgressNote' as type"),
                 DB::raw("'Etp Progress Note' as section_name"),
-                "etp_progress_note.created_at"
+                "etp_progress_note.created_at",
+                DB::raw("DATE_FORMAT(etp_progress_note.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('etp_progress_note.patient_mrn_id', $request->patient_id)
             ->orderBy('etp_progress_note.created_at', 'asc')
@@ -1079,7 +1090,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'JobClubProgressNote' as type"),
                 DB::raw("'Job Club Progress Note' as section_name"),
-                "job_club_progress_note.created_at"
+                "job_club_progress_note.created_at",
+                DB::raw("DATE_FORMAT(job_club_progress_note.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('job_club_progress_note.patient_mrn_id', $request->patient_id)
             ->orderBy('job_club_progress_note.created_at', 'asc')
@@ -1098,7 +1110,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'ConsultationDischargeNote' as type"),
                 DB::raw("'Consultation Discharges Note' as section_name"),
-                "consultation_discharge_note.created_at"
+                "consultation_discharge_note.created_at",
+                DB::raw("DATE_FORMAT(consultation_discharge_note.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('consultation_discharge_note.patient_id', $request->patient_id)
             ->orderBy('consultation_discharge_note.created_at', 'asc')
@@ -1117,7 +1130,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'RehabDischargeNote' as type"),
                 DB::raw("'Rehab Discharges Note' as section_name"),
-                "rehab_discharge_note.created_at"
+                "rehab_discharge_note.created_at",
+                DB::raw("DATE_FORMAT(rehab_discharge_note.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('rehab_discharge_note.patient_mrn_id', $request->patient_id)
             ->orderBy('rehab_discharge_note.created_at', 'asc')
@@ -1136,7 +1150,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'CpsDischargeNote' as type"),
                 DB::raw("'Cps Discharges Note' as section_name"),
-                "cps_discharge_note.created_at"
+                "cps_discharge_note.created_at",
+                DB::raw("DATE_FORMAT(cps_discharge_note.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('cps_discharge_note.patient_mrn_id', $request->patient_id)
             ->orderBy('cps_discharge_note.created_at', 'asc')
@@ -1155,7 +1170,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'CpsDischargeNote' as type"),
                 DB::raw("'Cps Discharges Note' as section_name"),
-                "cps_discharge_note.created_at"
+                "cps_discharge_note.created_at",
+                DB::raw("DATE_FORMAT(cps_discharge_note.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('cps_discharge_note.patient_mrn_id', $request->patient_id)
             ->orderBy('cps_discharge_note.created_at', 'asc')
@@ -1175,7 +1191,8 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("'CpsHomeVisitConsentForm' as type"),
                 DB::raw("'1' as status"),
                 DB::raw("'Cps Home Visit Consent Form' as section_name"),
-                "cps_homevisit_consent_form.created_at"
+                "cps_homevisit_consent_form.created_at",
+                DB::raw("DATE_FORMAT(cps_homevisit_consent_form.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('cps_homevisit_consent_form.patient_id', $request->patient_id)
             ->orderBy('cps_homevisit_consent_form.created_at', 'asc')
@@ -1195,7 +1212,8 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("'CpsHomeVisitWithdrawalForm' as type"),
                 DB::raw("'1' as status"),
                 DB::raw("'Cps Home Visit Withdraw Form' as section_name"),
-                "cps_homevisit_withdrawal_form.created_at"
+                "cps_homevisit_withdrawal_form.created_at",
+                DB::raw("DATE_FORMAT(cps_homevisit_withdrawal_form.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('cps_homevisit_withdrawal_form.patient_id', $request->patient_id)
             ->orderBy('cps_homevisit_withdrawal_form.created_at', 'asc')
@@ -1214,7 +1232,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'CpsPoliceReferralForm' as type"),
                 DB::raw("'Cps Police Referral Form' as section_name"),
-                "cps_police_referral_form.created_at"
+                "cps_police_referral_form.created_at",
+                DB::raw("DATE_FORMAT(cps_police_referral_form.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('cps_police_referral_form.patient_id', $request->patient_id)
             ->orderBy('cps_police_referral_form.created_at', 'asc')
@@ -1233,7 +1252,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'PhotographyConsentForm' as type"),
                 DB::raw("'Photography Consent Form' as section_name"),
-                "photography_consent_form.created_at"
+                "photography_consent_form.created_at",
+                DB::raw("DATE_FORMAT(photography_consent_form.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('photography_consent_form.patient_id', $request->patient_id)
             ->orderBy('photography_consent_form.created_at', 'asc')
@@ -1252,7 +1272,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'SEConsentForm' as type"),
                 DB::raw("'SE Consent Form' as section_name"),
-                "se_consent_form.created_at"
+                "se_consent_form.created_at",
+                DB::raw("DATE_FORMAT(se_consent_form.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('se_consent_form.patient_id', $request->patient_id)
             ->orderBy('se_consent_form.created_at', 'asc')
@@ -1271,7 +1292,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'ETPConsentForm' as type"),
                 DB::raw("'ETP Consent Form' as section_name"),
-                "etp_consent_form.created_at"
+                "etp_consent_form.created_at",
+                DB::raw("DATE_FORMAT(etp_consent_form.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('etp_consent_form.patient_id', $request->patient_id)
             ->orderBy('etp_consent_form.created_at', 'asc')
@@ -1290,7 +1312,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'JobClubConsentForm' as type"),
                 DB::raw("'Job Club Consent Form' as section_name"),
-                "job_club_consent_form.created_at"
+                "job_club_consent_form.created_at",
+                DB::raw("DATE_FORMAT(job_club_consent_form.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('job_club_consent_form.patient_id', $request->patient_id)
             ->orderBy('job_club_consent_form.created_at', 'asc')
@@ -1311,7 +1334,8 @@ class PatientAppointmentDetailsController extends Controller
                 'patient_care_paln.status',
                 DB::raw("'PatientCarePlanAndCaseReviewForm' as type"),
                 DB::raw("'Patient Care Plan And Case Review Form' as section_name"),
-                "patient_care_paln.created_at"
+                "patient_care_paln.created_at",
+                DB::raw("DATE_FORMAT(patient_care_paln.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('patient_care_paln.patient_id', $request->patient_id)
             ->orderBy('patient_care_paln.created_at', 'asc')
@@ -1330,7 +1354,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'JobStartReport' as type"),
                 DB::raw("'Job Start Report' as section_name"),
-                "job_start_form.created_at"
+                "job_start_form.created_at",
+                DB::raw("DATE_FORMAT(job_start_form.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('job_start_form.patient_id', $request->patient_id)
             ->orderBy('job_start_form.created_at', 'asc')
@@ -1349,7 +1374,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'JobEndReport' as type"),
                 DB::raw("'Job End Report' as section_name"),
-                "job_end_report.created_at"
+                "job_end_report.created_at",
+                DB::raw("DATE_FORMAT(job_end_report.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('job_end_report.patient_id', $request->patient_id)
             ->orderBy('job_end_report.created_at', 'asc')
@@ -1368,7 +1394,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'JobTransitionReport' as type"),
                 DB::raw("'Job Transition Report' as section_name"),
-                "job_transition_report.created_at"
+                "job_transition_report.created_at",
+                DB::raw("DATE_FORMAT(job_transition_report.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('job_transition_report.patient_id', $request->patient_id)
             ->orderBy('job_transition_report.created_at', 'asc')
@@ -1385,6 +1412,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("'1' as status"),
                 'laser_assesmen_form.id',
                 'users.name',
+                DB::raw("DATE_FORMAT(laser_assesmen_form.updated_at, '%d-%m-%Y') as updated_at"),
                 DB::raw("'LaserAssessment' as type"),
                 DB::raw("'Laser Assessment Form' as section_name"),
                 DB::raw("DATE_FORMAT(laser_assesmen_form.created_at, '%Y-%m-%d %H:%i:%s') as created_at")
@@ -1406,7 +1434,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'TriageForm' as type"),
                 DB::raw("'Triage Form' as section_name"),
-                "triage_form.created_at"
+                "triage_form.created_at",
+                DB::raw("DATE_FORMAT(triage_form.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('triage_form.patient_mrn_id', $request->patient_id)
             ->orderBy('triage_form.created_at', 'asc')
@@ -1425,7 +1454,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'JobInterestCheckList' as type"),
                 DB::raw("'Job Interest Check List' as section_name"),
-                "job_interest_checklist.created_at"
+                "job_interest_checklist.created_at",
+                DB::raw("DATE_FORMAT(job_interest_checklist.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('job_interest_checklist.patient_id', $request->patient_id)
             ->orderBy('job_interest_checklist.created_at', 'asc')
@@ -1444,7 +1474,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'WorkAnalysisForm' as type"),
                 DB::raw("'Work Analysis Form' as section_name"),
-                "work_analysis_forms.created_at"
+                "work_analysis_forms.created_at",
+                DB::raw("DATE_FORMAT(work_analysis_forms.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('work_analysis_forms.patient_id', $request->patient_id)
             ->orderBy('work_analysis_forms.created_at', 'asc')
@@ -1463,7 +1494,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'ListofJobClub' as type"),
                 DB::raw("'List of Job Club' as section_name"),
-                "list_job_club.created_at"
+                "list_job_club.created_at",
+                DB::raw("DATE_FORMAT(list_job_club.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('list_job_club.patient_id', $request->patient_id)
             ->orderBy('list_job_club.created_at', 'asc')
@@ -1482,7 +1514,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'ListofEtp' as type"),
                 DB::raw("'List of Etp' as section_name"),
-                "list_of_etp.created_at"
+                "list_of_etp.created_at",
+                DB::raw("DATE_FORMAT(list_of_etp.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('list_of_etp.patient_id', $request->patient_id)
             ->orderBy('list_of_etp.created_at', 'asc')
@@ -1502,7 +1535,8 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("'ListofJobSearch' as type"),
                 DB::raw("1 as editstatus"),
                 DB::raw("'List of Job Search' as section_name"),
-                "list_of_job_search.created_at"
+                "list_of_job_search.created_at",
+                DB::raw("DATE_FORMAT(list_of_job_search.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('list_of_job_search.patient_id', $request->patient_id)
             ->orderBy('list_of_job_search.created_at', 'asc')
@@ -1521,7 +1555,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'LogMeetingWithEmployer' as type"),
                 DB::raw("'Log Meeting With Employer' as section_name"),
-                "log_meeting_with_employer.created_at"
+                "log_meeting_with_employer.created_at",
+                DB::raw("DATE_FORMAT(log_meeting_with_employer.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('log_meeting_with_employer.patient_id', $request->patient_id)
             ->orderBy('log_meeting_with_employer.created_at', 'asc')
@@ -1540,7 +1575,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'ListofPreviousCurrentJob' as type"),
                 DB::raw("'List of Previous Current Job' as section_name"),
-                "list_previous_current_job.created_at"
+                "list_previous_current_job.created_at",
+                DB::raw("DATE_FORMAT(list_previous_current_job.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('list_previous_current_job.patient_id', $request->patient_id)
             ->orderBy('list_previous_current_job.created_at', 'asc')
@@ -1559,7 +1595,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'InternalRefferalForm' as type"),
                 DB::raw("'Internal Refferal Form' as section_name"),
-                "internal_referral_form.created_at"
+                "internal_referral_form.created_at",
+                DB::raw("DATE_FORMAT(internal_referral_form.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('internal_referral_form.patient_mrn_id', $request->patient_id)
             ->orderBy('internal_referral_form.created_at', 'asc')
@@ -1578,7 +1615,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'ExternalRefferalForm' as type"),
                 DB::raw("'External Refferal Form' as section_name"),
-                "external_referral_form.created_at"
+                "external_referral_form.created_at",
+                DB::raw("DATE_FORMAT(external_referral_form.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('external_referral_form.patient_mrn_id', $request->patient_id)
             ->orderBy('external_referral_form.created_at', 'asc')
@@ -1597,7 +1635,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'CpsRefferalForm' as type"),
                 DB::raw("'Cps Refferal Form' as section_name"),
-                "cps_referral_form.created_at"
+                "cps_referral_form.created_at",
+                DB::raw("DATE_FORMAT(cps_referral_form.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('cps_referral_form.patient_id', $request->patient_id)
             ->orderBy('cps_referral_form.created_at', 'asc')
@@ -1616,7 +1655,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'OcctRefferalForm' as type"),
                 DB::raw("'Occt Refferal Form' as section_name"),
-                "occt_referral_form.created_at"
+                "occt_referral_form.created_at",
+                DB::raw("DATE_FORMAT(occt_referral_form.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('occt_referral_form.patient_mrn_id', $request->patient_id)
             ->orderBy('occt_referral_form.created_at', 'asc')
@@ -1635,7 +1675,8 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'PsychologyRefferalForm' as type"),
                 DB::raw("'Psychology Refferal Form' as section_name"),
-                'psychology_referral.created_at'
+                'psychology_referral.created_at',
+                DB::raw("DATE_FORMAT(psychology_referral.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('psychology_referral.patient_id', $request->patient_id)
             ->orderBy('psychology_referral.created_at', 'asc')
@@ -1654,124 +1695,810 @@ class PatientAppointmentDetailsController extends Controller
                 'users.name',
                 DB::raw("'RehabRefferalAndClinicalForm' as type"),
                 DB::raw("'Rehab Refferal And Clinical Form' as section_name"),
-                "rehab_referral_and_clinical_form.created_at"
+                "rehab_referral_and_clinical_form.created_at",
+                DB::raw("DATE_FORMAT(rehab_referral_and_clinical_form.updated_at, '%d-%m-%Y') as updated_at")
             )
             ->where('rehab_referral_and_clinical_form.patient_mrn_id', $request->patient_id)
             ->orderBy('rehab_referral_and_clinical_form.created_at', 'asc')
             ->get();
         $list = [];
         foreach ($Psychiatry_Clerking_Note as $key => $val) {
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
+           
+
         }
         foreach ($Counsellor_Clerking_Note as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($patient_index_form as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($psychiatric_progress_note as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($cps_progress_note as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($se_progress_note as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($counselling_progress_note as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($etp_progress_note as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($job_club_progress_note as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($consultation_discharge_note as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($rehab_discharge_note as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($cps_discharge_note as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($cps_homevisit_consent_form as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($cps_homevisit_withdrawal_form as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($cps_police_referral_form as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($photography_consent_form as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($se_consent_form as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($etp_consent_form as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($job_club_consent_form as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($patient_care_paln as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($job_start_form as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($job_end_report as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($job_transition_report as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($laser_assesmen_form as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($triage_form as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($job_interest_checklist as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($work_analysis_form as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($list_job_club as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($list_of_etp as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($list_of_job_search as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($log_meeting_with_employer as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($list_previous_current_job as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($internal_referral_form as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($external_referral_form as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($cps_referral_form as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($occt_referral_form as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($psychology_referral as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         foreach ($rehab_referral_and_clinical_form as $key => $val) {
+        
+            $startDate = Carbon::today();
+            $draft_date = Carbon::today()->subDays(2);
+
+            $updated_at = Carbon::parse($val->updated_at);
+            $draft = Carbon::parse($draft_date);
+
+            if($updated_at->isAfter($draft_date)){
+                $val->flag_status=0; 
+            }else{
+                if($updated_at->equalTo($draft_date)){
+                    $val->flag_status=0; 
+                }else{
+                    $val->flag_status=1;
+                }
+                
+            }
+
             $list[] = $val;
         }
         $ab = [];
