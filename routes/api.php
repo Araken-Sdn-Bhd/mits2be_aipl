@@ -515,6 +515,7 @@ Route::group(['prefix' => 'von'], function () {
     Route::post('/set-status', [VounteerIndividualApplicationFormController::class, 'setStatus']);
     Route::post('/search-list', [VounteerIndividualApplicationFormController::class, 'searchList']);
     Route::post('/search-collaboration-list', [VounteerIndividualApplicationFormController::class, 'searchCollList']);
+    Route::post('/collaboration-list', [VounteerIndividualApplicationFormController::class, 'collaborationList']);
 });
 
 Route::group(['prefix' => 'shharp-registration-risk-protective-questions'], function () {
