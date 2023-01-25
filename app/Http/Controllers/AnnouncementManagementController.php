@@ -186,7 +186,7 @@ class AnnouncementManagementController extends Controller
     {
         $date = date('Y-m-d');
         $list = Announcement::select("id", "title", "start_date")
-            ->Where("status", '=', "2")
+            ->Where("status", '=', "1")
             ->Where("start_date", '<=', $date)
             ->Where("end_date", '>=', $date)
             ->OrderBy("start_date", 'DESC')

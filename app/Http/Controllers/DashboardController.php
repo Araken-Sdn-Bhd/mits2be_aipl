@@ -218,13 +218,84 @@ class DashboardController extends Controller
 ////Announcement////
 
         $date = date('Y-m-d');
-        $list = Announcement::select("id", "title", "start_date")
-            ->Where("branch_id", '=', $request->branch)
-            ->Where("status", '=', "2")
-            ->Where("start_date", '<=', $date)
-            ->Where("end_date", '>=', $date)
-            ->OrderBy("start_date", 'DESC')
-            ->get();
+        $staff_check = DB::table('staff_management')
+                        ->leftjoin('roles', function ($join) {
+                                        $join->on('roles.id', '=', 'staff_management.role_id');
+                                    })
+                        ->Where("staff_management.email", '=', $request->email)
+                        ->pluck("roles.role_name");
+
+        if($staff_check){
+            if($staff_check[0] == "Psychiatrist"){
+                $list = Announcement::select("id", "title", "start_date", "end_date")
+                ->where(DB::raw('substr(audience_ids, 1, 1)'), '=' , 1)
+                ->Where("branch_id", '=', $request->branch)
+                ->Where("status", '=', "1")
+                ->Where("start_date", '<=', $date)
+                ->Where("end_date", '>=', $date)
+                ->OrderBy("start_date", 'DESC')
+                ->get();
+            }
+            else if($staff_check[0] == "Medical Officer"){
+                $list = Announcement::select("id", "title", "start_date", "end_date")
+                ->where(DB::raw('substr(audience_ids, 3, 1)'), '=' , 1)
+                ->Where("branch_id", '=', $request->branch)
+                ->Where("status", '=', "1")
+                ->Where("start_date", '<=', $date)
+                ->Where("end_date", '>=', $date)
+                ->OrderBy("start_date", 'DESC')
+                ->get();
+            }
+            else if($staff_check[0] == "Counsellor"){
+                $list = Announcement::select("id", "title", "start_date", "end_date")
+                ->where(DB::raw('substr(audience_ids, 5, 1)'), '=' , 1)
+                ->Where("branch_id", '=', $request->branch)
+                ->Where("status", '=', "1")
+                ->Where("start_date", '<=', $date)
+                ->Where("end_date", '>=', $date)
+                ->OrderBy("start_date", 'DESC')
+                ->get();
+            }
+            else if($staff_check[0] == "Occupational Therapy"){
+                $list = Announcement::select("id", "title", "start_date", "end_date")
+                ->where(DB::raw('substr(audience_ids, 7, 1)'), '=' , 1)
+                ->Where("branch_id", '=', $request->branch)
+                ->Where("status", '=', "1")
+                ->Where("start_date", '<=', $date)
+                ->Where("end_date", '>=', $date)
+                ->OrderBy("start_date", 'DESC')
+                ->get();
+            }
+            else if($staff_check[0] == "Staff Nurse"){
+                $list = Announcement::select("id", "title", "start_date", "end_date")
+                ->where(DB::raw('substr(audience_ids, 9, 1)'), '=' , 1)
+                ->Where("branch_id", '=', $request->branch)
+                ->Where("status", '=', "1")
+                ->Where("start_date", '<=', $date)
+                ->Where("end_date", '>=', $date)
+                ->OrderBy("start_date", 'DESC')
+                ->get();
+            }
+            else if($staff_check[0] == "Healthcare Assistant"){
+                $list = Announcement::select("id", "title", "start_date", "end_date")
+                ->where(DB::raw('substr(audience_ids, 11, 1)'), '=' , 1)
+                ->Where("branch_id", '=', $request->branch)
+                ->Where("status", '=', "1")
+                ->Where("start_date", '<=', $date)
+                ->Where("end_date", '>=', $date)
+                ->OrderBy("start_date", 'DESC')
+                ->get();
+            }
+            else{
+                $list = Announcement::select("id", "title", "start_date", "end_date")
+                ->Where("branch_id", '=', $request->branch)
+                ->Where("status", '=', "1")
+                ->Where("start_date", '<=', $date)
+                ->Where("end_date", '>=', $date)
+                ->OrderBy("start_date", 'DESC')
+                ->get();
+            }
+        }
 
             ////Review Patient////
             $dateReview = Carbon::now()->subDays(7)->toDateString();
@@ -1485,13 +1556,84 @@ class DashboardController extends Controller
 
         $date = date('Y-m-d');
 
-        $list = Announcement::select("id", "title", "start_date", "end_date")
-            ->Where("branch_id", '=', $request->branch)
-            ->Where("status", '=', "2")
-            ->Where("start_date", '<=', $date)
-            ->Where("end_date", '>=', $date)
-            ->OrderBy("start_date", 'DESC')
-            ->get();
+        $staff_check = DB::table('staff_management')
+                        ->leftjoin('roles', function ($join) {
+                                        $join->on('roles.id', '=', 'staff_management.role_id');
+                                    })
+                        ->Where("staff_management.email", '=', $request->email)
+                        ->pluck("roles.role_name");
+
+        if($staff_check){
+            if($staff_check[0] == "Psychiatrist"){
+                $list = Announcement::select("id", "title", "start_date", "end_date")
+                ->where(DB::raw('substr(audience_ids, 1, 1)'), '=' , 1)
+                ->Where("branch_id", '=', $request->branch)
+                ->Where("status", '=', "1")
+                ->Where("start_date", '<=', $date)
+                ->Where("end_date", '>=', $date)
+                ->OrderBy("start_date", 'DESC')
+                ->get();
+            }
+            else if($staff_check[0] == "Medical Officer"){
+                $list = Announcement::select("id", "title", "start_date", "end_date")
+                ->where(DB::raw('substr(audience_ids, 3, 1)'), '=' , 1)
+                ->Where("branch_id", '=', $request->branch)
+                ->Where("status", '=', "1")
+                ->Where("start_date", '<=', $date)
+                ->Where("end_date", '>=', $date)
+                ->OrderBy("start_date", 'DESC')
+                ->get();
+            }
+            else if($staff_check[0] == "Counsellor"){
+                $list = Announcement::select("id", "title", "start_date", "end_date")
+                ->where(DB::raw('substr(audience_ids, 5, 1)'), '=' , 1)
+                ->Where("branch_id", '=', $request->branch)
+                ->Where("status", '=', "1")
+                ->Where("start_date", '<=', $date)
+                ->Where("end_date", '>=', $date)
+                ->OrderBy("start_date", 'DESC')
+                ->get();
+            }
+            else if($staff_check[0] == "Occupational Therapy"){
+                $list = Announcement::select("id", "title", "start_date", "end_date")
+                ->where(DB::raw('substr(audience_ids, 7, 1)'), '=' , 1)
+                ->Where("branch_id", '=', $request->branch)
+                ->Where("status", '=', "1")
+                ->Where("start_date", '<=', $date)
+                ->Where("end_date", '>=', $date)
+                ->OrderBy("start_date", 'DESC')
+                ->get();
+            }
+            else if($staff_check[0] == "Staff Nurse"){
+                $list = Announcement::select("id", "title", "start_date", "end_date")
+                ->where(DB::raw('substr(audience_ids, 9, 1)'), '=' , 1)
+                ->Where("branch_id", '=', $request->branch)
+                ->Where("status", '=', "1")
+                ->Where("start_date", '<=', $date)
+                ->Where("end_date", '>=', $date)
+                ->OrderBy("start_date", 'DESC')
+                ->get();
+            }
+            else if($staff_check[0] == "Healthcare Assistant"){
+                $list = Announcement::select("id", "title", "start_date", "end_date")
+                ->where(DB::raw('substr(audience_ids, 11, 1)'), '=' , 1)
+                ->Where("branch_id", '=', $request->branch)
+                ->Where("status", '=', "1")
+                ->Where("start_date", '<=', $date)
+                ->Where("end_date", '>=', $date)
+                ->OrderBy("start_date", 'DESC')
+                ->get();
+            }
+            else{
+                $list = Announcement::select("id", "title", "start_date", "end_date")
+                ->Where("branch_id", '=', $request->branch)
+                ->Where("status", '=', "1")
+                ->Where("start_date", '<=', $date)
+                ->Where("end_date", '>=', $date)
+                ->OrderBy("start_date", 'DESC')
+                ->get();
+            }
+        }
 
             ////Review Patient////
             $dateReview = Carbon::now()->subDays(7)->toDateString();
