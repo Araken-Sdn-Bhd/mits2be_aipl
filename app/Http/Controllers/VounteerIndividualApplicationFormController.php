@@ -869,7 +869,7 @@ class VounteerIndividualApplicationFormController extends Controller
         }
         $section = $response[0]['section'];
         if ($section == 'org') {
-            $org =  VonOrgBackground::where('id', $request->id)->get();
+            $org =  VonOrgBackground::where('id', $response[0]['org_background_id'])->get();
             $result['org_name'] = $org[0]['org_name'];
             $result['org_reg_number'] = $org[0]['org_reg_number'];
             $result['org_desc'] = $org[0]['org_desc'];
@@ -1892,7 +1892,7 @@ class VounteerIndividualApplicationFormController extends Controller
      }
      if($request->name != "" || $request->name != null) {
         $record->where('von_appointment.name', 'like', '%'.$request->name.'%');
-       
+
      }
      if ($request->section != null || $request->section != ""){
          $record->where('von_org_representative_background.section','=', $request->section);
@@ -1903,7 +1903,7 @@ class VounteerIndividualApplicationFormController extends Controller
      if ($request->aoi != null || $request->aoi != ""){
         $record->where('von_appointment.area_of_involvement','=', $request->aoi);
     }
-    
+
 
      $list = $record->get();
      return response()->json(["message" => "Von List", "list" => $list, "code" => 200]);
