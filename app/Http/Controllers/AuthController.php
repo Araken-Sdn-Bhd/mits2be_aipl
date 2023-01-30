@@ -124,7 +124,7 @@ class AuthController extends Controller
                     $screenroute = DB::table('screen_access_roles')
                         ->select(DB::raw('screens.screen_route', 'screens.screen_route_alt'))
                         ->join('screens', function ($join) {
-                            $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
+                            $join->on('screens.id', '=', 'screen_access_roles.screen_id');
                         })
                         ->where('screens.screen_route', 'like', '%Dash%')
                         ->where('screen_access_roles.staff_id', '=', $id)
@@ -143,7 +143,7 @@ class AuthController extends Controller
                     $screenroute = DB::table('screen_access_roles')
                         ->select(DB::raw('screens.screen_route', 'screens,screen_route_alt'))
                         ->join('screens', function ($join) {
-                            $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
+                            $join->on('screens.id', '=', 'screen_access_roles.screen_id');
                         })
                         ->where('screens.screen_route', 'like', '%Mod%')
                         ->where('screen_access_roles.staff_id', '=', $id)
@@ -176,7 +176,7 @@ class AuthController extends Controller
                 $screenroute = DB::table('screen_access_roles')
                     ->select(DB::raw('screens.screen_route'))
                     ->join('screens', function ($join) {
-                        $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
+                        $join->on('screens.id', '=', 'screen_access_roles.screen_id');
                     })
                     ->where('screens.screen_route', 'like', '%Mod%')
                     ->where('screen_access_roles.staff_id', '=', $id)
@@ -186,7 +186,7 @@ class AuthController extends Controller
                 $screenroutealt = DB::table('screen_access_roles')
                     ->select(DB::raw('screens.screen_route_alt'))
                     ->join('screens', function ($join) {
-                        $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
+                        $join->on('screens.id', '=', 'screen_access_roles.screen_id');
                     })
                     ->where('screens.screen_route_alt', 'like', '%Mod%')
                     ->where('screen_access_roles.staff_id', '=', $id)
@@ -206,7 +206,7 @@ class AuthController extends Controller
                 $screenroute = DB::table('screen_access_roles')
                     ->select(DB::raw('screens.screen_route', 'screens,screen_route_alt'))
                     ->join('screens', function ($join) {
-                        $join->on('screens.module_id', '=', 'screen_access_roles.module_id');
+                        $join->on('screens.id', '=', 'screen_access_roles.screen_id');
                     })
                     ->where('screens.screen_route', 'like', '%Mod%')
                     ->where('screen_access_roles.staff_id', '=', $id)
