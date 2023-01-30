@@ -198,7 +198,7 @@ class PatientRegistrationController extends Controller
                     'patient_mrn' =>   $Patient['id'],
                     'branch_id' => $request->branch_id,
                     'screen_id' => $screen_id['id'],
-                    'staff_id'=> '',
+                    'staff_id'=> 0,
                     'url_route' => $screen_id['notifi_route']."?id=" . $Patient['id'],
                     'message' =>  'Request for patient screening',
                     'created_at' => $date->format('Y-m-d H:i:s'),

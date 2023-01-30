@@ -871,7 +871,7 @@ class PatientAppointmentDetailsController extends Controller
                 'patient_mrn' =>   $patient_id ['patient_mrn_id'],
                 'branch_id' => $request->branch_id,
                 'screen_id' => $screen_id['id'],
-                'staff_id'=> $request->assign_team,
+                'staff_id'=> 0,
                 'url_route' => $screen_id['screen_route_alt'],
                 'message' =>  'New assigned patient for vital',
                 'created_at' => $date->format('Y-m-d H:i:s'),
