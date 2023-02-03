@@ -12,6 +12,7 @@ use DateTime;
 use DateTimeZone;
 use Illuminate\Support\Facades\DB;
 use Validator;
+use App\Models\UserActivity;
 
 class AuthController extends Controller
 {
@@ -134,6 +135,7 @@ class AuthController extends Controller
                     if (!empty($screenroute[0])) {
                         $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
                         $tmp_alt = json_decode(json_encode($screenroute[0]), true)['screen_route_alt'];
+
                         return $this->createNewToken($token, $tmp, $tmp_alt, $branch);
                     } else {
                         $tmp = "";
@@ -196,6 +198,37 @@ class AuthController extends Controller
                 if (!empty($screenroute[0])) {
                     $tmp = json_decode(json_encode($screenroute[0]), true)['screen_route'];
                     $tmp_alt = json_decode(json_encode($screenroutealt[0]), true)['screen_route_alt'];
+
+                    $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+                    $userid = User::select('id','name')->where('email', $request->email)->first();
+                $check_user=UserActivity::select('id','login_count', 'first_login')->where('user_email',$request->email)->first();
+                if($check_user != NULL) {
+                    $login_count = $check_user['login_count'] +1;
+                    $last_login = $date->format('Y-m-d H:i:s');
+                    $activity=[
+                        'login_count' => $login_count,
+                        'last_login' => $last_login,
+                    ];
+
+                    DB::table('user_activity')
+                    ->where('id', $check_user['id'])
+                    ->update($activity);
+                } else {
+
+                    $login_count = 1;
+                    $first_login = $date->format('Y-m-d H:i:s');
+                    $last_login = $date->format('Y-m-d H:i:s');
+                    $activity=[
+                        'user_email' => $request->email,
+                        'user_name' =>   $userid->name,
+                        'branch_name' => $branch->hospital_branch_name,
+                        'login_count' => $login_count,
+                        'first_login'=> $first_login,
+                        'last_login' => $last_login,
+                    ];
+                    $user_activity = UserActivity::insert($activity);
+
+                }
 
                     return $this->createNewToken($token, $tmp, $tmp_alt, $branch);
                 } else {
@@ -331,6 +364,7 @@ class AuthController extends Controller
                 ]);
             } catch (\Throwable $th) {
             }
+
             return $this->createNewToken($token, $tmp, $tmp_alt, $branch);
         }
     }
