@@ -151,7 +151,7 @@ class DashboardController extends Controller
             ->leftjoin('patient_registration as r', function ($join) {
                 $join->on('p.patient_id', '=', 'r.id');
             })
-            ->Where("p.services_type", '=', 2)
+            ->Where("r.services_type", '=', 2)
             ->Where("r.branch_id", '=', $request->branch)
             ->Where("p.next_review_date", '=', date('Y-m-d'))->get();
 
@@ -160,7 +160,7 @@ class DashboardController extends Controller
             ->leftjoin('patient_registration as r', function ($join) {
                 $join->on('p.patient_id', '=', 'r.id');
             })
-            ->Where("p.services_type", '=', 3)
+            ->Where("r.services_type", '=', 3)
             ->Where("r.branch_id", '=', $request->branch)
             ->Where("p.next_review_date", '=', date('Y-m-d'))->get();
 
@@ -169,7 +169,7 @@ class DashboardController extends Controller
             ->leftjoin('patient_registration as r', function ($join) {
                 $join->on('p.patient_id', '=', 'r.id');
             })
-            ->Where("p.services_type", '=', 5)
+            ->Where("r.services_type", '=', 5)
             ->Where("r.branch_id", '=', $request->branch)
             ->Where("p.next_review_date", '=', date('Y-m-d'))->get();
 
@@ -178,7 +178,7 @@ class DashboardController extends Controller
             ->leftjoin('patient_registration as r', function ($join) {
                 $join->on('p.patient_id', '=', 'r.id');
             })
-            ->Where("p.services_type", '=', 3)
+            ->Where("r.services_type", '=', 3)
             ->Where("r.branch_id", '=', $request->branch)
             ->Where("p.next_review_date", '=', date('Y-m-d'))->get();
 
@@ -196,7 +196,7 @@ class DashboardController extends Controller
             ->leftjoin('patient_registration as r', function ($join) {
                 $join->on('p.patient_id', '=', 'r.id');
             })
-            ->Where("p.services_type", '=', 6)
+            ->Where("r.services_type", '=', 6)
             ->Where("r.branch_id", '=', $request->branch)
             ->Where("p.next_review_date", '=', date('Y-m-d'))->get();
             $team_task = $query->count();
@@ -208,7 +208,7 @@ class DashboardController extends Controller
             ->leftjoin('patient_registration as r', function ($join) {
                 $join->on('p.patient_id', '=', 'r.id');
             })
-            ->Where("p.services_type", '=', 20)
+            ->Where("r.services_type", '=', 20)
             ->Where("r.branch_id", '=', $request->branch)
             ->Where("p.next_review_date", '=', date('Y-m-d'))->get();
             $team_task = $query->count();
