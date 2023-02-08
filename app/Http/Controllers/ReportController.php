@@ -68,6 +68,7 @@ use App\Models\CPSReferralForm;
 use App\Models\Occt_Referral_Form;
 use App\Models\PsychologyReferral;
 use App\Models\RehabReferralAndClinicalForm;
+use Carbon\Carbon;
 
 
 
@@ -161,11 +162,119 @@ class ReportController extends Controller
                 $run_query = $query->get()->toArray();
                 $response  = json_decode(json_encode($run_query), true);
 
-                
+                $icd=NULL;
+                $icd_array=[];
+                $count=0;
+
+
+
+
                 $index = 0;
                 $result = [];
                 
                 foreach ($response as $k => $v) {
+                
+                //////////////////////////diagnosis/////////////////////////
+
+
+                $query_diagnosis1 = PatientCounsellorClerkingNotes::where('patient_mrn_id', $v['patient_id'])
+                ->where('status','=','1');
+
+                    $diagnosis1=$query_diagnosis1->orderBy('id', 'DESC')->first();
+
+                
+                $query_diagnosis2 = PsychiatryClerkingNote::where('patient_mrn_id', $v['patient_id'])
+                ->where('status','=','1');
+
+                        $diagnosis2=$query_diagnosis2->orderBy('id', 'DESC')->first();
+
+
+                    $query_diagnosis3 = PsychiatricProgressNote::where('patient_mrn_id', $v['patient_id'])
+                    ->where('status','=','1');
+
+                            $diagnosis3=$query_diagnosis3->orderBy('id', 'DESC')->first();
+
+
+                    $query_diagnosis4 = CpsProgressNote::where('patient_mrn_id', $v['patient_id'])
+                    ->where('status','=','1');
+              
+                            $diagnosis4=$query_diagnosis4->orderBy('id', 'DESC')->first();
+              
+
+
+                        $query_diagnosis5 = SeProgressNote::where('patient_mrn_id', $v['patient_id'])
+                        ->where('status','=','1');
+              
+                            $diagnosis5=$query_diagnosis5->orderBy('id', 'DESC')->first();
+              
+
+                        $query_diagnosis6 = PatientIndexForm::where('patient_mrn_id', $v['patient_id'])
+                        ->where('status','=','1');
+              
+                            $diagnosis6=$query_diagnosis6->orderBy('id', 'DESC')->first();
+              
+
+                $query_diagnosis7 = CounsellingProgressNote::where('patient_mrn_id', $v['patient_id'])
+                ->where('status','=','1');
+
+                    $diagnosis7=$query_diagnosis7->orderBy('id', 'DESC')->first();
+
+                
+                $query_diagnosis8 = EtpProgressNote::where('patient_mrn_id', $v['patient_id'])
+                ->where('status','=','1');
+
+                        $diagnosis8=$query_diagnosis8->orderBy('id', 'DESC')->first();
+
+
+                    $query_diagnosis9 = JobClubProgressNote::where('patient_mrn_id', $v['patient_id'])
+                    ->where('status','=','1');
+
+                            $diagnosis9=$query_diagnosis9->orderBy('id', 'DESC')->first();
+       
+                    $query_diagnosis10 = ConsultationDischargeNote::where('patient_id', $v['patient_id'])
+                    ->where('status','=','1');
+              
+                            $diagnosis10=$query_diagnosis10->orderBy('id', 'DESC')->first();
+              
+                        $query_diagnosis11 = RehabDischargeNote::where('patient_mrn_id', $v['patient_id'])
+                        ->where('status','=','1');
+                            
+                        $diagnosis11=$query_diagnosis11->orderBy('id', 'DESC')->first();
+              
+
+                        $query_diagnosis12 = CpsDischargeNote::where('patient_mrn_id', $v['patient_id'])
+                        ->where('status','=','1');
+              
+                            $diagnosis12=$query_diagnosis12->orderBy('id', 'DESC')->first();
+                                
+
+                        if(!empty($cd_array)){
+                                                                      
+                                $Dates = array_map(fn($entry) => $entry['updated_at'], $cd_array);
+                                $array_date=max($Dates); 
+                                 
+                                
+                            foreach ($cd_array as $c => $d){
+                                
+                                if($array_date==$d['updated_at']){
+                                    $icd=$d['diagnosis_id'];
+                                    
+                                }
+                            }
+                        
+                        }
+                        
+                        if($request->diagnosis_id!=NULL){
+                            if($icd!=$request->diagnosis_id){
+                                continue;
+                            }
+                        }
+                    
+                // $icd = IcdCode::where('id', $icd)->first(); 
+                
+
+                //////////////////////////diagnosis/////////////////////////
+                
 
                     if($request->protective_factor!=NULL){
                         $protective=$v['protective'];
@@ -1035,10 +1144,7 @@ class ReportController extends Controller
         }      
         if ($request->gender) {
             $demo['sex'] = $request->gender;
-        }
-        if ($request->diagnosis_id) {
-            $demo['sex'] = $request->diagnosis_id;
-        }        
+        }      
             $query = DB::table('patient_appointment_details as pad')
             ->select('*')
             ->join('patient_registration as p', function($join) {
@@ -1076,7 +1182,6 @@ class ReportController extends Controller
         $attendanceStatus = [];
         $attend = 0;
         $noShow = 0;
-        
         if ($ssh) {
             $index = 0;
             foreach ($ssh as $k => $v) {
@@ -1086,7 +1191,6 @@ class ReportController extends Controller
                     $apcount[$v['patient_mrn_id']] = 1;
                 }
                 $notes = [];
-                $icd = [];
                 $job_search = [];
                 $job_visit = [];
                 $jv= 0;
@@ -1095,18 +1199,220 @@ class ReportController extends Controller
                 $jobStart = [];
                 $js = [];
                 $curr_interv = [];
-                
+                $cd_array=[];
+                $icd=NULL;
+                $count=0;
 
                 if($request->appointment_type == 1){
-                $notes = PatientCounsellorClerkingNotes::where('patient_mrn_id', $v['patient_mrn_id'])
-                    ->where(DB::raw("(STR_TO_DATE(created_at,'%Y-%m-%d'))"), $v['booking_date'])->where('status','=','1')
-                    ->get()->toArray();
-                if (count($notes) == 0) {
-                    $notes = PsychiatryClerkingNote::where('patient_mrn_id', $v['patient_mrn_id'])
-                        ->where(DB::raw("(STR_TO_DATE(created_at,'%Y-%m-%d'))"), $v['booking_date'])->where('status','=','1')
-                        ->get()->toArray();
+
+        
+                        $query_diagnosis1 = PatientCounsellorClerkingNotes::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('status','=','1');
+                            $diagnosis1=$query_diagnosis1->orderBy('id', 'DESC')->first();
+        
+                            if($diagnosis1!=NULL){
+                                $diagnosis1_ts=strtotime($diagnosis1['updated_at']);
+                                $cd_array[$count]['updated_at']=$diagnosis1_ts;
+                                $cd_array[$count]['diagnosis_id']=$diagnosis1['diagnosis_id'];
+                                $cd_array[$count]['procedure']=$diagnosis1['category_services'];
+                                $cd_array[$count]['medication']=$diagnosis1['medication_des'];
+                                $count++;
+                            }
+                        
+                        $query_diagnosis2 = PsychiatryClerkingNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('status','=','1');
+                                $diagnosis2=$query_diagnosis2->orderBy('id', 'DESC')->first();
+        
+                            if($diagnosis2!=NULL){
+                                    $diagnosis2_ts=strtotime($diagnosis2['updated_at']);
+                                    $cd_array[$count]['updated_at']=$diagnosis2_ts;
+                                    $cd_array[$count]['diagnosis_id']=$diagnosis2['diagnosis_id'];
+                                    $cd_array[$count]['procedure']=$diagnosis2['category_services'];
+                                    $cd_array[$count]['medication']=$diagnosis2['medication_des'];
+                                    $count++;
+                               }
+        
+                            $query_diagnosis3 = PsychiatricProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                            ->where('status','=','1');
+                                    $diagnosis3=$query_diagnosis3->orderBy('id', 'DESC')->first();
+               
+                                if($diagnosis3!=NULL){
+                                        $diagnosis3_ts=strtotime($diagnosis3['updated_at']);
+                                        $cd_array[$count]['updated_at']=$diagnosis3_ts;
+                                        $cd_array[$count]['diagnosis_id']=$diagnosis3['diagnosis'];
+                                        $cd_array[$count]['procedure']=$diagnosis3['category_services'];
+                                        $cd_array[$count]['medication']=$diagnosis3['medication_des'];
+                                        $count++;
+                                }
+                
+                                $query_diagnosis4 = PatientIndexForm::where('patient_mrn_id', $v['patient_mrn_id'])
+                                ->where('status','=','1');
+                      
+                                    $diagnosis4=$query_diagnosis4->orderBy('id', 'DESC')->first();
+                      
+                                        if($diagnosis4!=NULL){
+                                            $diagnosis4_ts=strtotime($diagnosis4['updated_at']);
+                                            $cd_array[$count]['updated_at']=$diagnosis4_ts;
+                                            $cd_array[$count]['diagnosis_id']=$diagnosis4['diagnosis'];
+                                            $cd_array[$count]['procedure']=$diagnosis4['category_services'];
+                                            $cd_array[$count]['medication']=$diagnosis4['medication_des'];
+                                            $count++;
+                                        }
+        
+                $query_diagnosis5 = CounsellingProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                ->where('status','=','1');
+                    $diagnosis5=$query_diagnosis5->orderBy('id', 'DESC')->first();
+
+                    if($diagnosis5!=NULL){
+                        $diagnosis5_ts=strtotime($diagnosis5['updated_at']);
+                        $cd_array[$count]['updated_at']=$diagnosis5_ts;
+                        $cd_array[$count]['diagnosis_id']=$diagnosis5['diagnosis_id'];
+                        $cd_array[$count]['procedure']=$diagnosis5['category_services'];
+                        $cd_array[$count]['medication']=$diagnosis5['medication_des'];
+                        $count++;
+                    }
+                
+
+                    $query_diagnosis6 = ConsultationDischargeNote::where('patient_id', $v['patient_mrn_id'])
+                    ->where('status','=','1');
+              
+                            $diagnosis6=$query_diagnosis6->orderBy('id', 'DESC')->first();
+              
+                        if($diagnosis6!=NULL){
+                            $diagnosis6_ts=strtotime($diagnosis6['updated_at']);
+                            $cd_array[$count]['updated_at']=$diagnosis6_ts;
+                            $cd_array[$count]['diagnosis_id']=$diagnosis6['diagnosis_id'];
+                            $cd_array[$count]['procedure']=$diagnosis6['category_services'];
+                            $cd_array[$count]['medication']=$diagnosis6['medication_des'];
+                            $count++;
+                        }
+
+                        
+            if(!empty($cd_array)){
+                                                                    
+                    $Dates = array_map(fn($entry) => $entry['updated_at'], $cd_array);
+                    $array_date=max($Dates); 
+                                
+                                
+                    foreach ($cd_array as $c => $d){
+                        
+                        if($array_date==$d['updated_at']){
+                            $icd=$d['diagnosis_id'];
+                            $procedure=$d['procedure'];
+                            if($procedure==NULL){
+                                $procedure='NA';
+                            }
+                            $medication=$d['medication'];
+                            if($medication==NULL){
+                                $medication='NA';
+                            }
+                        }
+                    }
+                    if($icd!=NULL){
+                        $icd_query = IcdCode::where('id', $icd)->first();
+                        $icd_name=$icd_query['icd_name'];
+                    }else{
+                        $icd_name='NA';
+                    }
+                    
+            }else{
+                $icd_name = 'NA';
+                $procedure='NA';
+                $medication='NA';
+            }
+
+            if($request->diagnosis_id!=NULL){
+                if($icd!=$request->diagnosis_id){
+                    continue;
                 }
+            }
+        
+
                 }elseif($request->appointment_type == 3){
+
+                    $query_diagnosis1 = SeProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                    ->where('status','=','1');
+                        $diagnosis1=$query_diagnosis1->orderBy('id', 'DESC')->first();
+          
+                            if($diagnosis1!=NULL){
+                                $diagnosis1_ts=strtotime($diagnosis1['updated_at']);
+                                $cd_array[$count]['updated_at']=$diagnosis1_ts;
+                                $cd_array[$count]['diagnosis_id']=$diagnosis1['diagnosis_type'];
+                                $cd_array[$count]['procedure']=$diagnosis1['service_category'];
+                                $cd_array[$count]['medication']=$diagnosis1['medication'];
+                                $count++;
+                            }
+
+                        $query_diagnosis2 = PatientIndexForm::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('status','=','1');
+                            $diagnosis2=$query_diagnosis2->orderBy('id', 'DESC')->first();
+              
+                                if($diagnosis2!=NULL){
+                                    $diagnosis2_ts=strtotime($diagnosis2['updated_at']);
+                                    $cd_array[$count]['updated_at']=$diagnosis2_ts;
+                                    $cd_array[$count]['diagnosis_id']=$diagnosis2['diagnosis'];
+                                    $cd_array[$count]['procedure']=$diagnosis1['category_of_services'];
+                                    $cd_array[$count]['medication']=$diagnosis1['medication'];
+                                    $count++;
+                                }
+
+                        $query_diagnosis3 = RehabDischargeNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('status','=','1');
+                            $diagnosis3=$query_diagnosis3->orderBy('id', 'DESC')->first();
+              
+                                if($diagnosis3!=NULL){
+                                    $diagnosis3_ts=strtotime($diagnosis3['updated_at']);
+                                    $cd_array[$count]['updated_at']=$diagnosis3_ts;
+                                    $cd_array[$count]['diagnosis_id']=$diagnosis3['diagnosis_id'];
+                                    $cd_array[$count]['procedure']=$diagnosis1['service_category'];
+                                    $cd_array[$count]['medication']=$diagnosis1['medication'];
+                                    $count++;
+                                }
+
+                                if($request->diagnosis_id){
+                                    if($diagnosis1==NULL && $diagnosis2==NULL && $diagnosis3==NULL){            
+                                        continue;  
+                                    }
+                                 }
+        
+                if(!empty($cd_array)){
+                                                                      
+                    $Dates = array_map(fn($entry) => $entry['updated_at'], $cd_array);
+                    $array_date=max($Dates); 
+                                 
+                                
+                    foreach ($cd_array as $c => $d){
+                        
+                        if($array_date==$d['updated_at']){
+                            $icd=$d['diagnosis_id'];
+                            $procedure=$d['procedure'];
+                            if($procedure==NULL){
+                                $procedure='NA';
+                            }
+                            $medication=$d['medication'];
+                            if($medication==NULL){
+                                $medication='NA';
+                            }
+                        }
+                    }
+                    if($icd!=NULL){
+                        $icd_query = IcdCode::where('id', $icd)->first();
+                        $icd_name=$icd_query['icd_name'];
+                    }else{
+                        $icd_name='NA';
+                    }
+
+                }else{
+                    $icd_name = 'NA';
+                    $procedure='NA';
+                    $medication='NA';
+                }
+                if($request->diagnosis_id!=NULL){
+                    if($icd!=$request->diagnosis_id){
+                        continue;
+                    }
+                }
+                
 
                     if($request->employment_status){
                         $employment_status = SeProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
@@ -1138,21 +1444,21 @@ class ReportController extends Controller
                             continue;
                         } 
                     }
-                    $notes = SeProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
-                    ->where('status', '1')->get()->toArray();
+
+
                 
                     $jobStart = JobStartForm::where('patient_id', $v['patient_mrn_id'])
                                             ->where('status', '1')
                                             ->where('is_deleted', 0)
                                             ->get()->toArray();
 
-                    if(count($notes) != 0){
-                        $job_visit = GeneralSetting::where('id', $notes[0]['activity_type'])->get()->toArray();
+                    if($diagnosis1 != NULL){
+                        $job_visit = GeneralSetting::where('id', $diagnosis1['activity_type'])->get()->toArray();
                         if($job_visit[0]['section_value'] == 'FASC (Follow Along Support For Client)' || $job_visit[0]['section_value'] == 'FASE (Follow Along Support For Employer)')
                         {
                             $jv += 1;
                         }
-                        $empStatus = GeneralSetting::where('id', $notes[0]['employment_status'])->get()->toArray();
+                        $empStatus = GeneralSetting::where('id', $diagnosis1['employment_status'])->get()->toArray();
                     }               
                         $log_meeting = LogMeetingWithEmployer::where(['patient_id' => $v['patient_mrn_id']])->where('status','=','1')->get()->toArray();
                     if($log_meeting){
@@ -1160,13 +1466,100 @@ class ReportController extends Controller
                     }
                 }
                 elseif($request->appointment_type == 4){
-                    if($request->work_readiness){
+                    
+
+                     $query_diagnosis1 = PatientIndexForm::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('status','=','1');
+                            $diagnosis1=$query_diagnosis1->orderBy('id', 'DESC')->first();
+              
+                                if($diagnosis1!=NULL){
+                                    $diagnosis1_ts=strtotime($diagnosis1['updated_at']);
+                                    $cd_array[$count]['updated_at']=$diagnosis1_ts;
+                                    $cd_array[$count]['diagnosis_id']=$diagnosis1['diagnosis'];
+                                    $cd_array[$count]['procedure']=$diagnosis1['category_of_services'];
+                                    $cd_array[$count]['medication']=$diagnosis1['medication'];
+                                    $count++;
+                                }
+
+                    $query_diagnosis2 = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                    ->where('status','=','1');
+                            $diagnosis2=$query_diagnosis2->orderBy('id', 'DESC')->first();
+
+                        if($diagnosis2!=NULL){
+                                $diagnosis2_ts=strtotime($diagnosis2['updated_at']);
+                                $cd_array[$count]['updated_at']=$diagnosis2_ts;
+                                $cd_array[$count]['diagnosis_id']=$diagnosis2['diagnosis_type'];
+                                $cd_array[$count]['procedure']=$diagnosis1['service_category'];
+                                $cd_array[$count]['medication']=$diagnosis1['medication'];
+                                
+                                $count++;
+                        }
+
+                        $query_diagnosis3 = RehabDischargeNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('status','=','1');
+                            $diagnosis3=$query_diagnosis3->orderBy('id', 'DESC')->first();
+              
+                                if($diagnosis3!=NULL){
+                                    $diagnosis3_ts=strtotime($diagnosis3['updated_at']);
+                                    $cd_array[$count]['updated_at']=$diagnosis3_ts;
+                                    $cd_array[$count]['diagnosis_id']=$diagnosis3['diagnosis_id'];
+                                    $cd_array[$count]['procedure']=$diagnosis1['service_category'];
+                                    $cd_array[$count]['medication']=$diagnosis1['medication'];
+                                    $count++;
+                                }
+                                if($request->diagnosis_id){
+                                    if($diagnosis1==NULL && $diagnosis2==NULL && $diagnosis3==NULL){            
+                                        continue;  
+                                    }
+                                 }
+        
+                if(!empty($cd_array)){
+                                                                      
+                                $Dates = array_map(fn($entry) => $entry['updated_at'], $cd_array);
+                                $array_date=max($Dates); 
+                                 
+                                
+                    foreach ($cd_array as $c => $d){
+                        
+                        if($array_date==$d['updated_at']){
+                            $icd=$d['diagnosis_id'];
+                            $procedure=$d['procedure'];
+                            if($procedure==NULL){
+                                $procedure='NA';
+                            }
+                            $medication=$d['medication'];
+                            if($medication==NULL){
+                                $medication='NA';
+                            }
+                        }
+                    }
+                
+                    if($icd!=NULL){
+                        $icd_query = IcdCode::where('id', $icd)->first();
+                        $icd_name=$icd_query['icd_name'];
+                    }else{
+                        $icd_name='NA';
+                    }
+
+                }else{
+                    $icd_name = 'NA';
+                    $procedure='NA';
+                    $medication='NA';
+                }
+
+                if($request->diagnosis_id!=NULL){
+                    if($icd!=$request->diagnosis_id){
+                        continue;
+                    }
+                }
+                
+                if($request->work_readiness){
                         $work_readiness = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                         ->where('work_readiness',$request->work_readiness)
                         ->where('status', '1')
                         ->where('is_deleted', 0)
                         ->get()->toArray();
-                        if(empty($employment_status)){
+                        if(empty($work_readiness)){
                             continue;
                         }   
                     }
@@ -1182,13 +1575,74 @@ class ReportController extends Controller
                             continue;
                         }   
                     }
-                    $notes = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
+                    $etp = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                     ->get()->toArray();
 
 
 
 
                 }elseif($request->appointment_type == 5){
+                    
+
+                        $query_diagnosis1 = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('status','=','1');
+                                $diagnosis1=$query_diagnosis1->orderBy('id', 'DESC')->first();
+           
+                            if($diagnosis1!=NULL){
+                                    $diagnosis1_ts=strtotime($diagnosis1['updated_at']);
+                                    $cd_array[$count]['updated_at']=$diagnosis1_ts;
+                                    $cd_array[$count]['diagnosis_id']=$diagnosis1['diagnosis_type'];
+                                    $cd_array[$count]['procedure']=$diagnosis1['service_category'];
+                                    $cd_array[$count]['medication']=$diagnosis1['medication'];
+                                    $count++;
+                            }
+                            if($request->diagnosis_id){
+                                if($diagnosis1==NULL){            
+                                    continue;  
+                                }
+                             }
+    
+            if(!empty($cd_array)){
+                                                                  
+                    $Dates = array_map(fn($entry) => $entry['updated_at'], $cd_array);
+                    $array_date=max($Dates); 
+                             
+                            
+                        foreach ($cd_array as $c => $d){
+                            
+                            if($array_date==$d['updated_at']){
+                                $icd=$d['diagnosis_id'];
+                                $procedure=$d['procedure'];
+                                if($procedure==NULL){
+                                    $procedure='NA';
+                                }
+                                $medication=$d['medication'];
+                                if($medication==NULL){
+                                    $medication='NA';
+                                }
+                            }
+                        }
+                        if($icd!=NULL){
+                            $icd_query = IcdCode::where('id', $icd)->first();
+                            $icd_name=$icd_query['icd_name'];
+                        }else{
+                            $icd_name='NA';
+                        }
+
+            }else{
+                $icd_name = 'NA';
+                $procedure='NA';
+                $medication='NA';
+            }
+
+            if($request->diagnosis_id!=NULL){
+                if($icd!=$request->diagnosis_id){
+                    continue;
+                }
+            }
+            
+            
+
                     if($request->work_readiness){
                         $work_readiness = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                         ->where('work_readiness',$request->work_readiness)
@@ -1211,11 +1665,92 @@ class ReportController extends Controller
                             continue;
                         }   
                     }
-                    $notes = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
+                    $job_club = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                     ->get()->toArray();
 
                 }elseif($request->appointment_type == 6){
 
+                    
+                    $query_diagnosis1 = PatientIndexForm::where('patient_mrn_id', $v['patient_mrn_id'])
+                    ->where('status','=','1');
+                        $diagnosis1=$query_diagnosis1->orderBy('id', 'DESC')->first();
+          
+                            if($diagnosis1!=NULL){
+                                $diagnosis1_ts=strtotime($diagnosis1['updated_at']);
+                                $cd_array[$count]['updated_at']=$diagnosis1_ts;
+                                $cd_array[$count]['diagnosis_id']=$diagnosis1['diagnosis'];
+                                $cd_array[$count]['procedure']=$diagnosis1['category_of_services'];
+                                $cd_array[$count]['medication']=$diagnosis1['medication'];
+                                $count++;
+                            }
+                    
+                        $query_diagnosis2 = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('status','=','1');
+                            $diagnosis2=$query_diagnosis2->orderBy('id', 'DESC')->first();
+              
+                                if($diagnosis2!=NULL){
+                                    $diagnosis2_ts=strtotime($diagnosis2['updated_at']);
+                                    $cd_array[$count]['updated_at']=$diagnosis2_ts;
+                                    $cd_array[$count]['diagnosis_id']=$diagnosis2['diagnosis_id'];
+                                    $cd_array[$count]['procedure']=$diagnosis2['service_category'];
+                                    $cd_array[$count]['medication']=$diagnosis2['medication'];
+                                    $count++;
+                                }
+
+                        $query_diagnosis3 = CpsDischargeNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('status','=','1');
+                            $diagnosis3=$query_diagnosis3->orderBy('id', 'DESC')->first();
+              
+                                if($diagnosis3!=NULL){
+                                    $diagnosis3_ts=strtotime($diagnosis3['updated_at']);
+                                    $cd_array[$count]['updated_at']=$diagnosis3_ts;
+                                    $cd_array[$count]['diagnosis_id']=$diagnosis3['diagnosis'];
+                                    $cd_array[$count]['procedure']=$diagnosis3['service_category'];
+                                    $cd_array[$count]['medication']=$diagnosis3['medication'];
+                                    $count++;
+                                }
+                                    
+                             if(!empty($cd_array)){
+                                                                  
+                            $Dates = array_map(fn($entry) => $entry['updated_at'], $cd_array);
+                            $array_date=max($Dates); 
+                             
+                            
+                    foreach ($cd_array as $c => $d){
+                        
+                        if($array_date==$d['updated_at']){
+                            $icd=$d['diagnosis_id'];
+                            $procedure=$d['procedure'];
+                            if($procedure==NULL){
+                                $procedure='NA';
+                            }
+                            $medication=$d['medication'];
+                            if($medication==NULL){
+                                $medication='NA';
+                            }
+                        }
+                    }
+                    if($icd!=NULL){
+                        $icd_query = IcdCode::where('id', $icd)->first();
+                        $icd_name=$icd_query['icd_name'];
+                    }else{
+                        $icd_name='NA';
+                    }
+                    
+
+            }else{
+                $icd_name = 'NA';
+                $procedure='NA';
+                $medication='NA';
+            }
+
+            if($request->diagnosis_id!=NULL){
+                if($icd!=$request->diagnosis_id){
+                    continue;
+                }
+            }
+            
+                      
                     if($request->current_intervention){
                         $current_intervention = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                         ->where('current_intervention',$request->current_intervention)
@@ -1239,10 +1774,10 @@ class ReportController extends Controller
                         }   
                     }
 
-                    $notes = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
+                    $cps = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                     ->get()->toArray();
-                    if(count($notes) != 0){
-                        $curr_interv = GeneralSetting::where('id', $notes[0]['current_intervention'])->get()->toArray();
+                    if(count($cps) != 0){
+                        $curr_interv = GeneralSetting::where('id', $cps[0]['current_intervention'])->get()->toArray();
                         
                     }
                 }
@@ -1251,8 +1786,7 @@ class ReportController extends Controller
                     ->whereBetween('created_at', [$request->fromDate, $request->toDate])
                     ->get()->toArray();
 
-                $staff = StaffManagement::select('name')->where('id', $v['assign_team'])->get()->toArray();
-
+                $staff = StaffManagement::select('name')->where('id', $v['staff_id'])->get()->toArray();
 
                     $pc = GeneralSetting::where(['id' => $v['sex']])->get()->toArray();
                     $st = ServiceRegister::where(['id' => $v['appointment_type']])->get()->toArray();
@@ -1261,8 +1795,8 @@ class ReportController extends Controller
                     $reftyp = GeneralSetting::where(['id' => $v['referral_type']])->get()->toArray();
                     
 
-                    if ($notes)
-                        $icd = IcdCode::where('id', $notes[0]['code_id'])->get()->toArray();
+                    // if ($notes)
+                    //     $icd = IcdCode::where('id', $notes[0]['code_id'])->get()->toArray();
                         $nap = PatientAppointmentDetails::where('patient_mrn_id', $v['patient_mrn_id'])
                             ->where('booking_date', '>', $v['booking_date'])->where('appointment_status', 0)->first();
                     $nxtAppointments = ($nap) ? $nap->toArray() : [];
@@ -1274,7 +1808,7 @@ class ReportController extends Controller
                     $result[$index]['Next_visit'] = ($nxtAppointments) ? date('d/m/Y', strtotime($nxtAppointments['booking_date'])) : '-';
                     $result[$index]['time_registered'] = ($nxtAppointments) ? date('h:i:s A', strtotime($nxtAppointments['booking_time'])) : '-';
                     $result[$index]['time_seen'] = ($nxtAppointments) ? date('h:i:s A', strtotime($nxtAppointments['booking_time'])) : '-';
-                    $result[$index]['Procedure'] = ($icd) ? $icd[0]['icd_name'] : 'NA';
+                    $result[$index]['Procedure'] = $procedure;
                     $result[$index]['Attendance_status'] = get_appointment_status($v['appointment_status']);
                     $result[$index]['Name'] = $v['name_asin_nric'];
                     $result[$index]['Attending_staff'] = ($staff) ? $staff[0]['name'] : 'NA';
@@ -1282,29 +1816,29 @@ class ReportController extends Controller
                     $result[$index]['GENDER'] = $gender;
                     $result[$index]['APPOINTMENT_TYPE'] = $appointment_type;
                     $result[$index]['AGE'] = $v['age'];
-                    $result[$index]['DIAGNOSIS'] = ($icd) ? $icd[0]['icd_name'] : 'NA';
+                    $result[$index]['DIAGNOSIS'] = $icd_name;
                     if($request->appointment_type == 3){
-                        $result[$index]['MEDICATIONS'] = ($notes) ? $notes[0]['medication'] : "NA";
+                        $result[$index]['MEDICATIONS'] = $medication;
                         $result[$index]['EMPSTATUS'] = ($empStatus) ? $empStatus[0]['section_value'] : "NA";
                         $result[$index]['EMPLOYER'] = ($jobStart) ? $jobStart[0]['name_of_employer'] : "NA";
                         $result[$index]['JOBSTARTDATE'] = ($jobStart) ? $jobStart[0]['first_date_of_work'] : "NA";
                         $result[$index]['ADDRESS'] = ($jobStart) ? $jobStart[0]['address'] : "NA";
                     }
                     elseif($request->appointment_type == 4 ){
-                        $result[$index]['MEDICATIONS'] = ($notes) ? $notes[0]['medication'] : "NA";
-                        $result[$index]['WORKREADY'] = ($notes) ? $notes[0]['work_readiness'] : "NA";
+                        $result[$index]['MEDICATIONS'] = $medication;
+                        $result[$index]['WORKREADY'] = ($etp) ? $etp[0]['work_readiness'] : "NA";
                     }
                     elseif($request->appointment_type == 5 ){
-                        $result[$index]['MEDICATIONS'] = ($notes) ? $notes[0]['medication'] : "NA";
-                        $result[$index]['WORKREADY'] = ($notes) ? $notes[0]['work_readiness'] : "NA";
+                        $result[$index]['MEDICATIONS'] = $medication;
+                        $result[$index]['WORKREADY'] = ($job_club ) ? $job_club [0]['work_readiness'] : "NA";
                     }
                     elseif($request->appointment_type == 6 ){
-                        $result[$index]['MEDICATIONS'] = ($notes) ? $notes[0]['medication'] : "NA";
-                        $result[$index]['CURRENTINTERV'] = ($notes) ? $curr_interv[0]['section_value'] : "NA";
-                        $result[$index]['CONTACT'] = ($notes) ? $notes[0]['informants_contact'] : "NA";
+                        $result[$index]['MEDICATIONS'] = $medication;
+                        $result[$index]['CURRENTINTERV'] = ($curr_interv) ? $curr_interv[0]['section_value'] : "NA";
+                        $result[$index]['CONTACT'] = ($cps) ? $cps[0]['informants_contact'] : "NA";
                     }
                     else{
-                        $result[$index]['MEDICATIONS'] = ($notes) ? $notes[0]['medication_des'] : "NA";
+                        $result[$index]['MEDICATIONS'] = $medication;
                     }
 
                     $result[$index]['CATEGORY_OF_PATIENTS'] = $category;
@@ -1593,6 +2127,7 @@ class ReportController extends Controller
         $demo = [];
         $age=[];
         $result = [];
+        $cd_array=[];
         if ($request->name) {
             $demo['name_asin_nric'] = $request->name;
         }
@@ -1637,20 +2172,188 @@ class ReportController extends Controller
             $index = 0;
             foreach ($ssh as $k => $v) {
                 $notes = [];
-                $icd = [];
-                $diagnosis = PatientCounsellorClerkingNotes::where('patient_mrn_id', $v['patient_mrn_id'])
-                    ->where('type_diagnosis_id', $request->diagnosis_id)
-                    ->where(DB::raw("(STR_TO_DATE(created_at,'%Y-%m-%d'))"), $v['booking_date'])
-                    ->get()->toArray();
-                if (count($notes) == 0) {
-                    $notes = PsychiatryClerkingNote::where('patient_mrn_id', $v['patient_mrn_id'])
-                        ->where('type_diagnosis_id', $request->diagnosis_id)
-                        ->where(DB::raw("(STR_TO_DATE(created_at,'%Y-%m-%d'))"), $v['booking_date'])
-                        ->get()->toArray();
+                $icd=NULL;
+                $cd_array=[];
+                $count=0;
 
+                $query_diagnosis1 = PatientCounsellorClerkingNotes::where('patient_mrn_id', $v['patient_mrn_id'])
+                ->where('status','=','1');
+
+                    $diagnosis1=$query_diagnosis1->orderBy('id', 'DESC')->first();
+
+                    if($diagnosis1!=NULL){
+                        $diagnosis1_ts=strtotime($diagnosis1['updated_at']);
+                        $cd_array[$count]['updated_at']=$diagnosis1_ts;
+                        $cd_array[$count]['diagnosis_id']=$diagnosis1['diagnosis_id'];
+                        $count++;
+                    }
+                
+                $query_diagnosis2 = PsychiatryClerkingNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                ->where('status','=','1');
+
+
+                        $diagnosis2=$query_diagnosis2->orderBy('id', 'DESC')->first();
+
+                    if($diagnosis2!=NULL){
+                            $diagnosis2_ts=strtotime($diagnosis2['updated_at']);
+                            $cd_array[$count]['updated_at']=$diagnosis2_ts;
+                            $cd_array[$count]['diagnosis_id']=$diagnosis2['diagnosis_id'];
+                            $count++;
+                       }
+
+
+                    $query_diagnosis3 = PsychiatricProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                    ->where('status','=','1');
+       
+
+                            $diagnosis3=$query_diagnosis3->orderBy('id', 'DESC')->first();
+       
+                        if($diagnosis3!=NULL){
+                                $diagnosis3_ts=strtotime($diagnosis3['updated_at']);
+                                $cd_array[$count]['updated_at']=$diagnosis3_ts;
+                                $cd_array[$count]['diagnosis_id']=$diagnosis3['diagnosis'];
+                                $count++;
+                        }
+
+                    $query_diagnosis4 = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                    ->where('status','=','1');
+
+                            $diagnosis4=$query_diagnosis4->orderBy('id', 'DESC')->first();
+                        if($diagnosis4!=NULL){
+                            $diagnosis4_ts=strtotime($diagnosis4['updated_at']);
+                            $cd_array[$count]['updated_at']=$diagnosis4_ts;
+                            $cd_array[$count]['diagnosis_id']=$diagnosis4['diagnosis_type'];
+                            $count++;
+                        }
+
+                        $query_diagnosis5 = SeProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('status','=','1');
+              
+
+                            $diagnosis5=$query_diagnosis5->orderBy('id', 'DESC')->first();
+              
+                                if($diagnosis5!=NULL){
+                                    $diagnosis5_ts=strtotime($diagnosis5['updated_at']);
+                                    $cd_array[$count]['updated_at']=$diagnosis5_ts;
+                                    $cd_array[$count]['diagnosis_id']=$diagnosis5['diagnosis_type'];
+                                    $count++;
+                                }
+
+                        $query_diagnosis6 = PatientIndexForm::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('status','=','1');
+              
+
+                            $diagnosis6=$query_diagnosis6->orderBy('id', 'DESC')->first();
+              
+                                if($diagnosis6!=NULL){
+                                    $diagnosis6_ts=strtotime($diagnosis6['updated_at']);
+                                    $cd_array[$count]['updated_at']=$diagnosis6_ts;
+                                    $cd_array[$count]['diagnosis_id']=$diagnosis6['diagnosis'];
+                                    $count++;
+                                }
+
+                $query_diagnosis7 = CounsellingProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                ->where('status','=','1');
+
+                    $diagnosis7=$query_diagnosis7->orderBy('id', 'DESC')->first();
+
+                    if($diagnosis7!=NULL){
+                        $diagnosis7_ts=strtotime($diagnosis7['updated_at']);
+                        $cd_array[$count]['updated_at']=$diagnosis7_ts;
+                        $cd_array[$count]['diagnosis_id']=$diagnosis7['diagnosis_id'];
+                        $count++;
+                    }
+                
+                $query_diagnosis8 = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                ->where('status','=','1');
+
+                        $diagnosis8=$query_diagnosis8->orderBy('id', 'DESC')->first();
+
+                    if($diagnosis8!=NULL){
+                            $diagnosis8_ts=strtotime($diagnosis8['updated_at']);
+                            $cd_array[$count]['updated_at']=$diagnosis8_ts;
+                            $cd_array[$count]['diagnosis_id']=$diagnosis8['diagnosis_type'];
+                            $count++;
+                       }
+
+
+                    $query_diagnosis9 = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                    ->where('status','=','1');
+       
+
+                            $diagnosis9=$query_diagnosis9->orderBy('id', 'DESC')->first();
+       
+                        if($diagnosis9!=NULL){
+                                $diagnosis9_ts=strtotime($diagnosis9['updated_at']);
+                                $cd_array[$count]['updated_at']=$diagnosis9_ts;
+                                $cd_array[$count]['diagnosis_id']=$diagnosis9['diagnosis_type'];
+                                $count++;
+                        }
+
+                    $query_diagnosis10 = ConsultationDischargeNote::where('patient_id', $v['patient_mrn_id'])
+                    ->where('status','=','1');
+              
+
+                            $diagnosis10=$query_diagnosis10->orderBy('id', 'DESC')->first();
+              
+                        if($diagnosis10!=NULL){
+                            $diagnosis10_ts=strtotime($diagnosis10['updated_at']);
+                            $cd_array[$count]['updated_at']=$diagnosis10_ts;
+                            $cd_array[$count]['diagnosis_id']=$diagnosis10['diagnosis_id'];
+                            $count++;
+                        }
+
+                        $query_diagnosis11 = RehabDischargeNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('status','=','1');
+              
+
+                            $diagnosis11=$query_diagnosis11->orderBy('id', 'DESC')->first();
+              
+                                if($diagnosis11!=NULL){
+                                    $diagnosis11_ts=strtotime($diagnosis11['updated_at']);
+                                    $cd_array[$count]['updated_at']=$diagnosis11_ts;
+                                    $cd_array[$count]['diagnosis_id']=$diagnosis11['diagnosis_id'];
+                                    $count++;
+                                }
+
+                        $query_diagnosis12 = CpsDischargeNote::where('patient_mrn_id', $v['patient_mrn_id'])
+                        ->where('status','=','1');
+
+                            $diagnosis12=$query_diagnosis12->orderBy('id', 'DESC')->first();
+              
+                                if($diagnosis12!=NULL){
+                                    $diagnosis12_ts=strtotime($diagnosis12['updated_at']);
+                                    $cd_array[$count]['updated_at']=$diagnosis12_ts;
+                                    $cd_array[$count]['diagnosis_id']=$diagnosis12['diagnosis'];
+                                    $count++;
+                                }
+                               
+                                    
+                                 
+                if(!empty($cd_array)){
+                                                                        
+                        $Dates = array_map(fn($entry) => $entry['updated_at'], $cd_array);
+                        $array_date=max($Dates); 
+                                 
+                                
+                        foreach ($cd_array as $c => $d){
+                            if($array_date==$d['updated_at']){
+                                $icd=$d['diagnosis_id'];
+                            }
+                        
+                        }
                 }
 
-                $staff = StaffManagement::select('name')->where('id', $v['assign_team'])->get()->toArray();
+                if($request->diagnosis_id!=NULL){
+                    if($icd!=$request->diagnosis_id){
+                        continue;
+                    }
+                }
+                
+                $icd = IcdCode::where('id', $icd)->first();
+
+                $staff = StaffManagement::select('name')->where('id', $v['staff_id'])->get()->toArray();
+                
 
                 $users = DB::table('staff_management')
                 ->select('roles.code')
@@ -1711,8 +2414,8 @@ class ReportController extends Controller
                     $vt = GeneralSetting::where('id', $v['type_visit'])->get()->toArray();
                     $cp = GeneralSetting::where('id', $v['patient_category'])->get()->toArray();
                     
-                    if ($notes)
-                        $icd = IcdCode::where('id', $notes[0]['code_id'])->get()->toArray();
+                        
+
                     $appointment_type = ($apt) ? $apt[0]['service_name'] : 'NA';
                     $visit_type = ($vt) ? $vt[0]['section_value'] : 'NA';
                     $category = ($cp) ? $cp[0]['section_value'] : 'NA';
@@ -1756,7 +2459,7 @@ class ReportController extends Controller
                     $index++;
                 }
             }
-        }
+        } 
         if ($result) {
             $totalReports = count($result);
             $filePath = '';
