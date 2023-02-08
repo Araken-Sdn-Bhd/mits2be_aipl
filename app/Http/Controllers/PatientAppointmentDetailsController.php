@@ -73,6 +73,7 @@ class PatientAppointmentDetailsController extends Controller
 {
     public function store(Request $request)
     {
+        DB::enableQueryLog();
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
             'nric_or_passportno' => 'required|string',
@@ -111,6 +112,8 @@ class PatientAppointmentDetailsController extends Controller
                         ->where('patient_appointment_details.status','=', '1')
                         ->where('patient_appointment_details.assign_team','=', $assign_team)
                         ->get();
+
+            dd(DB::getQueryLog($chkPoint));
 
             if ($chkPoint->count() == 0) {
                 $service = [
@@ -970,7 +973,7 @@ class PatientAppointmentDetailsController extends Controller
                 "patient_index_form.created_at",
                 DB::raw("DATE_FORMAT(patient_index_form.updated_at, '%d-%m-%Y') as updated_at")
 
-                
+
             )
             ->where('patient_index_form.patient_mrn_id', $request->patient_id)
             ->orderBy("patient_index_form.created_at", 'asc')
@@ -991,7 +994,7 @@ class PatientAppointmentDetailsController extends Controller
                 DB::raw("'Psychiatric Progress Note' as section_name"),
                 "psychiatric_progress_note.created_at",
                 DB::raw("DATE_FORMAT(psychiatric_progress_note.updated_at, '%d-%m-%Y') as updated_at")
-                
+
             )
             ->where('psychiatric_progress_note.patient_mrn_id', $request->patient_id)
             ->orderBy('psychiatric_progress_note.created_at', 'asc')
@@ -1710,22 +1713,22 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
-           
+
 
         }
         foreach ($Counsellor_Clerking_Note as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -1733,20 +1736,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($patient_index_form as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -1754,20 +1757,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($psychiatric_progress_note as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -1775,20 +1778,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($cps_progress_note as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -1796,20 +1799,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($se_progress_note as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -1817,20 +1820,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($counselling_progress_note as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -1838,20 +1841,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($etp_progress_note as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -1859,20 +1862,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($job_club_progress_note as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -1880,20 +1883,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($consultation_discharge_note as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -1901,20 +1904,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($rehab_discharge_note as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -1922,20 +1925,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($cps_discharge_note as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -1943,20 +1946,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($cps_homevisit_consent_form as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -1964,20 +1967,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($cps_homevisit_withdrawal_form as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -1985,20 +1988,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($cps_police_referral_form as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2006,20 +2009,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($photography_consent_form as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2027,20 +2030,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($se_consent_form as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2048,20 +2051,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($etp_consent_form as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2069,20 +2072,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($job_club_consent_form as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2090,20 +2093,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($patient_care_paln as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2111,20 +2114,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($job_start_form as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2132,20 +2135,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($job_end_report as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2153,20 +2156,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($job_transition_report as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2174,20 +2177,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($laser_assesmen_form as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2195,20 +2198,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($triage_form as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2216,20 +2219,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($job_interest_checklist as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2237,20 +2240,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($work_analysis_form as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2258,20 +2261,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($list_job_club as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2279,20 +2282,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($list_of_etp as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2300,20 +2303,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($list_of_job_search as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2321,20 +2324,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($log_meeting_with_employer as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2342,20 +2345,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($list_previous_current_job as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2363,20 +2366,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($internal_referral_form as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2384,20 +2387,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($external_referral_form as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2405,20 +2408,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($cps_referral_form as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2426,20 +2429,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($occt_referral_form as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2447,20 +2450,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($psychology_referral as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2468,20 +2471,20 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
         }
         foreach ($rehab_referral_and_clinical_form as $key => $val) {
-        
+
             $startDate = Carbon::today();
             $draft_date = Carbon::today()->subDays(2);
 
@@ -2489,14 +2492,14 @@ class PatientAppointmentDetailsController extends Controller
             $draft = Carbon::parse($draft_date);
 
             if($updated_at->isAfter($draft_date)){
-                $val->flag_status=0; 
+                $val->flag_status=0;
             }else{
                 if($updated_at->equalTo($draft_date)){
-                    $val->flag_status=0; 
+                    $val->flag_status=0;
                 }else{
                     $val->flag_status=1;
                 }
-                
+
             }
 
             $list[] = $val;
@@ -2751,7 +2754,7 @@ class PatientAppointmentDetailsController extends Controller
 
 
                     $list[$key]['city_id'] = $val['city_id'] ??  'NA';
-                     
+
                     if ( $val['city_id'] != null ||  $val['city_id'] != ""){
                         $list[$key]['city_name'] = Postcode::where('id',$val['city_id'])->select('city_name')->first();
                     }else{
@@ -2797,7 +2800,7 @@ class PatientAppointmentDetailsController extends Controller
 
                     $list[$key]['jobs'] = $abArray ??  'NA';
                     $list[$key]['comment'] = $comment_array ??  'NA';
-                   
+
 
                     $list[$key]['jobs_des'] = $jobdes ??  'NA';
                 }
