@@ -353,9 +353,10 @@ class HospitalManagementController extends Controller
 
         $rolelist = DB::table('staff_management')
         ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+        ->select('staff_management.id', 'staff_management.name')
         ->where(function ($query){
-			$query->where('role_name', 'LIKE', "%Medical Officer%")
-                        ->orWhere('role_name', 'LIKE', "%Psychiatrist%");
+			$query->where('role_name', "Medical Officer")
+                        ->orWhere('role_name', "Psychiatrist");
                     })
         ->where('branch_id','=', $list[0]['branch_id'])
         ->get();
