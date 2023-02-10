@@ -754,7 +754,6 @@ class CpsProgressNoteController extends Controller
             } else {
                 if ($request->appId == null || $request->appId == '') {
                     $checkTodayAppointment = PatientAppointmentDetails::where('patient_mrn_id', $request->patient_mrn_id)->whereDate("created_at",'=',date('Y-m-d'))->first();
-                    dd($checkTodayAppointment);
                     if ($checkTodayAppointment) {
                         $request->appId = $checkTodayAppointment->id;
                     } else {
