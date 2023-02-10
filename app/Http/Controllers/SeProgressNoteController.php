@@ -462,7 +462,7 @@ class SeProgressNoteController extends Controller
                 }
             } else {
                 if ($request->appId == null || $request->appId == '') {
-                    $checkTodayAppointment = PatientAppointmentDetails::where('patient_mrn_id', $request->patient_id)->latest("created_at")->first();
+                    $checkTodayAppointment = PatientAppointmentDetails::where('patient_mrn_id', $request->patient_id)->whereDate("created_at",'=',date('Y-m-d'))->first();
                     if ($checkTodayAppointment) {
                         $request->appId = $checkTodayAppointment->id;
                     } else {
