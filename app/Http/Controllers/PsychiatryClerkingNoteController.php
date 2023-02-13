@@ -143,7 +143,7 @@ class PsychiatryClerkingNoteController extends Controller
                     ];
 
                     try {
-                        $HOD = PsychiatryClerkingNote::firstOrCreate($psychiatryclerking);
+                        $HOD = PsychiatryClerkingNote::create($psychiatryclerking);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'psychiatryclerking' => $psychiatryclerking, "code" => 200]);
                     }
@@ -184,7 +184,7 @@ class PsychiatryClerkingNoteController extends Controller
                     ];
 
                     try {
-                        $HOD = PsychiatryClerkingNote::firstOrCreate($psychiatryclerking);
+                        $HOD = PsychiatryClerkingNote::create($psychiatryclerking);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'psychiatryclerking' => $psychiatryclerking, "code" => 200]);
                     }
@@ -291,7 +291,7 @@ class PsychiatryClerkingNoteController extends Controller
                     ];
 
                     try {
-                        $HOD = PsychiatryClerkingNote::firstOrCreate($psychiatryclerking);
+                        $HOD = PsychiatryClerkingNote::create($psychiatryclerking);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'psychiatryclerking' => $psychiatryclerking, "code" => 200]);
                     }
@@ -326,7 +326,7 @@ class PsychiatryClerkingNoteController extends Controller
                     ];
 
                     try {
-                        $HOD = PsychiatryClerkingNote::firstOrCreate($psychiatryclerking);
+                        $HOD = PsychiatryClerkingNote::create($psychiatryclerking);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'psychiatryclerking' => $psychiatryclerking, "code" => 200]);
                     }
@@ -360,7 +360,7 @@ class PsychiatryClerkingNoteController extends Controller
                     ];
 
                     try {
-                        $HOD = PsychiatryClerkingNote::firstOrCreate($psychiatryclerking);
+                        $HOD = PsychiatryClerkingNote::create($psychiatryclerking);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'psychiatryclerking' => $psychiatryclerking, "code" => 200]);
                     }
