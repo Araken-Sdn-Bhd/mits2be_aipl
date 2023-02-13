@@ -20,7 +20,12 @@
                         <br>
                         Thank you.
                         <br>
-                        <img src="{{asset('storage/img/mentari.png')}}" alt="Mentari" title="" style="width:20px; height:auto;">
+                        {{ $data['branch']}}.
+                        <br>
+                        <img src="{{asset('storage/img/mentari.png')}}" alt="" title="" style="width:20px; height:auto;">
+                        <br>
+                        <br>
+                        <div style="color: grey"><small>This is an auto-generated email. Please do not reply to this email.</small></div>
                     </div>
                 </div>
             </div>

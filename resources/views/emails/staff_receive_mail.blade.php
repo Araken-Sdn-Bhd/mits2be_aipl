@@ -26,6 +26,9 @@
                         Thanks,
                         <br>
                         Team Mentari.
+                        <br>
+                        <br>
+                        <div style="color: grey"><small>This is an auto-generated email. Please do not reply to this email.</small></div>
                     </div>
                 </div>
             </div>
