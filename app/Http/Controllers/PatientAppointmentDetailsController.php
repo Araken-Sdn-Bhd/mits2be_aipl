@@ -113,7 +113,6 @@ class PatientAppointmentDetailsController extends Controller
                         ->where('patient_appointment_details.assign_team','=', $assign_team)
                         ->get();
 
-            //dd(DB::getQueryLog($chkPoint));
 
             if ($chkPoint->count() == 0) {
                 $service = [
