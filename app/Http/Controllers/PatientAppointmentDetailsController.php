@@ -105,77 +105,79 @@ class PatientAppointmentDetailsController extends Controller
             $duration = "+" . $request->duration . " minutes";
             $endTime = date("H:i", strtotime($duration, strtotime($booking_time)));
 
-            $chkPoint =  PatientRegistration::join('patient_appointment_details','patient_appointment_details.patient_mrn_id','=','patient_registration.id')
-                        ->where('patient_registration.branch_id', '=', $branch_id)
-                        ->where('patient_appointment_details.booking_date', '=', $booking_date)
-                        ->whereBetween('patient_appointment_details.booking_time', [$booking_time, $endTime])
-                        ->where('patient_appointment_details.status','=', '1')
-                        ->where('patient_appointment_details.assign_team','=', $assign_team)
-                        ->get();
+            $service = [
+                'added_by' => $request->added_by,
+                'nric_or_passportno' => $request->nric_or_passportno,
+                'booking_date' => $request->booking_date,
+                'booking_time' => $request->booking_time,
+                'patient_mrn_id' => $getmnr_id[0],
+                'duration' => $request->duration,
+                'appointment_type' => $request->appointment_type,
+                'type_visit' => $request->type_visit,
+                'patient_category' => $request->patient_category,
+                'assign_team' => $request->assign_team
+            ];
+            $patient = PatientAppointmentDetails::create($service);
+            $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+            // $notifi = [
+            //     'added_by' => $request->added_by,
+            //     'branch_id' => $request->branch_id,
+            //     'role' => 'Admin/Clerk',
+            //     'patient_mrn' =>   $getmnr_id[0],
+            //     'url_route' => "/Modules/Patient/list-of-appointment",
+            //     'created_at' => $date->format('Y-m-d H:i:s'),
+            //     'message' =>  'Request for appointment(s)',
+            // ];
+            // $HOD = Notifications::insert($notifi);
 
+            // EMAIL
+            $app_request = AppointmentRequest::where('nric_or_passportno', $nric_or_passportno)
+                ->select('name', 'email')->get();
 
-            if ($chkPoint->count() == 0) {
-                $service = [
-                    'added_by' => $request->added_by,
-                    'nric_or_passportno' => $request->nric_or_passportno,
-                    'booking_date' => $request->booking_date,
-                    'booking_time' => $request->booking_time,
-                    'patient_mrn_id' => $getmnr_id[0],
-                    'duration' => $request->duration,
-                    'appointment_type' => $request->appointment_type,
-                    'type_visit' => $request->type_visit,
-                    'patient_category' => $request->patient_category,
-                    'assign_team' => $request->assign_team
-                ];
-                $patient = PatientAppointmentDetails::create($service);
-                $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-                // $notifi = [
-                //     'added_by' => $request->added_by,
-                //     'branch_id' => $request->branch_id,
-                //     'role' => 'Admin/Clerk',
-                //     'patient_mrn' =>   $getmnr_id[0],
-                //     'url_route' => "/Modules/Patient/list-of-appointment",
-                //     'created_at' => $date->format('Y-m-d H:i:s'),
-                //     'message' =>  'Request for appointment(s)',
-                // ];
-                // $HOD = Notifications::insert($notifi);
+            $hospital_branch = HospitalBranchManagement::where('id', $request->branch_id)
+                ->select('hospital_branch_name')->get();
+            if ($app_request->count() != 0) {
+                $bookingDate = date('d M Y', strtotime($request->booking_date));
+                $bookingTime = date("h:i A", strtotime($request->booking_time));
+                $data = array(
+                    'name' => $app_request[0]['name'],
+                    'branch' => ucwords(strtolower($hospital_branch[0]['hospital_branch_name'])),
+                    'email' => $app_request[0]['email'],
+                    'date' => $bookingDate,
+                    'time' => $bookingTime,
+                );
 
-                // EMAIL
-                $app_request = AppointmentRequest::where('nric_or_passportno', $nric_or_passportno)
-                    ->select('name', 'email')->get();
+                try {
+                    Mail::to($data['email'])->send(new AppointmentRequestMail($data));
+                } catch (\Exception $err) {
+                    var_dump($err);
 
-                $hospital_branch = HospitalBranchManagement::where('id', $request->branch_id)
-                    ->select('hospital_branch_name')->get();
-                if ($app_request->count() != 0) {
-                    $bookingDate = date('d M Y', strtotime($request->booking_date));
-                    $bookingTime = date("h:i A", strtotime($request->booking_time));
-                    $data = array(
-                        'name' => $app_request[0]['name'],
-                        'branch' => ucwords(strtolower($hospital_branch[0]['hospital_branch_name'])),
-                        'email' => $app_request[0]['email'],
-                        'date' => $bookingDate,
-                        'time' => $bookingTime,
-                    );
-
-                    try {
-                        Mail::to($data['email'])->send(new AppointmentRequestMail($data));
-                    } catch (\Exception $err) {
-                        var_dump($err);
-
-                        return response([
-                            'message' => 'Error In Email Configuration: ' . $err,
-                            'code' => 500
-                        ]);
-                    }
-                };
+                    return response([
+                        'message' => 'Error In Email Configuration: ' . $err,
+                        'code' => 500
+                    ]);
+                }
+            };
 
 
 
-                return response()->json(["message" => "Patient Appointment Created Successfully!", "code" => 200]);
-            } else {
-                return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
-            }
+            return response()->json(["message" => "Patient Appointment Created Successfully!", "code" => 200]);
         }
+
+        //     $chkPoint =  PatientRegistration::join('patient_appointment_details','patient_appointment_details.patient_mrn_id','=','patient_registration.id')
+        //                 ->where('patient_registration.branch_id', '=', $branch_id)
+        //                 ->where('patient_appointment_details.booking_date', '=', $booking_date)
+        //                 ->whereBetween('patient_appointment_details.booking_time', [$booking_time, $endTime])
+        //                 ->where('patient_appointment_details.status','=', '1')
+        //                 ->where('patient_appointment_details.assign_team','=', $assign_team)
+        //                 ->get();
+
+
+        //     if ($chkPoint->count() == 0) {
+        //          else {
+        //         return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
+        //     }
+        // }
     }
 
     public function storeByPID(Request $request)
@@ -352,10 +354,10 @@ class PatientAppointmentDetailsController extends Controller
         $booking_date = $request->booking_date;
         $booking_time = $request->booking_time;
         $assign_team = $request->assign_team;
-        $chkPoint =  PatientAppointmentDetails::where(function ($query) use ($booking_date, $booking_time, $assign_team) {
-            $query->where('booking_date', '=', $booking_date)->where('booking_time', '=', $booking_time)->where('assign_team', '=', $assign_team);
-        })->where('id', '!=', $request->id)->where('status', '1')->get();
-        if ($chkPoint->count() == 0) {
+        // $chkPoint =  PatientAppointmentDetails::where(function ($query) use ($booking_date, $booking_time, $assign_team) {
+        //     $query->where('booking_date', '=', $booking_date)->where('booking_time', '=', $booking_time)->where('assign_team', '=', $assign_team);
+        // })->where('id', '!=', $request->id)->where('status', '1')->get();
+        // if ($chkPoint->count() == 0) {
             PatientAppointmentDetails::where(
                 ['id' => $request->id]
             )->update([
@@ -385,10 +387,11 @@ class PatientAppointmentDetailsController extends Controller
             // $HOD = Notifications::insert($notifi);
             $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
             return response()->json(["message" => "Appointment Updated Successfully!", "code" => 200]);
-        } else {
-            return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
         }
-    }
+        // else {
+        //     return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
+        // }
+    //}
 
     public function remove(Request $request)
     {
