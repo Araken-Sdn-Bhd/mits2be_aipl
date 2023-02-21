@@ -61,7 +61,7 @@ class GeneralSettingController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
         $list = GeneralSetting::select('id', 'section', 'section_value', 'section_order','code', 'status')
-        ->where('section', $request->section)->where('status', '1')->orderBy('section_value', 'asc')->get();
+        ->where('section', $request->section)->where('status', '1')->orderBy('section_order', 'asc')->get();
         return response()->json(["message" => $request->section . " List", 'list' => $list, "code" => 200]);
     }
     public function getListSetting(Request $request)
@@ -79,7 +79,7 @@ class GeneralSettingController extends Controller
 
     public function getSettingById(Request $request)
     {
-        
+
         $validator = Validator::make($request->all(), [
             'setting_id' => 'required|integer'
         ]);
