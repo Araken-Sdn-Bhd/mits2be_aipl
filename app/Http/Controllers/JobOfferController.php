@@ -348,9 +348,29 @@ class JobOfferController extends Controller
     {
         $patient_id = $request->patient_id;
         $patient = PatientRegistration::select('name_asin_nric', 'nric_no', 'passport_no')->where('id', $patient_id)->get();
-        $hospital = HospitalManagement::select('hospital_name')->where('added_by', $request->added_by)->get();
-        $hospitalbranch = HospitalBranchManagement::select('hospital_branch_name')->where('added_by', $request->added_by)->get();
-        $user = User::select('name', 'role')->where('id', $request->added_by)->get();
+        if($request->type=="SEConsentForm") {
+            $view= SEConsentForm::select('*')->where('id', $request->pid)->where('patient_id',$patient_id)->get();
+        }
+        else if($request->type=="ETPConsentForm") {
+            $view= EtpConsentForm::select('*')->where('id', $request->pid)->where('patient_id',$patient_id)->get();
+        }
+        else {
+            $view= JobClubConsentForm::select('*')->where('id', $request->pid)->where('patient_id',$patient_id)->get();
+        }
+
+        // dd($view[0]['added_by']);
+        // dd(count($view));
+        if(count($view)!=0) {
+        $hospital = HospitalManagement::select('hospital_name')->where('added_by', $view[0]['added_by'])->get();
+        $hospitalbranch = HospitalBranchManagement::select('hospital_branch_name')->where('added_by', $view[0]['added_by'])->get();
+        $user = User::select('name', 'role')->where('id', $view[0]['added_by'])->get();
+        }
+        else{
+    $hospital = HospitalManagement::select('hospital_name')->where('added_by', $request->added_by)->get();
+    $hospitalbranch = HospitalBranchManagement::select('hospital_branch_name')->where('added_by', $request->added_by)->get();
+    $user = User::select('name', 'role')->where('id', $request->added_by)->get();
+}
+
          if(!empty($hospital[0])){
             $response = [
                 'patient_name' => $patient[0]['name_asin_nric'],
@@ -420,6 +440,14 @@ class JobOfferController extends Controller
         ]);
         return response()->json(["message" => "Created", "code" => 200]);
     }
+    }
+
+    public function viewSEConsentForm(Request $request)
+    {
+        if($request->id){
+            SEConsentForm::where(['id' => $request->id])->get();
+            return response()->json(["message" => "View SE Consent Form", "code" => 200]);
+        }
     }
 
     public function setCPSReferralForm(Request $request)
