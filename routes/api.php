@@ -93,6 +93,8 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\JobController;
 use App\Http\Controllers\DefaultRoleAccessController;
 use App\Http\Controllers\UserBlockController;
+use App\Http\Controllers\FaqListController;
+use App\Http\Controllers\FaqCategoryController;
 use App\Models\DefaultRoleAccess;
 use GuzzleHttp\Middleware;
 use Illuminate\Support\Facades\Mail;
@@ -802,6 +804,13 @@ Route::group(['prefix' => 'default-role-access'], function () {
     Route::post('/add', [DefaultRoleAccessController::class, 'store']);
     Route::post('/listbyId', [DefaultRoleAccessController::class, 'listbyId']);
     Route::post('/{id}/delete', [DefaultRoleAccessController::class, 'delete']);
+});
+Route::group(['prefix' => 'faqList'], function () {
+    Route::post('/list', [FaqListController::class, 'getFaqList']);
+    Route::post('/listbyId', [FaqListController::class, 'getFaqListbyId']);
+});
+Route::group(['prefix' => 'faqCategory'], function () {
+    Route::post('/faqCategoryList', [FaqCategoryController::class, 'getListCategory']);
 });
 
 
