@@ -1124,6 +1124,7 @@ class VounteerIndividualApplicationFormController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
         VonOrgRepresentativeBackground::where('id', $request->id)->update(['status' => $request->status]);
+        // dd($request->status);
 
         $von_app = VonOrgRepresentativeBackground::where('id', $request->id)
                     ->select('name', 'email', 'branch_id')->get();
@@ -1879,7 +1880,10 @@ class VounteerIndividualApplicationFormController extends Controller
 
         ->leftJoin('von_org_representative_background', 'von_org_representative_background.id', '=', 'von_appointment.parent_section_id')
         ->leftJoin('staff_management','von_appointment.interviewer_id','=','staff_management.id')
-        ->where('von_appointment.status','1');
+        ->where(function ($query) {
+            $query->orWhere('von_appointment.status','1')
+            ->orWhere('von_org_representative_background.status','1');
+        });
      }else{
 
         $record= DB::table('von_appointment')
@@ -1888,8 +1892,11 @@ class VounteerIndividualApplicationFormController extends Controller
         ->leftJoin('von_org_representative_background', 'von_org_representative_background.id', '=', 'von_appointment.parent_section_id')
         ->leftJoin('staff_management','von_appointment.interviewer_id','=','staff_management.id')
         ->where('von_org_representative_background.branch_id',$request->branch_id)
-        ->where('von_appointment.status','1');
-     }
+        ->where(function ($query) {
+            $query->orWhere('von_appointment.status','1')
+            ->orWhere('von_org_representative_background.status','1');
+        });
+    }
      if($request->name != "" || $request->name != null) {
         $record->where('von_appointment.name', 'like', '%'.$request->name.'%');
 

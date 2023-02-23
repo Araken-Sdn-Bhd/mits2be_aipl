@@ -10,6 +10,7 @@ class VonOrgRepresentativeBackground extends Model
     use HasFactory;
     protected $table = 'von_org_representative_background';
     protected $fillable = [
+        'id',
         'added_by',
         'org_background_id',
         'section',
