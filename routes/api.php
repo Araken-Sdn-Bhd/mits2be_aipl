@@ -810,6 +810,7 @@ Route::group(['prefix' => 'faqList'], function () {
     Route::post('/listbyId', [FaqListController::class, 'getFaqListbyId']);
 });
 Route::group(['prefix' => 'faqCategory'], function () {
+    Route::post('/add', [FaqCategoryController::class, 'store']);
     Route::post('/faqCategoryList', [FaqCategoryController::class, 'getListCategory']);
 });
 
