@@ -56,6 +56,7 @@ class PatientRegistrationController extends Controller
             'other_maritalList' => '',
             'other_feeExemptionStatus' => '',
             'other_occupationStatus' => '',
+            'other_education' => '',
 
 
         ]);
@@ -139,7 +140,7 @@ class PatientRegistrationController extends Controller
 
             $validateCitizenship['nric_no'] = 'required|unique:patient_registration';
             $patientregistration['nric_no'] =  $request->nric_no; // the value is still from nric_no1.please refer front end
-            
+
         } elseif ($request->citizentype == 'Foreigner') {
             $validateCitizenship['passport_no'] = 'required|string|unique:patient_registration';
             $validateCitizenship['expiry_date'] = 'required';
@@ -202,7 +203,7 @@ class PatientRegistrationController extends Controller
                     'url_route' => $screen_id['notifi_route']."?id=" . $Patient['id'],
                     'message' =>  'Request for patient screening',
                     'created_at' => $date->format('Y-m-d H:i:s'),
-                    
+
                 ];
                 $HOD = Notifications::insert($notifi);
             }
@@ -237,6 +238,7 @@ class PatientRegistrationController extends Controller
             ->with('fee:section_value,id')
             ->with('accomondation:section_value,id')
             ->with('citizenships:section_value,id')
+            ->with('education:section_value,id')
             ->get();
         $result = [];
         foreach ($list as $key => $val) {
@@ -521,6 +523,7 @@ class PatientRegistrationController extends Controller
             'other_maritalList' => '',
             'other_feeExemptionStatus' => '',
             'other_occupationStatus' => '',
+            'other_education' => '',
 
         ]);
         if ($validator->fails()) {
