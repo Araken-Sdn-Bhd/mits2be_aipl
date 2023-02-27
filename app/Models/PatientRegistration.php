@@ -23,7 +23,7 @@ class PatientRegistration extends Model
         'drug_allergy_description', 'traditional_medication', 'kin_postcode', 'traditional_description',
         'other_allergy', 'other_description', 'status','patient_need_triage_screening','kin_nric_no','sharp','other_race',
         'other_religion','other_accommodation','other_maritalList','other_feeExemptionStatus','other_occupationStatus',
-        'employment_status','household_income',
+        'employment_status','other_education','household_income',
 
     ];
 
@@ -86,6 +86,10 @@ class PatientRegistration extends Model
     public function accomondation()
     {
         return $this->hasMany(GeneralSetting::class, "id", "accomodation_id");
+    }
+    public function education()
+    {
+        return $this->hasMany(GeneralSetting::class, "id", "education-level");
     }
 
 }
