@@ -307,7 +307,7 @@ class CpsProgressNoteController extends Controller
                     ];
 
                     try {
-                        $HOD = CpsProgressNote::firstOrCreate($cpsprogressnote);
+                        $HOD = CpsProgressNote::create($cpsprogressnote);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $cpsprogressnote, "code" => 200]);
                     }
@@ -397,7 +397,7 @@ class CpsProgressNoteController extends Controller
                     ];
 
                     try {
-                        $HOD = CpsProgressNote::firstOrCreate($CpsProgress);
+                        $HOD = CpsProgressNote::create($CpsProgress);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $CpsProgress, "code" => 200]);
                     }
@@ -487,7 +487,7 @@ class CpsProgressNoteController extends Controller
                     ];
 
                     try {
-                        $HOD = CpsProgressNote::firstOrCreate($CpsProgress);
+                        $HOD = CpsProgressNote::create($CpsProgress);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $CpsProgress, "code" => 200]);
                     }
@@ -923,7 +923,7 @@ class CpsProgressNoteController extends Controller
                     ];
 
                     try {
-                        $HOD = CpsProgressNote::firstOrCreate($cpsprogressnote);
+                        $HOD = CpsProgressNote::create($cpsprogressnote);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $cpsprogressnote, "code" => 200]);
                     }
@@ -1005,7 +1005,7 @@ class CpsProgressNoteController extends Controller
                     ];
 
                     try {
-                        $HOD = CpsProgressNote::firstOrCreate($CpsProgress);
+                        $HOD = CpsProgressNote::create($CpsProgress);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $CpsProgress, "code" => 200]);
                     }
@@ -1087,7 +1087,7 @@ class CpsProgressNoteController extends Controller
                     ];
 
                     try {
-                        $HOD = CpsProgressNote::firstOrCreate($CpsProgress);
+                        $HOD = CpsProgressNote::create($CpsProgress);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $CpsProgress, "code" => 200]);
                     }
@@ -1168,7 +1168,7 @@ class CpsProgressNoteController extends Controller
                     ];
 
                     try {
-                        $HOD = CpsProgressNote::firstOrCreate($CpsProgress);
+                        $HOD = CpsProgressNote::create($CpsProgress);
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $CpsProgress, "code" => 200]);
                     }
