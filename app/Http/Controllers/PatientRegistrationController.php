@@ -124,6 +124,8 @@ class PatientRegistrationController extends Controller
             'other_accommodation' => $request->other_accommodation,
             'other_feeExemptionStatus' => $request->other_feeExemptionStatus,
             'other_occupationStatus' => $request->other_occupationStatus,
+            'other_maritalList' => $request->other_maritalList,
+            'other_education' => $request->other_education,
         ];
 
 
@@ -583,6 +585,8 @@ class PatientRegistrationController extends Controller
             'other_accommodation' => $request->other_accommodation,
             'other_feeExemptionStatus' => $request->other_feeExemptionStatus,
             'other_occupationStatus' => $request->other_occupationStatus,
+            'other_maritalList' => $request->other_maritalList,
+            'other_education' => $request->other_education,
 
         ];
 
