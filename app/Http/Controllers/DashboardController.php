@@ -119,18 +119,20 @@ class DashboardController extends Controller
             ->Where("branch_id", '=', $request->branch)->get();
         $today_appointment = $query->count();
 
+        $list = StaffManagement::select("team_id", 'id')->Where("email", '=', $request->email)->get();
+
         $personal_task = 0;
         $query2 = DB::table('von_appointment as v')
             ->select('v.id')
             ->leftjoin('staff_management as s', function ($join) {
                 $join->on('v.interviewer_id', '=', 's.id');
             })
+            ->where('v.interviewer_id', '=', $list[0]['id'])
             ->Where("booking_date", '=', date('Y-m-d'))->get();
         $personal_task = $query2->count();
 
         ////team task////
         $team_task = 0;
-        $list = StaffManagement::select("team_id")->Where("email", '=', $request->email)->get();
 
         if($list[0]['team_id']==1){
 
@@ -145,7 +147,7 @@ class DashboardController extends Controller
             $team_task = $query->count();
 
         }else if($list[0]['team_id']==2 || $list[0]['team_id']==3 || $list[0]['team_id']==4 || $list[0]['team_id']==5){
-            
+
             $query1 = DB::table('patient_care_paln as p')
             ->select('p.id')
             ->leftjoin('patient_registration as r', function ($join) {
@@ -213,8 +215,8 @@ class DashboardController extends Controller
             ->Where("p.next_review_date", '=', date('Y-m-d'))->get();
             $team_task = $query->count();
 
-        }       
-        
+        }
+
 ////Announcement////
 
         $date = date('Y-m-d');
@@ -330,10 +332,10 @@ class DashboardController extends Controller
              ->Where("r.branch_id", '=', $request->branch)
              ->Where("p.status", '=', '0')
              ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-             
+
             $cd  = json_decode(json_encode($draft1), true);
 
-                       
+
 
         if($cd){
             foreach($cd as $dr => $d) {
@@ -356,7 +358,7 @@ class DashboardController extends Controller
          ->Where("r.branch_id", '=', $request->branch)
          ->Where("p.status", '=', '0')
          ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-         
+
         $cd2  = json_decode(json_encode($draft2), true);
 
     if($cd2){
@@ -366,7 +368,7 @@ class DashboardController extends Controller
             $draft_array[$index]['updated_at']=$d['updated_at'];
             $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
             $index++;
-    
+
         }
     }
 
@@ -381,10 +383,10 @@ class DashboardController extends Controller
              ->Where("r.branch_id", '=', $request->branch)
              ->Where("p.status", '=', '0')
              ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-             
+
             $cd3  = json_decode(json_encode($draft3), true);
-   
-    
+
+
         if($cd3){
             foreach($cd3 as $dr => $d) {
                 $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -392,7 +394,7 @@ class DashboardController extends Controller
                 $draft_array[$index]['updated_at']=$d['updated_at'];
                 $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                 $index++;
-        
+
             }
         }
 
@@ -407,10 +409,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd4  = json_decode(json_encode($draft4), true);
-            
-                        
+
+
                 if($cd4){
                     foreach($cd4 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -418,7 +420,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -433,10 +435,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
- 
+
                                     $cd5  = json_decode(json_encode($draft5), true);
-                            
-                                                        
+
+
                                 if($cd5){
                                     foreach($cd5 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -444,7 +446,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -459,10 +461,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd6  = json_decode(json_encode($draft6), true);
-            
-                        
+
+
                 if($cd6){
                     foreach($cd6 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -470,7 +472,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -485,10 +487,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd7  = json_decode(json_encode($draft7), true);
-                            
-                                                        
+
+
                                 if($cd7){
                                     foreach($cd7 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -496,7 +498,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -511,10 +513,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd8  = json_decode(json_encode($draft8), true);
-            
-                        
+
+
                 if($cd8){
                     foreach($cd8 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -522,7 +524,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -537,10 +539,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd9  = json_decode(json_encode($draft9), true);
-                            
-                                                        
+
+
                                 if($cd9){
                                     foreach($cd9 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -548,7 +550,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -563,10 +565,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd10  = json_decode(json_encode($draft10), true);
-            
-                        
+
+
                 if($cd10){
                     foreach($cd10 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -574,7 +576,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -589,10 +591,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd11  = json_decode(json_encode($draft11), true);
-                            
-                                                        
+
+
                                 if($cd11){
                                     foreach($cd11 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -600,7 +602,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -615,10 +617,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd12  = json_decode(json_encode($draft4), true);
-            
-                        
+
+
                 if($cd12){
                     foreach($cd12 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -626,7 +628,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -641,10 +643,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd13  = json_decode(json_encode($draft13), true);
-                            
-                                                        
+
+
                                 if($cd13){
                                     foreach($cd13 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -652,7 +654,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -667,10 +669,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd14  = json_decode(json_encode($draft14), true);
-            
-                        
+
+
                 if($cd14){
                     foreach($cd14 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -678,7 +680,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -693,10 +695,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd15  = json_decode(json_encode($draft15), true);
-                            
-                                                        
+
+
                                 if($cd15){
                                     foreach($cd15 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -704,7 +706,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -719,10 +721,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd16  = json_decode(json_encode($draft16), true);
-            
-                        
+
+
                 if($cd16){
                     foreach($cd16 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -730,7 +732,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -745,10 +747,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd17  = json_decode(json_encode($draft17), true);
-                            
-                                                        
+
+
                                 if($cd17){
                                     foreach($cd17 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -756,7 +758,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -771,11 +773,11 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd18  = json_decode(json_encode($draft18), true);
-            
-                    
-                        
+
+
+
                 if($cd18){
                     foreach($cd18 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -783,7 +785,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -798,11 +800,11 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd19  = json_decode(json_encode($draft19), true);
-                            
-                                    
-                                                        
+
+
+
                                 if($cd19){
                                     foreach($cd19 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -810,7 +812,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -825,10 +827,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd20  = json_decode(json_encode($draft20), true);
-            
-            
+
+
                 if($cd20){
                     foreach($cd20 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -836,7 +838,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -851,10 +853,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
-                                    $cd21  = json_decode(json_encode($draft21), true);                            
-                                    
-                                                        
+
+                                    $cd21  = json_decode(json_encode($draft21), true);
+
+
                                 if($cd21){
                                     foreach($cd21 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -862,7 +864,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -877,10 +879,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd22  = json_decode(json_encode($draft22), true);
-            
-            
+
+
                 if($cd22){
                     foreach($cd22 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -888,7 +890,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -903,10 +905,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd23  = json_decode(json_encode($draft23), true);
-                                                             
-                                                        
+
+
                                 if($cd23){
                                     foreach($cd23 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -914,7 +916,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -929,10 +931,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd24  = json_decode(json_encode($draft24), true);
-                               
-                        
+
+
                 if($cd24){
                     foreach($cd24 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -940,7 +942,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -955,11 +957,11 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd25  = json_decode(json_encode($draft25), true);
-                                                              
-                            
-                            
+
+
+
                                 if($cd25){
                                     foreach($cd25 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -967,7 +969,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -982,10 +984,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd26  = json_decode(json_encode($draft26), true);
-                                           
-            
+
+
                 if($cd26){
                     foreach($cd26 as $dr => $d) {
 
@@ -994,7 +996,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -1002,7 +1004,7 @@ class DashboardController extends Controller
                     array_reverse($draft_array),
                     null,
                     'patient_id'
-                )));                             
+                )));
 
 
         return response()->json([
@@ -1176,7 +1178,7 @@ class DashboardController extends Controller
                                             ->where('srfs.hospital_mgmt', '!=', "")
                                             ->where('patient_registration.status', '=', '1')
                                             ->groupby('patient_registration.id');
-                                            
+
         $shharpcaseSQL = PatientRegistration::distinct()
                                             ->select('patient_registration.id', 'patient_registration.race_id', 'patient_registration.age', 'patient_registration.sex', 'patient_registration.religion_id', 'patient_registration.marital_id', 'patient_registration.education_level', 'patient_registration.occupation_status', DB::raw('count(distinct patient_registration.id) as Sharptotal'))
                                             ->join('sharp_registraion_final_step as srfs',function($join) {
@@ -1185,9 +1187,9 @@ class DashboardController extends Controller
                                             ->where('srfs.status', '=', '1')
                                             ->where('srfs.hospital_mgmt', '!=', "")
                                             ->where('patient_registration.status', '=', '1');
-                                            
 
-        
+
+
         if ($request->sharpyear != 0) {
             $ShharpOverall->whereYear('srfs.created_at', $request->sharpyear);
             $shharpcaseSQL->whereYear('srfs.created_at', $request->sharpyear);
@@ -1387,7 +1389,7 @@ class DashboardController extends Controller
                 FROM {$value['tab']} cpn
                 JOIN icd_code ic on ic.id = cpn.{$value['col']}
                 JOIN icd_category icdcat on icdcat.id = ic.icd_category_id ";
-                
+
                 if($request->scryear != 0){
                     $qry .= " AND YEAR(cpn.{$value['created_at']}) = $request->scryear";
                 }
@@ -1523,6 +1525,7 @@ class DashboardController extends Controller
             ->Where("branch_id", '=', $request->branch)->get();
         $today_appointment = $query->count();
 
+        $list = StaffManagement::select("team_id", "id")->Where("email", '=', $request->email)->get();
 
         $personal_task = 0;
         $query2 = DB::table('von_appointment as v')
@@ -1530,12 +1533,12 @@ class DashboardController extends Controller
             ->leftjoin('staff_management as s', function ($join) {
                 $join->on('v.interviewer_id', '=', 's.id');
             })
+            ->where('v.interviewer_id', '=', $list[0]['id'])
             ->Where("booking_date", '=', date('Y-m-d'))->get();
         $personal_task = $query2->count();
 
 
         $team_task = 0;
-        $list = StaffManagement::select("team_id")->Where("email", '=', $request->email)->get();
 
         $query3 = DB::table('patient_care_paln as p')
             ->select('p.id')
@@ -1668,10 +1671,10 @@ class DashboardController extends Controller
              ->Where("r.branch_id", '=', $request->branch)
              ->Where("p.status", '=', '0')
              ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-             
+
             $cd  = json_decode(json_encode($draft1), true);
 
-                       
+
 
         if($cd){
             foreach($cd as $dr => $d) {
@@ -1694,7 +1697,7 @@ class DashboardController extends Controller
          ->Where("r.branch_id", '=', $request->branch)
          ->Where("p.status", '=', '0')
          ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-         
+
         $cd2  = json_decode(json_encode($draft2), true);
 
     if($cd2){
@@ -1704,7 +1707,7 @@ class DashboardController extends Controller
             $draft_array[$index]['updated_at']=$d['updated_at'];
             $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
             $index++;
-    
+
         }
     }
 
@@ -1719,10 +1722,10 @@ class DashboardController extends Controller
              ->Where("r.branch_id", '=', $request->branch)
              ->Where("p.status", '=', '0')
              ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-             
+
             $cd3  = json_decode(json_encode($draft3), true);
-   
-    
+
+
         if($cd3){
             foreach($cd3 as $dr => $d) {
                 $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -1730,7 +1733,7 @@ class DashboardController extends Controller
                 $draft_array[$index]['updated_at']=$d['updated_at'];
                 $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                 $index++;
-        
+
             }
         }
 
@@ -1745,10 +1748,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd4  = json_decode(json_encode($draft4), true);
-            
-                        
+
+
                 if($cd4){
                     foreach($cd4 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -1756,7 +1759,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -1771,10 +1774,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
- 
+
                                     $cd5  = json_decode(json_encode($draft5), true);
-                            
-                                                        
+
+
                                 if($cd5){
                                     foreach($cd5 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -1782,7 +1785,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -1797,10 +1800,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd6  = json_decode(json_encode($draft6), true);
-            
-                        
+
+
                 if($cd6){
                     foreach($cd6 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -1808,7 +1811,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -1823,10 +1826,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd7  = json_decode(json_encode($draft7), true);
-                            
-                                                        
+
+
                                 if($cd7){
                                     foreach($cd7 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -1834,7 +1837,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -1849,10 +1852,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd8  = json_decode(json_encode($draft8), true);
-            
-                        
+
+
                 if($cd8){
                     foreach($cd8 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -1860,7 +1863,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -1875,10 +1878,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd9  = json_decode(json_encode($draft9), true);
-                            
-                                                        
+
+
                                 if($cd9){
                                     foreach($cd9 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -1886,7 +1889,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -1901,10 +1904,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd10  = json_decode(json_encode($draft10), true);
-            
-                        
+
+
                 if($cd10){
                     foreach($cd10 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -1912,7 +1915,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -1927,10 +1930,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd11  = json_decode(json_encode($draft11), true);
-                            
-                                                        
+
+
                                 if($cd11){
                                     foreach($cd11 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -1938,7 +1941,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -1953,10 +1956,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd12  = json_decode(json_encode($draft4), true);
-            
-                        
+
+
                 if($cd12){
                     foreach($cd12 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -1964,7 +1967,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -1979,10 +1982,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd13  = json_decode(json_encode($draft13), true);
-                            
-                                                        
+
+
                                 if($cd13){
                                     foreach($cd13 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -1990,7 +1993,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -2005,10 +2008,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd14  = json_decode(json_encode($draft14), true);
-            
-                        
+
+
                 if($cd14){
                     foreach($cd14 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -2016,7 +2019,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -2031,10 +2034,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd15  = json_decode(json_encode($draft15), true);
-                            
-                                                        
+
+
                                 if($cd15){
                                     foreach($cd15 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -2042,7 +2045,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -2057,10 +2060,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd16  = json_decode(json_encode($draft16), true);
-            
-                        
+
+
                 if($cd16){
                     foreach($cd16 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -2068,7 +2071,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -2083,10 +2086,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd17  = json_decode(json_encode($draft17), true);
-                            
-                                                        
+
+
                                 if($cd17){
                                     foreach($cd17 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -2094,7 +2097,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -2109,11 +2112,11 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd18  = json_decode(json_encode($draft18), true);
-            
-                    
-                        
+
+
+
                 if($cd18){
                     foreach($cd18 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -2121,7 +2124,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -2136,11 +2139,11 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd19  = json_decode(json_encode($draft19), true);
-                            
-                                    
-                                                        
+
+
+
                                 if($cd19){
                                     foreach($cd19 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -2148,7 +2151,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -2163,10 +2166,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd20  = json_decode(json_encode($draft20), true);
-            
-            
+
+
                 if($cd20){
                     foreach($cd20 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -2174,7 +2177,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -2189,10 +2192,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
-                                    $cd21  = json_decode(json_encode($draft21), true);                            
-                                    
-                                                        
+
+                                    $cd21  = json_decode(json_encode($draft21), true);
+
+
                                 if($cd21){
                                     foreach($cd21 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -2200,7 +2203,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -2215,10 +2218,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd22  = json_decode(json_encode($draft22), true);
-            
-            
+
+
                 if($cd22){
                     foreach($cd22 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -2226,7 +2229,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -2241,10 +2244,10 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd23  = json_decode(json_encode($draft23), true);
-                                                             
-                                                        
+
+
                                 if($cd23){
                                     foreach($cd23 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -2252,7 +2255,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -2267,10 +2270,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd24  = json_decode(json_encode($draft24), true);
-                               
-                        
+
+
                 if($cd24){
                     foreach($cd24 as $dr => $d) {
                         $draft_array[$index]['patient_id']=$d['patient_mrn_id'] ??= $d;
@@ -2278,7 +2281,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -2293,11 +2296,11 @@ class DashboardController extends Controller
                                      ->Where("r.branch_id", '=', $request->branch)
                                      ->Where("p.status", '=', '0')
                                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                                     
+
                                     $cd25  = json_decode(json_encode($draft25), true);
-                                                              
-                            
-                            
+
+
+
                                 if($cd25){
                                     foreach($cd25 as $dr => $d) {
                                         $draft_array[$index]['patient_id']=$d['patient_id'] ??= $d;
@@ -2305,7 +2308,7 @@ class DashboardController extends Controller
                                         $draft_array[$index]['updated_at']=$d['updated_at'];
                                         $draft_array[$index]['route']=$route.'?id='.$d['patient_id'].'&appId='.$d['appointment_details_id'];
                                         $index++;
-                                
+
                                     }
                                 }
 
@@ -2320,10 +2323,10 @@ class DashboardController extends Controller
                      ->Where("r.branch_id", '=', $request->branch)
                      ->Where("p.status", '=', '0')
                      ->Where("p.updated_at", '<', $dateDraft)->get()->toArray();
-                     
+
                     $cd26  = json_decode(json_encode($draft26), true);
-                                           
-            
+
+
                 if($cd26){
                     foreach($cd26 as $dr => $d) {
 
@@ -2332,7 +2335,7 @@ class DashboardController extends Controller
                         $draft_array[$index]['updated_at']=$d['updated_at'];
                         $draft_array[$index]['route']=$route.'?id='.$d['patient_mrn_id'].'&appId='.$d['appointment_details_id'];
                         $index++;
-                
+
                     }
                 }
 
@@ -2340,7 +2343,7 @@ class DashboardController extends Controller
                     array_reverse($draft_array),
                     null,
                     'patient_id'
-                )));                             
+                )));
 
 
         return response()->json([
