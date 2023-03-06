@@ -89,7 +89,7 @@ class PatientRegistration extends Model
     }
     public function education()
     {
-        return $this->hasMany(GeneralSetting::class, "id", "education-level");
+        return $this->hasMany(GeneralSetting::class, "id", "education_level");
     }
 
 }

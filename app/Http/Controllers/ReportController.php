@@ -163,7 +163,7 @@ class ReportController extends Controller
                 $response  = json_decode(json_encode($run_query), true);
 
                 $icd=NULL;
-                $icd_array=[];
+                $cd_array=[];
                 $count=0;
 
 
@@ -182,71 +182,153 @@ class ReportController extends Controller
 
                     $diagnosis1=$query_diagnosis1->orderBy('id', 'DESC')->first();
 
+                    if($diagnosis1!=NULL){
+                        $diagnosis1_ts=strtotime($diagnosis1['updated_at']);
+                        $cd_array[$count]['updated_at']=$diagnosis1_ts;
+                        $cd_array[$count]['diagnosis_id']=$diagnosis1['diagnosis_id'];
+                        $count++;
+                    }
                 
                 $query_diagnosis2 = PsychiatryClerkingNote::where('patient_mrn_id', $v['patient_id'])
                 ->where('status','=','1');
 
+
                         $diagnosis2=$query_diagnosis2->orderBy('id', 'DESC')->first();
+
+                    if($diagnosis2!=NULL){
+                            $diagnosis2_ts=strtotime($diagnosis2['updated_at']);
+                            $cd_array[$count]['updated_at']=$diagnosis2_ts;
+                            $cd_array[$count]['diagnosis_id']=$diagnosis2['diagnosis_id'];
+                            $count++;
+                       }
 
 
                     $query_diagnosis3 = PsychiatricProgressNote::where('patient_mrn_id', $v['patient_id'])
                     ->where('status','=','1');
+       
 
                             $diagnosis3=$query_diagnosis3->orderBy('id', 'DESC')->first();
-
+       
+                        if($diagnosis3!=NULL){
+                                $diagnosis3_ts=strtotime($diagnosis3['updated_at']);
+                                $cd_array[$count]['updated_at']=$diagnosis3_ts;
+                                $cd_array[$count]['diagnosis_id']=$diagnosis3['diagnosis'];
+                                $count++;
+                        }
 
                     $query_diagnosis4 = CpsProgressNote::where('patient_mrn_id', $v['patient_id'])
                     ->where('status','=','1');
-              
-                            $diagnosis4=$query_diagnosis4->orderBy('id', 'DESC')->first();
-              
 
+                            $diagnosis4=$query_diagnosis4->orderBy('id', 'DESC')->first();
+                        if($diagnosis4!=NULL){
+                            $diagnosis4_ts=strtotime($diagnosis4['updated_at']);
+                            $cd_array[$count]['updated_at']=$diagnosis4_ts;
+                            $cd_array[$count]['diagnosis_id']=$diagnosis4['diagnosis_type'];
+                            $count++;
+                        }
 
                         $query_diagnosis5 = SeProgressNote::where('patient_mrn_id', $v['patient_id'])
                         ->where('status','=','1');
               
+
                             $diagnosis5=$query_diagnosis5->orderBy('id', 'DESC')->first();
               
+                                if($diagnosis5!=NULL){
+                                    $diagnosis5_ts=strtotime($diagnosis5['updated_at']);
+                                    $cd_array[$count]['updated_at']=$diagnosis5_ts;
+                                    $cd_array[$count]['diagnosis_id']=$diagnosis5['diagnosis_type'];
+                                    $count++;
+                                }
 
                         $query_diagnosis6 = PatientIndexForm::where('patient_mrn_id', $v['patient_id'])
                         ->where('status','=','1');
               
+
                             $diagnosis6=$query_diagnosis6->orderBy('id', 'DESC')->first();
               
+                                if($diagnosis6!=NULL){
+                                    $diagnosis6_ts=strtotime($diagnosis6['updated_at']);
+                                    $cd_array[$count]['updated_at']=$diagnosis6_ts;
+                                    $cd_array[$count]['diagnosis_id']=$diagnosis6['diagnosis'];
+                                    $count++;
+                                }
 
                 $query_diagnosis7 = CounsellingProgressNote::where('patient_mrn_id', $v['patient_id'])
                 ->where('status','=','1');
 
                     $diagnosis7=$query_diagnosis7->orderBy('id', 'DESC')->first();
 
+                    if($diagnosis7!=NULL){
+                        $diagnosis7_ts=strtotime($diagnosis7['updated_at']);
+                        $cd_array[$count]['updated_at']=$diagnosis7_ts;
+                        $cd_array[$count]['diagnosis_id']=$diagnosis7['diagnosis_id'];
+                        $count++;
+                    }
                 
                 $query_diagnosis8 = EtpProgressNote::where('patient_mrn_id', $v['patient_id'])
                 ->where('status','=','1');
 
                         $diagnosis8=$query_diagnosis8->orderBy('id', 'DESC')->first();
 
+                    if($diagnosis8!=NULL){
+                            $diagnosis8_ts=strtotime($diagnosis8['updated_at']);
+                            $cd_array[$count]['updated_at']=$diagnosis8_ts;
+                            $cd_array[$count]['diagnosis_id']=$diagnosis8['diagnosis_type'];
+                            $count++;
+                       }
+
 
                     $query_diagnosis9 = JobClubProgressNote::where('patient_mrn_id', $v['patient_id'])
                     ->where('status','=','1');
+       
 
                             $diagnosis9=$query_diagnosis9->orderBy('id', 'DESC')->first();
        
+                        if($diagnosis9!=NULL){
+                                $diagnosis9_ts=strtotime($diagnosis9['updated_at']);
+                                $cd_array[$count]['updated_at']=$diagnosis9_ts;
+                                $cd_array[$count]['diagnosis_id']=$diagnosis9['diagnosis_type'];
+                                $count++;
+                        }
+
                     $query_diagnosis10 = ConsultationDischargeNote::where('patient_id', $v['patient_id'])
                     ->where('status','=','1');
               
+
                             $diagnosis10=$query_diagnosis10->orderBy('id', 'DESC')->first();
               
+                        if($diagnosis10!=NULL){
+                            $diagnosis10_ts=strtotime($diagnosis10['updated_at']);
+                            $cd_array[$count]['updated_at']=$diagnosis10_ts;
+                            $cd_array[$count]['diagnosis_id']=$diagnosis10['diagnosis_id'];
+                            $count++;
+                        }
+
                         $query_diagnosis11 = RehabDischargeNote::where('patient_mrn_id', $v['patient_id'])
                         ->where('status','=','1');
-                            
-                        $diagnosis11=$query_diagnosis11->orderBy('id', 'DESC')->first();
               
+
+                            $diagnosis11=$query_diagnosis11->orderBy('id', 'DESC')->first();
+              
+                                if($diagnosis11!=NULL){
+                                    $diagnosis11_ts=strtotime($diagnosis11['updated_at']);
+                                    $cd_array[$count]['updated_at']=$diagnosis11_ts;
+                                    $cd_array[$count]['diagnosis_id']=$diagnosis11['diagnosis_id'];
+                                    $count++;
+                                }
 
                         $query_diagnosis12 = CpsDischargeNote::where('patient_mrn_id', $v['patient_id'])
                         ->where('status','=','1');
-              
+
                             $diagnosis12=$query_diagnosis12->orderBy('id', 'DESC')->first();
-                                
+              
+                                if($diagnosis12!=NULL){
+                                    $diagnosis12_ts=strtotime($diagnosis12['updated_at']);
+                                    $cd_array[$count]['updated_at']=$diagnosis12_ts;
+                                    $cd_array[$count]['diagnosis_id']=$diagnosis12['diagnosis'];
+                                    $count++;
+                                }
+              
 
                         if(!empty($cd_array)){
                                                                       
@@ -264,8 +346,8 @@ class ReportController extends Controller
                         
                         }
                         
-                        if($request->diagnosis_id!=NULL){
-                            if($icd!=$request->diagnosis_id){
+                        if($request->diagnosis!=NULL){
+                            if($icd!=$request->diagnosis){
                                 continue;
                             }
                         }
@@ -977,7 +1059,7 @@ class ReportController extends Controller
                         
 
                     if (isset($request->report_type) && $request->report_type == 'excel') {
-                        $filename = 'SharpReport-'.time().'.xls';
+                        $filename = 'ShharpReport-'.time().'.xls';
                         
                         $totalReports= $index;
 
@@ -1351,8 +1433,8 @@ class ReportController extends Controller
                                     $diagnosis2_ts=strtotime($diagnosis2['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis2_ts;
                                     $cd_array[$count]['diagnosis_id']=$diagnosis2['diagnosis'];
-                                    $cd_array[$count]['procedure']=$diagnosis1['category_of_services'];
-                                    $cd_array[$count]['medication']=$diagnosis1['medication'];
+                                    $cd_array[$count]['procedure']=$diagnosis2['category_of_services'];
+                                    $cd_array[$count]['medication']=$diagnosis2['medication'];
                                     $count++;
                                 }
 
@@ -1364,8 +1446,8 @@ class ReportController extends Controller
                                     $diagnosis3_ts=strtotime($diagnosis3['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis3_ts;
                                     $cd_array[$count]['diagnosis_id']=$diagnosis3['diagnosis_id'];
-                                    $cd_array[$count]['procedure']=$diagnosis1['service_category'];
-                                    $cd_array[$count]['medication']=$diagnosis1['medication'];
+                                    $cd_array[$count]['procedure']=$diagnosis3['service_category'];
+                                    $cd_array[$count]['medication']=$diagnosis3['medication'];
                                     $count++;
                                 }
 
@@ -1489,8 +1571,8 @@ class ReportController extends Controller
                                 $diagnosis2_ts=strtotime($diagnosis2['updated_at']);
                                 $cd_array[$count]['updated_at']=$diagnosis2_ts;
                                 $cd_array[$count]['diagnosis_id']=$diagnosis2['diagnosis_type'];
-                                $cd_array[$count]['procedure']=$diagnosis1['service_category'];
-                                $cd_array[$count]['medication']=$diagnosis1['medication'];
+                                $cd_array[$count]['procedure']=$diagnosis2['service_category'];
+                                $cd_array[$count]['medication']=$diagnosis2['medication'];
                                 
                                 $count++;
                         }
@@ -1503,8 +1585,8 @@ class ReportController extends Controller
                                     $diagnosis3_ts=strtotime($diagnosis3['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis3_ts;
                                     $cd_array[$count]['diagnosis_id']=$diagnosis3['diagnosis_id'];
-                                    $cd_array[$count]['procedure']=$diagnosis1['service_category'];
-                                    $cd_array[$count]['medication']=$diagnosis1['medication'];
+                                    $cd_array[$count]['procedure']=$diagnosis3['service_category'];
+                                    $cd_array[$count]['medication']=$diagnosis3['medication'];
                                     $count++;
                                 }
                                 if($request->diagnosis_id){
@@ -2482,6 +2564,7 @@ class ReportController extends Controller
 
     public function getKPIReport(Request $request)
     {
+        
         $month = ['January' => 1, 'February' => 2, 'March' => 3, 'April' => 4, 'May' => 5, 'June' => 6, 'July' => 7,
         'August' => 8, 'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12];
         $year=$request->year;
@@ -2499,7 +2582,6 @@ class ReportController extends Controller
 
             }
         }
-
         $users = DB::table('staff_management')
             ->select('roles.code')
             ->join('roles', 'staff_management.role_id', '=', 'roles.id')
@@ -2507,41 +2589,38 @@ class ReportController extends Controller
             ->first();
             $users2  = json_decode(json_encode($users), true);
         $index=0;
+        
         if($users2['code']=='superadmin'){
-            if($request->hospital!=NULL){
-                    if($request->state!=NULL){
-                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->where('branch_state','=', $request->state)
-                        ->where('branch_state','=', $request->state)->get()->toArray();
-                    }else{
-                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->get()->toArray();
-                    }   
-            } else{
-                    if($request->state!=NULL){
-                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->where('branch_state','=', $request->state)->get()->toArray();
-                    }else{
-                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->get()->toArray();
-                    }              
+            if($request->hospital!=NULL){  
+                        $branchName=HospitalBranchManagement::where('id', '=', $request->hospital)->get()->toArray();
+
+            } else if($request->state!=NULL){
+                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')
+                        ->where('branch_state','=', $request->state)->get()->toArray();                   
+            }else{
+                $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->get()->toArray();
             }
 
-        }else{
+        }else{ 
             $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->where('id',$request->branch_id)->get()->toArray();
         }
-
+        
         $totalBranch=count($branchName);
 
         foreach($branchName as $v =>$val){
 
         for ($m=$fromMonth; $m<=$toMonth; $m++){
-           
+
             $a1 = DB::table('job_start_form as jsf')
-            ->select('jsf.id')
+            ->select('jsf.id','jsf.patient_id')
             ->join('patient_registration as p', function($join) {
                 $join->on('jsf.patient_id', '=', 'p.id');
             })
-            ->whereYear('jsf.created_at', '=', $request->year)     
-            ->whereMonth('jsf.created_at', '=', $m)
+            ->whereYear('jsf.updated_at', '=', $request->year)     
+            ->whereMonth('jsf.updated_at', '=', $m)
             ->where('jsf.status', '=', '1')
-            ->where('p.branch_id',$val['id']);
+            ->where('p.branch_id',$val['id'])
+            ->GroupBy('spn.patient_id');
 
             if($request->state!=NULL){
                 $a1->where('p.state_id','=', $request->state);
@@ -2552,20 +2631,29 @@ class ReportController extends Controller
 
             $mainResult['group_name'][$val['hospital_branch_name']][$m]['a'] = count($a);
 
+            // $testing = DB::table(DB::raw('testing as t1'))
+            //             ->join(DB::raw('(SELECT patient_id,MAX(id) AS id FROM testing GROUP BY patient_id) as t2'),
+            //             function($query){
+            //                 $query->on('t1.patient_id','=','t2.patient_id')
+            //                       ->on('t1.id','=','t2.id');
+            //             })
+            //             ->where('status','=','employed')->get();
 
             $b1 = DB::table('se_progress_note as spn')
-            ->select('spn.id')
+            ->select('spn.id','spn.patient_mrn_id')
             ->join('general_setting as gs', function($join) {
                 $join->on('gs.id', '=', 'spn.employment_status');
             })
             ->join('patient_registration as p', function($join) {
                 $join->on('p.id', '=', 'spn.patient_mrn_id');
             })
-            ->whereYear('spn.created_at', '=', $request->year)     
-            ->whereMonth('spn.created_at', '=', $m)
+            ->whereYear('spn.updated_at', '=', $request->year)     
+            ->whereMonth('spn.updated_at', '=', $m)
             ->where('gs.section_value','=','Employed')
             ->where('spn.status', '=', '1')
-            ->where('p.branch_id',$val['id']);
+            ->where('p.branch_id',$val['id'])
+            ->GroupBy('spn.patient_mrn_id');
+            
 
             if($request->state!=NULL){
                 $b1->where('p.state_id','=', $request->state);
@@ -2575,17 +2663,27 @@ class ReportController extends Controller
             $b2=$b1->get()->toArray();
             $b  = json_decode(json_encode($b2), true);
             $mainResult['group_name'][$val['hospital_branch_name']][$m]['b'] = count($b);
-
+          
+            if($b!=Null && $a!=Null){
+                foreach($a as $k =>$y){
+                    foreach($b as $v => $z){
+                        if($y['patient_id']==$z['patient_mrn_id']){
+                            $mainResult['group_name'][$val['hospital_branch_name']][$m]['b'] -= 1;
+                        }
+                    }
+                }
+            }
 
             $c1 = DB::table('se_progress_note as spn')
-            ->select('spn.id')
+            ->select('spn.id','spn.patient_mrn_id')
             ->join('patient_registration as p', function($join) {
                 $join->on('p.id', '=', 'spn.patient_mrn_id');
             })
-            ->whereYear('spn.created_at', '=', $request->year)
-            ->whereMonth('spn.created_at', '=', $m)
+            ->whereYear('spn.updated_at', '=', $request->year)
+            ->whereMonth('spn.updated_at', '=', $m)
             ->where('spn.status', '=','1')
-            ->where('p.branch_id',$val['id']);
+            ->where('p.branch_id',$val['id'])
+            ->GroupBy('spn.patient_mrn_id');
 
             if($request->state!=NULL){
                 $c1->where('p.state_id','=', $request->state);
@@ -2597,20 +2695,33 @@ class ReportController extends Controller
 
             $mainResult['group_name'][$val['hospital_branch_name']][$m]['c'] = count($c);
 
+            if($c!=Null && $a!=Null){
+                foreach($a as $k =>$y){
+                    foreach($c as $v => $z){
+                        if($y['patient_id']==$z['patient_mrn_id']){
+                            $mainResult['group_name'][$val['hospital_branch_name']][$m]['c'] -= 1;
+                        }
+                    }
+                }
+            }
+
+            $mainResult['group_name'][$val['hospital_branch_name']][$m]['c'] += $mainResult['group_name'][$val['hospital_branch_name']][$m]['a'];
+
 
             $d1 = DB::table('se_progress_note as spn')
-            ->select('spn.id')
+            ->select('spn.id','spn.patient_mrn_id')
             ->join('general_setting as gs', function($join) {
                 $join->on('gs.id', '=', 'spn.employment_status');
             })
             ->join('patient_registration as p', function($join) {
                 $join->on('p.id', '=', 'spn.patient_mrn_id');
             })
-            ->whereYear('spn.created_at', '=', $request->year)     
-            ->whereMonth('spn.created_at', '=', $m)
+            ->whereYear('spn.updated_at', '=', $request->year)     
+            ->whereMonth('spn.updated_at', '=', $m)
             ->where('gs.section_value','!=','Employed')
             ->where('spn.status', '=', '1')
-            ->where('p.branch_id',$val['id']);
+            ->where('p.branch_id',$val['id'])
+            ->GroupBy('spn.patient_mrn_id');
 
             if($request->state!=NULL){
                 $d1->where('p.state_id','=', $request->state);
@@ -2665,19 +2776,14 @@ class ReportController extends Controller
             $users2  = json_decode(json_encode($users), true);
         $index=0;
         if($users2['code']=='superadmin'){
-            if($request->hospital!=NULL){
-                    if($request->state!=NULL){
-                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->where('branch_state','=', $request->state)
-                        ->where('branch_state','=', $request->state)->get()->toArray();
-                    }else{
-                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->get()->toArray();
-                    }   
-            } else{
-                    if($request->state!=NULL){
-                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->where('branch_state','=', $request->state)->get()->toArray();
-                    }else{
-                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->get()->toArray();
-                    }              
+            if($request->hospital!=NULL){  
+                        $branchName=HospitalBranchManagement::where('id', '=', $request->hospital)->get()->toArray();
+
+            } else if($request->state!=NULL){
+                        $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')
+                        ->where('branch_state','=', $request->state)->get()->toArray();                   
+            }else{
+                $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->get()->toArray();
             }
 
         }else{ 
@@ -2691,14 +2797,15 @@ class ReportController extends Controller
         for ($m=$fromMonth; $m<=$toMonth; $m++){
            
             $a1 = DB::table('job_start_form as jsf')
-            ->select('jsf.id')
+            ->select('jsf.id','jsf.patient_id')
             ->join('patient_registration as p', function($join) {
                 $join->on('jsf.patient_id', '=', 'p.id');
             })
-            ->whereYear('jsf.created_at', '=', $request->year)     
-            ->whereMonth('jsf.created_at', '=', $m)
+            ->whereYear('jsf.updated_at', '=', $request->year)     
+            ->whereMonth('jsf.updated_at', '=', $m)
             ->where('jsf.status', '=', '1')
-            ->where('p.branch_id',$val['id']);
+            ->where('p.branch_id',$val['id'])
+            ->GroupBy('jsf.patient_id');
 
             if($request->state!=NULL){
                 $a1->where('p.state_id','=', $request->state);
@@ -2711,18 +2818,19 @@ class ReportController extends Controller
 
 
             $b1 = DB::table('se_progress_note as spn')
-            ->select('spn.id')
+            ->select('spn.id','spn.patient_mrn_id')
             ->join('general_setting as gs', function($join) {
                 $join->on('gs.id', '=', 'spn.employment_status');
             })
             ->join('patient_registration as p', function($join) {
                 $join->on('p.id', '=', 'spn.patient_mrn_id');
             })
-            ->whereYear('spn.created_at', '=', $request->year)     
-            ->whereMonth('spn.created_at', '=', $m)
+            ->whereYear('spn.updated_at', '=', $request->year)     
+            ->whereMonth('spn.updated_at', '=', $m)
             ->where('gs.section_value','=','Employed')
             ->where('spn.status', '=', '1')
-            ->where('p.branch_id',$val['id']);
+            ->where('p.branch_id',$val['id'])
+            ->GroupBy('spn.patient_mrn_id');
 
             if($request->state!=NULL){
                 $b1->where('p.state_id','=', $request->state);
@@ -2733,16 +2841,27 @@ class ReportController extends Controller
             $b  = json_decode(json_encode($b2), true);
             $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['b'] = count($b);
 
+            if($b!=Null && $a!=Null){
+                foreach($a as $k =>$y){
+                    foreach($b as $v => $z){
+                        
+                        if($y['patient_id']==$z['patient_mrn_id']){
+                            $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['b'] -= 1;
+                        }
+                    }
+                }
+            }
 
             $c1 = DB::table('se_progress_note as spn')
-            ->select('spn.id')
+            ->select('spn.id','patient_mrn_id')
             ->join('patient_registration as p', function($join) {
                 $join->on('p.id', '=', 'spn.patient_mrn_id');
             })
-            ->whereYear('spn.created_at', '=', $request->year)
-            ->whereMonth('spn.created_at', '=', $m)
+            ->whereYear('spn.updated_at', '=', $request->year)
+            ->whereMonth('spn.updated_at', '=', $m)
             ->where('spn.status', '=','1')
-            ->where('p.branch_id',$val['id']);
+            ->where('p.branch_id',$val['id'])
+            ->GroupBy('spn.patient_mrn_id');
 
             if($request->state!=NULL){
                 $c1->where('p.state_id','=', $request->state);
@@ -2754,20 +2873,32 @@ class ReportController extends Controller
 
             $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['c'] = count($c);
 
+            if($c!=Null && $a!=Null){
+                foreach($a as $k =>$y){
+                    foreach($c as $v => $z){
+                        if($y['patient_id']==$z['patient_mrn_id']){
+                            $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['c'] -= 1;
+                        }
+                    }
+                }
+            }
+
+            $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['c'] += $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['a'];
 
             $d1 = DB::table('se_progress_note as spn')
-            ->select('spn.id')
+            ->select('spn.id','spn.patient_mrn_id')
             ->join('general_setting as gs', function($join) {
                 $join->on('gs.id', '=', 'spn.employment_status');
             })
             ->join('patient_registration as p', function($join) {
                 $join->on('p.id', '=', 'spn.patient_mrn_id');
             })
-            ->whereYear('spn.created_at', '=', $request->year)     
-            ->whereMonth('spn.created_at', '=', $m)
+            ->whereYear('spn.updated_at', '=', $request->year)     
+            ->whereMonth('spn.updated_at', '=', $m)
             ->where('gs.section_value','!=','Employed')
             ->where('spn.status', '=', '1')
-            ->where('p.branch_id',$val['id']);
+            ->where('p.branch_id',$val['id'])
+            ->GroupBy('spn.patient_mrn_id');
 
             if($request->state!=NULL){
                 $d1->where('p.state_id','=', $request->state);

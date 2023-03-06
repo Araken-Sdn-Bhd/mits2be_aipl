@@ -2541,9 +2541,11 @@ class PatientAppointmentDetailsController extends Controller
 
         }
         if ($request->type == "PsychiatricProgressNote") {
-            $list = PsychiatricProgressNote::select('*')
-                ->where('id', '=', $request->id)
+            $list = PsychiatricProgressNote::join('users', 'psychiatric_progress_note.added_by', '=', 'users.id')
+            ->select('psychiatric_progress_note.*', 'users.name as name', 'users.role as designation')
+                ->where('psychiatric_progress_note.id', '=', $request->id)
                 ->get();
+                // dd($list);
         }
         if ($request->type == "CPSProgressNote") {
             $list = CpsProgressNote::select('*')
