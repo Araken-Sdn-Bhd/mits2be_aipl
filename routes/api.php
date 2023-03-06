@@ -807,6 +807,7 @@ Route::group(['prefix' => 'default-role-access'], function () {
 });
 Route::group(['prefix' => 'faqList'], function () {
     Route::post('/list', [FaqListController::class, 'getFaqList']);
+    Route::post('/search', [FaqListController::class, 'getSearchList']);
     Route::post('/listbyId', [FaqListController::class, 'getFaqListbyId']);
 });
 Route::group(['prefix' => 'faqCategory'], function () {
