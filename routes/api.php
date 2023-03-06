@@ -812,7 +812,9 @@ Route::group(['prefix' => 'faqList'], function () {
 });
 Route::group(['prefix' => 'faqCategory'], function () {
     Route::post('/add', [FaqCategoryController::class, 'store']);
+    Route::post('/fetch', [FaqCategoryController::class, 'fetch']);
     Route::post('/faqCategoryList', [FaqCategoryController::class, 'getListCategory']);
+    Route::post('/faqCategoryAll', [FaqCategoryController::class, 'getAllCategory']);
 });
 
 
