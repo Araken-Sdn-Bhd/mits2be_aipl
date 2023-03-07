@@ -49,7 +49,7 @@ class FaqCategoryController extends Controller
                         'isactive' => $request->status,
                     ]
                 );
-                return response()->json(["message" => "Catgeory has updated successfully", "code" => 200]);
+                return response()->json(["message" => "Category has updated successfully", "code" => 200]);
             } else {
                 return response()->json(["message" => "Value Already Exists!", "code" => 200]);
             }
@@ -61,7 +61,7 @@ class FaqCategoryController extends Controller
                 'index' => $request->index,
                 'isactive' => $request->status,
             ]);
-            return response()->json(["message" => "Catgeory has updated successfully", "code" => 200]);
+            return response()->json(["message" => "Category has updated successfully", "code" => 200]);
         }
     }
 
