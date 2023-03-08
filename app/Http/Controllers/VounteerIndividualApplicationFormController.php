@@ -1124,7 +1124,25 @@ class VounteerIndividualApplicationFormController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
         VonOrgRepresentativeBackground::where('id', $request->id)->update(['status' => $request->status]);
+
+        $von=VonOrgRepresentativeBackground::where('id', $request->id)
+                    ->select('*')->first();
         // dd($request->status);
+
+
+            $service = [
+                'added_by' => $von->added_by,
+                'name' => $von->name,
+                'parent_section_id' => $von->id,
+                'booking_date' => $von->created_at,
+                'booking_time' => $von->updated_at,
+                'duration' => 15,
+                'interviewer_id' => $von->added_by,
+                'area_of_involvement' => $von->area_of_involvement,
+                'services_type' => 'NA',
+                'status' => '1'
+            ];
+            VonAppointment::create($service);
 
         $von_app = VonOrgRepresentativeBackground::where('id', $request->id)
                     ->select('name', 'email', 'branch_id')->get();
@@ -1874,6 +1892,17 @@ class VounteerIndividualApplicationFormController extends Controller
         ->where('staff_management.email', '=', $request->email)
         ->first();
 
+        // if($role->code == 'superadmin') {
+        //     $record=DB::table('von_org_representative_background')
+        //     ->where('von_org_representative_background.status','1');
+        // }
+        // else {
+        //     $record=DB::table('von_org_representative_background')
+        //     ->where('von_org_representative_background.branch_id',$request->branch_id)
+        //     ->where('von_org_representative_background.status','1');
+        // }
+
+
         if($role->code == 'superadmin'){
             $record= DB::table('von_appointment')
         ->select('von_appointment.*','von_appointment.area_of_involvement as aoi','staff_management.name as dr_name','von_org_representative_background.*')
@@ -1897,6 +1926,7 @@ class VounteerIndividualApplicationFormController extends Controller
             ->orWhere('von_org_representative_background.status','1');
         });
     }
+
      if($request->name != "" || $request->name != null) {
         $record->where('von_appointment.name', 'like', '%'.$request->name.'%');
 
@@ -1907,12 +1937,17 @@ class VounteerIndividualApplicationFormController extends Controller
      if ($request->service != null || $request->service != ""){
          $record->where('von_appointment.services_type','=', $request->service);
      }
-     if ($request->aoi != null || $request->aoi != ""){
-        $record->where('von_appointment.area_of_involvement','=', $request->aoi);
+     if ($request->area_of_involvement != null || $request->area_of_involvement != ""){
+        $record->where('von_org_representative_background.area_of_involvement','=', $request->area_of_involvement);
     }
 
 
-     $list = $record->get();
+  $list = $record->get();
+
+
+
+
+
      return response()->json(["message" => "Von List", "list" => $list, "code" => 200]);
 
     }
