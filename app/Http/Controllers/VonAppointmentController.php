@@ -134,10 +134,10 @@ class VonAppointmentController extends Controller
         ->where('von_org_representative_background.branch_id',$request->branch_id)
         ->where('von_appointment.status','0');
      }
-        
+
         if($request->name != "" || $request->name != null) {
            $record->where('von_appointment.name', 'like', '%'.$request->name.'%');
-          
+
         }
         if ($request->date != null || $request->date != ""){
             $record->where('von_appointment.booking_date','=', $request->date);
@@ -148,11 +148,11 @@ class VonAppointmentController extends Controller
 
         $list = $record->get();
 
-        foreach ($list as $item) { 
+        foreach ($list as $item) {
                     $item->app_date = date('d/m/Y', strtotime($item->booking_date));
-                    $item->app_time = date('H:i a', strtotime($item->booking_time));    
+                    $item->app_time = date('H:i a', strtotime($item->booking_time));
                 }
-       
+
         return response()->json(["message" => "Von List", "list" => $list, "code" => 200]);
     }
 
@@ -165,7 +165,15 @@ class VonAppointmentController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        VonOrgRepresentativeBackground::where('id', $request->id)->update(['status' => $request->status]);
+        // DB::table('von_org_representative_background')
+        // ->where('id', $request->id)
+        // ->update(['status' => $request->status]);
+
+        $q1=DB::table('von_appointment')->select('parent_section_id')
+        ->where('id', $request->id)
+        ->first();
+
+        VonOrgRepresentativeBackground::where('id', $q1->parent_section_id)->update(['status' => $request->status]);
         VonAppointment::where('id', $request->id)->update(['status' => $request->status]);
         return response()->json(["message" => "Appointment status updated!", "code" => 200]);
     }
