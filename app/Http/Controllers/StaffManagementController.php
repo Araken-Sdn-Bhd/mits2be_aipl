@@ -605,9 +605,14 @@ class StaffManagementController extends Controller
                 'document' =>  $request->document,
                 'status' => $request->account_status
             ]);
+
+            $updateDetails = [
+                'email' => $request->email,
+                'name' => $request->name,
+            ];
             DB::table('users')
                 ->where('email', $staffEmail->email)
-                ->update(['email' => $request->email]);
+                ->update($updateDetails);
 
             if ($staffEmail->email != $request->email) {
                 $toEmail    =   $request->email;
