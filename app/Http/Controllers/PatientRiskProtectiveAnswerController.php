@@ -409,7 +409,7 @@ class PatientRiskProtectiveAnswerController extends Controller
         }
         $records = DB::table('sharp_registraion_final_step')
             ->join('patient_shharp_registration_data_producer', 'sharp_registraion_final_step.id', '=', 'patient_shharp_registration_data_producer.shharp_register_id')
-            
+
             ->join('patient_risk_protective_answers', 'sharp_registraion_final_step.id', '=', 'patient_shharp_registration_data_producer.shharp_register_id')
             ->select(
                 'sharp_registraion_final_step.id',
@@ -482,6 +482,7 @@ class PatientRiskProtectiveAnswerController extends Controller
                         $jsonDecode['How did Patient Get Idea about Method']['Internet_website_social_media_platform_app_blogs_forum_video_photosharing'] = $jsonDecode['How did Patient Get Idea about Method']['Internet (website, social media platform, app, blogs, forum, video/photosharing)'];
                         $jsonDecode['How did Patient Get Idea about Method']['Printed_media_newspaper_books_magazine_etc'] = $jsonDecode['How did Patient Get Idea about Method']['Printed media (newspaper, books, magazine, etc)'];
                         $jsonDecode['How did Patient Get Idea about Method']['Broadcast_media_television_radio'] = $jsonDecode['How did Patient Get Idea about Method']['Broadcast media (television, radio)'];
+                        $jsonDecode['How did Patient Get Idea about Method']['Own_ideas'] = $jsonDecode['How did Patient Get Idea about Method']['Own ideas'];
                         $jsonDecode['How did Patient Get Idea about Method']['Specify_patient_actual_words'] = $jsonDecode['How did Patient Get Idea about Method']['Specify patient actual words'];
                     }
 
@@ -497,6 +498,7 @@ class PatientRiskProtectiveAnswerController extends Controller
             }
             $hospital = !empty($shharp[0]['hospital_mgmt']) ? explode('^', $shharp[0]['hospital_mgmt']) : [];
             $hospitalData = PatientShharpRegistrationHospitalManagement::select('*')->whereIn('id', $hospital)->get()->toArray();
+            // dd($hospitalArray);
             if ($hospitalData) {
                 foreach ($hospitalData as $k => $v) {
                     $hospitalArray[$k] = $v;

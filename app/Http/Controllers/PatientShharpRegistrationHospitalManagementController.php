@@ -31,6 +31,8 @@ class PatientShharpRegistrationHospitalManagementController extends Controller
             'discharge_number_days_in_ward' => '',
             'main_psychiatric_diagnosis' => '',
             'external_cause_inquiry' => '',
+            'additional_diagnosis' => '',
+            'additional_external_cause_injury' => '',
             'discharge_psy_mx' => '',
             'discharge_psy_mx_des' => '',
             'sharp_register_id' => ''
@@ -45,6 +47,10 @@ class PatientShharpRegistrationHospitalManagementController extends Controller
             if ($self_harm[0] != '')
                 $riskArray = $self_harm[0];
         }
+
+        $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
+        $additional_external_cause_injury=str_replace('"',"",$request->additional_external_cause_injury);
+
         $module = [];
         if ($riskArray == 0) {
             $module = [
@@ -63,6 +69,8 @@ class PatientShharpRegistrationHospitalManagementController extends Controller
                 'discharge_number_days_in_ward' => $request->discharge_number_days_in_ward,
                 'main_psychiatric_diagnosis' => $request->main_psychiatric_diagnosis,
                 'external_cause_inquiry' => $request->external_cause_inquiry,
+                'additional_diagnosis' => $additional_diagnosis,
+                'additional_external_cause_injury' => $additional_external_cause_injury,
                 'discharge_psy_mx' => $request->discharge_psy_mx,
                 'status' => "1"
             ];
