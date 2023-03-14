@@ -413,7 +413,7 @@ class PatientDetailsController extends Controller
                 order by pr.name_asin_nric;");//where d.patient_id = 1
             } else if ($request->keyword != 'no-keyword') {
                 $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
-                (select id,patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
+                (select patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
                 where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
                 d on pr.id=d.patient_id
                 where pr.name_asin_nric like '%$request->keyword%' or pr.nric_no like '%$request->keyword%'
@@ -421,7 +421,7 @@ class PatientDetailsController extends Controller
 
             } else if ($request->keyword != 'no-keyword' && $request->fromDate != 'dd-mm-yyyy' && $request->toDate != 'dd-mm-yyyy') {
                 $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
-                (select id,patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
+                (select patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
                 where id in (SELECT max(id) id FROM sharp_registraion_final_step
                 where harm_date between '".$request->fromDate."' and '".$request->toDate."'
                 group by patient_id))
@@ -430,7 +430,7 @@ class PatientDetailsController extends Controller
                 order by pr.name_asin_nric;");
             } else {
                 $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
-                (select id,patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
+                (select patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
                 where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
                 d on pr.id=d.patient_id
                 order by pr.name_asin_nric;");
@@ -483,7 +483,7 @@ class PatientDetailsController extends Controller
                     } else {
                         $result[$key]['hospital_branch_name'] = 'NA';
                     }
-    
+
                 }
             } else {
                 $result[$key]['harm_time'] = $val->harm_time ??  '-';
@@ -505,7 +505,7 @@ class PatientDetailsController extends Controller
                 }else{
                     $result[$key]['status'] = '-';
                 }
-                
+
 
                 if ($val->added_by) {
                     $users = DB::table('patient_registration')
