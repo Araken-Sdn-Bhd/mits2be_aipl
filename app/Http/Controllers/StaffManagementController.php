@@ -29,7 +29,7 @@ class StaffManagementController extends Controller
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
             'name' => 'required|string',
-            'nric_no' => 'required|string|unique:staff_management',
+            'nric_no' => 'required|string|',
             'registration_no' => '',
             'role_id' => 'required|integer',
             'email' => 'required|string|unique:staff_management',
