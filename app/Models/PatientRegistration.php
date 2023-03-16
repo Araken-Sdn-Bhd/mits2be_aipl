@@ -22,7 +22,7 @@ class PatientRegistration extends Model
         'kin_address2', 'kin_address3', 'kin_state_id', 'kin_city_id', 'kin_postcode', 'drug_allergy',
         'drug_allergy_description', 'traditional_medication', 'kin_postcode', 'traditional_description',
         'other_allergy', 'other_description', 'status','patient_need_triage_screening','kin_nric_no','sharp','other_race',
-        'other_religion','other_accommodation','other_maritalList','other_feeExemptionStatus','other_occupationStatus',
+        'other_religion','other_accommodation','other_maritalList','other_feeExemptionStatus','other_occupationStatus', 'other_referral',
         'employment_status','other_education','household_income',
 
     ];
@@ -91,5 +91,4 @@ class PatientRegistration extends Model
     {
         return $this->hasMany(GeneralSetting::class, "id", "education_level");
     }
-
 }

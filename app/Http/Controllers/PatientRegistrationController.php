@@ -57,6 +57,7 @@ class PatientRegistrationController extends Controller
             'other_feeExemptionStatus' => '',
             'other_occupationStatus' => '',
             'other_education' => '',
+            'other_referral' => '',
 
 
         ]);
@@ -126,6 +127,7 @@ class PatientRegistrationController extends Controller
             'other_occupationStatus' => $request->other_occupationStatus,
             'other_maritalList' => $request->other_maritalList,
             'other_education' => $request->other_education,
+            'other_referral' => $request->other_referral,
         ];
 
 
