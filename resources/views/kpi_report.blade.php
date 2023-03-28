@@ -26,40 +26,40 @@
 
     {{-- foreach untuk month akan mula dekat sini --}}
     @if($m ==1)
-    <td colspan="5">January</td>
+    <td colspan="4">January</td>
     @endif
     @if($m ==2)
-    <td colspan="5">February</td>
+    <td colspan="4">February</td>
     @endif
     @if($m ==3)
-    <td colspan="5">March</td>
+    <td colspan="4">March</td>
     @endif
     @if($m ==4)
-    <td colspan="5">April</td>
+    <td colspan="4">April</td>
     @endif
     @if($m ==5)
-    <td colspan="5">May</td>
+    <td colspan="4">May</td>
     @endif
     @if($m ==6)
-    <td colspan="5">June</td>
+    <td colspan="4">June</td>
     @endif
     @if($m ==7)
-    <td colspan="5">July</td>
+    <td colspan="4">July</td>
     @endif
     @if($m ==8)
-    <td colspan="5">August</td>
+    <td colspan="4">August</td>
     @endif
     @if($m ==9)
-    <td colspan="5">September</td>
+    <td colspan="4">September</td>
     @endif
     @if($m ==10)
-    <td colspan="5">October</td>
+    <td colspan="4">October</td>
     @endif
     @if($m ==11)
-    <td colspan="5">November</td>
+    <td colspan="4">November</td>
     @endif
     @if($m ==12)
-    <td colspan="5">December</td>
+    <td colspan="4">December</td>
     @endif
 
 @endforeach
@@ -75,7 +75,6 @@
     <td>Newly Job Placed</td> {{-- Jan --}}
     <td>Ongoing Job Placement</td>
     <td>Total Caseload</td>
-    <td>Total Dismissed</td>
     <td>KPI (%)</td>
     @endif
 
@@ -83,7 +82,6 @@
     <td>Newly Job Placed</td> {{-- Feb --}}
     <td>Ongoing Job Placement</td>
     <td>Total Caseload</td>
-    <td>Total Dismissed</td>
     <td>KPI (%)</td>
     @endif
 
@@ -91,7 +89,6 @@
     <td>Newly Job Placed</td> {{-- Mar --}}
     <td>Ongoing Job Placement</td>
     <td>Total Caseload</td>
-    <td>Total Dismissed</td>
     <td>KPI (%)</td>
     @endif
 
@@ -99,7 +96,6 @@
     <td>Newly Job Placed</td> {{-- Apr --}}
     <td>Ongoing Job Placement</td>
     <td>Total Caseload</td>
-    <td>Total Dismissed</td>
     <td>KPI (%)</td>
     @endif
 
@@ -107,7 +103,6 @@
     <td>Newly Job Placed</td> {{-- May --}}
     <td>Ongoing Job Placement</td>
     <td>Total Caseload</td>
-    <td>Total Dismissed</td>
     <td>KPI (%)</td>
     @endif
 
@@ -115,7 +110,6 @@
     <td>Newly Job Placed</td> {{-- Jun --}}
     <td>Ongoing Job Placement</td>
     <td>Total Caseload</td>
-    <td>Total Dismissed</td>
     <td>KPI (%)</td>
     @endif
 
@@ -123,7 +117,6 @@
     <td>Newly Job Placed</td> {{-- Jul --}}
     <td>Ongoing Job Placement</td>
     <td>Total Caseload</td>
-    <td>Total Dismissed</td>
     <td>KPI (%)</td>
     @endif
 
@@ -131,7 +124,6 @@
     <td>Newly Job Placed</td> {{-- Aug --}}
     <td>Ongoing Job Placement</td>
     <td>Total Caseload</td>
-    <td>Total Dismissed</td>
     <td>KPI (%)</td>
     @endif
 
@@ -139,7 +131,6 @@
     <td>Newly Job Placed</td> {{-- Sep --}}
     <td>Ongoing Job Placement</td>
     <td>Total Caseload</td>
-    <td>Total Dismissed</td>
     <td>KPI (%)</td>
     @endif
 
@@ -147,7 +138,6 @@
     <td>Newly Job Placed</td> {{-- Oct --}}
     <td>Ongoing Job Placement</td>
     <td>Total Caseload</td>
-    <td>Total Dismissed</td>
     <td>KPI (%)</td>
     @endif
 
@@ -155,7 +145,6 @@
     <td>Newly Job Placed</td> {{-- Nov --}}
     <td>Ongoing Job Placement</td>
     <td>Total Caseload</td>
-    <td>Total Dismissed</td>
     <td>KPI (%)</td>
     @endif
 
@@ -163,7 +152,6 @@
     <td>Newly Job Placed</td> {{-- Dec --}}
     <td>Ongoing Job Placement</td>
     <td>Total Caseload</td>
-    <td>Total Dismissed</td>
     <td>KPI (%)</td>
     @endif
 
@@ -195,37 +183,37 @@
     @foreach($average as $av => $ave)
 
         @if($av==1)
-        <td colspan="4">Average</td>
+        <td colspan="3">Average</td>
         <td>{{ $ave }}</td>
         @endif
 
         @if($av==2)
-        <td colspan="4">Average</td>
+        <td colspan="3">Average</td>
         <td>{{ $ave }}</td>
         @endif
 
         @if($av==3)
-        <td colspan="4">Average</td>
+        <td colspan="3">Average</td>
         <td>{{ $ave }}</td>
         @endif
 
         @if($av==4)
-        <td colspan="4">Average</td>
+        <td colspan="3">Average</td>
         <td>{{ $ave }}</td>
         @endif
 
         @if($av==5)
-        <td colspan="4">Average</td>
+        <td colspan="3">Average</td>
         <td>{{ $ave }}</td>
         @endif
 
         @if($av==6)
-        <td colspan="4">Average</td>
+        <td colspan="3">Average</td>
         <td>{{ $ave }}</td>
         @endif
 
         @if($av==7)
-        <td colspan="4">Average</td>
+        <td colspan="3">Average</td>
         <td>{{ $ave }}</td>
         @endif
 
@@ -235,22 +223,22 @@
         @endif
 
         @if($av==9)
-        <td colspan="4">Average</td>
+        <td colspan="3">Average</td>
         <td>{{ $ave }}</td>
         @endif
 
         @if($av==10)
-        <td colspan="4">Average</td>
+        <td colspan="3">Average</td>
         <td>{{ $ave }}</td>
         @endif
 
         @if($av==11)
-        <td colspan="4">Average</td>
+        <td colspan="3">Average</td>
         <td>{{ $ave }}</td>
         @endif
 
         @if($av==12)
-        <td colspan="4">Average</td>
+        <td colspan="3">Average</td>
         <td>{{ $ave }}</td>
         @endif
         

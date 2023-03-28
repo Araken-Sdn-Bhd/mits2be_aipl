@@ -2620,7 +2620,7 @@ class ReportController extends Controller
             ->whereMonth('jsf.updated_at', '=', $m)
             ->where('jsf.status', '=', '1')
             ->where('p.branch_id',$val['id'])
-            ->GroupBy('spn.patient_id');
+            ->GroupBy('jsf.patient_id');
 
             if($request->state!=NULL){
                 $a1->where('p.state_id','=', $request->state);
@@ -2708,28 +2708,28 @@ class ReportController extends Controller
             $mainResult['group_name'][$val['hospital_branch_name']][$m]['c'] += $mainResult['group_name'][$val['hospital_branch_name']][$m]['a'];
 
 
-            $d1 = DB::table('se_progress_note as spn')
-            ->select('spn.id','spn.patient_mrn_id')
-            ->join('general_setting as gs', function($join) {
-                $join->on('gs.id', '=', 'spn.employment_status');
-            })
-            ->join('patient_registration as p', function($join) {
-                $join->on('p.id', '=', 'spn.patient_mrn_id');
-            })
-            ->whereYear('spn.updated_at', '=', $request->year)     
-            ->whereMonth('spn.updated_at', '=', $m)
-            ->where('gs.section_value','!=','Employed')
-            ->where('spn.status', '=', '1')
-            ->where('p.branch_id',$val['id'])
-            ->GroupBy('spn.patient_mrn_id');
+            // $d1 = DB::table('se_progress_note as spn')
+            // ->select('spn.id','spn.patient_mrn_id')
+            // ->join('general_setting as gs', function($join) {
+            //     $join->on('gs.id', '=', 'spn.employment_status');
+            // })
+            // ->join('patient_registration as p', function($join) {
+            //     $join->on('p.id', '=', 'spn.patient_mrn_id');
+            // })
+            // ->whereYear('spn.updated_at', '=', $request->year)     
+            // ->whereMonth('spn.updated_at', '=', $m)
+            // ->where('gs.section_value','!=','Employed')
+            // ->where('spn.status', '=', '1')
+            // ->where('p.branch_id',$val['id'])
+            // ->GroupBy('spn.patient_mrn_id');
 
-            if($request->state!=NULL){
-                $d1->where('p.state_id','=', $request->state);
-            }
+            // if($request->state!=NULL){
+            //     $d1->where('p.state_id','=', $request->state);
+            // }
 
-            $d2=$d1->get()->toArray();
-            $d  = json_decode(json_encode($d2), true);
-            $mainResult['group_name'][$val['hospital_branch_name']][$m]['d'] = count($d);
+            // $d2=$d1->get()->toArray();
+            // $d  = json_decode(json_encode($d2), true);
+            // $mainResult['group_name'][$val['hospital_branch_name']][$m]['d'] = count($d);
         
             
         if((count($a)!=0 || count($b)!=0) && count($c)!=0){
@@ -2885,28 +2885,28 @@ class ReportController extends Controller
 
             $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['c'] += $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['a'];
 
-            $d1 = DB::table('se_progress_note as spn')
-            ->select('spn.id','spn.patient_mrn_id')
-            ->join('general_setting as gs', function($join) {
-                $join->on('gs.id', '=', 'spn.employment_status');
-            })
-            ->join('patient_registration as p', function($join) {
-                $join->on('p.id', '=', 'spn.patient_mrn_id');
-            })
-            ->whereYear('spn.updated_at', '=', $request->year)     
-            ->whereMonth('spn.updated_at', '=', $m)
-            ->where('gs.section_value','!=','Employed')
-            ->where('spn.status', '=', '1')
-            ->where('p.branch_id',$val['id'])
-            ->GroupBy('spn.patient_mrn_id');
+            // $d1 = DB::table('se_progress_note as spn')
+            // ->select('spn.id','spn.patient_mrn_id')
+            // ->join('general_setting as gs', function($join) {
+            //     $join->on('gs.id', '=', 'spn.employment_status');
+            // })
+            // ->join('patient_registration as p', function($join) {
+            //     $join->on('p.id', '=', 'spn.patient_mrn_id');
+            // })
+            // ->whereYear('spn.updated_at', '=', $request->year)     
+            // ->whereMonth('spn.updated_at', '=', $m)
+            // ->where('gs.section_value','!=','Employed')
+            // ->where('spn.status', '=', '1')
+            // ->where('p.branch_id',$val['id'])
+            // ->GroupBy('spn.patient_mrn_id');
 
-            if($request->state!=NULL){
-                $d1->where('p.state_id','=', $request->state);
-            }
+            // if($request->state!=NULL){
+            //     $d1->where('p.state_id','=', $request->state);
+            // }
 
-            $d2=$d1->get()->toArray();
-            $d  = json_decode(json_encode($d2), true);
-            $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['d'] = count($d);
+            // $d2=$d1->get()->toArray();
+            // $d  = json_decode(json_encode($d2), true);
+            // $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['d'] = count($d);
         
             
         if((count($a)!=0 || count($b)!=0) && count($c)!=0){
