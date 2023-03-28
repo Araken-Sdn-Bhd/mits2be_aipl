@@ -2583,14 +2583,14 @@ class ReportController extends Controller
             }
         }
         $users = DB::table('staff_management')
-            ->select('roles.code')
+            ->select('roles.code','roles.role_name')
             ->join('roles', 'staff_management.role_id', '=', 'roles.id')
             ->where('staff_management.email', '=', $request->email)
             ->first();
             $users2  = json_decode(json_encode($users), true);
         $index=0;
         
-        if($users2['code']=='superadmin'){
+        if($users2['code']=='superadmin' || $users2['code']='high level'){
             if($request->hospital!=NULL){  
                         $branchName=HospitalBranchManagement::where('id', '=', $request->hospital)->get()->toArray();
 
@@ -2775,7 +2775,7 @@ class ReportController extends Controller
             ->first();
             $users2  = json_decode(json_encode($users), true);
         $index=0;
-        if($users2['code']=='superadmin'){
+        if($users2['code']=='superadmin' || $users2['code']='high level'){
             if($request->hospital!=NULL){  
                         $branchName=HospitalBranchManagement::where('id', '=', $request->hospital)->get()->toArray();
 
