@@ -218,6 +218,9 @@ class DashboardController extends Controller
         }
 
 ////Announcement////
+$screen_id_announcement=ScreenPageModule::select('id','dashboard_route')->where('notifi_code','=','AM')->first();
+$announcment_route=$screen_id_announcement->dashboard_route;
+
 
         $date = date('Y-m-d');
         $staff_check = DB::table('staff_management')
@@ -302,8 +305,8 @@ class DashboardController extends Controller
             ////Review Patient////
             $dateReview = Carbon::now()->subDays(7)->toDateString();
             $team_id = StaffManagement::select("id","team_id")->Where("email", '=', $request->email)->get();
-            $screen_id_review=ScreenPageModule::select('id','notifi_route')->where('notifi_code','=','RPC')->first();
-            $route_review_patient=$screen_id_review->notifi_route;
+            $screen_id_review=ScreenPageModule::select('id','dashboard_route')->where('notifi_code','=','APV')->first();
+            $review_route=$screen_id_review->dashboard_route;
 
             $review_patient = DB::table('patient_care_paln as p')
            ->select('p.id','r.name_asin_nric','p.next_review_date')
@@ -318,8 +321,8 @@ class DashboardController extends Controller
             ////All Clinical Documentation Draft////
 
         $dateDraft = Carbon::now()->subDays(2)->toDateString();
-        $screen_id=ScreenPageModule::select('id','notifi_route')->where('notifi_code','=','RPC')->first();
-        $route=$screen_id->notifi_route;
+        $screen_id=ScreenPageModule::select('id','dashboard_route')->where('notifi_code','=','RPC')->first();
+        $route=$screen_id->dashboard_route;
         $draft_array=[];
         $index=0;
         ///// patient care plan /////
@@ -1008,7 +1011,7 @@ class DashboardController extends Controller
 
 
         return response()->json([
-            "message" => "All Mentari Staffams", 'review_patient'=> $review_patient, 'route'=>$route_review_patient,'cd_draft'=>$draft_array2,'list' => $list, 'today_appointment' => $today_appointment,
+            "message" => "All Mentari Staffams", 'review_patient'=> $review_patient, 'review_route'=>$review_route ,'cd_draft'=>$draft_array2,'list' => $list, 'announcement_route'=>$announcment_route, 'today_appointment' => $today_appointment,
             'team_task' => $team_task, 'personal_task' => $personal_task, "code" => 200
         ]);
     }
@@ -1559,6 +1562,9 @@ class DashboardController extends Controller
 
         $date = date('Y-m-d');
 
+$screen_id_announcement=ScreenPageModule::select('id','dashboard_route')->where('notifi_code','=','AM')->first();
+$announcment_route=$screen_id_announcement->dashboard_route;
+
         $staff_check = DB::table('staff_management')
                         ->leftjoin('roles', function ($join) {
                                         $join->on('roles.id', '=', 'staff_management.role_id');
@@ -1641,8 +1647,8 @@ class DashboardController extends Controller
             ////Review Patient////
             $dateReview = Carbon::now()->subDays(7)->toDateString();
             $team_id = StaffManagement::select("id","team_id")->Where("email", '=', $request->email)->get();
-            $screen_id_review=ScreenPageModule::select('id','notifi_route')->where('notifi_code','=','RPC')->first();
-            $route_review_patient=$screen_id_review->notifi_route;
+            $screen_id_review=ScreenPageModule::select('id','dashboard_route')->where('notifi_code','=','APV')->first();
+            $review_route=$screen_id_review->dashboard_route;
 
             $review_patient = DB::table('patient_care_paln as p')
            ->select('p.id','r.name_asin_nric','p.next_review_date')
@@ -1657,8 +1663,8 @@ class DashboardController extends Controller
             ////All Clinical Documentation Draft////
 
         $dateDraft = Carbon::now()->subDays(2)->toDateString();
-        $screen_id=ScreenPageModule::select('id','notifi_route')->where('notifi_code','=','RPC')->first();
-        $route=$screen_id->notifi_route;
+        $screen_id=ScreenPageModule::select('id','dashboard_route')->where('notifi_code','=','RPC')->first();
+        $route=$screen_id->dashboard_route;
         $draft_array=[];
         $index=0;
         ///// patient care plan /////
@@ -2347,8 +2353,8 @@ class DashboardController extends Controller
 
 
         return response()->json([
-            "message" => "Admin & Specialist inCharge", 'today_appointment' => $today_appointment, 'route'=>$route_review_patient, 'review_patient'=> $review_patient,'cd_draft'=>$draft_array2,
-            'personal_task' => $personal_task, 'team_task' => $team_task, 'request_appointment' => $request_appointment, 'list' => $list,  "code" => 200
+            "message" => "Admin & Specialist inCharge", 'today_appointment' => $today_appointment, 'review_route'=>$review_route, 'review_patient'=> $review_patient,'cd_draft'=>$draft_array2,
+            'personal_task' => $personal_task, 'team_task' => $team_task, 'request_appointment' => $request_appointment, 'list' => $list, 'announcement_route'=>$announcment_route,  "code" => 200
         ]);
     }
 }

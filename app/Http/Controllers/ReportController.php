@@ -1421,6 +1421,7 @@ class ReportController extends Controller
                                 $cd_array[$count]['updated_at']=$diagnosis1_ts;
                                 $cd_array[$count]['diagnosis_id']=$diagnosis1['diagnosis_type'];
                                 $cd_array[$count]['procedure']=$diagnosis1['service_category'];
+                                $cd_array[$count]['restart']=$diagnosis1['restart'];
                                 $cd_array[$count]['medication']=$diagnosis1['medication'];
                                 $count++;
                             }
@@ -1467,6 +1468,7 @@ class ReportController extends Controller
                         
                         if($array_date==$d['updated_at']){
                             $icd=$d['diagnosis_id'];
+                            $restart=$d['restart'];
                             $procedure=$d['procedure'];
                             if($procedure==NULL){
                                 $procedure='NA';
@@ -1474,6 +1476,9 @@ class ReportController extends Controller
                             $medication=$d['medication'];
                             if($medication==NULL){
                                 $medication='NA';
+                            }
+                            if($restart==NULL){
+                                $restart='NA';
                             }
                         }
                     }
@@ -1487,6 +1492,7 @@ class ReportController extends Controller
                 }else{
                     $icd_name = 'NA';
                     $procedure='NA';
+                    $restart='NA';
                     $medication='NA';
                 }
                 if($request->diagnosis_id!=NULL){
@@ -1901,6 +1907,7 @@ class ReportController extends Controller
                     $result[$index]['DIAGNOSIS'] = $icd_name;
                     if($request->appointment_type == 3){
                         $result[$index]['MEDICATIONS'] = $medication;
+                        $result[$index]['RESTART']=$restart;
                         $result[$index]['EMPSTATUS'] = ($empStatus) ? $empStatus[0]['section_value'] : "NA";
                         $result[$index]['EMPLOYER'] = ($jobStart) ? $jobStart[0]['name_of_employer'] : "NA";
                         $result[$index]['JOBSTARTDATE'] = ($jobStart) ? $jobStart[0]['first_date_of_work'] : "NA";
