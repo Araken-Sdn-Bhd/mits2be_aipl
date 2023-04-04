@@ -131,7 +131,7 @@ class ReportController extends Controller
                 $query = DB::table('sharp_registraion_final_step as srfs')
                 ->select('srfs.id','srfs.risk','srfs.protective','srfs.self_harm','srfs.patient_id',
                 'p.name_asin_nric','p.address1','p.city_id','p.nric_no','p.state_id','p.postcode',
-                'p.mobile_no','p.birth_date','srfs.harm_date','srfs.harm_time','hb.hospital_branch_name',
+                'p.mobile_no','p.birth_date','srfs.harm_date','srfs.harm_time','psrdp.hospital_name',
                 'psrhm.id as id2','psrhm.main_psychiatric_diagnosis','psrhm.additional_diagnosis')
                 ->leftjoin('patient_registration as p', function($join) {
                     $join->on('srfs.patient_id', '=', 'p.id');
@@ -142,8 +142,8 @@ class ReportController extends Controller
                 ->leftjoin('patient_shharp_registration_hospital_management as psrhm', function($join) {
                     $join->on('psrhm.id', '=', 'srfs.hospital_mgmt');
                 })
-                ->leftjoin('hospital_branch__details as hb', function($join) {
-                    $join->on('hb.id', '=', 'p.branch_id');
+                ->leftjoin('patient_shharp_registration_data_producer as psrdp', function($join) {
+                    $join->on('psrdp.patient_mrn_id', '=', 'srfs.patient_id');
                 })       
                 ->whereBetween('harm_date', [$request->fromDate, $request->toDate])
                 ->where('srfs.hospital_mgmt', '!=','')
@@ -895,7 +895,7 @@ class ReportController extends Controller
                  } 
 
                     $result[$index]['NO'] = $index+1;
-                    $result[$index]['HOSPITAL'] = $v['hospital_branch_name'];
+                    $result[$index]['HOSPITAL'] = $v['hospital_name'];
                     $result[$index]['DATE'] = $v['harm_date'];
                     $result[$index]['TIME'] = $v['harm_time'];
                     $result[$index]['NRIC_NO_PASSPORT_NO'] = $v['nric_no'];
