@@ -17,7 +17,7 @@ class AppointmentRequestController extends Controller
     public function addRequest(Request $request){
         $validator = Validator::make($request->all(), [
             'branch_id' => 'required|integer',
-            'name' => 'required|string', 
+            'name' => 'required|string',
             'contact_no' => 'required|string',
             'email' => 'required|string',
             'patient_mrn_id' => '',
@@ -69,7 +69,7 @@ class AppointmentRequestController extends Controller
         ->where('status', '1')
         ->where('branch_id',$request->branch_id)
         ->get();
-     
+
        return response()->json(["message" => "Appointment Requested List", 'list' => $list, "code" => 200]);
     }
 
@@ -80,7 +80,27 @@ class AppointmentRequestController extends Controller
         ->where('id',$request->id)
         ->where('status', '1')
         ->get();
-        
+
        return response()->json(["message" => "Appointment Requested List", 'list' => $list, "code" => 200]);
+    }
+
+    public function removeRequestList(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'id' => 'required|integer'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+
+        AppointmentRequest::where(
+            ['id' => $request->id]
+        )->update([
+            'status' => '2',
+            'added_by' => $request->added_by,
+            'remark' => $request->remarks,
+        ]);
+
+        return response()->json(["message" => "Request Appointment Deleted Successfully!", "code" => 200]);
     }
 }

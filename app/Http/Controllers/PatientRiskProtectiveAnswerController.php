@@ -467,15 +467,18 @@ class PatientRiskProtectiveAnswerController extends Controller
 
                     $jsonDecode = json_decode($v['section_value'], true);
                     if (array_key_exists('CURRENT SELF HARM ACT', $jsonDecode)) {
+                        // dd($jsonDecode['CURRENT SELF HARM ACT']);
                         $jsonDecode['CURRENT SELF HARM ACT']['Place_of_Occurance'] = $jsonDecode['CURRENT SELF HARM ACT']['Place of Occurance'];
                     }
                     if (array_key_exists('Method of Self-Harm', $jsonDecode)) {
+                        // dd($jsonDecode['Method of Self-Harm']);
                         $jsonDecode['Method of Self-Harm']['Firearms_or_explosives'] = $jsonDecode['Method of Self-Harm']['Firearms or explosives'];
                         $jsonDecode['Method of Self-Harm']['Cutting_or_Piercing'] = $jsonDecode['Method of Self-Harm']['Cutting or Piercing'];
                         $jsonDecode['Method of Self-Harm']['Jumping_from_height'] = $jsonDecode['Method of Self-Harm']['Jumping from height'];
                         $jsonDecode['Method of Self-Harm']['Overdose_Poisoning'] = $jsonDecode['Method of Self-Harm']['Overdose/Poisoning'];
                         $jsonDecode['Method of Self-Harm']['Hanging_Suffocation'] = $jsonDecode['Method of Self-Harm']['Hanging/Suffocation'];
                         $jsonDecode['Method of Self-Harm']['Fire_flames'] = $jsonDecode['Method of Self-Harm']['Fire/flames'];
+                        $jsonDecode['Method of Self-Harm']['Other'] = $jsonDecode['Method of Self-Harm']['selfharm_other'];
                     }
                     if (array_key_exists('How did Patient Get Idea about Method', $jsonDecode)) {
                         $jsonDecode['How did Patient Get Idea about Method']['Family_friends_peer_group'] = $jsonDecode['How did Patient Get Idea about Method']['Family, friends, peer group'];
