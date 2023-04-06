@@ -62,11 +62,11 @@ class JobClubProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'JobClubProgress' => $jobclubprogressnote, "code" => 200]);
                     }
-                    return response()->json(["message" => "Job Club Progress Note Successfully00", "code" => 200]);
+                    return response()->json(["message" => "Job Club Progress Note Successfully Save", "code" => 200]);
                 } else if ($request->service_category == 'clinical-work') {
                     $validator = Validator::make($request->all(), [
                         'code_id' => 'required|integer',
-                        'sub_code_id' => 'required|integer'
+                        'sub_code_id' => 'required'
                     ]);
                     if ($validator->fails()) {
                         return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -76,6 +76,8 @@ class JobClubProgressNoteController extends Controller
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
                         'sub_code_id' =>  $request->sub_code_id,
+                        'add_code_id' =>  $request->add_code_id,
+                        'add_sub_code_id' =>  $request->add_sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'name' =>  $request->name,
@@ -103,12 +105,14 @@ class JobClubProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'JobClubProgress' => $JobClubProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Job Club Progress Note Successfully11", "code" => 200]);
+                    return response()->json(["message" => "Job Club Progress Note Successfully Save", "code" => 200]);
                 }else{
                     $JobClubProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
                         'sub_code_id' =>  $request->sub_code_id,
+                        'add_code_id' =>  $request->add_code_id,
+                        'add_sub_code_id' =>  $request->add_sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'name' =>  $request->name,
@@ -136,7 +140,7 @@ class JobClubProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'JobClubProgress' => $JobClubProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Job Club Progress Note Successfully11", "code" => 200]);
+                    return response()->json(["message" => "Job Club Progress Note Successfully Save", "code" => 200]);
                 }
             } else {
                 if ($request->service_category == 'assisstance' || $request->service_category == 'external') {
@@ -177,7 +181,7 @@ class JobClubProgressNoteController extends Controller
                 } else if ($request->service_category == 'clinical-work') {
                     $validator = Validator::make($request->all(), [
                         'code_id' => 'required|integer',
-                        'sub_code_id' => 'required|integer'
+                        'sub_code_id' => 'required'
                     ]);
                     if ($validator->fails()) {
                         return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -187,6 +191,8 @@ class JobClubProgressNoteController extends Controller
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
                         'sub_code_id' =>  $request->sub_code_id,
+                        'add_code_id' =>  $request->add_code_id,
+                        'add_sub_code_id' =>  $request->add_sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'name' =>  $request->name,
@@ -212,12 +218,14 @@ class JobClubProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'JobClubProgress' => $JobClubProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Job Club Progress Note Successfully", "code" => 200]);
+                    return response()->json(["message" => "Job Club Progress Note Successfully Save", "code" => 200]);
                 }else{
                     $JobClubProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
                         'sub_code_id' =>  $request->sub_code_id,
+                        'add_code_id' =>  $request->add_code_id,
+                        'add_sub_code_id' =>  $request->add_sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'name' =>  $request->name,
@@ -245,7 +253,7 @@ class JobClubProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'JobClubProgress' => $JobClubProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Job Club Progress Note Successfully11", "code" => 200]);
+                    return response()->json(["message" => "Job Club Progress Note Successfully Save", "code" => 200]);
                 }
             }
         } else if ($request->status == 0) {
@@ -280,12 +288,14 @@ class JobClubProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'JobClubProgress' => $jobclubprogressnote, "code" => 200]);
                     }
-                    return response()->json(["message" => "Job Club Progress Note Successfully00", "code" => 200]);
+                    return response()->json(["message" => "Job Club Progress Note Successfully Save", "code" => 200]);
                 } else if ($request->service_category == 'clinical-work') {
                     $JobClubProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
                         'sub_code_id' =>  $request->sub_code_id,
+                        'add_code_id' =>  $request->add_code_id,
+                        'add_sub_code_id' =>  $request->add_sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'name' =>  $request->name,
@@ -313,12 +323,14 @@ class JobClubProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'JobClubProgress' => $JobClubProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Job Club Progress Note Successfully11", "code" => 200]);
+                    return response()->json(["message" => "Job Club Progress Note Successfully Save", "code" => 200]);
                 } else {
                     $JobClubProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
                         'sub_code_id' =>  $request->sub_code_id,
+                        'add_code_id' =>  $request->add_code_id,
+                        'add_sub_code_id' =>  $request->add_sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'name' =>  $request->name,
@@ -345,7 +357,7 @@ class JobClubProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'JobClubProgress' => $JobClubProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Job Club Progress Note Successfully11", "code" => 200]);
+                    return response()->json(["message" => "Job Club Progress Note Successfully Save", "code" => 200]);
                 }
             } else {
                 if ($request->service_category == 'assisstance' || $request->service_category == 'external') {
@@ -376,12 +388,14 @@ class JobClubProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'JobClubProgress' => $jobclubprogressnote, "code" => 200]);
                     }
-                    return response()->json(["message" => "Job Club Progress Note Successfully00", "code" => 200]);
+                    return response()->json(["message" => "Job Club Progress Note Successfully Save", "code" => 200]);
                 } else if ($request->service_category == 'clinical-work') {
                     $JobClubProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
                         'sub_code_id' =>  $request->sub_code_id,
+                        'add_code_id' =>  $request->add_code_id,
+                        'add_sub_code_id' =>  $request->add_sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'name' =>  $request->name,
@@ -407,12 +421,14 @@ class JobClubProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'JobClubProgress' => $JobClubProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Job Club Progress Note Successfully", "code" => 200]);
+                    return response()->json(["message" => "Job Club Progress Note Successfully Save", "code" => 200]);
                 } else {
                     $JobClubProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
                         'sub_code_id' =>  $request->sub_code_id,
+                        'add_code_id' =>  $request->add_code_id,
+                        'add_sub_code_id' =>  $request->add_sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'name' =>  $request->name,
@@ -437,7 +453,7 @@ class JobClubProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'JobClubProgress' => $JobClubProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Job Club Progress Note Successfully", "code" => 200]);
+                    return response()->json(["message" => "Job Club Progress Note Successfully save", "code" => 200]);
                 }
             }
         }
