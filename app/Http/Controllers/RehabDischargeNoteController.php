@@ -40,6 +40,8 @@ class RehabDischargeNoteController extends Controller
                 'services_id' => $request->services_id,
                 'code_id' => $request->code_id,
                 'sub_code_id' => $request->sub_code_id,
+                'add_code_id' => $request->add_code_id,
+                'add_sub_code_id' => $request->add_sub_code_id,
                 'complexity_services' => $request->complexity_services,
                 'outcome' => $request->outcome,
                 'medication' => $request->medication,
@@ -62,6 +64,8 @@ class RehabDischargeNoteController extends Controller
                 $Rehabdischarge['code_id'] =  $request->code_id;
                 $validateRehabDischarge['sub_code_id'] = 'required';
                 $Rehabdischarge['sub_code_id'] =  $request->sub_code_id;
+                $Rehabdischarge['add_code_id'] =  $request->add_code_id;
+                $Rehabdischarge['add_sub_code_id'] =  $request->add_sub_code_id;
             }
             $validator = Validator::make($request->all(), $validateRehabDischarge);
             if ($validator->fails()) {
@@ -93,6 +97,8 @@ class RehabDischargeNoteController extends Controller
                 'services_id' => $request->services_id,
                 'code_id' => $request->code_id,
                 'sub_code_id' => $request->sub_code_id,
+                'add_code_id' => $request->add_code_id,
+                'add_sub_code_id' => $request->add_sub_code_id,
                 'complexity_services' => $request->complexity_services,
                 'outcome' => $request->outcome,
                 'medication' => $request->medication,
@@ -115,6 +121,8 @@ class RehabDischargeNoteController extends Controller
                 $Rehabdischarge['code_id'] =  $request->code_id;
                 $validateRehabDischarge['sub_code_id'] = 'required';
                 $Rehabdischarge['sub_code_id'] =  $request->sub_code_id;
+                $Rehabdischarge['add_code_id'] =  $request->add_code_id;
+                $Rehabdischarge['add_sub_code_id'] =  $request->add_sub_code_id;
             }
             if ($request->id) {
                 RehabDischargeNote::where(['id' => $request->id])->update($rehabdischarge);

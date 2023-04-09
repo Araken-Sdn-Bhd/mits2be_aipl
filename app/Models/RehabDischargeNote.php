@@ -14,5 +14,5 @@ class RehabDischargeNote extends Model
     'intervention', 'discharge_category', 'comment', 'location_services', 'diagnosis_type', 'service_category',
     'services_id', 'code_id', 'sub_code_id', 'complexity_services', 'outcome',
     'medication', 'specialist_name', 'case_manager', 'verification_date_1', 'verification_date_2',
-     'status','created_at'];
+     'status','created_at','add_code_id','add_sub_code_id'];
 }
