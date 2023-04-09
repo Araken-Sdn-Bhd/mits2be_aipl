@@ -35,6 +35,8 @@ class ConsultationDischargeNoteController extends Controller
                 'services_id' => $request->services_id,
                 'code_id' => $request->code_id,
                 'sub_code_id' => $request->sub_code_id,
+                'add_code_id' =>  $request->add_code_id,
+                'add_sub_code_id' =>  $request->add_sub_code_id,
                 'type_diagnosis_id' => $request->type_diagnosis_id,
                 'category_services' => $request->category_services,
                 'complexity_services' => $request->complexity_services,
@@ -54,6 +56,8 @@ class ConsultationDischargeNoteController extends Controller
                 $consultationdischarge['code_id'] =  $request->code_id;
                 $validateConsultationDischarge['sub_code_id'] = 'required';
                 $consultationdischarge['sub_code_id'] =  $request->sub_code_id;
+                $consultationdischarge['add_code_id'] =  $request->add_code_id;
+                $consultationdischarge['add_sub_code_id'] =  $request->add_sub_code_id;
             }
             $validator = Validator::make($request->all(), $validateConsultationDischarge);
             if ($validator->fails()) {
@@ -72,17 +76,17 @@ class ConsultationDischargeNoteController extends Controller
             $consultationdischarge = [
                 'added_by' => $request->added_by,
                 'patient_id' => $request->patient_id,
-
                 'diagnosis_id' => $request->diagnosis_id,
                 'category_discharge' => $request->category_discharge,
                 'comment' => $request->comment,
                 'specialist_name_id' => $request->specialist_name_id,
                 'date' => $request->date,
-
                 'location_services' => $request->location_services,
                 'services_id' => $request->services_id,
                 'code_id' => $request->code_id,
                 'sub_code_id' => $request->sub_code_id,
+                'add_code_id' => $request->add_code_id,
+                'add_sub_code_id' => $request->add_sub_code_id,
                 'type_diagnosis_id' => $request->type_diagnosis_id,
                 'category_services' => $request->category_services,
                 'complexity_services' => $request->complexity_services,
@@ -102,6 +106,8 @@ class ConsultationDischargeNoteController extends Controller
                 $consultationdischarge['code_id'] =  $request->code_id;
                 $validateConsultationDischarge['sub_code_id'] = 'required';
                 $consultationdischarge['sub_code_id'] =  $request->sub_code_id;
+                $consultationdischarge['add_code_id'] =  $request->add_code_id;
+                $consultationdischarge['add_sub_code_id'] =  $request->add_sub_code_id;
             }
             $validator = Validator::make($request->all(), $validateConsultationDischarge);
             if ($validator->fails()) {
