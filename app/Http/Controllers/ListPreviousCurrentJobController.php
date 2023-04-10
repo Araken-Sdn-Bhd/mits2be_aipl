@@ -16,7 +16,6 @@ class ListPreviousCurrentJobController extends Controller
          $validator = Validator::make($request->all(), [
              'added_by' => 'required|integer',
              'patient_id' => 'required|integer',
-
              'location_services' => 'required',
              'services_id' => '',
              'code_id' => '',
@@ -32,16 +31,21 @@ class ListPreviousCurrentJobController extends Controller
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
+         $additional_diagnosis=str_replace('"','',$request->additional_diagnosis);
+         $additional_sub_code_id=str_replace('"','',$request->additional_sub_code_id);
+         $sub_code_id=str_replace('"','',$request->sub_code_id);
 
             $listpreviouscurrentjob = [
             'added_by' => $request->added_by,
             'patient_id' => $request->patient_id,
-
             'location_services' => $request->location_services,
             'services_id' => $request->services_id,
             'code_id' => $request->code_id,
-            'sub_code_id' => $request->sub_code_id,
+            'sub_code_id' => $sub_code_id,//newly added
             'type_diagnosis_id' => $request->type_diagnosis_id,
+            'add_type_diagnosis_id'=> $additional_diagnosis, //newly added
+            'add_sub_code_id' => $additional_sub_code_id, //newly added
+            'add_code_id' => $request->additional_code_id, //newly added
             'category_services' => $request->category_services,
             'complexity_services' => $request->complexity_services,
             'outcome' => $request->outcome,
@@ -59,7 +63,7 @@ class ListPreviousCurrentJobController extends Controller
              $validateListPreviousCurrentJob['code_id'] = 'required';
              $listpreviouscurrentjob['code_id'] =  $request->code_id;
              $validateListPreviousCurrentJob['sub_code_id'] = 'required';
-             $listpreviouscurrentjob['sub_code_id'] =  $request->sub_code_id;
+             $listpreviouscurrentjob['sub_code_id'] =  $sub_code_id;
          }
          $validator = Validator::make($request->all(), $validateListPreviousCurrentJob);
          if ($validator->fails()) {
