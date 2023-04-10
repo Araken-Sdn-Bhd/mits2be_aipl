@@ -38,6 +38,8 @@ class JobStartForm extends Model
         'medication_prescription',
         'status',
         'created_at',
-        'is_deleted'
+        'is_deleted',
+        'add_code_id',
+        'add_sub_code_id'
     ];
 }
