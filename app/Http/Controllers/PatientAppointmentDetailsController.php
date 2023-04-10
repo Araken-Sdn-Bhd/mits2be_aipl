@@ -2869,15 +2869,17 @@ class PatientAppointmentDetailsController extends Controller
                     $list[$key]['patient_id'] = $val['patient_id'] ??  'NA';
                     $list[$key]['location_services'] = $val['location_services'] ??  'NA';
                     $list[$key]['type_diagnosis_id'] = $val['type_diagnosis_id'] ??  'NA';
+                    $list[$key]['add_type_diagnosis_id'] = $val['add_type_diagnosis_id'] ??  'NA';
                     $list[$key]['category_services'] = $val['category_services'] ??  'NA';
                     $list[$key]['services_id'] = $val['services_id'] ??  'NA';
                     $list[$key]['code_id'] = $val['code_id'] ??  'NA';
                     $list[$key]['sub_code_id'] = $val['sub_code_id'] ??  'NA';
+                    $list[$key]['add_code_id'] = $val['add_code_id'] ??  'NA';
+                    $list[$key]['add_sub_code_id'] = $val['add_sub_code_id'] ??  'NA';
                     $list[$key]['complexity_services'] = $val['complexity_services'] ??  'NA';
                     $list[$key]['outcome'] = $val['outcome'] ??  'NA';
                     $list[$key]['medication_des'] = $val['medication_des'] ??  'NA';
                     $list[$key]['status'] = $val['status'] ??  'NA';
-
                     $list[$key]['jobs'] = $ab ??  'NA';
                 }
             }
