@@ -17,8 +17,12 @@ class PsychiatryClerkingNoteController extends Controller
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|string',
             'appointment_details_id' => '',
-
         ]);
+
+        $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
+        $additional_subcode=str_replace('"',"",$request->additional_subcode);
+        $sub_code_id=str_replace('"',"",$request->sub_code_id);
+
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
@@ -48,6 +52,9 @@ class PsychiatryClerkingNoteController extends Controller
                         'time' =>  $request->time,
                         'location_services_id' =>  $request->location_services_id,
                         'type_diagnosis_id' =>  $request->type_diagnosis_id,
+                        'additional_diagnosis' => $additional_diagnosis,
+                        'additional_subcode' => $additional_subcode,
+                        'additional_code_id' => $request->additional_code_id,
                         'category_services' =>  $request->category_services,
                         'complexity_services_id' =>  $request->complexity_services_id,
                         'outcome_id' =>  $request->outcome_id,
@@ -69,7 +76,7 @@ class PsychiatryClerkingNoteController extends Controller
                 } else if ($request->category_services == 'clinical-work') {
                     $validator = Validator::make($request->all(), [
                         'code_id' => 'required|integer',
-                        'sub_code_id' => 'required|integer'
+                        'sub_code_id' => 'required'
                     ]);
                     if ($validator->fails()) {
                         return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -78,7 +85,7 @@ class PsychiatryClerkingNoteController extends Controller
                     $psychiatryclerking = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
+                        'sub_code_id' =>  $sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'chief_complain' =>  $request->chief_complain,
@@ -94,6 +101,9 @@ class PsychiatryClerkingNoteController extends Controller
                         'location_services_id' =>  $request->location_services_id,
                         'type_diagnosis_id' =>  $request->type_diagnosis_id,
                         'category_services' =>  $request->category_services,
+                        'additional_diagnosis' => $additional_diagnosis,
+                        'additional_code_id' => $request->additional_code_id,
+                        'additional_subcode' => $additional_subcode,
                         'complexity_services_id' =>  $request->complexity_services_id,
                         'outcome_id' =>  $request->outcome_id,
                         'medication_des' =>  $request->medication_des,
@@ -134,6 +144,9 @@ class PsychiatryClerkingNoteController extends Controller
                         'location_services_id' =>  $request->location_services_id,
                         'type_diagnosis_id' =>  $request->type_diagnosis_id,
                         'category_services' =>  $request->category_services,
+                        'additional_diagnosis' => $additional_diagnosis,
+                        'additional_subcode' => $additional_subcode,
+                        'additional_code_id' => $request->additional_code_id,
                         'complexity_services_id' =>  $request->complexity_services_id,
                         'outcome_id' =>  $request->outcome_id,
                         'medication_des' =>  $request->medication_des,
@@ -151,7 +164,7 @@ class PsychiatryClerkingNoteController extends Controller
                 } else if ($request->category_services == 'clinical-work') {
                     $validator = Validator::make($request->all(), [
                         'code_id' => 'required|integer',
-                        'sub_code_id' => 'required|integer'
+                        'sub_code_id' => 'required'
                     ]);
                     if ($validator->fails()) {
                         return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -160,7 +173,7 @@ class PsychiatryClerkingNoteController extends Controller
                     $psychiatryclerking = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
+                        'sub_code_id' =>  $sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'chief_complain' =>  $request->chief_complain,
@@ -176,6 +189,9 @@ class PsychiatryClerkingNoteController extends Controller
                         'location_services_id' =>  $request->location_services_id,
                         'type_diagnosis_id' =>  $request->type_diagnosis_id,
                         'category_services' =>  $request->category_services,
+                        'additional_diagnosis' => $additional_diagnosis,
+                        'additional_subcode' => $additional_subcode,
+                        'additional_code_id' => $request->additional_code_id,
                         'complexity_services_id' =>  $request->complexity_services_id,
                         'outcome_id' =>  $request->outcome_id,
                         'medication_des' =>  $request->medication_des,
@@ -233,7 +249,7 @@ class PsychiatryClerkingNoteController extends Controller
                     $psychiatryclerking = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
+                        'sub_code_id' =>  $sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'chief_complain' =>  $request->chief_complain,
@@ -249,6 +265,9 @@ class PsychiatryClerkingNoteController extends Controller
                         'location_services_id' =>  $request->location_services_id,
                         'type_diagnosis_id' =>  $request->type_diagnosis_id,
                         'category_services' =>  $request->category_services,
+                        'additional_diagnosis' => $additional_diagnosis,
+                        'additional_subcode' => $additional_subcode,
+                        'additional_code_id' => $request->additional_code_id,
                         'complexity_services_id' =>  $request->complexity_services_id,
                         'outcome_id' =>  $request->outcome_id,
                         'medication_des' =>  $request->medication_des,
@@ -268,7 +287,7 @@ class PsychiatryClerkingNoteController extends Controller
                     $psychiatryclerking = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
+                        'sub_code_id' =>  $sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'chief_complain' =>  $request->chief_complain,
@@ -336,7 +355,7 @@ class PsychiatryClerkingNoteController extends Controller
                     $psychiatryclerking = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
+                        'sub_code_id' =>  $sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'chief_complain' =>  $request->chief_complain,
@@ -352,6 +371,9 @@ class PsychiatryClerkingNoteController extends Controller
                         'location_services_id' =>  $request->location_services_id,
                         'type_diagnosis_id' =>  $request->type_diagnosis_id,
                         'category_services' =>  $request->category_services,
+                        'additional_diagnosis' => $additional_diagnosis,
+                        'additional_subcode' => $additional_subcode,
+                        'additional_code_id' => $request->additional_code_id,
                         'complexity_services_id' =>  $request->complexity_services_id,
                         'outcome_id' =>  $request->outcome_id,
                         'medication_des' =>  $request->medication_des,
@@ -370,7 +392,7 @@ class PsychiatryClerkingNoteController extends Controller
                     $psychiatryclerking = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
+                        'sub_code_id' =>  $sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'chief_complain' =>  $request->chief_complain,
