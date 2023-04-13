@@ -12,6 +12,6 @@ class EtpProgressNote extends Model
     protected $table = 'etp_progress_note';
     protected $fillable =  ['id', 'name','appointment_details_id', 'mrn','patient_mrn_id','added_by', 'date', 'time', 'staff_name', 'work_readiness',
     'progress_note', 'management_plan', 'location_service', 'diagnosis_type', 'service_category',
-    'services_id', 'code_id', 'sub_code_id', 'complexity_service', 'outcome',
+    'services_id', 'code_id', 'sub_code_id', 'complexity_service', 'outcome', 'additional_diagnosis', 'additional_code_id','additional_subcode',
     'medication', 'status','created_at'];
 }
