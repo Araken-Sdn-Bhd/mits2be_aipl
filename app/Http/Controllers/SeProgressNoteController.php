@@ -44,6 +44,11 @@ class SeProgressNoteController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
+
+        $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
+        $additional_subcode=str_replace('"',"",$request->additional_subcode);
+        $sub_code_id=str_replace('"',"",$request->sub_code_id);
+
         if ($request->status == 1) {
             if ($request->id) {
                 if ($request->service_category == 'assisstance' || $request->service_category == 'external') {
@@ -77,6 +82,7 @@ class SeProgressNoteController extends Controller
                         'medication' =>  $request->medication,
                         'status' => "1",
                         'appointment_details_id' => $request->appId,
+                        'additional_diagnosis' => $additional_diagnosis,
                     ];
 
                     try {
@@ -86,11 +92,11 @@ class SeProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'SeProgress' => $seprogressnote, "code" => 200]);
                     }
-                    return response()->json(["message" => "SE Progress Form Successfully", "code" => 200]);
+                    return response()->json(["message" => "SE Progress Form Successfully1", "code" => 200]);
                 } else if ($request->service_category == 'clinical-work') {
                     $validator = Validator::make($request->all(), [
                         'code_id' => 'required|integer',
-                        'sub_code_id' => 'required|integer'
+                        'sub_code_id' => 'required'
                     ]);
                     if ($validator->fails()) {
                         return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -99,7 +105,7 @@ class SeProgressNoteController extends Controller
                     $SeProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
+                        'sub_code_id' =>  $sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'patient_id' =>  $request->patient_id,
@@ -121,6 +127,9 @@ class SeProgressNoteController extends Controller
                         'medication' =>  $request->medication,
                         'status' => "1",
                         'appointment_details_id' => $request->appId,
+                        'additional_diagnosis' => $additional_diagnosis,
+                        'additional_code_id' => $request->additional_code_id,
+                        'additional_subcode' => $additional_subcode,
                     ];
 
                     try {
@@ -130,7 +139,7 @@ class SeProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'EtpProgress' => $SeProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Se Progress Note Successfully", "code" => 200]);
+                    return response()->json(["message" => "Se Progress Note Successfully2", "code" => 200]);
                 } else if ($request->service_category == 'clinical') {
                     $validator = Validator::make($request->all(), [
                         'code_id' => 'required|integer',
@@ -174,7 +183,7 @@ class SeProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'EtpProgress' => $SeProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Se Progress Note Successfully", "code" => 200]);
+                    return response()->json(["message" => "Se Progress Note Successfully3", "code" => 200]);
                 }
             } else {
                 if ($request->service_category == 'assisstance' || $request->service_category == 'external') {
@@ -215,11 +224,11 @@ class SeProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'SeProgress' => $seprogressnote, "code" => 200]);
                     }
-                    return response()->json(["message" => "SE Progress Form Successfully", "code" => 200]);
+                    return response()->json(["message" => "SE Progress Form Successfully4", "code" => 200]);
                 } else if ($request->service_category == 'clinical-work') {
                     $validator = Validator::make($request->all(), [
                         'code_id' => 'required|integer',
-                        'sub_code_id' => 'required|integer'
+                        'sub_code_id' => 'required'
                     ]);
                     if ($validator->fails()) {
                         return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -228,7 +237,7 @@ class SeProgressNoteController extends Controller
                     $SeProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
+                        'sub_code_id' =>  $sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'patient_id' =>  $request->patient_id,
@@ -250,6 +259,9 @@ class SeProgressNoteController extends Controller
                         'medication' =>  $request->medication,
                         'status' => "1",
                         'appointment_details_id' => $request->appId,
+                        'additional_diagnosis' => $additional_diagnosis,
+                        'additional_code_id' => $request->additional_code_id,
+                        'additional_subcode' => $additional_subcode,
                     ];
 
                     try {
@@ -257,7 +269,7 @@ class SeProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'EtpProgress' => $SeProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Se Progress Note Successfully", "code" => 200]);
+                    return response()->json(["message" => "Se Progress Note Successfully5", "code" => 200]);
                 } else if ($request->service_category == 'clinical') {
                     $validator = Validator::make($request->all(), [
                         'code_id' => 'required|integer',
@@ -299,7 +311,7 @@ class SeProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'EtpProgress' => $SeProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Se Progress Note Successfully", "code" => 200]);
+                    return response()->json(["message" => "Se Progress Note Successfully6", "code" => 200]);
                 }
             }
         } else if ($request->status == 0) {
@@ -344,11 +356,11 @@ class SeProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'SeProgress' => $seprogressnote, "code" => 200]);
                     }
-                    return response()->json(["message" => "SE Progress Form Successfully", "code" => 200]);
+                    return response()->json(["message" => "SE Progress Form Successfully7", "code" => 200]);
                 } else if ($request->service_category == 'clinical-work') {
                     $validator = Validator::make($request->all(), [
                         'code_id' => 'required|integer',
-                        'sub_code_id' => 'required|integer'
+                        'sub_code_id' => 'required'
                     ]);
                     if ($validator->fails()) {
                         return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -357,7 +369,7 @@ class SeProgressNoteController extends Controller
                     $SeProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
+                        'sub_code_id' =>  $sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'patient_id' =>  $request->patient_id,
@@ -379,6 +391,9 @@ class SeProgressNoteController extends Controller
                         'medication' =>  $request->medication,
                         'status' => "0",
                         'appointment_details_id' => $request->appId,
+                        'additional_diagnosis' => $additional_diagnosis,
+                        'additional_code_id' => $request->additional_code_id,
+                        'additional_subcode' => $additional_subcode,
                     ];
 
                     try {
@@ -388,7 +403,7 @@ class SeProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'EtpProgress' => $SeProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Se Progress Note Successfully", "code" => 200]);
+                    return response()->json(["message" => "Se Progress Note Successfully8", "code" => 200]);
                 } else if ($request->service_category == 'clinical') {
                     $validator = Validator::make($request->all(), [
                         'code_id' => 'required|integer',
@@ -432,7 +447,7 @@ class SeProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'EtpProgress' => $SeProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Se Progress Note Successfully", "code" => 200]);
+                    return response()->json(["message" => "Se Progress Note Successfully9", "code" => 200]);
                 } else {
 
                     $SeProgress = [
@@ -468,7 +483,7 @@ class SeProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'SEProgress' => $SeProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Se Progress Note Successfully", "code" => 200]);
+                    return response()->json(["message" => "Se Progress Note Successfully10", "code" => 200]);
                 }
             } else {
                 if ($request->appId == null || $request->appId == '') {
@@ -602,6 +617,7 @@ class SeProgressNoteController extends Controller
                         'medication' =>  $request->medication,
                         'status' => "0",
                         'appointment_details_id' => $request->appId,
+                        'additional_diagnosis' => $additional_diagnosis,
                     ];
 
                     try {
@@ -609,13 +625,13 @@ class SeProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'SeProgress' => $seprogressnote, "code" => 200]);
                     }
-                    return response()->json(["message" => "SE Progress Form Successfully", "code" => 200]);
+                    return response()->json(["message" => "SE Progress Form Successfully11", "code" => 200]);
                 } else if ($request->service_category == 'clinical-work') {
 
                     $SeProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
+                        'sub_code_id' =>  $sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'patient_id' =>  $request->patient_id,
@@ -637,6 +653,9 @@ class SeProgressNoteController extends Controller
                         'medication' =>  $request->medication,
                         'status' => "0",
                         'appointment_details_id' => $request->appId,
+                        'additional_diagnosis' => $additional_diagnosis,
+                        'additional_code_id' => $request->additional_code_id,
+                        'additional_subcode' => $additional_subcode,
                     ];
 
                     try {
@@ -644,7 +663,7 @@ class SeProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'EtpProgress' => $SeProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Se Progress Note Successfully", "code" => 200]);
+                    return response()->json(["message" => "Se Progress Note Successfully12", "code" => 200]);
                 } else if ($request->service_category == 'clinical') {
 
                     $SeProgress = [
@@ -679,13 +698,13 @@ class SeProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'EtpProgress' => $SeProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Se Progress Note Successfully", "code" => 200]);
+                    return response()->json(["message" => "Se Progress Note Successfully13", "code" => 200]);
                 } else {
 
                     $SeProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
+                        'sub_code_id' =>  $sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'patient_id' =>  $request->patient_id,
@@ -706,6 +725,9 @@ class SeProgressNoteController extends Controller
                         'medication' =>  $request->medication,
                         'status' => "0",
                         'appointment_details_id' => $request->appId,
+                        'additional_diagnosis' => $additional_diagnosis,
+                        'additional_code_id' => $request->additional_code_id,
+                        'additional_subcode' => $additional_subcode,
                     ];
 
                     try {
@@ -713,7 +735,7 @@ class SeProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'SEProgress' => $SeProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "Se Progress Note Successfully", "code" => 200]);
+                    return response()->json(["message" => "Se Progress Note Successfully14", "code" => 200]);
                 }
             }
         }
