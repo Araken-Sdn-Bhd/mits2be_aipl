@@ -16,5 +16,5 @@ class PatientIndexForm extends Model
     'tobacco','others','past_Medical','background_history','who_das_assessment','mental_state_examination',
     'summary_of_issues','management_plan','location_of_services','type_of_diagnosis','category_of_services','services_id',
     'added_by','patient_mrn_id','code_id','sub_code_id',
-    'complexity_of_service','outcome','medication','zone','case_manager','specialist','date','status','created_at','is_deleted'];
+    'complexity_of_service','outcome','medication','zone','case_manager','specialist','date','status','additional_diagnosis', 'additional_subcode','additional_code_id','created_at','is_deleted'];
 }

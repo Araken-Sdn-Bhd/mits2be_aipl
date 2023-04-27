@@ -38,11 +38,15 @@ class CpsProgressNoteController extends Controller
             'designation' => 'required|string',
 
         ]);
-        if ($request->status == 1) {
             if ($validator->fails()) {
                 return response()->json(["message" => $validator->errors(), "code" => 422]);
             }
 
+            $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
+            $additional_subcode=str_replace('"',"",$request->additional_subcode);
+            $sub_code_id=str_replace('"',"",$request->sub_code_id);
+
+            if ($request->status == 1) {
             if ($request->id) {
                 if ($request->service_category == 'assisstance' || $request->service_category == 'external') {
                     $validator = Validator::make($request->all(), [
@@ -121,7 +125,8 @@ class CpsProgressNoteController extends Controller
                         'medication' =>  $request->medication,
                         'staff_name' =>  $request->staff_name,
                         'designation' =>  $request->designation,
-                        'status' => "1"
+                        'status' => "1",
+                        'additional_diagnosis' => $additional_diagnosis,
                     ];
 
                     try {
@@ -135,7 +140,7 @@ class CpsProgressNoteController extends Controller
                 } else if ($request->service_category == 'clinical-work') {
                     $validator = Validator::make($request->all(), [
                         'code_id' => 'required|integer',
-                        'sub_code_id' => 'required|integer'
+                        'sub_code_id' => 'required'
                     ]);
                     if ($validator->fails()) {
                         return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -144,7 +149,7 @@ class CpsProgressNoteController extends Controller
                     $CpsProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
+                        'sub_code_id' =>  $sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'cps_date' =>  $request->cps_date,
@@ -212,7 +217,10 @@ class CpsProgressNoteController extends Controller
                         'medication' =>  $request->medication,
                         'staff_name' =>  $request->staff_name,
                         'designation' =>  $request->designation,
-                        'status' => "1"
+                        'status' => "1",
+                        'additional_diagnosis' => $additional_diagnosis,
+                        'additional_code_id'=> $request->additional_code_id,
+                        'additional_subcode' => $additional_subcode,
                     ];
 
                     try {
@@ -222,7 +230,7 @@ class CpsProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $CpsProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "CPS Progress Note Successfully11", "code" => 200]);
+                    return response()->json(["message" => "CPS Progress Note Successfully1", "code" => 200]);
                 }
             } else {
                 if ($request->service_category == 'assisstance' || $request->service_category == 'external') {
@@ -304,6 +312,7 @@ class CpsProgressNoteController extends Controller
                         'designation' =>  $request->designation,
                         'status' => "1",
                         'appointment_details_id' => $request->appId,
+                        'additional_diagnosis' => $additional_diagnosis,
                     ];
 
                     try {
@@ -315,7 +324,7 @@ class CpsProgressNoteController extends Controller
                 } else if ($request->service_category == 'clinical-work') {
                     $validator = Validator::make($request->all(), [
                         'code_id' => 'required|integer',
-                        'sub_code_id' => 'required|integer'
+                        'sub_code_id' => 'required'
                     ]);
                     if ($validator->fails()) {
                         return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -324,7 +333,7 @@ class CpsProgressNoteController extends Controller
                     $CpsProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
+                        'sub_code_id' =>  $sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'cps_date' =>  $request->cps_date,
@@ -394,6 +403,9 @@ class CpsProgressNoteController extends Controller
                         'designation' =>  $request->designation,
                         'status' => "1",
                         'appointment_details_id' => $request->appId,
+                        'additional_diagnosis' => $additional_diagnosis,
+                        'additional_code_id'=> $request->additional_code_id,
+                        'additional_subcode' => $additional_subcode,
                     ];
 
                     try {
@@ -401,7 +413,7 @@ class CpsProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $CpsProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "CPS Progress Note Successfully11", "code" => 200]);
+                    return response()->json(["message" => "CPS Progress Note Successfully2", "code" => 200]);
                 } else if ($request->service_category == 'clinical') {
                     $validator = Validator::make($request->all(), [
                         'code_id' => 'required|integer',
@@ -491,7 +503,7 @@ class CpsProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $CpsProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "CPS Progress Note Successfully11", "code" => 200]);
+                    return response()->json(["message" => "CPS Progress Note Successfully3", "code" => 200]);
                 }
             }
         } else if ($request->status == 0) {
@@ -587,7 +599,7 @@ class CpsProgressNoteController extends Controller
                     $CpsProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
+                        'sub_code_id' =>  $sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'cps_date' =>  $request->cps_date,
@@ -657,6 +669,9 @@ class CpsProgressNoteController extends Controller
                         'designation' =>  $request->designation,
                         'status' => "0",
                         'appointment_details_id' => $request->appId,
+                        'additional_diagnosis' => $additional_diagnosis,
+                        'additional_code_id'=> $request->additional_code_id,
+                        'additional_subcode' => $additional_subcode,
                     ];
 
                     try {
@@ -666,12 +681,12 @@ class CpsProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $CpsProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "CPS Progress Note Successfully11", "code" => 200]);
+                    return response()->json(["message" => "CPS Progress Note Successfully4", "code" => 200]);
                 }else {
                     $CpsProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
+                        'sub_code_id' =>  $sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'cps_date' =>  $request->cps_date,
@@ -749,7 +764,7 @@ class CpsProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $CpsProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "CPS Progress Note Successfully11", "code" => 200]);
+                    return response()->json(["message" => "CPS Progress Note Successfully5", "code" => 200]);
                 }
             } else {
                 if ($request->appId == null || $request->appId == '') {
@@ -932,7 +947,7 @@ class CpsProgressNoteController extends Controller
                     $CpsProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
+                        'sub_code_id' =>  $sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'cps_date' =>  $request->cps_date,
@@ -1002,6 +1017,9 @@ class CpsProgressNoteController extends Controller
                         'designation' =>  $request->designation,
                         'status' => "0",
                         'appointment_details_id' => $request->appId,
+                        'additional_diagnosis' => $additional_diagnosis,
+                        'additional_code_id'=> $request->additional_code_id,
+                        'additional_subcode' => $additional_subcode,
                     ];
 
                     try {
@@ -1009,7 +1027,7 @@ class CpsProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $CpsProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "CPS Progress Note Successfully11", "code" => 200]);
+                    return response()->json(["message" => "CPS Progress Note Successfully6", "code" => 200]);
                 } else if ($request->service_category == 'clinical') {
                     $CpsProgress = [
                         'services_id' =>  $request->services_id,
@@ -1091,12 +1109,12 @@ class CpsProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $CpsProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "CPS Progress Note Successfully11", "code" => 200]);
+                    return response()->json(["message" => "CPS Progress Note Successfully7", "code" => 200]);
                 } else {
                     $CpsProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
+                        'sub_code_id' =>  $sub_code_id,
                         'added_by' =>  $request->added_by,
                         'patient_mrn_id' =>  $request->patient_mrn_id,
                         'cps_date' =>  $request->cps_date,
@@ -1165,6 +1183,9 @@ class CpsProgressNoteController extends Controller
                         'designation' =>  $request->designation,
                         'status' => "0",
                         'appointment_details_id' => $request->appId,
+                        'additional_diagnosis' => $additional_diagnosis,
+                        'additional_code_id'=> $request->additional_code_id,
+                        'additional_subcode' => $additional_subcode,
                     ];
 
                     try {
@@ -1172,7 +1193,7 @@ class CpsProgressNoteController extends Controller
                     } catch (Exception $e) {
                         return response()->json(["message" => $e->getMessage(), 'CpsProgress' => $CpsProgress, "code" => 200]);
                     }
-                    return response()->json(["message" => "CPS Progress Note Successfully11", "code" => 200]);
+                    return response()->json(["message" => "CPS Progress Note Successfully8", "code" => 200]);
                 }
             }
         }
