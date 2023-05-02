@@ -16,5 +16,5 @@ class CounsellingProgressNote extends Model
     'transference_session','duration_session','other_comment_session','name','designation',
     'date_session','location_services_id','type_diagnosis_id','category_services',
     'services_id','code_id','sub_code_id','complexity_services_id','outcome_id',
-    'medication_des','status','created_at'];
+    'medication_des','additional_code_id','additional_diagnosis','additional_subcode', 'status','created_at'];
 }

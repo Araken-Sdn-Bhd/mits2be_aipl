@@ -23,323 +23,170 @@ class PatientCounsellorClerkingNotesController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        if ($request->status == "1") {
-            if ($request->id) {
 
-                if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
-                    $validator = Validator::make($request->all(), [
-                        'services_id' => 'required'
-                    ]);
-                    if ($validator->fails()) {
-                        return response()->json(["message" => $validator->errors(), "code" => 422]);
-                    }
-                    $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-                    $psychiatryclerking = [
-                        'services_id' =>  $request->services_id,
-                        'added_by' =>  $request->added_by,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'clinical_summary' =>  $request->clinical_summary,
-                        'background_history' =>  $request->background_history,
-                        'clinical_notes' =>  $request->clinical_notes,
-                        'diagnosis_id' =>  $request->diagnosis_id,
-                        'management' =>  $request->management,
-                        'location_services_id' =>  $request->location_services_id,
-                        'type_diagnosis_id' =>  $request->type_diagnosis_id,
-                        'category_services' =>  $request->category_services,
-                        'complexity_services_id' =>  $request->complexity_services_id,
-                        'outcome_id' =>  $request->outcome_id,
-                        'medication_des' =>  $request->medication_des,
-                        'status' => "1",
-                        'created_at' => $date->format('Y-m-d H:i:s')
-                    ];
+        $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
+        $additional_subcode=str_replace('"',"",$request->additional_subcode);
+        $sub_code_id=str_replace('"',"",$request->sub_code_id);
 
-                    try {
-                        PatientCounsellorClerkingNotes::where(
-                            ['id' => $request->id]
-                        )->update($psychiatryclerking);
-                    } catch (Exception $e) {
-                        return response()->json(["message" => $e->getMessage(), 'Counsellclerking' => $psychiatryclerking, "code" => 200]);
-                    }
-                    return response()->json(["message" => "Counsellclerking clerking Successfully00", "code" => 200]);
-                } else if ($request->category_services == 'clinical-work') {
-                    $validator = Validator::make($request->all(), [
-                        'code_id' => 'required|integer',
-                        'sub_code_id' => 'required|integer'
-                    ]);
-                    if ($validator->fails()) {
-                        return response()->json(["message" => $validator->errors(), "code" => 422]);
-                    }
-                    $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-                    $psychiatryclerking = [
-                        'services_id' =>  $request->services_id,
-                        'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
-                        'added_by' =>  $request->added_by,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'clinical_summary' =>  $request->clinical_summary,
-                        'background_history' =>  $request->background_history,
-                        'clinical_notes' =>  $request->clinical_notes,
-                        'diagnosis_id' =>  $request->diagnosis_id,
-                        'management' =>  $request->management,
-                        'location_services_id' =>  $request->location_services_id,
-                        'type_diagnosis_id' =>  $request->type_diagnosis_id,
-                        'category_services' =>  $request->category_services,
-                        'complexity_services_id' =>  $request->complexity_services_id,
-                        'outcome_id' =>  $request->outcome_id,
-                        'medication_des' =>  $request->medication_des,
-                        'status' => "1",
-                        'created_at' => $date->format('Y-m-d H:i:s'),
-                        'appointment_details_id' => $request->appId,
+        if ($request->status == "0") {
+            if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
+                $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+                $psychiatryclerking = [
+                    'services_id' =>  $request->services_id,
+                    'appointment_details_id' => $request->appId,
+                    'added_by' =>  $request->added_by,
+                    'patient_mrn_id' =>  $request->patient_mrn_id,
+                    'clinical_summary' =>  $request->clinical_summary,
+                    'background_history' =>  $request->background_history,
+                    'clinical_notes' =>  $request->clinical_notes,
+                    'diagnosis_id' =>  $request->diagnosis_id,
+                    'management' =>  $request->management,
+                    'location_services_id' =>  $request->location_services_id,
+                    'type_diagnosis_id' =>  $request->type_diagnosis_id,
+                    'category_services' =>  $request->category_services,
+                    'additional_diagnosis' => $additional_diagnosis,
+                    'complexity_services_id' =>  $request->complexity_services_id,
+                    'outcome_id' =>  $request->outcome_id,
+                    'medication_des' =>  $request->medication_des,
+                    'status' => "0",
+                    'created_at' => $date->format('Y-m-d H:i:s'),
 
-                    ];
-
-                    try {
-                        PatientCounsellorClerkingNotes::where(
-                            ['id' => $request->id]
-                        )->update($psychiatryclerking);
-                    } catch (Exception $e) {
-                        return response()->json(["message" => $e->getMessage(), 'counsellclerking' => $psychiatryclerking, "code" => 200]);
-                    }
-                    return response()->json(["message" => "Counsellclerking clerking Successfully11", "code" => 200]);
+                ];
+                if($request->id) {
+                    PatientCounsellorClerkingNotes::where(
+                                ['id' => $request->id]
+                            )->update($psychiatryclerking);
+                            return response()->json(["message" => "Counselling Clerking Note updated successfully", "code" => 200]);
+                } else {
+                    PatientCounsellorClerkingNotes::create($psychiatryclerking);
+                    return response()->json(["message" => "Counselling Clerking Note created successfully", "code" => 200]);
                 }
-            } else {
+            } else if ($request->category_services == 'clinical-work') {
+                $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+                $psychiatryclerking = [
+                    'services_id' =>  $request->services_id,
+                    'code_id' =>  $request->code_id,
+                    'sub_code_id' =>  $sub_code_id,
+                    'added_by' =>  $request->added_by,
+                    'patient_mrn_id' =>  $request->patient_mrn_id,
+                    'patient_mrn_id' =>  $request->patient_mrn_id,
+                    'clinical_summary' =>  $request->clinical_summary,
+                    'background_history' =>  $request->background_history,
+                    'clinical_notes' =>  $request->clinical_notes,
+                    'diagnosis_id' =>  $request->diagnosis_id,
+                    'management' =>  $request->management,
+                    'location_services_id' =>  $request->location_services_id,
+                    'type_diagnosis_id' =>  $request->type_diagnosis_id,
+                    'category_services' =>  $request->category_services,
+                    'additional_diagnosis' => $additional_diagnosis,
+                    'additional_subcode' => $additional_subcode,
+                    'additional_code_id' => $request->additional_code_id,
+                    'complexity_services_id' =>  $request->complexity_services_id,
+                    'outcome_id' =>  $request->outcome_id,
+                    'medication_des' =>  $request->medication_des,
+                    'status' => "0",
+                    'created_at' => $date->format('Y-m-d H:i:s'),
+                    'appointment_details_id' => $request->appId,
+                ];
 
-                if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
-                    $validator = Validator::make($request->all(), [
-                        'services_id' => 'required'
-                    ]);
-                    if ($validator->fails()) {
-                        return response()->json(["message" => $validator->errors(), "code" => 422]);
-                    }
-                    $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-                    $psychiatryclerking = [
-                        'services_id' =>  $request->services_id,
-                        'appointment_details_id' => $request->appId,
-                        'added_by' =>  $request->added_by,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'clinical_summary' =>  $request->clinical_summary,
-                        'background_history' =>  $request->background_history,
-                        'clinical_notes' =>  $request->clinical_notes,
-                        'diagnosis_id' =>  $request->diagnosis_id,
-                        'management' =>  $request->management,
-                        'location_services_id' =>  $request->location_services_id,
-                        'type_diagnosis_id' =>  $request->type_diagnosis_id,
-                        'category_services' =>  $request->category_services,
-                        'complexity_services_id' =>  $request->complexity_services_id,
-                        'outcome_id' =>  $request->outcome_id,
-                        'medication_des' =>  $request->medication_des,
-                        'status' => "1",
-                        'created_at' => $date->format('Y-m-d H:i:s'),
-
-                    ];
-
-                    try {
-
-                        $HOD = PatientCounsellorClerkingNotes::Create($psychiatryclerking);
-                    } catch (Exception $e) {
-                        return response()->json(["message" => $e->getMessage(), 'Counsellclerking' => $psychiatryclerking, "code" => 200]);
-                    }
-                    return response()->json(["message" => "Counsellclerking clerking Successfully00", "code" => 200]);
-                } else if ($request->category_services == 'clinical-work') {
-
-                    $validator = Validator::make($request->all(), [
-                        'code_id' => 'required|integer',
-                        'sub_code_id' => 'required|integer'
-                    ]);
-                    if ($validator->fails()) {
-                        return response()->json(["message" => $validator->errors(), "code" => 422]);
-                    }
-                    $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-                    $psychiatryclerking = [
-                        'services_id' =>  $request->services_id,
-                        'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
-                        'added_by' =>  $request->added_by,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'clinical_summary' =>  $request->clinical_summary,
-                        'background_history' =>  $request->background_history,
-                        'clinical_notes' =>  $request->clinical_notes,
-                        'diagnosis_id' =>  $request->diagnosis_id,
-                        'management' =>  $request->management,
-                        'location_services_id' =>  $request->location_services_id,
-                        'type_diagnosis_id' =>  $request->type_diagnosis_id,
-                        'category_services' =>  $request->category_services,
-                        'complexity_services_id' =>  $request->complexity_services_id,
-                        'outcome_id' =>  $request->outcome_id,
-                        'medication_des' =>  $request->medication_des,
-                        'status' => "1",
-                        'created_at' => $date->format('Y-m-d H:i:s'),
-                        'appointment_details_id' => $request->appId,
-                    ];
-
-                    try {
-                        $HOD = PatientCounsellorClerkingNotes::firstOrCreate($psychiatryclerking);
-                    } catch (Exception $e) {
-                        return response()->json(["message" => $e->getMessage(), 'counsellclerking' => $psychiatryclerking, "code" => 200]);
-                    }
-                    return response()->json(["message" => "Counsellclerking clerking Successfully11", "code" => 200]);
+                if($request->id) {
+                    PatientCounsellorClerkingNotes::where(
+                                ['id' => $request->id]
+                            )->update($psychiatryclerking);
+                            return response()->json(["message" => "Counselling Clerking Note updated successfully", "code" => 200]);
+                } else {
+                    PatientCounsellorClerkingNotes::create($psychiatryclerking);
+                    return response()->json(["message" => "Counselling Clerking Note created successfully", "code" => 200]);
                 }
             }
-        } else if ($request->status == "0") {
-            if ($request->id) {
-                if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
-                    $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-                    $psychiatryclerking = [
-                        'services_id' =>  $request->services_id,
-                        'added_by' =>  $request->added_by,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'clinical_summary' =>  $request->clinical_summary,
-                        'background_history' =>  $request->background_history,
-                        'clinical_notes' =>  $request->clinical_notes,
-                        'diagnosis_id' =>  $request->diagnosis_id,
-                        'management' =>  $request->management,
-                        'location_services_id' =>  $request->location_services_id,
-                        'type_diagnosis_id' =>  $request->type_diagnosis_id,
-                        'category_services' =>  $request->category_services,
-                        'complexity_services_id' =>  $request->complexity_services_id,
-                        'outcome_id' =>  $request->outcome_id,
-                        'medication_des' =>  $request->medication_des,
-                        'status' => "0",
-                        'created_at' => $date->format('Y-m-d H:i:s')
-                    ];
-
-                    try {
-                        PatientCounsellorClerkingNotes::where(
-                            ['id' => $request->id]
-                        )->update($psychiatryclerking);
-                    } catch (Exception $e) {
-                        return response()->json(["message" => $e->getMessage(), 'Counsellclerking' => $psychiatryclerking, "code" => 200]);
-                    }
-                    return response()->json(["message" => "Counsellclerking clerking Successfully00", "code" => 200]);
-                } else if ($request->category_services == 'clinical-work') {
-                    $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-                    $psychiatryclerking = [
-                        'services_id' =>  $request->services_id,
-                        'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
-                        'added_by' =>  $request->added_by,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'clinical_summary' =>  $request->clinical_summary,
-                        'background_history' =>  $request->background_history,
-                        'clinical_notes' =>  $request->clinical_notes,
-                        'diagnosis_id' =>  $request->diagnosis_id,
-                        'management' =>  $request->management,
-                        'location_services_id' =>  $request->location_services_id,
-                        'type_diagnosis_id' =>  $request->type_diagnosis_id,
-                        'category_services' =>  $request->category_services,
-                        'complexity_services_id' =>  $request->complexity_services_id,
-                        'outcome_id' =>  $request->outcome_id,
-                        'medication_des' =>  $request->medication_des,
-                        'status' => "0",
-                        'created_at' => $date->format('Y-m-d H:i:s'),
-                        'appointment_details_id' => $request->appId,
-
-                    ];
-
-                    try {
-                        PatientCounsellorClerkingNotes::where(
-                            ['id' => $request->id]
-                        )->update($psychiatryclerking);
-                    } catch (Exception $e) {
-                        return response()->json(["message" => $e->getMessage(), 'counsellclerking' => $psychiatryclerking, "code" => 200]);
-                    }
-                    return response()->json(["message" => "Counsellclerking clerking Successfully11", "code" => 200]);
+        }
+        else if ($request->status == "1") {
+            if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
+                $validator = Validator::make($request->all(), [
+                    'services_id' => 'required'
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(["message" => $validator->errors(), "code" => 422]);
                 }
-            } else {
-                if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
-                    $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-                    $psychiatryclerking = [
-                        'services_id' =>  $request->services_id,
-                        'appointment_details_id' => $request->appId,
-                        'added_by' =>  $request->added_by,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'clinical_summary' =>  $request->clinical_summary,
-                        'background_history' =>  $request->background_history,
-                        'clinical_notes' =>  $request->clinical_notes,
-                        'diagnosis_id' =>  $request->diagnosis_id,
-                        'management' =>  $request->management,
-                        'location_services_id' =>  $request->location_services_id,
-                        'type_diagnosis_id' =>  $request->type_diagnosis_id,
-                        'category_services' =>  $request->category_services,
-                        'complexity_services_id' =>  $request->complexity_services_id,
-                        'outcome_id' =>  $request->outcome_id,
-                        'medication_des' =>  $request->medication_des,
-                        'status' => "0",
-                        'created_at' => $date->format('Y-m-d H:i:s'),
+                $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+                $psychiatryclerking = [
+                    'services_id' =>  $request->services_id,
+                    'appointment_details_id' => $request->appId,
+                    'added_by' =>  $request->added_by,
+                    'patient_mrn_id' =>  $request->patient_mrn_id,
+                    'clinical_summary' =>  $request->clinical_summary,
+                    'background_history' =>  $request->background_history,
+                    'clinical_notes' =>  $request->clinical_notes,
+                    'diagnosis_id' =>  $request->diagnosis_id,
+                    'management' =>  $request->management,
+                    'location_services_id' =>  $request->location_services_id,
+                    'type_diagnosis_id' =>  $request->type_diagnosis_id,
+                    'category_services' =>  $request->category_services,
+                    'additional_diagnosis' => $additional_diagnosis,
+                    'complexity_services_id' =>  $request->complexity_services_id,
+                    'outcome_id' =>  $request->outcome_id,
+                    'medication_des' =>  $request->medication_des,
+                    'status' => "1",
+                    'created_at' => $date->format('Y-m-d H:i:s'),
 
-                    ];
-                    try {
-                        $HOD = PatientCounsellorClerkingNotes::Create($psychiatryclerking);
-                    } catch (Exception $e) {
-                        return response()->json(["message" => $e->getMessage(), 'Counsellclerking' => $psychiatryclerking, "code" => 200]);
-                    }
-                    return response()->json(["message" => "Counsellclerking clerking Successfully00", "code" => 200]);
-                } else if ($request->category_services == 'clinical-work') {
-                    $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-                    $psychiatryclerking = [
-                        'services_id' =>  $request->services_id,
-                        'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
-                        'added_by' =>  $request->added_by,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'clinical_summary' =>  $request->clinical_summary,
-                        'background_history' =>  $request->background_history,
-                        'clinical_notes' =>  $request->clinical_notes,
-                        'diagnosis_id' =>  $request->diagnosis_id,
-                        'management' =>  $request->management,
-                        'location_services_id' =>  $request->location_services_id,
-                        'type_diagnosis_id' =>  $request->type_diagnosis_id,
-                        'category_services' =>  $request->category_services,
-                        'complexity_services_id' =>  $request->complexity_services_id,
-                        'outcome_id' =>  $request->outcome_id,
-                        'medication_des' =>  $request->medication_des,
-                        'status' => "0",
-                        'created_at' => $date->format('Y-m-d H:i:s'),
-                        'appointment_details_id' => $request->appId,
-                    ];
+                ];
 
-                    try {
-                        $HOD = PatientCounsellorClerkingNotes::firstOrCreate($psychiatryclerking);
-                    } catch (Exception $e) {
-                        return response()->json(["message" => $e->getMessage(), 'counsellclerking' => $psychiatryclerking, "code" => 200]);
-                    }
-                    return response()->json(["message" => "Counsellclerking clerking Successfully11", "code" => 200]);
+                if($request->id) {
+                    PatientCounsellorClerkingNotes::where(
+                                ['id' => $request->id]
+                            )->update($psychiatryclerking);
+                            return response()->json(["message" => "Counselling Clerking Note updated successfully", "code" => 200]);
                 } else {
-                    $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-                    $psychiatryclerking = [
-                        'services_id' =>  $request->services_id,
-                        'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
-                        'added_by' =>  $request->added_by,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'clinical_summary' =>  $request->clinical_summary,
-                        'background_history' =>  $request->background_history,
-                        'clinical_notes' =>  $request->clinical_notes,
-                        'diagnosis_id' =>  $request->diagnosis_id,
-                        'management' =>  $request->management,
-                        'location_services_id' =>  $request->location_services_id,
-                        'type_diagnosis_id' =>  $request->type_diagnosis_id,
-                        'complexity_services_id' =>  $request->complexity_services_id,
-                        'outcome_id' =>  $request->outcome_id,
-                        'medication_des' =>  $request->medication_des,
-                        'status' => "0",
-                        'created_at' => $date->format('Y-m-d H:i:s'),
-                        'appointment_details_id' => $request->appId,
-                    ];
+                    PatientCounsellorClerkingNotes::create($psychiatryclerking);
+                    return response()->json(["message" => "Counselling Clerking Note created successfully", "code" => 200]);
+                }
+            } else if ($request->category_services == 'clinical-work') {
 
-                    try {
-                        $HOD = PatientCounsellorClerkingNotes::firstOrCreate($psychiatryclerking);
-                    } catch (Exception $e) {
-                        return response()->json(["message" => $e->getMessage(), 'counsellclerking' => $psychiatryclerking, "code" => 200]);
-                    }
-                    return response()->json(["message" => "Counsellclerking clerking Successfully11", "code" => 200]);
+                $validator = Validator::make($request->all(), [
+                    'code_id' => 'required|integer',
+                    'sub_code_id' => 'required'
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(["message" => $validator->errors(), "code" => 422]);
+                }
+                $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+                $psychiatryclerking = [
+                    'services_id' =>  $request->services_id,
+                    'code_id' =>  $request->code_id,
+                    'sub_code_id' =>  $sub_code_id,
+                    'added_by' =>  $request->added_by,
+                    'patient_mrn_id' =>  $request->patient_mrn_id,
+                    'patient_mrn_id' =>  $request->patient_mrn_id,
+                    'clinical_summary' =>  $request->clinical_summary,
+                    'background_history' =>  $request->background_history,
+                    'clinical_notes' =>  $request->clinical_notes,
+                    'diagnosis_id' =>  $request->diagnosis_id,
+                    'management' =>  $request->management,
+                    'location_services_id' =>  $request->location_services_id,
+                    'type_diagnosis_id' =>  $request->type_diagnosis_id,
+                    'category_services' =>  $request->category_services,
+                    'additional_diagnosis' => $additional_diagnosis,
+                    'additional_subcode' => $additional_subcode,
+                    'additional_code_id' => $request->additional_code_id,
+                    'complexity_services_id' =>  $request->complexity_services_id,
+                    'outcome_id' =>  $request->outcome_id,
+                    'medication_des' =>  $request->medication_des,
+                    'status' => "1",
+                    'created_at' => $date->format('Y-m-d H:i:s'),
+                    'appointment_details_id' => $request->appId,
+                ];
+
+                if($request->id) {
+                    PatientCounsellorClerkingNotes::where(
+                                ['id' => $request->id]
+                            )->update($psychiatryclerking);
+                            return response()->json(["message" => "Counselling Clerking Note updated successfully", "code" => 200]);
+                } else {
+                    PatientCounsellorClerkingNotes::create($psychiatryclerking);
+                    return response()->json(["message" => "Counselling Clerking Note created successfully", "code" => 200]);
                 }
             }
         }
     }
 }
+
