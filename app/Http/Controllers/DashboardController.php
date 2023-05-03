@@ -37,6 +37,7 @@ use App\Models\ShharpReportGenerateHistory;
 use App\Models\StaffManagement;
 use App\Models\VonnAppointment;
 use App\Models\Announcement;
+use App\Models\User;
 use App\Models\TriageForm;
 use App\Models\SharpRegistrationSelfHarmResult;
 use App\Models\CpsDischargeNote;
@@ -304,7 +305,7 @@ $announcment_route=$screen_id_announcement->dashboard_route;
 
             ////Review Patient////
             $dateReview = Carbon::now()->subDays(7)->toDateString();
-            $team_id = StaffManagement::select("id","team_id")->Where("email", '=', $request->email)->get();
+            $team = StaffManagement::select("id","team_id")->Where("email", '=', $request->email)->get();
             $screen_id_review=ScreenPageModule::select('id','dashboard_route')->where('notifi_code','=','APV')->first();
             $review_route=$screen_id_review->dashboard_route;
 
@@ -313,13 +314,13 @@ $announcment_route=$screen_id_announcement->dashboard_route;
             ->leftjoin('patient_registration as r', function ($join) {
                 $join->on('p.patient_id', '=', 'r.id');
             })
-            ->Where("r.services_type", '=', $team_id [0]['team_id'])
+            ->Where("r.services_type", '=', $team[0]['team_id'])
             ->Where("r.branch_id", '=', $request->branch)
             ->Where("p.next_review_date", '>=', $dateReview)->get()->toArray();
 
 
             ////All Clinical Documentation Draft////
-
+            $team_id= User::select('id')->Where("email", '=', $request->email)->get();
         $dateDraft = Carbon::now()->subDays(2)->toDateString();
         $screen_id=ScreenPageModule::select('id','dashboard_route')->where('notifi_code','=','RPC')->first();
         $route=$screen_id->dashboard_route;
@@ -1646,7 +1647,7 @@ $announcment_route=$screen_id_announcement->dashboard_route;
 
             ////Review Patient////
             $dateReview = Carbon::now()->subDays(7)->toDateString();
-            $team_id = StaffManagement::select("id","team_id")->Where("email", '=', $request->email)->get();
+            $team = StaffManagement::select("id","team_id")->Where("email", '=', $request->email)->get();
             $screen_id_review=ScreenPageModule::select('id','dashboard_route')->where('notifi_code','=','APV')->first();
             $review_route=$screen_id_review->dashboard_route;
 
@@ -1655,13 +1656,13 @@ $announcment_route=$screen_id_announcement->dashboard_route;
             ->leftjoin('patient_registration as r', function ($join) {
                 $join->on('p.patient_id', '=', 'r.id');
             })
-            ->Where("r.services_type", '=', $team_id [0]['team_id'])
+            ->Where("r.services_type", '=', $team[0]['team_id'])
             ->Where("r.branch_id", '=', $request->branch)
             ->Where("p.next_review_date", '>=', $dateReview)->get()->toArray();
 
 
             ////All Clinical Documentation Draft////
-
+            $team_id= User::select('id')->Where("email", '=', $request->email)->get();
         $dateDraft = Carbon::now()->subDays(2)->toDateString();
         $screen_id=ScreenPageModule::select('id','dashboard_route')->where('notifi_code','=','RPC')->first();
         $route=$screen_id->dashboard_route;

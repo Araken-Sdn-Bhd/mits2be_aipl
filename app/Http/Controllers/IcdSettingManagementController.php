@@ -147,9 +147,10 @@ class IcdSettingManagementController extends Controller
             ->where('icd_type_code', "ICD-10")
             ->pluck('id');
             $users = DB::table('icd_code')
-            ->select('icd_code.icd_code as icd_code','icd_code.id','icd_code.icd_name')
+            ->select('icd_code.icd_code as icd_code','icd_code.id','icd_code.icd_name','icd_code.icd_order')
             ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
             ->where('icd_code.icd_type_id', '=', $checkicdtype10id[0])
+            ->orderBy('icd_order', 'asc')
             ->get();
 
 
@@ -260,11 +261,11 @@ class IcdSettingManagementController extends Controller
 
     public function getIcd9subcodeList_(Request $request)
     {
-      
+
         $checkicdtype9id = IcdType::select('id')
             ->where('icd_type_code', "ICD-9CM")
             ->pluck('id');
-          
+
             $users = DB::table('icd_code')
             ->join('icd_type', 'icd_code.icd_type_id', '=', 'icd_type.id')
             ->join('icd_category', 'icd_code.icd_category_id', '=', 'icd_category.id')

@@ -21,5 +21,5 @@ class CpsProgressNote extends Model
     'employment_past_months','if_employment_yes','psychiatric_clinic','im_depot_clinic','next_community_visit',
     'comments','location_service','diagnosis_type','service_category',
     'services_id', 'code_id', 'sub_code_id', 'complexity_services', 'outcome',
-    'medication', 'staff_name', 'designation', 'status','created_at'];
+    'medication', 'staff_name', 'designation', 'additional_code_id','additional_diagnosis','additional_subcode', 'status','created_at'];
 }
