@@ -137,7 +137,7 @@ class ReportController extends Controller
                     $join->on('srfs.patient_id', '=', 'p.id');
                 })
                 ->leftjoin('patient_risk_protective_answers as prpa', function($join) {
-                    $join->on('srfs.patient_id', '=', 'prpa.id');
+                    $join->on('srfs.patient_id', '=', 'prpa.patient_mrn_id');
                 })
                 ->leftjoin('patient_shharp_registration_hospital_management as psrhm', function($join) {
                     $join->on('psrhm.id', '=', 'srfs.hospital_mgmt');
