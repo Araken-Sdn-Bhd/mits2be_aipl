@@ -980,7 +980,7 @@ class ReportController extends Controller
             
         
             }    
-             dd($result);
+           
                 
                     if ($result) {
                         
