@@ -127,24 +127,20 @@ class ReportController extends Controller
             $users2  = json_decode(json_encode($users), true);
 
 
-
-                $query = DB::table('sharp_registraion_final_step as srfs')
+                $query = DB::table('patient_shharp_registration_data_producer as psrdp')
                 ->select('srfs.id','srfs.risk','srfs.protective','srfs.self_harm','srfs.patient_id',
                 'p.name_asin_nric','p.address1','p.city_id','p.nric_no','p.state_id','p.postcode',
                 'p.mobile_no','p.birth_date','srfs.harm_date','srfs.harm_time','psrdp.hospital_name',
                 'psrhm.id as id2','psrhm.main_psychiatric_diagnosis','psrhm.additional_diagnosis')
+                ->leftjoin('sharp_registraion_final_step as srfs', function($join) {
+                    $join->on('srfs.id', '=', 'psrdp.shharp_register_id');
+                })      
                 ->leftjoin('patient_registration as p', function($join) {
                     $join->on('srfs.patient_id', '=', 'p.id');
                 })
-                ->leftjoin('patient_risk_protective_answers as prpa', function($join) {
-                    $join->on('srfs.patient_id', '=', 'prpa.id');
-                })
                 ->leftjoin('patient_shharp_registration_hospital_management as psrhm', function($join) {
                     $join->on('psrhm.id', '=', 'srfs.hospital_mgmt');
-                })
-                ->leftjoin('patient_shharp_registration_data_producer as psrdp', function($join) {
-                    $join->on('psrdp.patient_mrn_id', '=', 'srfs.patient_id');
-                })       
+                }) 
                 ->whereBetween('harm_date', [$request->fromDate, $request->toDate])
                 ->where('srfs.hospital_mgmt', '!=','')
                 ->where('srfs.status', '=','1');
@@ -174,8 +170,6 @@ class ReportController extends Controller
                 $icd=NULL;
                 $cd_array=[];
                 $count=0;
-
-
 
 
                 $index = 0;
@@ -986,8 +980,6 @@ class ReportController extends Controller
             
         
             }    
-            
-                
                     if ($result) {
                         
 
