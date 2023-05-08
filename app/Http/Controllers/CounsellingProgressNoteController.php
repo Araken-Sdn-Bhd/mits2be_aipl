@@ -72,12 +72,12 @@ class CounsellingProgressNoteController extends Controller
             $validateCounsellingprogress = [];
 
             if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
-                $validateCounsellingprogress['services_id'] = 'required';
+                $validateCounsellingprogress['services_id'] = '';
                 $counsellingprogess['services_id'] =  $request->services_id;
             } else if ($request->category_services == 'clinical-work') {
-                $validateCounsellingprogress['code_id'] = 'required';
+                $validateCounsellingprogress['code_id'] = '';
                 $counsellingprogess['code_id'] =  $request->code_id;
-                $validateCounsellingprogress['sub_code_id'] = 'required';
+                $validateCounsellingprogress['sub_code_id'] = '';
                 $counsellingprogess['sub_code_id'] =  $sub_code_id;
             }
 
