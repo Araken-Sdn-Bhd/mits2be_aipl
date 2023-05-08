@@ -13,6 +13,11 @@ class ExternalReferralFormController extends Controller
     public function store(Request $request)
     {
     if ($request->status=='0') {
+        
+        $additional_diagnosis=str_replace('"','',$request->additional_diagnosis);
+        $additional_sub_code_id=str_replace('"','',$request->additional_sub_code_id);
+        $sub_code_id=str_replace('"','',$request->sub_code_id);
+
         $externalform = [
         'added_by' => $request->added_by,
         'patient_mrn_id' => $request->patient_mrn_id,
@@ -24,17 +29,20 @@ class ExternalReferralFormController extends Controller
         'result_of_investigation' => $request->result_of_investigation,
         'treatment' => $request->treatment,
         'purpose_of_referral' => $request->purpose_of_referral,
-
+        'add_type_diagnosis_id'=> $additional_diagnosis, //newly added
+        'add_sub_code_id' => $additional_sub_code_id, //newly added
+        'add_code_id' => $request->additional_code_id, //newly added
         'location_services' => $request->location_services,
         'services_id' => $request->services_id,
         'code_id' => $request->code_id,
-        'sub_code_id' => $request->sub_code_id,
+        'sub_code_id' => $sub_code_id,
         'type_diagnosis_id' => $request->type_diagnosis_id,
         'category_services' => $request->category_services,
-        'complexity_services' => $request->complexity_services,
+        'complexity_services' => $request->complexity_of_services,
         'outcome' => $request->outcome,
         'medication_des' => $request->medication_des,
         'name' => $request->name,
+        
         'designation' => $request->designation,
         'hospital' => $request->hospital,
         'status' => "0",
@@ -50,7 +58,7 @@ class ExternalReferralFormController extends Controller
             $validateExternalForm['code_id'] = 'required';
             $externalform['code_id'] =  $request->code_id;
             $validateExternalForm['sub_code_id'] = 'required';
-            $externalform['sub_code_id'] =  $request->sub_code_id;
+            $externalform['sub_code_id'] =  $sub_code_id;
         }
         $validator = Validator::make($request->all(), $validateExternalForm);
         if ($validator->fails()) {
@@ -66,6 +74,9 @@ class ExternalReferralFormController extends Controller
             return response()->json(["message" => "External Referral Form Created Successfully!", "code" => 200]);
         }
     } elseif ($request->status=='1') {
+        $additional_diagnosis=str_replace('"','',$request->additional_diagnosis);
+        $additional_sub_code_id=str_replace('"','',$request->additional_sub_code_id);
+        $sub_code_id=str_replace('"','',$request->sub_code_id);
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
             'patient_mrn_id' => 'required|integer',
@@ -105,12 +116,15 @@ class ExternalReferralFormController extends Controller
         'result_of_investigation' => $request->result_of_investigation,
         'treatment' => $request->treatment,
         'purpose_of_referral' => $request->purpose_of_referral,
-
+        'add_type_diagnosis_id'=> $additional_diagnosis, //newly added
+        'add_sub_code_id' => $additional_sub_code_id, //newly added
+        'add_code_id' => $request->additional_code_id, //newly added
         'location_services' => $request->location_services,
         'services_id' => $request->services_id,
         'code_id' => $request->code_id,
-        'sub_code_id' => $request->sub_code_id,
+        'sub_code_id' => $sub_code_id,
         'type_diagnosis_id' => $request->type_diagnosis_id,
+        
         'category_services' => $request->category_services,
         'complexity_services' => $request->complexity_services,
         'outcome' => $request->outcome,
@@ -130,7 +144,7 @@ class ExternalReferralFormController extends Controller
             $validateExternalForm['code_id'] = 'required';
             $ExternalForm['code_id'] =  $request->code_id;
             $validateExternalForm['sub_code_id'] = 'required';
-            $ExternalForm['sub_code_id'] =  $request->sub_code_id;
+            $ExternalForm['sub_code_id'] =  $sub_code_id;
         }
         $validator = Validator::make($request->all(), $validateExternalForm);
         if ($validator->fails()) {
