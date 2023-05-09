@@ -31,6 +31,8 @@ class RehabDischargeNoteController extends Controller
                 'time' =>  $request->time,
                 'staff_name' =>  $request->staff_name,
                 'diagnosis_id' => $request->diagnosis_id,
+                'diagnosis_type' =>  $request->diagnosis_type,
+                'add_diagnosis_type' =>  str_replace('"',"",$request->add_diagnosis_type),
                 'intervention' => $request->intervention,
                 'discharge_category' => $request->discharge_category,
                 'comment' => $request->comment,
@@ -39,9 +41,9 @@ class RehabDischargeNoteController extends Controller
                 'service_category' => $request->service_category,
                 'services_id' => $request->services_id,
                 'code_id' => $request->code_id,
-                'sub_code_id' => $request->sub_code_id,
+                'sub_code_id' =>  str_replace('"',"",$request->sub_code_id),
                 'add_code_id' => $request->add_code_id,
-                'add_sub_code_id' => $request->add_sub_code_id,
+                'add_sub_code_id' =>  str_replace('"',"",$request->add_sub_code_id),
                 'complexity_services' => $request->complexity_services,
                 'outcome' => $request->outcome,
                 'medication' => $request->medication,
@@ -63,9 +65,9 @@ class RehabDischargeNoteController extends Controller
                 $validateRehabDischarge['code_id'] = 'required';
                 $Rehabdischarge['code_id'] =  $request->code_id;
                 $validateRehabDischarge['sub_code_id'] = 'required';
-                $Rehabdischarge['sub_code_id'] =  $request->sub_code_id;
+                $Rehabdischarge['sub_code_id'] =   str_replace('"',"",$request->sub_code_id);
                 $Rehabdischarge['add_code_id'] =  $request->add_code_id;
-                $Rehabdischarge['add_sub_code_id'] =  $request->add_sub_code_id;
+                $Rehabdischarge['add_sub_code_id'] =   str_replace('"',"",$request->add_sub_code_id);
             }
             $validator = Validator::make($request->all(), $validateRehabDischarge);
             if ($validator->fails()) {
@@ -92,13 +94,15 @@ class RehabDischargeNoteController extends Controller
                 'discharge_category' => $request->discharge_category,
                 'comment' => $request->comment,
                 'location_services' => $request->location_services,
-                'diagnosis_type' => $request->diagnosis_type,
+                'diagnosis_id' => $request->diagnosis_id,
+                'diagnosis_type' =>  $request->diagnosis_type,
+                'add_diagnosis_type' =>  str_replace('"',"",$request->add_diagnosis_type),
                 'service_category' => $request->service_category,
                 'services_id' => $request->services_id,
                 'code_id' => $request->code_id,
-                'sub_code_id' => $request->sub_code_id,
+                'sub_code_id' => str_replace('"',"",$request->sub_code_id),
                 'add_code_id' => $request->add_code_id,
-                'add_sub_code_id' => $request->add_sub_code_id,
+                'add_sub_code_id' => str_replace('"',"",$request->add_sub_code_id),
                 'complexity_services' => $request->complexity_services,
                 'outcome' => $request->outcome,
                 'medication' => $request->medication,
@@ -120,9 +124,9 @@ class RehabDischargeNoteController extends Controller
                 $validateRehabDischarge['code_id'] = 'required';
                 $Rehabdischarge['code_id'] =  $request->code_id;
                 $validateRehabDischarge['sub_code_id'] = 'required';
-                $Rehabdischarge['sub_code_id'] =  $request->sub_code_id;
+                $Rehabdischarge['sub_code_id'] =  str_replace('"',"",$request->sub_code_id);
                 $Rehabdischarge['add_code_id'] =  $request->add_code_id;
-                $Rehabdischarge['add_sub_code_id'] =  $request->add_sub_code_id;
+                $Rehabdischarge['add_sub_code_id'] =  str_replace('"',"",$request->add_sub_code_id);
             }
             if ($request->id) {
                 RehabDischargeNote::where(['id' => $request->id])->update($rehabdischarge);

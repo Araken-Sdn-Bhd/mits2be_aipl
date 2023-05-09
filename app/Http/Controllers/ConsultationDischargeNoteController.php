@@ -34,10 +34,11 @@ class ConsultationDischargeNoteController extends Controller
                 'location_services' => $request->location_services,
                 'services_id' => $request->services_id,
                 'code_id' => $request->code_id,
-                'sub_code_id' => $request->sub_code_id,
+                'sub_code_id' => str_replace('"',"",$request->sub_code_id),
                 'add_code_id' =>  $request->add_code_id,
-                'add_sub_code_id' =>  $request->add_sub_code_id,
+                'add_sub_code_id' =>  str_replace('"',"",$request->add_sub_code_id),
                 'type_diagnosis_id' => $request->type_diagnosis_id,
+                'add_type_diagnosis_id' => str_replace('"',"",$request->add_diagnosis_type),
                 'category_services' => $request->category_services,
                 'complexity_services' => $request->complexity_services,
                 'outcome' => $request->outcome,
@@ -55,9 +56,9 @@ class ConsultationDischargeNoteController extends Controller
                 $validateConsultationDischarge['code_id'] = 'required';
                 $consultationdischarge['code_id'] =  $request->code_id;
                 $validateConsultationDischarge['sub_code_id'] = 'required';
-                $consultationdischarge['sub_code_id'] =  $request->sub_code_id;
+                $consultationdischarge['sub_code_id'] =  str_replace('"',"",$request->sub_code_id);
                 $consultationdischarge['add_code_id'] =  $request->add_code_id;
-                $consultationdischarge['add_sub_code_id'] =  $request->add_sub_code_id;
+                $consultationdischarge['add_sub_code_id'] =  str_replace('"',"",$request->add_sub_code_id);
             }
             $validator = Validator::make($request->all(), $validateConsultationDischarge);
             if ($validator->fails()) {
@@ -84,10 +85,11 @@ class ConsultationDischargeNoteController extends Controller
                 'location_services' => $request->location_services,
                 'services_id' => $request->services_id,
                 'code_id' => $request->code_id,
-                'sub_code_id' => $request->sub_code_id,
+                'sub_code_id' => str_replace('"',"",$request->sub_code_id),
                 'add_code_id' => $request->add_code_id,
-                'add_sub_code_id' => $request->add_sub_code_id,
+                'add_sub_code_id' => str_replace('"',"",$request->add_sub_code_id),
                 'type_diagnosis_id' => $request->type_diagnosis_id,
+                'add_type_diagnosis_id' => str_replace('"',"",$request->add_diagnosis_type),
                 'category_services' => $request->category_services,
                 'complexity_services' => $request->complexity_services,
                 'outcome' => $request->outcome,
@@ -105,9 +107,9 @@ class ConsultationDischargeNoteController extends Controller
                 $validateConsultationDischarge['code_id'] = 'required';
                 $consultationdischarge['code_id'] =  $request->code_id;
                 $validateConsultationDischarge['sub_code_id'] = 'required';
-                $consultationdischarge['sub_code_id'] =  $request->sub_code_id;
+                $consultationdischarge['sub_code_id'] =  str_replace('"',"",$request->sub_code_id);
                 $consultationdischarge['add_code_id'] =  $request->add_code_id;
-                $consultationdischarge['add_sub_code_id'] =  $request->add_sub_code_id;
+                $consultationdischarge['add_sub_code_id'] =   str_replace('"',"",$request->add_sub_code_id);
             }
             $validator = Validator::make($request->all(), $validateConsultationDischarge);
             if ($validator->fails()) {
