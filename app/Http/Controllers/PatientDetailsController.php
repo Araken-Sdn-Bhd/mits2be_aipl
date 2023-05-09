@@ -399,7 +399,7 @@ class PatientDetailsController extends Controller
             $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
             (select patient_id,harm_time,harm_date,status from sharp_registraion_final_step
             where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
-            d on pr.id=d.patient_id order by pr.name_asin_nric;");
+            d on pr.id=d.patient_id where pr.branch_id = $request->branch_id order by pr.name_asin_nric;");
 
         } else {
             if ($request->fromDate != 'dd-mm-yyyy' && $request->toDate != 'dd-mm-yyyy') {
@@ -409,14 +409,14 @@ class PatientDetailsController extends Controller
                 where B.harm_date between '".$request->fromDate."' and '".$request->toDate."'
                 group by patient_id))
                 d on pr.id=d.patient_id
-
+                where pr.branch_id = $request->branch_id
                 order by pr.name_asin_nric;");//where d.patient_id = 1
             } else if ($request->keyword != 'no-keyword') {
                 $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
                 (select patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
                 where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
                 d on pr.id=d.patient_id
-                where pr.name_asin_nric like '%$request->keyword%' or pr.nric_no like '%$request->keyword%'
+                where pr.branch_id = $request->branch_id and pr.name_asin_nric like '%$request->keyword%' or pr.nric_no like '%$request->keyword%' 
                 order by pr.name_asin_nric;");
 
             } else if ($request->keyword != 'no-keyword' && $request->fromDate != 'dd-mm-yyyy' && $request->toDate != 'dd-mm-yyyy') {
@@ -432,7 +432,7 @@ class PatientDetailsController extends Controller
                 $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
                 (select patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
                 where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
-                d on pr.id=d.patient_id
+                d on pr.id=d.patient_id where pr.branch_id = $request->branch_id
                 order by pr.name_asin_nric;");
             }
         }
