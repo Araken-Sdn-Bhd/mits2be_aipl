@@ -453,6 +453,10 @@ class JobOfferController extends Controller
     public function setCPSReferralForm(Request $request)
     {
         if($request->status == '0'){
+            $additional_diagnosis=str_replace('"','',$request->additional_diagnosis);
+            $additional_sub_code_id=str_replace('"','',$request->additional_sub_code_id);
+            $icd_9_subcode=str_replace('"','',$request->sub_code_id);
+
             $cpsreferralform = [
                 'patient_id' => $request->patient_id,
                 'added_by' => $request->added_by,
@@ -466,7 +470,11 @@ class JobOfferController extends Controller
                 'complexity_of_services' => $request->complexity_of_services,
                 'outcome' => $request->outcome,
                 'icd_9_code' => $request->icd_9_code,
-                'icd_9_subcode' => $request->icd_9_subcode,
+                'icd_9_subcode' => $icd_9_subcode,
+                'add_type_diagnosis_id'=> $additional_diagnosis, //newly added
+                'add_sub_code_id' => $additional_sub_code_id, //newly added
+                'add_code_id' => $request->additional_code_id, //newly added
+
                 'medication_des' => $request->medication,
                 'medication_referrer_name' => $request->medication_referrer_name,
                 'medication_referrer_designation' => $request->medication_referrer_designation,
@@ -482,7 +490,7 @@ class JobOfferController extends Controller
                 $validateCPSReferralForm['code_id'] = 'required';
                 $cpsreferralform['code_id'] =  $request->code_id;
                 $validateCPSReferralForm['sub_code_id'] = 'required';
-                $cpsreferralform['sub_code_id'] =  $request->sub_code_id;
+                $cpsreferralform['sub_code_id'] =  $icd_9_subcode;
             }
             $validator = Validator::make($request->all(), $validateCPSReferralForm);
             if ($validator->fails()) {
@@ -499,6 +507,10 @@ class JobOfferController extends Controller
             }
         } else if($request->status == '1'){
 
+            $additional_diagnosis=str_replace('"','',$request->additional_diagnosis);
+            $additional_sub_code_id=str_replace('"','',$request->additional_sub_code_id);
+            $icd_9_subcode=str_replace('"','',$request->sub_code_id);
+
             $cpsreferralform = [
                 'patient_id' => $request->patient_id,
                 'added_by' => $request->added_by,
@@ -512,7 +524,10 @@ class JobOfferController extends Controller
                 'complexity_of_services' => $request->complexity_of_services,
                 'outcome' => $request->outcome,
                 'icd_9_code' => $request->icd_9_code,
-                'icd_9_subcode' => $request->icd_9_subcode,
+                'icd_9_subcode' => $icd_9_subcode,
+                'add_type_diagnosis_id'=> $additional_diagnosis, //newly added
+                'add_sub_code_id' => $additional_sub_code_id, //newly added
+                'add_code_id' => $request->additional_code_id, //newly added
                 'medication_des' => $request->medication,
                 'medication_referrer_name' => $request->medication_referrer_name,
                 'medication_referrer_designation' => $request->medication_referrer_designation,
@@ -528,7 +543,7 @@ class JobOfferController extends Controller
                 $validateCPSReferralForm['code_id'] = 'required';
                 $cpsreferralform['code_id'] =  $request->code_id;
                 $validateCPSReferralForm['sub_code_id'] = 'required';
-                $cpsreferralform['sub_code_id'] =  $request->sub_code_id;
+                $cpsreferralform['sub_code_id'] =  $icd_9_subcode;
             }
             $validator = Validator::make($request->all(), $validateCPSReferralForm);
             if ($validator->fails()) {
