@@ -399,7 +399,7 @@ class PatientDetailsController extends Controller
             $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
             (select patient_id,harm_time,harm_date,status from sharp_registraion_final_step
             where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
-            d on pr.id=d.patient_id where pr.branch_id = $request->branch_id order by pr.name_asin_nric;");
+            d on pr.id=d.patient_id where pr.branch_id = $request->branch_id and d.status = '0' order by pr.name_asin_nric;");
 
         } else {
             if ($request->fromDate != 'dd-mm-yyyy' && $request->toDate != 'dd-mm-yyyy') {
