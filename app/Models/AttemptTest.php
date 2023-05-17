@@ -10,5 +10,5 @@ class AttemptTest extends Model
     use HasFactory;
     protected $table = 'attempt_test';
     public $timestamps = true;
-    protected $fillable = ['id', 'added_by', 'patient_mrn_id', 'Type', 'question_id', 'answer_id', 'status', 'created_at', 'updated_at'];
+    protected $fillable = ['id', 'shharp_reg_id','added_by', 'patient_mrn_id', 'Type', 'question_id', 'answer_id', 'status', 'created_at', 'updated_at'];
 }
