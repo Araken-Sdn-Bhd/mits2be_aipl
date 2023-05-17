@@ -64,6 +64,20 @@ class GeneralSettingController extends Controller
         ->where('section', $request->section)->where('status', '1')->orderBy('section_order', 'asc')->get();
         return response()->json(["message" => $request->section . " List", 'list' => $list, "code" => 200]);
     }
+
+    public function shharpEmpList(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'section' => 'required|string'
+        ]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors(), "code" => 422]);
+        }
+        $list = GeneralSetting::select('*')
+        ->where('section', $request->section)->where('status', '1')->where('section_value', 'not like', '%Others%')->orderBy('section_order', 'asc')->get();
+        return response()->json(["message" => $request->section . " List", 'list' => $list, "code" => 200]);
+    }
+
     public function getListSetting(Request $request)
     {
         $validator = Validator::make($request->all(), [

@@ -218,6 +218,7 @@ Route::group(['prefix' => 'screen-module'], function () {
 Route::group(['prefix' => 'general-setting'], function () {
     Route::post('/add', [GeneralSettingController::class, 'add']);
     Route::get('/list', [GeneralSettingController::class, 'getList']);
+    Route::get('/shharpEmpList', [GeneralSettingController::class, 'shharpEmpList']);
     Route::get('/lists', [GeneralSettingController::class, 'getListSetting']);
     Route::post('/fetch', [GeneralSettingController::class, 'getSettingById']);
     Route::post('/update', [GeneralSettingController::class, 'update']);
@@ -360,6 +361,8 @@ Route::group(['prefix' => 'staff-management'], function () {
     Route::post('/addstaff', [StaffManagementController::class, 'store']);
     Route::get('/getList', [StaffManagementController::class, 'getStaffManagementList']);
     Route::get('/getListByBranchId/{branch_id}', [StaffManagementController::class, 'getStaffManagementListByBranchId']);
+    Route::get('/getPsychiatrist/{branch_id}', [StaffManagementController::class, 'getPsychiatristByBranchId']);
+
     Route::post('/getListById', [StaffManagementController::class, 'getStaffManagementListById']);
     Route::post('/getDetailsById', [StaffManagementController::class, 'getStaffManagementDetailsById']);
     Route::post('/editDetailsById', [StaffManagementController::class, 'editStaffManagementDetailsById']);
@@ -481,6 +484,7 @@ Route::group(['prefix' => 'patient'], function () {
     Route::get('/test-history', [AttemptTestController::class, 'testHistory']);
     Route::post('/resultdetail', [AttemptTestController::class, 'resultdetail']);
     Route::post('/test-history-show', [AttemptTestController::class, 'testHistoryResultShow']);
+    Route::post('/answered-si',[AttemptTestController::class, 'answeredSI']);
 });
 Route::group(['prefix' => 'patient-suicidal-risk-assessment'], function () {
     Route::post('/add', [PatientSuicidalRiskAssessmentController::class, 'store']);
