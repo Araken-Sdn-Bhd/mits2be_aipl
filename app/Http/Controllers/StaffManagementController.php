@@ -427,14 +427,19 @@ class StaffManagementController extends Controller
 
     public function getPsychiatristByBranchId(Request $request)
     {
-        $users = DB::table('staff_management')
-            ->join('roles', 'staff_management.role_id', '=', 'roles.id')
-            ->select('staff_management.id', 'staff_management.name')
-            ->Where('staff_management.branch_id', '=', $request->branch_id)
-            ->Where('roles.role_name', '=', 'Psychiatrist')
-            ->Where('staff_management.status', '=', '1')
-            ->get();
 
+        $users = DB::table('staff_management')
+        ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+        ->join('general_setting', 'general_setting.id', '=', 'staff_management.designation_id')
+        ->select('staff_management.id', 'staff_management.name', 'staff_management.designation_id', 'staff_management.role_id')
+        ->Where('staff_management.branch_id', '=', $request->branch_id)
+
+        ->Where('roles.role_name', 'like', '%SHHARP%')
+        ->Where('general_setting.section_value', 'like', '%Psychiatrist%')
+        ->Where('staff_management.status', '=', '1')
+        ->get();
+
+            // dd($users);
         return response()->json(["message" => "Staff Management List", 'list' => $users, "code" => 200]);
     }
 
