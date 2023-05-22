@@ -429,12 +429,10 @@ class StaffManagementController extends Controller
     {
 
         $users = DB::table('staff_management')
-        ->join('roles', 'staff_management.role_id', '=', 'roles.id')
         ->join('general_setting', 'general_setting.id', '=', 'staff_management.designation_id')
-        ->select('staff_management.id', 'staff_management.name', 'staff_management.designation_id', 'staff_management.role_id')
+        ->select('staff_management.id', 'staff_management.name', 'staff_management.designation_id')
         ->Where('staff_management.branch_id', '=', $request->branch_id)
 
-        ->Where('roles.role_name', 'like', '%SHHARP%')
         ->Where('general_setting.section_value', 'like', '%Psychiatrist%')
         ->Where('staff_management.status', '=', '1')
         ->get();
