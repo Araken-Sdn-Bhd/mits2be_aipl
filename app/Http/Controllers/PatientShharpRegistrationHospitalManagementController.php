@@ -72,7 +72,10 @@ class PatientShharpRegistrationHospitalManagementController extends Controller
                 'additional_diagnosis' => $additional_diagnosis,
                 'additional_external_cause_injury' => $additional_external_cause_injury,
                 'discharge_psy_mx' => $request->discharge_psy_mx,
-                'status' => "1"
+                'status' => "1",
+                'discharge_psy_mx_des'=> $request->discharge_psy_mx_des,
+                'patient_admitted_des'=> $request->patient_admitted_des,
+
             ];
             if ($request->physical_consequences == 'Aborted') {
                 $validator = Validator::make($request->all(), [
@@ -82,23 +85,24 @@ class PatientShharpRegistrationHospitalManagementController extends Controller
                     return response()->json(["message" => $validator->errors(), "code" => 422]);
                 }
                 $module['physical_consequences_des'] = $request->physical_consequences_des;
-            } else  if ($request->patient_admitted == 'Yes') {
-                $validator = Validator::make($request->all(), [
-                    'patient_admitted_des' => 'required|string'
-                ]);
-                if ($validator->fails()) {
-                    return response()->json(["message" => $validator->errors(), "code" => 422]);
-                }
-                $module['patient_admitted_des'] = $request->patient_admitted_des;
-            } else  if ($request->discharge_psy_mx == 'Other') {
-                $validator = Validator::make($request->all(), [
-                    'discharge_psy_mx_des' => 'required|string'
-                ]);
-                if ($validator->fails()) {
-                    return response()->json(["message" => $validator->errors(), "code" => 422]);
-                }
-                $module['discharge_psy_mx_des'] = $request->discharge_psy_mx_des;
             }
+            //else  if ($request->patient_admitted == 'Yes') {
+            //     $validator = Validator::make($request->all(), [
+            //         'patient_admitted_des' => 'required|string'
+            //     ]);
+            //     if ($validator->fails()) {
+            //         return response()->json(["message" => $validator->errors(), "code" => 422]);
+            //     }
+            // }
+            // } else  if ($request->discharge_psy_mx == 'Other') {
+            //     $validator = Validator::make($request->all(), [
+            //         'discharge_psy_mx_des' => 'required|string'
+            //     ]);
+            //     if ($validator->fails()) {
+            //         return response()->json(["message" => $validator->errors(), "code" => 422]);
+            //     }
+
+            // }
         } else {
             $module = [
                 'added_by' => $request->added_by,
@@ -131,7 +135,7 @@ class PatientShharpRegistrationHospitalManagementController extends Controller
                     return response()->json(["message" => $validator->errors(), "code" => 422]);
                 }
                 $module['physical_consequences_des'] = $request->physical_consequences_des;
-            } 
+            }
             PatientShharpRegistrationHospitalManagement::where(['id' => $riskArray])->update($module);
         }
 
