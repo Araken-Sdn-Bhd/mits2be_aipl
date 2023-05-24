@@ -37,7 +37,7 @@ class PatientShharpRegistrationDataProducerController extends Controller
         ];
         $sri = $request->sharp_register_id;
         if ($sri == 0) {
-            return response()->json(["message" => "Can't inserted data.Please fill all forms first!", 'id' => $sri, "code" => 400]);
+            return response()->json(["message" => "Please click SAVE AS DRAFT button on each tab before proceeding to Data Producer's tab", 'id' => $sri, "code" => 400]);
         } else {
 
             $chk = PatientShharpRegistrationDataProducer::where('shharp_register_id', $sri)->count();
