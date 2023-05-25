@@ -50,14 +50,6 @@ class PatientRiskProtectiveAnswerController extends Controller
                 }else{
                 $answer = 'No';
                 }
-                if (in_array($key, [1, 3, 4, 6, 7, 8, 10])) {
-                    if ($val != '0') {
-                        if ($request->factor_type == 'risk') {
-                            $txt = $val;
-                        }
-                        $answer = 'Yes';
-                    }
-                }
                 if (count($riskArray) == 0) {
                     $insertArray[] = [
                         'added_by' => $request->added_by,
