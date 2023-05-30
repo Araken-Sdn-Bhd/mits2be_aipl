@@ -404,7 +404,7 @@ class PatientDetailsController extends Controller
         } else {
             if ($request->fromDate != 'dd-mm-yyyy' && $request->toDate != 'dd-mm-yyyy') {
                 $query = DB::select("SELECT pr.*,d.* FROM patient_registration pr join
-                (select patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step as A
+                (select patient_id,harm_time,harm_date,status from sharp_registraion_final_step as A
                 where id in (SELECT max(id) id FROM sharp_registraion_final_step as B
                 where B.harm_date between '".$request->fromDate."' and '".$request->toDate."'
                 group by patient_id))
@@ -413,15 +413,15 @@ class PatientDetailsController extends Controller
                 order by pr.name_asin_nric;");//where d.patient_id = 1
             } else if ($request->keyword != 'no-keyword') {
                 $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
-                (select patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
+                (select patient_id,harm_time,harm_date,status from sharp_registraion_final_step
                 where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
                 d on pr.id=d.patient_id
-                where pr.branch_id = $request->branch_id and pr.name_asin_nric like '%$request->keyword%' or pr.nric_no like '%$request->keyword%' 
+                where pr.branch_id = $request->branch_id and pr.name_asin_nric like '%$request->keyword%' or pr.nric_no like '%$request->keyword%'
                 order by pr.name_asin_nric;");
 
             } else if ($request->keyword != 'no-keyword' && $request->fromDate != 'dd-mm-yyyy' && $request->toDate != 'dd-mm-yyyy') {
                 $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
-                (select patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
+                (select patient_id,harm_time,harm_date,status from sharp_registraion_final_step
                 where id in (SELECT max(id) id FROM sharp_registraion_final_step
                 where harm_date between '".$request->fromDate."' and '".$request->toDate."'
                 group by patient_id))
@@ -430,7 +430,7 @@ class PatientDetailsController extends Controller
                 order by pr.name_asin_nric;");
             } else {
                 $query = DB::select("SELECT pr.*, d.* FROM patient_registration pr left join
-                (select patient_id,harm_time,harm_date,status,added_by from sharp_registraion_final_step
+                (select patient_id,harm_time,harm_date,status from sharp_registraion_final_step
                 where id in (SELECT max(id) id FROM sharp_registraion_final_step group by patient_id))
                 d on pr.id=d.patient_id where pr.branch_id = $request->branch_id
                 order by pr.name_asin_nric;");
@@ -474,7 +474,7 @@ class PatientDetailsController extends Controller
                             $branchid =  StaffManagement::select('branch_id')->where('email', '=', $tmp)
                                 ->get();
                             if (!empty($branchid[0]['branch_id'])) {
-                                $pc = HospitalBranchManagement::where(['id' => $branchid[0]['branch_id']])->get()->toArray();
+                                $pc = HospitalBranchManagement::where(['id' => $val->branch_id])->get()->toArray();
                                 $result[$key]['hospital_branch_name'] = ($pc) ? $pc[0]['hospital_branch_name'] : 'NA';
                             } else {
                                 $result[$key]['hospital_branch_name'] = 'NA';
