@@ -315,177 +315,6 @@ class SeProgressNoteController extends Controller
                 }
             }
         } else if ($request->status == 0) {
-            if ($request->id) {
-                if ($request->service_category == 'assisstance' || $request->service_category == 'external') {
-                    $validator = Validator::make($request->all(), [
-                        'services_id' => 'required'
-                    ]);
-                    if ($validator->fails()) {
-                        return response()->json(["message" => $validator->errors(), "code" => 422]);
-                    }
-
-                    $seprogressnote = [
-                        'services_id' =>  $request->services_id,
-                        'added_by' =>  $request->added_by,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'patient_id' =>  $request->patient_id,
-                        'name' =>  $request->name,
-                        'mrn' =>  $request->mrn,
-                        'date' =>  $request->date,
-                        'time' =>  $request->time,
-                        'staff_name' =>  $request->staff_name,
-                        'activity_type' =>  $request->activity_type,
-                        'restart' => $request->restart_program,
-                        'employment_status' =>  $request->employment_status,
-                        'progress_note' =>  $request->progress_note,
-                        'management_plan' =>  $request->management_plan,
-                        'location_service' =>  $request->location_service,
-                        'diagnosis_type' =>  $request->diagnosis_type,
-                        'service_category' =>  $request->service_category,
-                        'complexity_service' =>  $request->complexity_service,
-                        'outcome' =>  $request->outcome,
-                        'medication' =>  $request->medication,
-                        'status' => "0",
-                        'appointment_details_id' => $request->appId,
-                    ];
-
-                    try {
-                        $HOD = SeProgressNote::where(
-                            ['id' => $request->id]
-                        )->update($seprogressnote);
-                    } catch (Exception $e) {
-                        return response()->json(["message" => $e->getMessage(), 'SeProgress' => $seprogressnote, "code" => 200]);
-                    }
-                    return response()->json(["message" => "SE Progress Form Successfully7", "code" => 200]);
-                } else if ($request->service_category == 'clinical-work') {
-                    $validator = Validator::make($request->all(), [
-                        'code_id' => 'required|integer',
-                        'sub_code_id' => 'required'
-                    ]);
-                    if ($validator->fails()) {
-                        return response()->json(["message" => $validator->errors(), "code" => 422]);
-                    }
-
-                    $SeProgress = [
-                        'services_id' =>  $request->services_id,
-                        'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $sub_code_id,
-                        'added_by' =>  $request->added_by,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'patient_id' =>  $request->patient_id,
-                        'name' =>  $request->name,
-                        'mrn' =>  $request->mrn,
-                        'date' =>  $request->date,
-                        'time' =>  $request->time,
-                        'staff_name' =>  $request->staff_name,
-                        'activity_type' =>  $request->activity_type,
-                        'restart' => $request->restart_program,
-                        'employment_status' =>  $request->employment_status,
-                        'progress_note' =>  $request->progress_note,
-                        'management_plan' =>  $request->management_plan,
-                        'location_service' =>  $request->location_service,
-                        'diagnosis_type' =>  $request->diagnosis_type,
-                        'service_category' =>  $request->service_category,
-                        'complexity_service' =>  $request->complexity_service,
-                        'outcome' =>  $request->outcome,
-                        'medication' =>  $request->medication,
-                        'status' => "0",
-                        'appointment_details_id' => $request->appId,
-                        'additional_diagnosis' => $additional_diagnosis,
-                        'additional_code_id' => $request->additional_code_id,
-                        'additional_subcode' => $additional_subcode,
-                    ];
-
-                    try {
-                        $HOD = SeProgressNote::where(
-                            ['id' => $request->id]
-                        )->update($SeProgress);
-                    } catch (Exception $e) {
-                        return response()->json(["message" => $e->getMessage(), 'EtpProgress' => $SeProgress, "code" => 200]);
-                    }
-                    return response()->json(["message" => "Se Progress Note Successfully8", "code" => 200]);
-                } else if ($request->service_category == 'clinical') {
-                    $validator = Validator::make($request->all(), [
-                        'code_id' => 'required|integer',
-                        'sub_code_id' => 'required|integer'
-                    ]);
-                    if ($validator->fails()) {
-                        return response()->json(["message" => $validator->errors(), "code" => 422]);
-                    }
-
-                    $SeProgress = [
-                        'services_id' =>  $request->services_id,
-                        'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
-                        'added_by' =>  $request->added_by,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'patient_id' =>  $request->patient_id,
-                        'name' =>  $request->name,
-                        'mrn' =>  $request->mrn,
-                        'date' =>  $request->date,
-                        'time' =>  $request->time,
-                        'staff_name' =>  $request->staff_name,
-                        'activity_type' =>  $request->activity_type,
-                        'restart' => $request->restart_program,
-                        'employment_status' =>  $request->employment_status,
-                        'progress_note' =>  $request->progress_note,
-                        'management_plan' =>  $request->management_plan,
-                        'location_service' =>  $request->location_service,
-                        'diagnosis_type' =>  $request->diagnosis_type,
-                        'service_category' =>  $request->service_category,
-                        'complexity_service' =>  $request->complexity_service,
-                        'outcome' =>  $request->outcome,
-                        'medication' =>  $request->medication,
-                        'status' => "0",
-                        'appointment_details_id' => $request->appId,
-                    ];
-
-                    try {
-                        $HOD = SeProgressNote::where(
-                            ['id' => $request->id]
-                        )->update($SeProgress);
-                    } catch (Exception $e) {
-                        return response()->json(["message" => $e->getMessage(), 'EtpProgress' => $SeProgress, "code" => 200]);
-                    }
-                    return response()->json(["message" => "Se Progress Note Successfully9", "code" => 200]);
-                } else {
-
-                    $SeProgress = [
-                        'services_id' =>  $request->services_id,
-                        'code_id' =>  $request->code_id,
-                        'sub_code_id' =>  $request->sub_code_id,
-                        'added_by' =>  $request->added_by,
-                        'patient_mrn_id' =>  $request->patient_mrn_id,
-                        'patient_id' =>  $request->patient_id,
-                        'name' =>  $request->name,
-                        'mrn' =>  $request->mrn,
-                        'date' =>  $request->date,
-                        'time' =>  $request->time,
-                        'staff_name' =>  $request->staff_name,
-                        'activity_type' =>  $request->activity_type,
-                        'restart' => $request->restart_program,
-                        'employment_status' =>  $request->employment_status,
-                        'progress_note' =>  $request->progress_note,
-                        'management_plan' =>  $request->management_plan,
-                        'location_service' =>  $request->location_service,
-                        'diagnosis_type' =>  $request->diagnosis_type,
-                        'complexity_service' =>  $request->complexity_service,
-                        'outcome' =>  $request->outcome,
-                        'medication' =>  $request->medication,
-                        'status' => "0",
-                        'appointment_details_id' => $request->appId,
-                    ];
-
-                    try {
-                        $HOD = SeProgressNote::where(
-                            ['id' => $request->id]
-                        )->update($SeProgress);
-                    } catch (Exception $e) {
-                        return response()->json(["message" => $e->getMessage(), 'SEProgress' => $SeProgress, "code" => 200]);
-                    }
-                    return response()->json(["message" => "Se Progress Note Successfully10", "code" => 200]);
-                }
-            } else {
                 if ($request->appId == null || $request->appId == '') {
                     $checkTodayAppointment = PatientAppointmentDetails::where('patient_mrn_id', $request->patient_id)->whereDate("created_at",'=',date('Y-m-d'))->first();
                     if ($checkTodayAppointment) {
@@ -620,12 +449,15 @@ class SeProgressNoteController extends Controller
                         'additional_diagnosis' => $additional_diagnosis,
                     ];
 
-                    try {
-                        $HOD = SeProgressNote::create($seprogressnote);
-                    } catch (Exception $e) {
-                        return response()->json(["message" => $e->getMessage(), 'SeProgress' => $seprogressnote, "code" => 200]);
+                    if($request->id) {
+                        SeProgressNote::where(
+                                    ['id' => $request->id]
+                                )->update($seprogressnote);
+                                return response()->json(["message" => "SE progress note updated1", "code" => 200]);
+                    } else {
+                        SeProgressNote::create($seprogressnote);
+                        return response()->json(["message" => "SE progress note created2", "code" => 200]);
                     }
-                    return response()->json(["message" => "SE Progress Form Successfully11", "code" => 200]);
                 } else if ($request->service_category == 'clinical-work') {
 
                     $SeProgress = [
@@ -658,12 +490,15 @@ class SeProgressNoteController extends Controller
                         'additional_subcode' => $additional_subcode,
                     ];
 
-                    try {
-                        $HOD = SeProgressNote::create($SeProgress);
-                    } catch (Exception $e) {
-                        return response()->json(["message" => $e->getMessage(), 'EtpProgress' => $SeProgress, "code" => 200]);
-                    }
-                    return response()->json(["message" => "Se Progress Note Successfully12", "code" => 200]);
+                    if($request->id) {
+                        SeProgressNote::where(
+                                    ['id' => $request->id]
+                                )->update($SeProgress);
+                                return response()->json(["message" => "SE progress note updated3", "code" => 200]);
+                    } else {
+                        SeProgressNote::create($SeProgress);
+                        return response()->json(["message" => "SE progress note created4", "code" => 200]);
+                }
                 } else if ($request->service_category == 'clinical') {
 
                     $SeProgress = [
@@ -699,8 +534,8 @@ class SeProgressNoteController extends Controller
                         return response()->json(["message" => $e->getMessage(), 'EtpProgress' => $SeProgress, "code" => 200]);
                     }
                     return response()->json(["message" => "Se Progress Note Successfully13", "code" => 200]);
-                } else {
-
+                }
+                else {
                     $SeProgress = [
                         'services_id' =>  $request->services_id,
                         'code_id' =>  $request->code_id,
@@ -737,7 +572,6 @@ class SeProgressNoteController extends Controller
                     }
                     return response()->json(["message" => "Se Progress Note Successfully14", "code" => 200]);
                 }
-            }
         }
     }
 }
