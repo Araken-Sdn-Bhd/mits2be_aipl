@@ -19,8 +19,7 @@ class AttemptTestController extends Controller
             'patient_id' => 'required|integer',
             'test_name' => 'required|string',
             'test_section_name' => 'required|string',
-            'result' => 'required|json',
-            'user_ip_address' => 'required'
+            'result' => 'required|json'
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
