@@ -11,6 +11,9 @@ class OcctReferralFormController extends Controller
     public function store(Request $request)
     {
     if ($request->status=='0') {
+        $additional_diagnosis=str_replace('"','',$request->additional_diagnosis);
+        $additional_sub_code_id=str_replace('"','',$request->additional_sub_code_id);
+        $sub_code_id=str_replace('"','',$request->sub_code_id);
         $occtform = [
             'added_by' => $request->added_by,
             'patient_mrn_id' => $request->patient_mrn_id,
@@ -27,8 +30,13 @@ class OcctReferralFormController extends Controller
             'location_services' => $request->location_services,
             'services_id' => $request->services_id,
             'code_id' => $request->code_id,
-            'sub_code_id' => $request->sub_code_id,
+
+            'sub_code_id' => $sub_code_id,
             'type_diagnosis_id' => $request->type_diagnosis_id,
+            'add_type_diagnosis_id'=> $additional_diagnosis, //newly added
+            'add_sub_code_id' => $additional_sub_code_id, //newly added
+            'add_code_id' => $request->additional_code_id, //newly added
+
             'category_services' => $request->category_services,
             'complexity_services' => $request->complexity_services,
             'outcome' => $request->outcome,
@@ -45,6 +53,10 @@ class OcctReferralFormController extends Controller
         return response()->json(["message" => "Created", "code" => 200]);
         }
     } elseif ($request->status=='1') {
+        $additional_diagnosis=str_replace('"','',$request->additional_diagnosis);
+        $additional_sub_code_id=str_replace('"','',$request->additional_sub_code_id);
+        $sub_code_id=str_replace('"','',$request->sub_code_id);
+
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
             'patient_mrn_id' => 'required|integer',
@@ -89,13 +101,16 @@ class OcctReferralFormController extends Controller
         'location_services' => $request->location_services,
         'services_id' => $request->services_id,
         'code_id' => $request->code_id,
-        'sub_code_id' => $request->sub_code_id,
+        'sub_code_id' => $sub_code_id,
         'type_diagnosis_id' => $request->type_diagnosis_id,
         'category_services' => $request->category_services,
         'complexity_services' => $request->complexity_services,
         'outcome' => $request->outcome,
         'medication_des' => $request->medication_des,
         'status' => "1",
+        'add_type_diagnosis_id'=> $additional_diagnosis, //newly added
+        'add_sub_code_id' => $additional_sub_code_id, //newly added
+        'add_code_id' => $request->additional_code_id, //newly added
         'appointment_details_id' => $request->appId,
         ];
         if($request->id){
