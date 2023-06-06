@@ -19,8 +19,7 @@ class AttemptTestController extends Controller
             'patient_id' => 'required|integer',
             'test_name' => 'required|string',
             'test_section_name' => 'required|string',
-            'result' => 'required|json',
-            'user_ip_address' => 'required'
+            'result' => 'required|json'
         ]);
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
@@ -80,26 +79,65 @@ class AttemptTestController extends Controller
                         $testResult = $this->prepareDASSResult($vv, $request);
                         $level = $this->getDassLevel($testResult);
                     }
-
-                    foreach ($vv as $k => $v) {
-                        $addTestResult[$i] = [
-                            'added_by' =>  $request->added_by,
-                            'patient_mrn_id' =>  $request->patient_id,
-                            'test_name' =>  $request->test_name,
-                            'test_section_name' => $kk,
-                            'question_id' =>  $k,
-                            'answer_id' => $v,
-                            'user_ip_address' => $request->user_ip_address,
-                            'created_at' =>  date('Y-m-d H:i:s'),
-                            'updated_at' =>  date('Y-m-d H:i:s')
-                        ];
-                        $i++;
+                    
+                    $sri = 0;
+                    $sri = $request->shharp_reg_id;
+                    if($sri != 0){
+                        foreach ($vv as $k => $v) {
+                            $addTestResult[$i] = [
+                                'shharp_reg_id' => $sri,
+                                'added_by' =>  $request->added_by,
+                                'patient_mrn_id' =>  $request->patient_id,
+                                'test_name' =>  $request->test_name,
+                                'test_section_name' => $kk,
+                                'question_id' =>  $k,
+                                'answer_id' => $v,
+                                'user_ip_address' => $request->user_ip_address,
+                                'created_at' =>  date('Y-m-d H:i:s'),
+                                'updated_at' =>  date('Y-m-d H:i:s')
+                            ];
+                            $i++;
+                        }
+                    }else{
+                        foreach ($vv as $k => $v) {
+                            $addTestResult[$i] = [
+                                'added_by' =>  $request->added_by,
+                                'patient_mrn_id' =>  $request->patient_id,
+                                'test_name' =>  $request->test_name,
+                                'test_section_name' => $kk,
+                                'question_id' =>  $k,
+                                'answer_id' => $v,
+                                'user_ip_address' => $request->user_ip_address,
+                                'created_at' =>  date('Y-m-d H:i:s'),
+                                'updated_at' =>  date('Y-m-d H:i:s')
+                            ];
+                            $i++;
+                        }
                     }
                 }
             }
             try {
-                AttemptTest::insert($addTestResult);
-                TestResult::insert($testResult);
+                    if($request->status == "update"){
+                        AttemptTest::where('shharp_reg_id', $sri)->where('question_id', 1)->update($addTestResult[0]);
+                        AttemptTest::where('shharp_reg_id', $sri)->where('question_id', 2)->update($addTestResult[1]);
+                        AttemptTest::where('shharp_reg_id', $sri)->where('question_id', 3)->update($addTestResult[2]);
+                        AttemptTest::where('shharp_reg_id', $sri)->where('question_id', 4)->update($addTestResult[3]);
+                        AttemptTest::where('shharp_reg_id', $sri)->where('question_id', 5)->update($addTestResult[4]);
+                        AttemptTest::where('shharp_reg_id', $sri)->where('question_id', 6)->update($addTestResult[5]);
+                        AttemptTest::where('shharp_reg_id', $sri)->where('question_id', 7)->update($addTestResult[6]);
+                        AttemptTest::where('shharp_reg_id', $sri)->where('question_id', 8)->update($addTestResult[7]);
+                        AttemptTest::where('shharp_reg_id', $sri)->where('question_id', 9)->update($addTestResult[8]);
+                        AttemptTest::where('shharp_reg_id', $sri)->where('question_id', 10)->update($addTestResult[9]);
+                        AttemptTest::where('shharp_reg_id', $sri)->where('question_id', 11)->update($addTestResult[10]);
+                        AttemptTest::where('shharp_reg_id', $sri)->where('question_id', 12)->update($addTestResult[11]);
+                        AttemptTest::where('shharp_reg_id', $sri)->where('question_id', 13)->update($addTestResult[12]);
+                        AttemptTest::where('shharp_reg_id', $sri)->where('question_id', 14)->update($addTestResult[13]);
+                        AttemptTest::where('shharp_reg_id', $sri)->where('question_id', 15)->update($addTestResult[14]);
+                    }
+                    else{
+                        AttemptTest::insert($addTestResult);
+                        TestResult::insert($testResult);
+                    }
                 return response()->json(["message" => "Answer submitted", "result" => $level, "code" => 200]);
             } catch (Exception $e) {
                 return response()->json(["message" => $e->getMessage(), 'Exception' => $addTestResult, "code" => 200]);
@@ -589,5 +627,17 @@ class AttemptTestController extends Controller
                 return response()->json(["message" => "High Intent, >28", 'result'=>$value[0]['result'], "code" => 200]);
             }
         }
+    }
+    public function answeredSI(Request $request){
+        $sri = 0;
+        $sri = $request->sharp_register_id;
+        $attempt_test = [];
+        if($sri!=0){
+            $attempt_test = AttemptTest::select('shharp_reg_id', 'question_id', 'answer_id')
+                                    ->where('shharp_reg_id', $sri)
+                                    ->get();
+        }
+        
+        return response()->json(["message" => "SIS answers.", 'attemptlist' => $attempt_test, "code" => 200]);
     }
 }

@@ -484,6 +484,7 @@ Route::group(['prefix' => 'patient'], function () {
     Route::get('/test-history', [AttemptTestController::class, 'testHistory']);
     Route::post('/resultdetail', [AttemptTestController::class, 'resultdetail']);
     Route::post('/test-history-show', [AttemptTestController::class, 'testHistoryResultShow']);
+    Route::post('/answered-si',[AttemptTestController::class, 'answeredSI']);
 });
 Route::group(['prefix' => 'patient-suicidal-risk-assessment'], function () {
     Route::post('/add', [PatientSuicidalRiskAssessmentController::class, 'store']);

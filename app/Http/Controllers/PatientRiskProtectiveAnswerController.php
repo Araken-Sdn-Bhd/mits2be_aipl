@@ -43,18 +43,12 @@ class PatientRiskProtectiveAnswerController extends Controller
         if ($result) {
             foreach ($result[0] as $key => $val) {
                 $txt = '';
-                if ($val != '0') {
+                if ($val == '1') {
                     $answer = 'Yes';
+                }else if($val == '2'){
+                    $answer = '';
                 }else{
                 $answer = 'No';
-                }
-                if (in_array($key, [1, 3, 4, 6, 7, 8, 10])) {
-                    if ($val != '0') {
-                        if ($request->factor_type == 'risk') {
-                            $txt = $val;
-                        }
-                        $answer = 'Yes';
-                    }
                 }
                 if (count($riskArray) == 0) {
                     $insertArray[] = [
@@ -158,8 +152,10 @@ class PatientRiskProtectiveAnswerController extends Controller
         if ($result) {
             foreach ($result[0] as $key => $val) {
                 $txt = '';
-                if ($val != '0') {
+                if ($val == '1') {
                     $answer = 'Yes';
+                }else if($val == '2'){
+                    $answer = '';
                 }else{
                     $answer = 'No';
                 }
@@ -183,8 +179,8 @@ class PatientRiskProtectiveAnswerController extends Controller
                         'updated_at' => date('Y-m-d H:i:s')
                     ];
                 } else {
-                    if(array_key_exists($key-1,$preIds)){
-                    PatientRiskProtectiveAnswer::where(['id' => $preIds[$key - 1]])->update([
+                    if(array_key_exists($key-13,$preIds)){
+                    PatientRiskProtectiveAnswer::where(['id' => $preIds[$key-13]])->update([
                         'added_by' => $request->added_by,
                         'patient_mrn_id' => $request->patient_id,
                         'factor_type' => 'protective',
@@ -311,6 +307,7 @@ class PatientRiskProtectiveAnswerController extends Controller
                         'status' =>  $request->status,
                         'created_at' => $date->format('Y-m-d H:i:s')
                     ]);
+
                     $insertID = $id->id;
                     return response()->json(["message" => "Data Inserted Successfully!", 'id' => $insertID, "code" => 201]);
                 } else {

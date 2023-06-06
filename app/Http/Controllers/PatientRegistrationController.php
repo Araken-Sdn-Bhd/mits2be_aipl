@@ -141,9 +141,7 @@ class PatientRegistrationController extends Controller
 
 
         } elseif ($request->citizentype == 'Permanent Resident') {
-
-            $validateCitizenship['nric_no'] = 'required|unique:patient_registration';
-            $patientregistration['nric_no'] =  $request->nric_no; // the value is still from nric_no1.please refer front end
+            $patientregistration['nric_no'] =  $request->nric_no1; // the value is still from nric_no1.please refer front end
 
         } elseif ($request->citizentype == 'Foreigner') {
             $validateCitizenship['passport_no'] = 'required|string|unique:patient_registration';
