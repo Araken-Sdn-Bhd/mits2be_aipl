@@ -670,7 +670,7 @@ class JobOfferController extends Controller
                 'added_by' => $request->added_by,
                 'plan_date' => $request->plan_date,
                 'reason_of_review' => $request->reason_of_review,
-                'diagnosis' => $request->diagnosis,
+                'diagnosis' => $request->diagnosis_type,
                 'medication_oral' => $request->medication_oral,
                 'medication_depot' => $request->medication_depot,
                 'medication_im' => $request->medication_im,
@@ -705,6 +705,7 @@ class JobOfferController extends Controller
                 PatientCarePaln::where(['id' => $request->id])->update($patientcarepln);
                 return response()->json(["message" => "Updated", "code" => 200]);
             }else{
+              
                 $HOD=PatientCarePaln::create($patientcarepln);
 
             return response()->json(["message" => "Created", "code" => 200]);
@@ -715,7 +716,7 @@ class JobOfferController extends Controller
                 'added_by' => $request->added_by,
                 'plan_date' => $request->plan_date,
                 'reason_of_review' => $request->reason_of_review,
-                'diagnosis' => $request->diagnosis,
+                'diagnosis' => $request->diagnosis_type,
                 'medication_oral' => $request->medication_oral,
                 'medication_depot' => $request->medication_depot,
                 'medication_im' => $request->medication_im,

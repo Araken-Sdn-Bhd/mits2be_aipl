@@ -32,6 +32,7 @@ class PatientCarePaln extends Model
         'specialist_incharge_designation',
         'location_of_service',
         'type_of_diagnosis',
+        'add_type_of_diagnosis',
         'category_of_services',
         'services',
         'complexity_of_services',
