@@ -31,11 +31,10 @@ class RequestAppointmentReportController extends Controller
         ->first();
         $users2  = json_decode(json_encode($users), true);
  
-        if($users2['code']!='superadmin'){
+        if($users2['code']=='superadmin'){
             $response = AppointmentRequest::select('*')
-            ->whereBetween('created_at', [$request->fromDate, $request->toDate])
-            ->where('status', '1')
-            ->where('branch_id','=',$request->branch_id);
+            ->whereBetween('created_at', [$request->fromDate, $request->toDate]);
+            
             
             $ssh= $response->get()->toArray();
 
@@ -43,7 +42,8 @@ class RequestAppointmentReportController extends Controller
 
             $response = AppointmentRequest::select('*')
             ->whereBetween('created_at', [$request->fromDate, $request->toDate])
-            ->where('status', '1');            
+            ->where('branch_id','=',$request->branch_id); 
+
             $ssh= $response->get()->toArray();
         }
         
@@ -73,6 +73,16 @@ class RequestAppointmentReportController extends Controller
         $result[$index]['contact_no']=$v['contact_no'];
         $result[$index]['email']=$v['email'];
         $result[$index]['created_at']=$v['created_at'];
+        $result[$index]['remark']=$v['remark'];
+
+        if($v['status']=='0'){
+        $result[$index]['status']='Registered';
+        }else if(($v['status']=='1')){
+        $result[$index]['status']='In Process';
+        }else if(($v['status']=='2')){
+        $result[$index]['status']='Deleted';
+        }
+        
         $index++;
         }
         if ($response) {
