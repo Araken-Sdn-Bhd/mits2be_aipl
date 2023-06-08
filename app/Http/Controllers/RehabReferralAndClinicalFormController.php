@@ -13,6 +13,10 @@ class RehabReferralAndClinicalFormController extends Controller
     public function store(Request $request)
     {
         if ($request->status=='0') {
+            $additional_diagnosis=str_replace('"','',$request->additional_diagnosis);
+            $additional_sub_code_id=str_replace('"','',$request->additional_sub_code_id);
+            $sub_code_id=str_replace('"','',$request->sub_code_id);
+
             $rehabreferralandclinicalform = [
             'added_by' => $request->added_by,
             'patient_mrn_id' => $request->patient_mrn_id,
@@ -39,7 +43,7 @@ class RehabReferralAndClinicalFormController extends Controller
             'location_services' => $request->location_services,
             'services_id' => $request->services_id,
             'code_id' => $request->code_id,
-            'sub_code_id' => $request->sub_code_id,
+            'sub_code_id' => $sub_code_id,
             'type_diagnosis_id' => $request->type_diagnosis_id,
             'category_services' => $request->category_services,
             'complexity_services' => $request->complexity_services,
@@ -48,7 +52,11 @@ class RehabReferralAndClinicalFormController extends Controller
             'referral_name' => $request->referral_name,
             'designation' => $request->designation,
             'status' => "0",
+            'current_medication' => $request->current_medication,
             'appointment_details_id' => $request->appId,
+            'add_type_diagnosis_id'=> $additional_diagnosis, //newly added
+            'add_sub_code_id' => $additional_sub_code_id, //newly added
+            'add_code_id' => $request->additional_code_id, //newly added
             ];
             $validateRehabReferralAndClinicalForm = [];
             if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
@@ -58,7 +66,7 @@ class RehabReferralAndClinicalFormController extends Controller
                 $validateRehabReferralAndClinicalForm['code_id'] = 'required';
                 $rehabreferralandclinicalform['code_id'] =  $request->code_id;
                 $validateRehabReferralAndClinicalForm['sub_code_id'] = 'required';
-                $rehabreferralandclinicalform['sub_code_id'] =  $request->sub_code_id;
+                $rehabreferralandclinicalform['sub_code_id'] =  $sub_code_id;
             }
             $validator = Validator::make($request->all(), $validateRehabReferralAndClinicalForm);
             if ($validator->fails()) {
@@ -69,10 +77,13 @@ class RehabReferralAndClinicalFormController extends Controller
                 return response()->json(["message" => "Successfully updated", "code" => 200]);
             } else {
                 $HOD=RehabReferralAndClinicalForm::create($rehabreferralandclinicalform);
-
                 return response()->json(["message" => "Rehab Referral and Clinical Form Created Successfully!", "code" => 200]);
             }
         }else if($request->status=='1'){
+                $additional_diagnosis=str_replace('"','',$request->additional_diagnosis);
+                $additional_sub_code_id=str_replace('"','',$request->additional_sub_code_id);
+                $sub_code_id=str_replace('"','',$request->sub_code_id);
+
             $validator = Validator::make($request->all(), [
                 'added_by' => 'required|integer',
                 'patient_mrn_id' => 'required|integer',
@@ -137,7 +148,7 @@ class RehabReferralAndClinicalFormController extends Controller
                'location_services' => $request->location_services,
                'services_id' => $request->services_id,
                'code_id' => $request->code_id,
-               'sub_code_id' => $request->sub_code_id,
+               'sub_code_id' => $sub_code_id,
                'type_diagnosis_id' => $request->type_diagnosis_id,
                'category_services' => $request->category_services,
                'complexity_services' => $request->complexity_services,
@@ -145,8 +156,12 @@ class RehabReferralAndClinicalFormController extends Controller
                'medication_des' => $request->medication_des,
                'referral_name' => $request->referral_name,
                'designation' => $request->designation,
+               'current_medication' => $request->current_medication,
                'status' => "1",
                'appointment_details_id' => $request->appId,
+               'add_type_diagnosis_id'=> $additional_diagnosis, //newly added
+               'add_sub_code_id' => $additional_sub_code_id, //newly added
+               'add_code_id' => $request->additional_code_id, //newly added
                ];
                $validateRehabReferralAndClinicalForm = [];
             if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
@@ -156,7 +171,7 @@ class RehabReferralAndClinicalFormController extends Controller
                 $validateRehabReferralAndClinicalForm['code_id'] = 'required';
                 $rehabreferralandclinicalform['code_id'] =  $request->code_id;
                 $validateRehabReferralAndClinicalForm['sub_code_id'] = 'required';
-                $rehabreferralandclinicalform['sub_code_id'] =  $request->sub_code_id;
+                $rehabreferralandclinicalform['sub_code_id'] =  $sub_code_id;
             }
             $validator = Validator::make($request->all(), $validateRehabReferralAndClinicalForm);
             if ($validator->fails()) {
