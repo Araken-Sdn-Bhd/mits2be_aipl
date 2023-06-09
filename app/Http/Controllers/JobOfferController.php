@@ -563,6 +563,9 @@ class JobOfferController extends Controller
     public function setLASERReferralForm(Request $request)
     {
 
+        $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
+        $additional_subcode=str_replace('"',"",$request->additional_subcode);
+        $sub_code_id=str_replace('"',"",$request->sub_code_id);
         $result = json_decode($request->result, true);
         $addTestResult = [];
         $level = [];
@@ -620,12 +623,15 @@ class JobOfferController extends Controller
             'action' => $request->action,
             'location_of_service' => $request->location_of_service,
             'type_of_diagnosis' => $request->type_of_diagnosis,
-            'category_of_services' => $request->category_of_services,
+            'additional_diagnosis' => $request->additional_diagnosis,
+            'category_of_services' => $request->category_services,
             'services' => $request->services,
             'complexity_of_services' => $request->complexity_of_services,
             'outcome' => $request->outcome,
             'icd_9_code' => $request->icd_9_code,
             'icd_9_subcode' => $request->icd_9_subcode,
+            'additional_code_id' => $request->additional_code_id,
+            'additional_subcode' => $request->additional_subcode,
             'medication_prescription' => $request->medication_prescription,
             'created_at' => date('Y-m-d H:i:s'),
             'appointment_details_id' => $request->appId,
