@@ -13,5 +13,5 @@ class PsychologyReferral extends Model
     'is_deleted', 'patient_acknowledged','diagnosis_id','reason_referral_assessment',
     'reason_referral_assessment_other','reason_referral_intervention','reason_referral_intervention_other','location_services','type_diagnosis_id',
     'category_services','services_id','code_id','sub_code_id','complexity_services','outcome',
-    'medication_des','status','created_at'];
+    'medication_des','status','created_at', 'additional_diagnosis', 'additional_code_id', 'additional_sub_code_id'];
 }

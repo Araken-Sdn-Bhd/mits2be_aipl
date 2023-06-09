@@ -13,6 +13,10 @@ class PsychologyReferralController extends Controller
     public function store(Request $request)
     {
     if ($request->status=='0') {
+        $additional_diagnosis=str_replace('"','',$request->additional_diagnosis);
+        $additional_sub_code_id=str_replace('"','',$request->additional_sub_code_id);
+        $sub_code_id=str_replace('"','',$request->sub_code_id);
+
         $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
         $psychologyreferral = [
         'added_by' => $request->added_by,
@@ -30,7 +34,7 @@ class PsychologyReferralController extends Controller
         'location_services' => $request->location_services,
         'services_id' => $request->services_id,
         'code_id' => $request->code_id,
-        'sub_code_id' => $request->sub_code_id,
+        'sub_code_id' => $sub_code_id,
         'type_diagnosis_id' => $request->type_diagnosis_id,
         'category_services' => $request->category_services,
         'complexity_services' => $request->complexity_services,
@@ -39,6 +43,9 @@ class PsychologyReferralController extends Controller
         'status' => "0",
         'appointment_details_id' => $request->appId,
         'created_at' => $date->format('Y-m-d H:i:s'),
+        'additional_diagnosis' => $additional_diagnosis,
+        'additional_code_id' => $request->additional_code_id,
+        'additional_sub_code_id' => $additional_sub_code_id,
         ];
 
         $validatePsychologyReferral = [];
@@ -50,7 +57,7 @@ class PsychologyReferralController extends Controller
             $validatePsychologyReferral['code_id'] = 'required';
             $psychologyreferral['code_id'] =  $request->code_id;
             $validatePsychologyReferral['sub_code_id'] = 'required';
-            $psychologyreferral['sub_code_id'] =  $request->sub_code_id;
+            $psychologyreferral['sub_code_id'] =  $sub_code_id;
         }
         $validator = Validator::make($request->all(), $validatePsychologyReferral);
         if ($validator->fails()) {
@@ -96,6 +103,11 @@ class PsychologyReferralController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
         $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+
+        $additional_diagnosis=str_replace('"','',$request->additional_diagnosis);
+        $additional_sub_code_id=str_replace('"','',$request->additional_sub_code_id);
+        $sub_code_id=str_replace('"','',$request->sub_code_id);
+
         $psychologyreferral = [
             'added_by' => $request->added_by,
             'patient_id' => $request->patient_id,
@@ -112,7 +124,7 @@ class PsychologyReferralController extends Controller
             'location_services' => $request->location_services,
             'services_id' => $request->services_id,
             'code_id' => $request->code_id,
-            'sub_code_id' => $request->sub_code_id,
+            'sub_code_id' => $sub_code_id,
             'type_diagnosis_id' => $request->type_diagnosis_id,
             'category_services' => $request->category_services,
             'complexity_services' => $request->complexity_services,
@@ -121,6 +133,9 @@ class PsychologyReferralController extends Controller
             'status' => "1",
             'appointment_details_id' => $request->appId,
             'created_at' => $date->format('Y-m-d H:i:s'),
+            'additional_diagnosis' => $additional_diagnosis,
+            'additional_code_id' => $request->additional_code_id,
+            'additional_sub_code_id' => $additional_sub_code_id,
             ];
 
             $validatePsychologyReferral = [];
@@ -132,7 +147,7 @@ class PsychologyReferralController extends Controller
                 $validatePsychologyReferral['code_id'] = 'required';
                 $psychologyreferral['code_id'] =  $request->code_id;
                 $validatePsychologyReferral['sub_code_id'] = 'required';
-                $psychologyreferral['sub_code_id'] =  $request->sub_code_id;
+                $psychologyreferral['sub_code_id'] =  $sub_code_id;
             }
             $validator = Validator::make($request->all(), $validatePsychologyReferral);
             if ($validator->fails()) {
