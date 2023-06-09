@@ -14,7 +14,7 @@ class RehabReferralAndClinicalForm extends Model
     'is_deleted', 'patient_referred_for','diagnosis','date_onset','date_of_referral','no_of_admission',
     'latest_admission_date','current_medication','alerts','education_level','aggresion',
     'suicidality','criminality','age_first_started','heroin','cannabis','ats','inhalant',
-    'alcohol','tobacco','others','other_information','location_services','type_diagnosis_id',
-    'category_services','services_id','code_id','sub_code_id','complexity_services','outcome',
+    'alcohol','tobacco','others','other_information','location_services','type_diagnosis_id','add_type_diagnosis_id',
+    'category_services','services_id','code_id','sub_code_id','add_code_id','add_sub_code_id','complexity_services','outcome',
     'medication_des','referral_name','designation','status','created_at'];
 }
