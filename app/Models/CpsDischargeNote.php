@@ -13,5 +13,5 @@ class CpsDischargeNote extends Model
     'post_intervention', 'psychopathology', 'psychosocial', 'potential_risk', 'category_of_discharge',
     'discharge_diagnosis','outcome_medication','location_service','diagnosis_type','service_category',
     'services_id', 'code_id', 'sub_code_id', 'complexity_services', 'outcome',
-    'medication', 'specialist_name', 'verification_date', 'case_manager','date', 'status','created_at','add_code_id','add_sub_code_id'];
+    'medication', 'specialist_name', 'verification_date', 'case_manager','date', 'status','created_at','add_code_id','add_sub_code_id','add_diagnosis_type'];
 }
