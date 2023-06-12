@@ -24,6 +24,9 @@ class LASERAssesmenForm extends Model
         'outcome',
         'icd_9_code',
         'icd_9_subcode',
+        'additional_code_id',
+        'additional_diagnosis',
+        'additional_subcode',
         'medication_prescription',
         'created_at',
         'is_deleted'

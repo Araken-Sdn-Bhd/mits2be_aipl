@@ -15,5 +15,8 @@ class WorkAnalysisForm extends Model
     "change_in_rate","from","to","on_date","works_hour_week","work_schedule","no_of_current_employee","no_of_other_employee","during_same_shift",
     "education_level", "grade", "job_experience_year","job_experience_months","others",
     "location_services","type_diagnosis_id","category_services","services_id","code_id",
-    "sub_code_id","complexity_services","outcome","medication_des","status"];
+    "sub_code_id","complexity_services","outcome",
+    'additional_code_id',
+    'additional_diagnosis',
+    'additional_subcode',"medication_des","status"];
 }
