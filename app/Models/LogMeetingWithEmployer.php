@@ -29,6 +29,9 @@ class LogMeetingWithEmployer extends Model
         'sub_code_id',
         'complexity_services',
         'outcome',
+        'additional_code_id',
+        'additional_diagnosis',
+        'additional_subcode',
         'medication_des',
         'status',
         'created_at'
