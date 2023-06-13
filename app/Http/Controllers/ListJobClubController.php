@@ -13,8 +13,8 @@ class ListJobClubController extends Controller
     public function store(Request $request)
     {
         $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
-        $additional_subcode=str_replace('"',"",$request->additional_subcode);
-        $sub_code_id=str_replace('"',"",$request->sub_code_id);
+        $additional_subcode=str_replace('"',"",$request->additional_code_id);
+        $sub_code_id=str_replace('"',"",$request->additional_sub_code_id);
          $validator = Validator::make($request->all(), [
              'added_by' => 'required|integer',
              'patient_id' => 'required|integer',
