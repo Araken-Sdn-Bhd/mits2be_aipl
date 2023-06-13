@@ -15,6 +15,6 @@ class TriageForm extends Model
     'treatment_checked','treatment_given_appointment','treatment_given_regular','placement_referred','placement_discharge','screening_id','score',
     'appointment_date', 'appointment_time', 'appointment_duration', 'appointment_type','appointment_type_visit', 'appointment_patient_category', 'appointment_assign_team',
     'location_services_id','type_diagnosis_id','category_services','services_id','code_id','sub_code_id','complexity_services_id','outcome_id',
-    'medication_des','status','created_at','is_deleted'];
+    'medication_des','status','created_at','is_deleted','additional_code_id','additional_diagnosis','additional_subcode'];
 
 }
