@@ -13,6 +13,9 @@ class JobInterestChecklistController extends Controller
 {
     public function store(Request $request)
     {
+        $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
+        $additional_subcode=str_replace('"',"",$request->additional_code_id);
+        $sub_code_id=str_replace('"',"",$request->additional_sub_code_id);
         if ($request->status == '0') {
             $jobinterestchecklist = [
                 'added_by' => $request->added_by,
@@ -48,6 +51,9 @@ class JobInterestChecklistController extends Controller
                 'planning' => $request->planning,
                 'patient_consent_interested' => $request->patient_consent_interested,
 
+                'additional_code_id' => $request->additional_code_id,
+                'additional_subcode' => $request->additional_subcode,
+                'additional_diagnosis' => $request->additional_diagnosis,
                 'location_services' => $request->location_services,
                 'services_id' => $request->services_id,
                 'code_id' => $request->code_id,
@@ -174,6 +180,9 @@ class JobInterestChecklistController extends Controller
                 'planning' => $request->planning,
                 'patient_consent_interested' => $request->patient_consent_interested,
 
+                'additional_code_id' => $sub_code_id,
+                'additional_subcode' => $additional_subcode,
+                'additional_diagnosis' => $additional_diagnosis,
                 'location_services' => $request->location_services,
                 'services_id' => $request->services_id,
                 'code_id' => $request->code_id,

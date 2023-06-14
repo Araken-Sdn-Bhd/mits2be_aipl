@@ -29,6 +29,9 @@ class WorkAnalysisFormController extends Controller
 {
     public function store(Request $request)
     {
+        $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
+        $additional_subcode=str_replace('"',"",$request->additional_code_id);
+        $sub_code_id=str_replace('"',"",$request->additional_sub_code_id);
         if($request->status == '0') {
 
             if ($request->appId == null || $request->appId == '') {
@@ -162,6 +165,9 @@ class WorkAnalysisFormController extends Controller
                 'job_experience_months' => $request->job_experience_months,
                 'others' => $request->others,
 
+                'additional_code_id' => $sub_code_id,
+                'additional_subcode' => $additional_subcode,
+                'additional_diagnosis' => $additional_diagnosis,
                 'location_services' => $request->location_services,
                 'type_diagnosis_id' => $request->type_diagnosis_id,
                 'category_services' => $request->category_services,
@@ -315,6 +321,9 @@ class WorkAnalysisFormController extends Controller
                 'job_experience_months' => $request->job_experience_months,
                 'others' => $request->others,
 
+                'additional_code_id' => $sub_code_id,
+                'additional_subcode' => $additional_subcode,
+                'additional_diagnosis' => $additional_diagnosis,
                 'location_services' => $request->location_services,
                 'type_diagnosis_id' => $request->type_diagnosis_id,
                 'category_services' => $request->category_services,

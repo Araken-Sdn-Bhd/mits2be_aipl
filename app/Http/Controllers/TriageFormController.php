@@ -14,6 +14,7 @@ class TriageFormController extends Controller
 {
     public function store(Request $request)
     {
+
         if ($request->status == '1') {
             $validator = Validator::make($request->all(), [
                 'added_by' => 'required|integer',
@@ -218,6 +219,9 @@ class TriageFormController extends Controller
 
     public function storeTriage(Request $request)
     {
+        $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
+        $additional_subcode=str_replace('"',"",$request->additional_code_id);
+        $sub_code_id=str_replace('"',"",$request->additional_sub_code_id);
         if ($request->status == '1') {
             $validator = Validator::make($request->all(), [
                 'added_by' => 'required|integer',
@@ -298,6 +302,11 @@ class TriageFormController extends Controller
                 'appointment_patient_category' => $request->appointment_patient_category,
                 'appointment_assign_team' => $request->appointment_assign_team,
 
+
+
+                'additional_code_id' => $sub_code_id,
+                'additional_subcode' => $additional_subcode,
+                'additional_diagnosis' => $additional_diagnosis,
                 'location_services_id' => $request->location_services_id,
                 'services_id' => $request->services_id,
                 'code_id' => $request->code_id,
@@ -367,6 +376,9 @@ class TriageFormController extends Controller
                             'appointment_patient_category' => $request->appointment_patient_category,
                             'appointment_assign_team' => $request->appointment_assign_team,
 
+                            'additional_code_id' => $sub_code_id,
+                            'additional_subcode' => $additional_subcode,
+                            'additional_diagnosis' => $additional_diagnosis,
                             'location_services_id' => $request->location_services_id,
                             'services_id' => $request->services_id,
                             'code_id' => $request->code_id,

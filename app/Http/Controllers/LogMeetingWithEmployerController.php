@@ -13,6 +13,9 @@ class LogMeetingWithEmployerController extends Controller
 
     public function store(Request $request)
     {
+        $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
+        $additional_subcode=str_replace('"',"",$request->additional_code_id);
+        $sub_code_id=str_replace('"',"",$request->additional_sub_code_id);
         $validator = Validator::make($request->all(), [
             'added_by' => 'required|integer',
             'appId' => '',
@@ -32,6 +35,9 @@ class LogMeetingWithEmployerController extends Controller
                 'discussion_end_time' => $request->get('discussion_end_time'),
                 'staff_name' => $request->get('staff_name'),
 
+                'additional_code_id' => $sub_code_id,
+                'additional_subcode' => $additional_subcode,
+                'additional_diagnosis' => $additional_diagnosis,
                 'location_services' => $request->get('location_services'),
                 'services_id' => $request->get('services_id'),
                 'code_id' => $request->get('code_id'),
@@ -75,6 +81,9 @@ class LogMeetingWithEmployerController extends Controller
                 'discussion_end_time' => $request->get('discussion_end_time'),
                 'staff_name' => $request->get('staff_name'),
 
+                'additional_code_id' => $sub_code_id,
+                'additional_subcode' => $additional_subcode,
+                'additional_diagnosis' => $additional_diagnosis,
                 'location_services' => $request->get('location_services'),
                 'services_id' => $request->get('services_id'),
                 'code_id' => $request->get('code_id'),

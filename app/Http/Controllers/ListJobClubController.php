@@ -12,6 +12,9 @@ class ListJobClubController extends Controller
 {
     public function store(Request $request)
     {
+        $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
+        $additional_subcode=str_replace('"',"",$request->additional_code_id);
+        $sub_code_id=str_replace('"',"",$request->additional_sub_code_id);
          $validator = Validator::make($request->all(), [
              'added_by' => 'required|integer',
              'patient_id' => 'required|integer',
@@ -30,13 +33,13 @@ class ListJobClubController extends Controller
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
- 
-        
+
+
             $listjobclub = [
             'added_by' => $request->added_by,
             'patient_id' => $request->patient_id,
             'job_club' => $request->job_club,
-           
+
             'location_services' => $request->location_services,
             'services_id' => $request->services_id,
             'code_id' => $request->code_id,
@@ -48,10 +51,14 @@ class ListJobClubController extends Controller
             'medication_des' => $request->medication_des,
             'status' => "1",
             'appointment_details_id' => $request->appId,
+
+            'additional_code_id' => $sub_code_id,
+            'additional_subcode' => $additional_subcode,
+            'additional_diagnosis' => $additional_diagnosis,
             ];
- 
+
             $validateListJobClub = [];
- 
+
          if ($request->category_services == 'assisstance' || $request->category_services == 'external') {
              $validateListJobClub['services_id'] = 'required';
              $listjobclub['services_id'] =  $request->services_id;
@@ -65,10 +72,10 @@ class ListJobClubController extends Controller
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
- 
-         ListJobClub::updateOrCreate( ['patient_id' => $request->patient_id], $listjobclub);   
+
+         ListJobClub::updateOrCreate( ['patient_id' => $request->patient_id], $listjobclub);
          return response()->json(["message" => "Job Club list Created Successfully!", "code" => 200]);
-        
+
     }
 
 }
