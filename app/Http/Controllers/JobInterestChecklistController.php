@@ -13,9 +13,9 @@ class JobInterestChecklistController extends Controller
 {
     public function store(Request $request)
     {
-        $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
-        $additional_subcode=str_replace('"',"",$request->additional_code_id);
-        $sub_code_id=str_replace('"',"",$request->additional_sub_code_id);
+        $additional_diagnosis = str_replace('"',"",$request->additional_diagnosis);
+        $additional_subcode = str_replace('"',"",$request->additional_sub_code_id);
+        $sub_code_id = str_replace('"',"",$request->sub_code_id);
         if ($request->status == '0') {
             $jobinterestchecklist = [
                 'added_by' => $request->added_by,
@@ -52,12 +52,12 @@ class JobInterestChecklistController extends Controller
                 'patient_consent_interested' => $request->patient_consent_interested,
 
                 'additional_code_id' => $request->additional_code_id,
-                'additional_subcode' => $request->additional_subcode,
-                'additional_diagnosis' => $request->additional_diagnosis,
+                'additional_subcode' => $additional_subcode,
+                'additional_diagnosis' => $additional_diagnosis,
                 'location_services' => $request->location_services,
                 'services_id' => $request->services_id,
                 'code_id' => $request->code_id,
-                'sub_code_id' => $request->sub_code_id,
+                'sub_code_id' => $sub_code_id,
                 'type_diagnosis_id' => $request->type_diagnosis_id,
                 'category_services' => $request->category_services,
                 'complexity_services' => $request->complexity_of_services,
@@ -77,7 +77,7 @@ class JobInterestChecklistController extends Controller
                 $validateJobInterestChecklist['code_id'] = 'required';
                 $jobinterestchecklist['code_id'] =  $request->code_id;
                 $validateJobInterestChecklist['sub_code_id'] = 'required';
-                $jobinterestchecklist['sub_code_id'] =  $request->sub_code_id;
+                $jobinterestchecklist['sub_code_id'] =  $sub_code_id;
             }
 
             if ($request->id) {
@@ -180,13 +180,13 @@ class JobInterestChecklistController extends Controller
                 'planning' => $request->planning,
                 'patient_consent_interested' => $request->patient_consent_interested,
 
-                'additional_code_id' => $sub_code_id,
+                'additional_code_id' => $request->additional_code_id,
                 'additional_subcode' => $additional_subcode,
                 'additional_diagnosis' => $additional_diagnosis,
                 'location_services' => $request->location_services,
                 'services_id' => $request->services_id,
                 'code_id' => $request->code_id,
-                'sub_code_id' => $request->sub_code_id,
+                'sub_code_id' => $sub_code_id,
                 'type_diagnosis_id' => $request->type_diagnosis_id,
                 'category_services' => $request->category_services,
                 'complexity_services' => $request->complexity_of_services,
@@ -206,7 +206,7 @@ class JobInterestChecklistController extends Controller
                 $validateJobInterestChecklist['code_id'] = 'required';
                 $jobinterestchecklist['code_id'] =  $request->code_id;
                 $validateJobInterestChecklist['sub_code_id'] = 'required';
-                $jobinterestchecklist['sub_code_id'] =  $request->sub_code_id;
+                $jobinterestchecklist['sub_code_id'] =  $sub_code_id;
             }
             $validator = Validator::make($request->all(), $validateJobInterestChecklist);
             if ($validator->fails()) {
