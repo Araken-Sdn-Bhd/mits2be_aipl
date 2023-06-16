@@ -29,9 +29,9 @@ class WorkAnalysisFormController extends Controller
 {
     public function store(Request $request)
     {
-        $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
-        $additional_subcode=str_replace('"',"",$request->additional_code_id);
-        $sub_code_id=str_replace('"',"",$request->additional_sub_code_id);
+        $additional_diagnosis = str_replace('"',"",$request->additional_diagnosis);
+        $additional_subcode = str_replace('"',"",$request->additional_sub_code_id);
+        $sub_code_id = str_replace('"',"",$request->sub_code_id);
         if($request->status == '0') {
 
             if ($request->appId == null || $request->appId == '') {
@@ -165,7 +165,7 @@ class WorkAnalysisFormController extends Controller
                 'job_experience_months' => $request->job_experience_months,
                 'others' => $request->others,
 
-                'additional_code_id' => $sub_code_id,
+                'additional_code_id' => $request->additional_code_id,
                 'additional_subcode' => $additional_subcode,
                 'additional_diagnosis' => $additional_diagnosis,
                 'location_services' => $request->location_services,
@@ -186,12 +186,12 @@ class WorkAnalysisFormController extends Controller
                 $validateWorkAnalysisForm['code_id'] = 'required';
                 $WorkAnalysisForm['code_id'] =  $request->code_id;
                 $validateWorkAnalysisForm['sub_code_id'] = 'required';
-                $WorkAnalysisForm['sub_code_id'] =  $request->sub_code_id;
+                $WorkAnalysisForm['sub_code_id'] =  $sub_code_id;
             }else if ($request->category_services == 'clinical') {
                 $validateWorkAnalysisForm['code_id'] = 'required';
                 $WorkAnalysisForm['code_id'] =  $request->code_id;
                 $validateWorkAnalysisForm['sub_code_id'] = 'required';
-                $WorkAnalysisForm['sub_code_id'] =  $request->sub_code_id;
+                $WorkAnalysisForm['sub_code_id'] =  $sub_code_id;
             }
 
             if ($request->wage_change_occur == 'yes') {
@@ -321,7 +321,7 @@ class WorkAnalysisFormController extends Controller
                 'job_experience_months' => $request->job_experience_months,
                 'others' => $request->others,
 
-                'additional_code_id' => $sub_code_id,
+                'additional_code_id' => $request->additional_code_id,
                 'additional_subcode' => $additional_subcode,
                 'additional_diagnosis' => $additional_diagnosis,
                 'location_services' => $request->location_services,
@@ -342,12 +342,12 @@ class WorkAnalysisFormController extends Controller
                 $validateWorkAnalysisForm['code_id'] = 'required';
                 $WorkAnalysisForm['code_id'] =  $request->code_id;
                 $validateWorkAnalysisForm['sub_code_id'] = 'required';
-                $WorkAnalysisForm['sub_code_id'] =  $request->sub_code_id;
+                $WorkAnalysisForm['sub_code_id'] =  $sub_code_id;
             }else if ($request->category_services == 'clinical') {
                 $validateWorkAnalysisForm['code_id'] = 'required';
                 $WorkAnalysisForm['code_id'] =  $request->code_id;
                 $validateWorkAnalysisForm['sub_code_id'] = 'required';
-                $WorkAnalysisForm['sub_code_id'] =  $request->sub_code_id;
+                $WorkAnalysisForm['sub_code_id'] =  $sub_code_id;
             }
 
             if ($request->wage_change_occur == 'yes') {
