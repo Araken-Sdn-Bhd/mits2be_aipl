@@ -2701,11 +2701,14 @@ class PatientAppointmentDetailsController extends Controller
                     $list[$key]['category_services'] = $val['category_services'] ??  'NA';
                     $list[$key]['services_id'] = $val['services_id'] ??  'NA';
                     $list[$key]['code_id'] = $val['code_id'] ??  'NA';
-                    $list[$key]['sub_code_id'] = $val['sub_code_id'] ??  'NA';
+                    $list[$key]['sub_code_id'] = $val['sub_code_id'] ??  '0';
                     $list[$key]['complexity_services'] = $val['complexity_services'] ??  'NA';
                     $list[$key]['outcome'] = $val['outcome'] ??  'NA';
                     $list[$key]['medication_des'] = $val['medication_des'] ??  'NA';
                     $list[$key]['status'] = $val['status'] ??  'NA';
+                    $list[$key]['additional_code_id'] = $val['additional_code_id'] ??  '0';
+                    $list[$key]['additional_diagnosis'] = $val['additional_diagnosis'] ??  '0';
+                    $list[$key]['additional_sub_code_id'] = $val['additional_subcode'] ??  '0';
 
                     $list[$key]['jobs'] = $ab ??  'NA';
                 }
@@ -2807,6 +2810,10 @@ class PatientAppointmentDetailsController extends Controller
 
 
                     $list[$key]['jobs_des'] = $jobdes ??  'NA';
+
+                    $list[$key]['additional_code_id'] = $val['additional_code_id'] ??  '0';
+                    $list[$key]['additional_diagnosis'] = $val['additional_diagnosis'] ??  '0';
+                    $list[$key]['additional_sub_code_id'] = $val['additional_subcode'] ??  '0';
                 }
             }
         }
