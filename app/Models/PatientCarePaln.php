@@ -32,6 +32,7 @@ class PatientCarePaln extends Model
         'specialist_incharge_designation',
         'location_of_service',
         'type_of_diagnosis',
+        'add_type_of_diagnosis',
         'category_of_services',
         'services',
         'complexity_of_services',
@@ -40,6 +41,7 @@ class PatientCarePaln extends Model
         'icd_9_subcode',
         'medication_prescription',
         'created_at',
-        'status'
+        'status',
+        'add_code_id','add_sub_code_id'
     ];
 }
