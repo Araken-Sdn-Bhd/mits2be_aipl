@@ -26,6 +26,7 @@ use App\Models\HospitalManagement;
 use App\Models\JobStartFormList;
 use App\Models\Notifications;
 use App\Models\TestResult;
+use App\Models\TreatmentPlan;
 use DateTime;
 use DateTimeZone;
 use Validator;
@@ -682,7 +683,6 @@ class JobOfferController extends Controller
                 'medication_im' => $request->medication_im,
                 'background_history' => $request->background_history,
                 'staff_incharge_dr' => $request->staff_incharge_dr,
-                'treatment_plan' => $request->treatment_plan,
                 'next_review_date' => $request->next_review_date,
                 'case_manager_date' => $request->case_manager_date,
                 'case_manager_name' => $request->case_manager_name,
@@ -709,10 +709,23 @@ class JobOfferController extends Controller
 
             if($request->id){
                 PatientCarePaln::where(['id' => $request->id])->update($patientcarepln);
+                if(!empty($request->treatment_plan)){
+                    TreatmentPlan::where('patient_care_plan_id', $request->id)->firstorfail()->delete();
+                    foreach($request->treatment_plan as $key) {
+                        $data = array('issues' => $key['issues'],'goals' =>$request->goals,'management'=>$key['management'],'who'=>$key['who'],'patient_care_plan_id'=>$request->id);
+                        TreatmentPlan::insert($data);
+                    }
+                 }
                 return response()->json(["message" => "Updated", "code" => 200]);
             }else{
-              
                 $HOD=PatientCarePaln::create($patientcarepln);
+                $getID = $HOD->id;
+                if(!empty($request->treatment_plan)){
+                    foreach($request->treatment_plan as $key) {
+                        $data = array('issues' => $key['issues'],'goals' =>$key['goals'],'management'=>$key['management'],'who'=>$key['who'],'patient_care_plan_id'=>$getID);
+                        TreatmentPlan::insert($data);
+                    }
+                 }
 
             return response()->json(["message" => "Created", "code" => 200]);
             }
