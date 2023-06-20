@@ -671,7 +671,6 @@ class JobOfferController extends Controller
 
     public function setPatientCarePlan(Request $request)
     {
-        if ($request->status == '0') {
             $patientcarepln=[
                 'patient_id' => $request->patient_id,
                 'added_by' => $request->added_by,
@@ -712,7 +711,7 @@ class JobOfferController extends Controller
                 if(!empty($request->treatment_plan)){
                     TreatmentPlan::where('patient_care_plan_id', $request->id)->firstorfail()->delete();
                     foreach($request->treatment_plan as $key) {
-                        $data = array('issues' => $key['issues'],'goals' =>$request->goals,'management'=>$key['management'],'who'=>$key['who'],'patient_care_plan_id'=>$request->id);
+                        $data = array('issues' => $key['issues'],'goals' =>$key['goals'],'management'=>$key['management'],'who'=>$key['who'],'patient_care_plan_id'=>$request->id);
                         TreatmentPlan::insert($data);
                     }
                  }
@@ -729,53 +728,7 @@ class JobOfferController extends Controller
 
             return response()->json(["message" => "Created", "code" => 200]);
             }
-        }elseif($request->status == '1'){
-            $patientcarepln=[
-                'patient_id' => $request->patient_id,
-                'added_by' => $request->added_by,
-                'plan_date' => $request->plan_date,
-                'reason_of_review' => $request->reason_of_review,
-                'diagnosis' => $request->diagnosis_type,
-                'medication_oral' => $request->medication_oral,
-                'medication_depot' => $request->medication_depot,
-                'medication_im' => $request->medication_im,
-                'background_history' => $request->background_history,
-                'staff_incharge_dr' => $request->staff_incharge_dr,
-                'treatment_plan' => $request->treatment_plan,
-                'next_review_date' => $request->next_review_date,
-                'case_manager_date' => $request->case_manager_date,
-                'case_manager_name' => $request->case_manager_name,
-                'case_manager_designation' => $request->case_manager_designation,
-                'specialist_incharge_date' => $request->specialist_incharge_date,
-                'specialist_incharge_name' => $request->specialist_incharge_name,
-                'specialist_incharge_designation' => $request->specialist_incharge_designation,
-                'location_of_service' => $request->location_of_service,
-                'type_of_diagnosis' => $request->diagnosis_type,
-                'add_type_of_diagnosis' => str_replace('"',"",$request->add_diagnosis_type),
-                'icd_9_code' => $request->code_id,
-                'icd_9_subcode' => str_replace('"',"",$request->sub_code_id),
-                'add_code_id' => $request-> add_code_id,
-                'add_sub_code_id' => str_replace('"',"",$request-> add_sub_code_id),
-                'category_of_services' => $request->category_of_services,
-                'services' => $request->services,
-                'complexity_of_services' => $request->complexity_of_services,
-                'outcome' => $request->outcome,
-                'medication_prescription' => $request->medication_prescription,
-                'created_at' => date('Y-m-d H:i:s'),
-                'appointment_details_id' => $request->appId,
-                'status' => "1",
-            ];
-
-            if($request->id){
-                PatientCarePaln::where(['id' => $request->id])->update($patientcarepln);
-                return response()->json(["message" => "Updated", "code" => 200]);
-            }else{
-                $HOD=PatientCarePaln::create($patientcarepln);
-                $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-             
-            return response()->json(["message" => "Created", "code" => 200]);
-            }
-        }
+      
 
     }
 
