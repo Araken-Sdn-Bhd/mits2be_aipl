@@ -2661,7 +2661,7 @@ class PatientAppointmentDetailsController extends Controller
                         $list[$key]['icd_9_code'] = $val['icd_9_code'] ??  'NA';
                         $list[$key]['icd_9_subcode'] = $val['icd_9_subcode'] ??  'NA';
                         $list[$key]['add_code_id'] = $val['add_code_id'] ??  'NA';
-                        $list[$key]['add_subcode_id'] = $val['add_subcode_id'] ??  'NA';
+                        $list[$key]['add_sub_code_id'] = $val['add_sub_code_id'] ??  'NA';
                         $list[$key]['medication_prescription'] = $val['medication_prescription'] ??  'NA';
     
                         $list[$key]['jobs'] = $ab ??  'NA';

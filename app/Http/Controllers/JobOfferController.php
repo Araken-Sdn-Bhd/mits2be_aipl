@@ -703,7 +703,7 @@ class JobOfferController extends Controller
                 'medication_prescription' => $request->medication_prescription,
                 'created_at' => date('Y-m-d H:i:s'),
                 'appointment_details_id' => $request->appId,
-                'status' => "0",
+                'status' => $request->status,
             ];
 
             if($request->id){
