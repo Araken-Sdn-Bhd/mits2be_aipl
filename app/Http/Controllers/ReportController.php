@@ -2277,7 +2277,7 @@ class ReportController extends Controller
                                     $cd_array[$count]['additional_diagnosis']=$diagnosis5['additional_diagnosis'];
                                     $cd_array[$count]['code_id']=$diagnosis5['code_id'];
                                     $cd_array[$count]['sub_code_id']=$diagnosis5['sub_code_id'];
-                                    $cd_array[$count]['add_code_id']=$diagnosis1['additional_code_id'];
+                                    $cd_array[$count]['add_code_id']=$diagnosis5['additional_code_id'];
                                     $cd_array[$count]['add_sub_code_id']=$diagnosis5['additional_subcode'];
                                     $count++;
                                 }
