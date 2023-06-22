@@ -58,6 +58,7 @@ use App\Models\AppointmentRequest;
 use App\Models\HospitalBranchManagement;
 use App\Models\ScreenPageModule;
 use App\Models\ServiceRegister;
+use App\Models\TreatmentPlan;
 use Exception;
 use Validator;
 use DateTime;
@@ -2626,6 +2627,46 @@ class PatientAppointmentDetailsController extends Controller
             $list = PatientCarePaln::select('*')
                 ->where('id', '=', $request->id)
                 ->get();
+
+                $result = (array) json_decode($list, true);
+                $list = [];
+                if (count($result) > 0) {
+                    foreach ($result as $key => $val) {
+                        if ($val['id']) {
+                            $ab = TreatmentPlan::select('*')->where('patient_care_plan_id', $val['id'])
+                                ->get();
+                        }
+                        $list[$key]['patient_id'] = $val['patient_id'] ??  'NA';
+                        $list[$key]['plan_date'] = $val['plan_date'] ??  'NA';
+                        $list[$key]['reason_of_review'] = $val['reason_of_review'] ??  'NA';
+                        $list[$key]['diagnosis'] = $val['diagnosis'] ??  'NA';
+                        $list[$key]['medication_oral'] = $val['medication_oral'] ??  'NA';
+                        $list[$key]['medication_depot'] = $val['medication_depot'] ??  'NA';
+                        $list[$key]['medication_im'] = $val['medication_im'] ??  'NA';
+                        $list[$key]['background_history'] = $val['background_history'] ??  'NA';
+                        $list[$key]['staff_incharge_dr'] = $val['staff_incharge_dr'] ??  'NA';
+                        $list[$key]['next_review_date'] = $val['next_review_date'] ??  'NA';
+                        $list[$key]['case_manager_date'] = $val['case_manager_date'] ??  'NA';
+                        $list[$key]['case_manager_name'] = $val['case_manager_name'] ??  'NA';
+                        $list[$key]['case_manager_designation'] = $val['case_manager_designation'] ??  'NA';
+                        $list[$key]['specialist_incharge_date'] = $val['specialist_incharge_date'] ??  'NA';
+                        $list[$key]['specialist_incharge_name'] = $val['specialist_incharge_name'] ??  'NA';
+                        $list[$key]['specialist_incharge_designation'] = $val['specialist_incharge_designation'] ??  'NA';
+                        $list[$key]['location_of_service'] = $val['location_of_service'] ??  'NA';
+                        $list[$key]['type_of_diagnosis'] = $val['type_of_diagnosis'] ??  'NA';
+                        $list[$key]['add_type_of_diagnosis'] = $val['add_type_of_diagnosis'] ??  'NA';
+                        $list[$key]['category_of_services'] = $val['category_of_services'] ??  'NA';
+                        $list[$key]['complexity_of_services'] = $val['complexity_of_services'] ??  'NA';
+                        $list[$key]['outcome'] = $val['outcome'] ??  'NA';
+                        $list[$key]['icd_9_code'] = $val['icd_9_code'] ??  'NA';
+                        $list[$key]['icd_9_subcode'] = $val['icd_9_subcode'] ??  'NA';
+                        $list[$key]['add_code_id'] = $val['add_code_id'] ??  'NA';
+                        $list[$key]['add_sub_code_id'] = $val['add_sub_code_id'] ??  'NA';
+                        $list[$key]['medication_prescription'] = $val['medication_prescription'] ??  'NA';
+    
+                        $list[$key]['jobs'] = $ab ??  'NA';
+                    }
+                }
         }
         if ($request->type == "JobStartReport") {
             $list = JobStartForm::select('*')

@@ -29,6 +29,7 @@ class JobStartForm extends Model
         'address',
         'location_of_service',
         'type_of_diagnosis',
+        'add_type_of_diagnosis',
         'category_of_services',
         'services',
         'complexity_of_services',
@@ -38,6 +39,8 @@ class JobStartForm extends Model
         'medication_prescription',
         'status',
         'created_at',
-        'is_deleted'
+        'is_deleted',
+        'add_code_id',
+        'add_sub_code_id'
     ];
 }
