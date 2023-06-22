@@ -2202,6 +2202,12 @@ class ReportController extends Controller
                         $diagnosis1_ts=strtotime($diagnosis1['updated_at']);
                         $cd_array[$count]['updated_at']=$diagnosis1_ts;
                         $cd_array[$count]['diagnosis_id']=$diagnosis1['diagnosis_id'];
+                        $cd_array[$count]['additional_diagnosis']=$diagnosis1['additional_diagnosis'];
+                        $cd_array[$count]['code_id']=$diagnosis1['code_id'];
+                        $cd_array[$count]['sub_code_id']=$diagnosis1['sub_code_id'];
+                        $cd_array[$count]['add_code_id']=$diagnosis1['additional_code_id'];
+                        $cd_array[$count]['add_sub_code_id']=$diagnosis1['additional_subcode'];
+
                         $count++;
                     }
                 
@@ -2215,6 +2221,11 @@ class ReportController extends Controller
                             $diagnosis2_ts=strtotime($diagnosis2['updated_at']);
                             $cd_array[$count]['updated_at']=$diagnosis2_ts;
                             $cd_array[$count]['diagnosis_id']=$diagnosis2['diagnosis_id'];
+                            $cd_array[$count]['additional_diagnosis']=$diagnosis2['additional_diagnosis'];
+                            $cd_array[$count]['code_id']=$diagnosis2['code_id'];
+                            $cd_array[$count]['sub_code_id']=$diagnosis2['sub_code_id'];
+                            $cd_array[$count]['add_code_id']=$diagnosis2['additional_code_id'];
+                            $cd_array[$count]['add_sub_code_id']=$diagnosis2['additional_subcode'];
                             $count++;
                        }
 
@@ -2229,6 +2240,11 @@ class ReportController extends Controller
                                 $diagnosis3_ts=strtotime($diagnosis3['updated_at']);
                                 $cd_array[$count]['updated_at']=$diagnosis3_ts;
                                 $cd_array[$count]['diagnosis_id']=$diagnosis3['diagnosis'];
+                                $cd_array[$count]['additional_diagnosis']=$diagnosis3['additional_diagnosis'];
+                                $cd_array[$count]['code_id']=$diagnosis3['code_id'];
+                                $cd_array[$count]['sub_code_id']=$diagnosis3['sub_code_id'];
+                                $cd_array[$count]['add_code_id']=$diagnosis3['additional_code_id'];
+                                $cd_array[$count]['add_sub_code_id']=$diagnosis3['additional_subcode'];
                                 $count++;
                         }
 
@@ -2240,6 +2256,11 @@ class ReportController extends Controller
                             $diagnosis4_ts=strtotime($diagnosis4['updated_at']);
                             $cd_array[$count]['updated_at']=$diagnosis4_ts;
                             $cd_array[$count]['diagnosis_id']=$diagnosis4['diagnosis_type'];
+                            $cd_array[$count]['additional_diagnosis']=$diagnosis4['additional_diagnosis'];
+                            $cd_array[$count]['code_id']=$diagnosis4['code_id'];
+                            $cd_array[$count]['sub_code_id']=$diagnosis4['sub_code_id'];
+                            $cd_array[$count]['add_code_id']=$diagnosis4['additional_code_id'];
+                            $cd_array[$count]['add_sub_code_id']=$diagnosis4['additional_subcode'];
                             $count++;
                         }
 
@@ -2253,6 +2274,11 @@ class ReportController extends Controller
                                     $diagnosis5_ts=strtotime($diagnosis5['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis5_ts;
                                     $cd_array[$count]['diagnosis_id']=$diagnosis5['diagnosis_type'];
+                                    $cd_array[$count]['additional_diagnosis']=$diagnosis5['additional_diagnosis'];
+                                    $cd_array[$count]['code_id']=$diagnosis5['code_id'];
+                                    $cd_array[$count]['sub_code_id']=$diagnosis5['sub_code_id'];
+                                    $cd_array[$count]['add_code_id']=$diagnosis1['additional_code_id'];
+                                    $cd_array[$count]['add_sub_code_id']=$diagnosis5['additional_subcode'];
                                     $count++;
                                 }
 
@@ -2266,6 +2292,11 @@ class ReportController extends Controller
                                     $diagnosis6_ts=strtotime($diagnosis6['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis6_ts;
                                     $cd_array[$count]['diagnosis_id']=$diagnosis6['diagnosis'];
+                                    $cd_array[$count]['additional_diagnosis']=$diagnosis6['additional_diagnosis'];
+                                    $cd_array[$count]['code_id']=$diagnosis6['code_id'];
+                                    $cd_array[$count]['sub_code_id']=$diagnosis6['sub_code_id'];
+                                    $cd_array[$count]['add_code_id']=$diagnosis6['additional_code_id'];
+                                    $cd_array[$count]['add_sub_code_id']=$diagnosis6['additional_subcode'];
                                     $count++;
                                 }
 
@@ -2278,6 +2309,11 @@ class ReportController extends Controller
                         $diagnosis7_ts=strtotime($diagnosis7['updated_at']);
                         $cd_array[$count]['updated_at']=$diagnosis7_ts;
                         $cd_array[$count]['diagnosis_id']=$diagnosis7['diagnosis_id'];
+                        $cd_array[$count]['additional_diagnosis']=$diagnosis7['additional_diagnosis'];
+                        $cd_array[$count]['code_id']=$diagnosis7['code_id'];
+                        $cd_array[$count]['sub_code_id']=$diagnosis7['sub_code_id'];
+                        $cd_array[$count]['add_code_id']=$diagnosis7['additional_code_id'];
+                        $cd_array[$count]['add_sub_code_id']=$diagnosis7['additional_subcode'];
                         $count++;
                     }
                 
@@ -2290,6 +2326,11 @@ class ReportController extends Controller
                             $diagnosis8_ts=strtotime($diagnosis8['updated_at']);
                             $cd_array[$count]['updated_at']=$diagnosis8_ts;
                             $cd_array[$count]['diagnosis_id']=$diagnosis8['diagnosis_type'];
+                            $cd_array[$count]['additional_diagnosis']=$diagnosis8['additional_diagnosis'];
+                            $cd_array[$count]['code_id']=$diagnosis8['code_id'];
+                            $cd_array[$count]['sub_code_id']=$diagnosis8['sub_code_id'];
+                            $cd_array[$count]['add_code_id']=$diagnosis8['additional_code_id'];
+                            $cd_array[$count]['add_sub_code_id']=$diagnosis8['additional_subcode'];
                             $count++;
                        }
 
@@ -2304,6 +2345,11 @@ class ReportController extends Controller
                                 $diagnosis9_ts=strtotime($diagnosis9['updated_at']);
                                 $cd_array[$count]['updated_at']=$diagnosis9_ts;
                                 $cd_array[$count]['diagnosis_id']=$diagnosis9['diagnosis_type'];
+                                $cd_array[$count]['additional_diagnosis']=$diagnosis9['add_diagnosis_type'];
+                                $cd_array[$count]['code_id']=$diagnosis9['code_id'];
+                                $cd_array[$count]['sub_code_id']=$diagnosis9['sub_code_id'];
+                                $cd_array[$count]['add_code_id']=$diagnosis9['add_code_id'];
+                                $cd_array[$count]['add_sub_code_id']=$diagnosis9['add_sub_code_id'];
                                 $count++;
                         }
 
@@ -2317,19 +2363,29 @@ class ReportController extends Controller
                             $diagnosis10_ts=strtotime($diagnosis10['updated_at']);
                             $cd_array[$count]['updated_at']=$diagnosis10_ts;
                             $cd_array[$count]['diagnosis_id']=$diagnosis10['diagnosis_id'];
+                            $cd_array[$count]['additional_diagnosis']=$diagnosis10['add_type_diagnosis_id'];
+                            $cd_array[$count]['code_id']=$diagnosis10['code_id'];
+                            $cd_array[$count]['sub_code_id']=$diagnosis10['sub_code_id'];
+                            $cd_array[$count]['add_code_id']=$diagnosis10['add_code_id'];
+                            $cd_array[$count]['add_sub_code_id']=$diagnosis10['add_sub_code_id'];
                             $count++;
                         }
 
                         $query_diagnosis11 = RehabDischargeNote::where('patient_mrn_id', $v['patient_mrn_id'])
                         ->where('status','=','1');
-              
+
 
                             $diagnosis11=$query_diagnosis11->orderBy('id', 'DESC')->first();
-              
+
                                 if($diagnosis11!=NULL){
                                     $diagnosis11_ts=strtotime($diagnosis11['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis11_ts;
                                     $cd_array[$count]['diagnosis_id']=$diagnosis11['diagnosis_id'];
+                                    $cd_array[$count]['additional_diagnosis']=$diagnosis11['add_diagnosis_type'];
+                                    $cd_array[$count]['code_id']=$diagnosis11['code_id'];
+                                    $cd_array[$count]['sub_code_id']=$diagnosis11['sub_code_id'];
+                                    $cd_array[$count]['add_code_id']=$diagnosis11['add_code_id'];
+                                    $cd_array[$count]['add_sub_code_id']=$diagnosis11['add_sub_code_id'];
                                     $count++;
                                 }
 
@@ -2342,10 +2398,14 @@ class ReportController extends Controller
                                     $diagnosis12_ts=strtotime($diagnosis12['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis12_ts;
                                     $cd_array[$count]['diagnosis_id']=$diagnosis12['diagnosis'];
+                                    $cd_array[$count]['additional_diagnosis']=$diagnosis12['diagnosis_type'];
+                                    $cd_array[$count]['code_id']=$diagnosis12['code_id'];
+                                    $cd_array[$count]['sub_code_id']=$diagnosis12['sub_code_id'];
+                                    $cd_array[$count]['add_code_id']=$diagnosis12['add_code_id'];
+                                    $cd_array[$count]['add_sub_code_id']=$diagnosis12['add_sub_code_id'];
                                     $count++;
                                 }
                                
-                                    
                                  
                 if(!empty($cd_array)){
                                                                         
@@ -2356,9 +2416,181 @@ class ReportController extends Controller
                         foreach ($cd_array as $c => $d){
                             if($array_date==$d['updated_at']){
                                 $icd=$d['diagnosis_id'];
+                                ////////////////////////////////////////////for additional diagnosis/////////////////////////////////////////////////
+                                if($d['additional_diagnosis']!=NULL){
+                                    $e=0;
+
+                                        foreach (explode(',',$d['additional_diagnosis']) as $add) {
+                                                if($add=='0'){
+                                                    $additional_diagnosis[$e]['additional_diagnosis']='NA';
+                                                }else{
+                                                    $add_diagnosis = IcdCode::select('icd_code','icd_name')->where('id', $add)->first();
+                                                    $additional_diagnosis[$e]['additional_diagnosis']=$add_diagnosis['icd_code'].' '.$add_diagnosis['icd_name'];
+                                                }
+                                            $e++;   
+                                        }                                  
+                                        if($e==1){
+                                            $result[$index]['additional_diagnosis1']=$additional_diagnosis[0]['additional_diagnosis'];
+                                            $result[$index]['additional_diagnosis2']='NA';
+                                            $result[$index]['additional_diagnosis3']='NA';
+                                            $result[$index]['additional_diagnosis4']='NA';
+                                            $result[$index]['additional_diagnosis5']='NA';
+                                        }else if($e==2){
+                                            $result[$index]['additional_diagnosis1']=$additional_diagnosis[0]['additional_diagnosis'];
+                                            $result[$index]['additional_diagnosis2']=$additional_diagnosis[1]['additional_diagnosis'];
+                                            $result[$index]['additional_diagnosis3']='NA';
+                                            $result[$index]['additional_diagnosis4']='NA';
+                                            $result[$index]['additional_diagnosis5']='NA';
+                                        }else if($e==3){
+                                            $result[$index]['additional_diagnosis1']=$additional_diagnosis[0]['additional_diagnosis'];
+                                            $result[$index]['additional_diagnosis2']=$additional_diagnosis[1]['additional_diagnosis'];
+                                            $result[$index]['additional_diagnosis3']=$additional_diagnosis[2]['additional_diagnosis'];
+                                            $result[$index]['additional_diagnosis4']='NA';
+                                            $result[$index]['additional_diagnosis5']='NA';
+                                        }else if($e==4){
+                                            $result[$index]['additional_diagnosis1']=$additional_diagnosis[0]['additional_diagnosis'];
+                                            $result[$index]['additional_diagnosis2']=$additional_diagnosis[1]['additional_diagnosis'];
+                                            $result[$index]['additional_diagnosis3']=$additional_diagnosis[2]['additional_diagnosis'];
+                                            $result[$index]['additional_diagnosis4']=$additional_diagnosis[3]['additional_diagnosis'];
+                                            $result[$index]['additional_diagnosis5']='NA';
+                                        }else if($e==5){
+                                            $result[$index]['additional_diagnosis1']=$additional_diagnosis[0]['additional_diagnosis'];
+                                            $result[$index]['additional_diagnosis2']=$additional_diagnosis[1]['additional_diagnosis'];
+                                            $result[$index]['additional_diagnosis3']=$additional_diagnosis[2]['additional_diagnosis'];
+                                            $result[$index]['additional_diagnosis4']=$additional_diagnosis[3]['additional_diagnosis'];
+                                            $result[$index]['additional_diagnosis5']=$additional_diagnosis[4]['additional_diagnosis'];
+                                        }
+
+                                    
+                                }else{
+                                    $result[$index]['additional_diagnosis1']='NA';
+                                    $result[$index]['additional_diagnosis2']='NA';
+                                    $result[$index]['additional_diagnosis3']='NA';
+                                    $result[$index]['additional_diagnosis4']='NA';
+                                    $result[$index]['additional_diagnosis5']='NA';
+                                }
+                                ///////////////////////////for code and additional code/////////////////////////////////////
+                                if($d['code_id']!=NULL && $d['code_id']!='0'){
+                                    $code_id = IcdCode::select('icd_code','icd_name')->where('id', $d['code_id'])->first();
+                                    $result[$index]['code_id']=$code_id['icd_code'].''.$code_id['icd_name'];
+                                }else{
+                                    $result[$index]['code_id']='NA';
+                                }
+
+                                if($d['add_code_id']!=NULL && $d['add_code_id']!='0'){
+                                    $add_code_id = IcdCode::select('icd_code','icd_name')->where('id', $d['add_code_id'])->first();
+                                    $result[$index]['add_code_id']=$add_code_id['icd_code'].''.$add_code_id['icd_name'];;
+                                }else{
+                                    $result[$index]['add_code_id']='NA';
+                                }
+                                ///////////////////////////for sub code///////////////////////////////////////////
+                                if($d['sub_code_id']!=NULL && $d['sub_code_id']!='0'){
+                                    $f=0;
+                                        foreach (explode(',',$d['sub_code_id']) as $sub) {
+ 
+                                                    $sub_code = IcdCode::select('icd_code','icd_name')->where('id', $sub)->first();
+                                                    $sub_code = $sub_code->jsonserialize();
+                                                    $sub_code_id[$f]['sub_code']=$sub_code['icd_code'].' '.$sub_code['icd_name'];
+                                                    $f++; 
+                                                }                                             
+                                                                       
+                                        if($f==1){
+                                            $result[$index]['sub_code1']=$sub_code_id[0]['sub_code'];
+                                            $result[$index]['sub_code2']='NA';
+                                            $result[$index]['sub_code3']='NA';
+                                            $result[$index]['sub_code4']='NA';
+                                            $result[$index]['sub_code5']='NA';
+                                        }else if($f==2){
+                                            $result[$index]['sub_code1']=$sub_code_id[0]['sub_code'];
+                                            $result[$index]['sub_code2']=$sub_code_id[1]['sub_code'];
+                                            $result[$index]['sub_code3']='NA';
+                                            $result[$index]['sub_code4']='NA';
+                                            $result[$index]['sub_code5']='NA';
+                                        }else if($f==3){
+                                            $result[$index]['sub_code1']=$sub_code_id[0]['sub_code'];
+                                            $result[$index]['sub_code2']=$sub_code_id[1]['sub_code'];
+                                            $result[$index]['sub_code3']=$sub_code_id[2]['sub_code'];
+                                            $result[$index]['sub_code4']='NA';
+                                            $result[$index]['sub_code5']='NA';
+                                        }else if($f==4){
+                                            $result[$index]['sub_code1']=$sub_code_id[0]['sub_code'];
+                                            $result[$index]['sub_code2']=$sub_code_id[1]['sub_code'];
+                                            $result[$index]['sub_code3']=$sub_code_id[2]['sub_code'];
+                                            $result[$index]['sub_code4']=$sub_code_id[3]['sub_code'];
+                                            $result[$index]['sub_code5']='NA';
+                                        }else if($f==5){
+                                            $result[$index]['sub_code1']=$sub_code_id[0]['sub_code'];
+                                            $result[$index]['sub_code2']=$sub_code_id[1]['sub_code'];
+                                            $result[$index]['sub_code3']=$sub_code_id[2]['sub_code'];
+                                            $result[$index]['sub_code4']=$sub_code_id[3]['sub_code'];
+                                            $result[$index]['sub_code5']=$sub_code_id[4]['sub_code'];
+                                        }
+
+                                    
+                                }else{
+                                    $result[$index]['sub_code1']='NA';
+                                    $result[$index]['sub_code2']='NA';
+                                    $result[$index]['sub_code3']='NA';
+                                    $result[$index]['sub_code4']='NA';
+                                    $result[$index]['sub_code5']='NA';
+                                }
+                            
+                                ///////////////////////////for additional sub code/////////////////////////////////////
+                                if($d['add_sub_code_id']!=NULL && $d['add_sub_code_id']!='0'){
+                                    $f=0;
+                                        foreach (explode(',',$d['add_sub_code_id']) as $add_sub) {
+                                                    $add_sub_code = IcdCode::select('icd_code','icd_name')->where('id', $add_sub)->first();
+                                                    $add_sub_code = $add_sub_code->jsonserialize();
+                                                    $add_sub_code_id[$f]['add_sub_code']=$add_sub_code['icd_code'].' '.$add_sub_code['icd_name'];
+                                                }
+                                            $f++;   
+                                                                         
+                                        if($f==1){
+                                            $result[$index]['add_sub_code1']=$add_sub_code_id[0]['add_sub_code'];
+                                            $result[$index]['add_sub_code2']='NA';
+                                            $result[$index]['add_sub_code3']='NA';
+                                            $result[$index]['add_sub_code4']='NA';
+                                            $result[$index]['add_sub_code5']='NA';
+                                        }else if($f==2){
+                                            $result[$index]['add_sub_code1']=$add_sub_code_id[0]['add_sub_code'];
+                                            $result[$index]['add_sub_code2']=$add_sub_code_id[1]['add_sub_code'];
+                                            $result[$index]['add_sub_code3']='NA';
+                                            $result[$index]['add_sub_code4']='NA';
+                                            $result[$index]['add_sub_code5']='NA';
+                                        }else if($f==3){
+                                            $result[$index]['add_sub_code1']=$add_sub_code_id[0]['add_sub_code'];
+                                            $result[$index]['add_sub_code2']=$add_sub_code_id[1]['add_sub_code'];
+                                            $result[$index]['add_sub_code3']=$add_sub_code_id[2]['add_sub_code'];
+                                            $result[$index]['add_sub_code4']='NA';
+                                            $result[$index]['add_sub_code5']='NA';
+                                        }else if($f==4){
+                                            $result[$index]['add_sub_code1']=$add_sub_code_id[0]['add_sub_code'];
+                                            $result[$index]['add_sub_code2']=$add_sub_code_id[1]['add_sub_code'];
+                                            $result[$index]['add_sub_code3']=$add_sub_code_id[2]['add_sub_code'];
+                                            $result[$index]['add_sub_code4']=$add_sub_code_id[3]['add_sub_code'];
+                                            $result[$index]['add_sub_code5']='NA';
+                                        }else if($f==5){
+                                            $result[$index]['add_sub_code1']=$add_sub_code_id[0]['add_sub_code'];
+                                            $result[$index]['add_sub_code2']=$add_sub_code_id[1]['add_sub_code'];
+                                            $result[$index]['add_sub_code3']=$add_sub_code_id[2]['add_sub_code'];
+                                            $result[$index]['add_sub_code4']=$add_sub_code_id[3]['add_sub_code'];
+                                            $result[$index]['add_sub_code5']=$add_sub_code_id[4]['add_sub_code'];
+                                        }
+
+                                    
+                                }else{
+                                    $result[$index]['add_sub_code1']='NA';
+                                    $result[$index]['add_sub_code2']='NA';
+                                    $result[$index]['add_sub_code3']='NA';
+                                    $result[$index]['add_sub_code4']='NA';
+                                    $result[$index]['add_sub_code5']='NA';
+                                }      
                             }
+                            
                         
                         }
+                }else{
+
                 }
 
                 if($request->diagnosis_id!=NULL){
@@ -2378,7 +2610,6 @@ class ReportController extends Controller
                 ->where('staff_management.email', '=', $request->email)
                 ->first();
                 $users2  = json_decode(json_encode($users), true);
-
                 $query = PatientRegistration::where('id', $v['patient_mrn_id']);
                 if($users2['code']!='superadmin'){
                     $query->where('branch_id','=',$request->branch_id);
