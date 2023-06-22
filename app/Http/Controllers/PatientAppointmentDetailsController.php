@@ -2893,6 +2893,10 @@ class PatientAppointmentDetailsController extends Controller
                     $list[$key]['medication_des'] = $val['medication_des'] ??  'NA';
                     $list[$key]['status'] = $val['status'] ??  'NA';
 
+                    $list[$key]['add_type_of_diagnosis'] = $val['add_type_of_diagnosis'] ??  'NA';
+                    $list[$key]['add_code_id'] = $val['add_code_id'] ??  'NA';
+                    $list[$key]['add_sub_code_id'] = $val['add_sub_code_id'] ??  'NA';
+
                     $list[$key]['jobs'] = $ab ??  'NA';
                 }
             }
