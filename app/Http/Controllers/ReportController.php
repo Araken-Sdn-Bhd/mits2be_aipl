@@ -2412,7 +2412,6 @@ class ReportController extends Controller
                         $Dates = array_map(fn($entry) => $entry['updated_at'], $cd_array);
                         $array_date=max($Dates); 
                                  
-                                
                         foreach ($cd_array as $c => $d){
                             if($array_date==$d['updated_at']){
                                 $icd=$d['diagnosis_id'];
@@ -2489,8 +2488,13 @@ class ReportController extends Controller
                                         foreach (explode(',',$d['sub_code_id']) as $sub) {
  
                                                     $sub_code = IcdCode::select('icd_code','icd_name')->where('id', $sub)->first();
-                                                    $sub_code = $sub_code->jsonserialize();
-                                                    $sub_code_id[$f]['sub_code']=$sub_code['icd_code'].' '.$sub_code['icd_name'];
+                                                    if($sub_code==!NULL){
+                                                        $sub_code = $sub_code->jsonserialize();
+                                                        $sub_code_id[$f]['sub_code']=$sub_code['icd_code'].' '.$sub_code['icd_name'];
+                                                    }else{
+                                                        $sub_code_id[$f]['add_sub_code']='NA';
+                                                        }
+
                                                     $f++; 
                                                 }                                             
                                                                        
@@ -2540,8 +2544,12 @@ class ReportController extends Controller
                                     $f=0;
                                         foreach (explode(',',$d['add_sub_code_id']) as $add_sub) {
                                                     $add_sub_code = IcdCode::select('icd_code','icd_name')->where('id', $add_sub)->first();
-                                                    $add_sub_code = $add_sub_code->jsonserialize();
-                                                    $add_sub_code_id[$f]['add_sub_code']=$add_sub_code['icd_code'].' '.$add_sub_code['icd_name'];
+                                                        if($add_sub_code==!NULL){
+                                                        $add_sub_code = $add_sub_code->jsonserialize();
+                                                        $add_sub_code_id[$f]['add_sub_code']=$add_sub_code['icd_code'].' '.$add_sub_code['icd_name'];
+                                                        }else{
+                                                        $add_sub_code_id[$f]['add_sub_code']='NA';
+                                                        }
                                                 }
                                             $f++;   
                                                                          
