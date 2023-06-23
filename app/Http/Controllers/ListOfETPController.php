@@ -12,9 +12,7 @@ class ListOfETPController extends Controller
 {
     public function store(Request $request)
     {
-        $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
-        $additional_subcode=str_replace('"',"",$request->additional_code_id);
-        $sub_code_id=str_replace('"',"",$request->additional_sub_code_id);
+     
          $validator = Validator::make($request->all(), [
              'added_by' => 'required|integer',
              'patient_id' => 'required|integer',
@@ -43,7 +41,7 @@ class ListOfETPController extends Controller
             'location_services' => $request->location_services,
             'services_id' => $request->services_id,
             'code_id' => $request->code_id,
-            'sub_code_id' => $request->sub_code_id,
+            'sub_code_id' => str_replace('"',"",$request->sub_code_id),
             'type_diagnosis_id' => $request->type_diagnosis_id,
             'category_services' => $request->category_services,
             'complexity_services' => $request->complexity_services,
@@ -52,9 +50,9 @@ class ListOfETPController extends Controller
             'status' => "1",
             'appointment_details_id'=> $request->appId,
 
-            'additional_code_id' => $sub_code_id,
-            'additional_subcode' => $additional_subcode,
-            'additional_diagnosis' => $additional_diagnosis,
+            'add_type_of_diagnosis' => str_replace('"',"",$request->add_type_of_diagnosis),
+            'add_code_id' => str_replace('"',"",$request->add_code_id),
+            'add_sub_code_id' => str_replace('"',"",$request->add_sub_code_id),
             ];
 
             $validateListOfETP = [];
@@ -66,7 +64,7 @@ class ListOfETPController extends Controller
              $validateListOfETP['code_id'] = 'required';
              $listofetp['code_id'] =  $request->code_id;
              $validateListOfETP['sub_code_id'] = 'required';
-             $listofetp['sub_code_id'] =  $request->sub_code_id;
+             $listofetp['sub_code_id'] =  str_replace('"',"",$request->sub_code_id);
          }
          $validator = Validator::make($request->all(), $validateListOfETP);
          if ($validator->fails()) {
@@ -74,7 +72,7 @@ class ListOfETPController extends Controller
          }
 
          ListOfETP::updateOrCreate( ['patient_id' => $request->patient_id], $listofetp);
-         return response()->json(["message" => "List Of ETP Created Successfully!", "code" => 200]);
+         return response()->json(["message" => "Successfully Saved!", "code" => 200]);
 
     }
 
