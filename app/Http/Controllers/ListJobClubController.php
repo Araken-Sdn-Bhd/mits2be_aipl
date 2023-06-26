@@ -43,7 +43,7 @@ class ListJobClubController extends Controller
             'code_id' => $request->code_id,
             'sub_code_id' => str_replace('"',"",$request->sub_code_id),
             'type_diagnosis_id' => $request->type_diagnosis_id,
-            '$request->add_type_of_diagnosis' =>str_replace('"',"",$request->add_type_of_diagnosis),
+            'add_type_of_diagnosis' =>str_replace('"',"",$request->add_type_of_diagnosis),
             'category_services' => $request->category_services,
             'complexity_services' => $request->complexity_services,
             'outcome' => $request->outcome,
