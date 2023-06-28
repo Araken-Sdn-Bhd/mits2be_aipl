@@ -79,23 +79,26 @@ class JobInterestChecklistController extends Controller
                 $validateJobInterestChecklist['sub_code_id'] = 'required';
                 $jobinterestchecklist['sub_code_id'] =  $sub_code_id;
             }
-
-            if ($request->id) {
-                JobInterestChecklist::where(['id' => $request->id])->update($jobinterestchecklist);
-
-                return response()->json(["message" => "Job Interest Checklist Created Successfully!", "code" => 200]);
-            } else {
-                $jobInterestChecklist = JobInterestChecklist::create($jobinterestchecklist);
-                if (!empty($request->jobs)) {
-                    foreach ($request->jobs as $key) {
-                        if ($key['job']) {
-                            $data = array('type_of_job' => $key['job'], 'patient_id' => $request->patient_id, 'duration' => $key['duration'], 'termination_reason' => $key['reason'], 'job_interest_checklist_id' => $jobInterestChecklist['id']);
-                            JobInterestList::insert($data);
-                        }
+            JobInterestChecklist::where(['id' => $request->id])->update($jobinterestchecklist);
+            if (!empty($request->jobs)) {
+                foreach ($request->jobs as $key) {
+                    if ($key['id']) {
+                        $data = array('type_of_job' => $key['job'], 'patient_id' => $request->patient_id, 'duration' => $key['duration'], 'termination_reason' => $key['reason']);
+                        JobInterestList::where('id', $key['id'])->update($data);
                     }
                 }
+                return response()->json(["message" => "Job Interest Checklist Updated Successfully!", "code" => 200]);
+            } else {
+                // if (!empty($request->jobs)) {
+                //     foreach ($request->jobs as $key) {
+                //         if ($key['job']) {
+                //             $data = array('type_of_job' => $key['job'], 'patient_id' => $request->patient_id, 'duration' => $key['duration'], 'termination_reason' => $key['reason'], 'job_interest_checklist_id' => $jobInterestChecklist['id']);
+                //             JobInterestList::insert($data);
+                //         }
+                //     }
+                // }
 
-                return response()->json(["message" => "Job Interest Checklist Created Successfully!", "code" => 200]);
+                return response()->json(["message" => "Job Interest Checklist Updated Successfully!", "code" => 200]);
             }
         } elseif ($request->status == '1') {
             $validator = Validator::make($request->all(), [
@@ -145,7 +148,6 @@ class JobInterestChecklistController extends Controller
             if ($validator->fails()) {
                 return response()->json(["message" => $validator->errors(), "code" => 422]);
             }
-
 
             $jobinterestchecklist = [
                 'added_by' => $request->added_by,
@@ -212,13 +214,14 @@ class JobInterestChecklistController extends Controller
             if ($validator->fails()) {
                 return response()->json(["message" => $validator->errors(), "code" => 422]);
             }
-
             if ($request->id) {
                 JobInterestChecklist::where(['id' => $request->id])->update($jobinterestchecklist);
                 if (!empty($request->jobs)) {
                     foreach ($request->jobs as $key) {
-                        $data = array('type_of_job' => $key['job'], 'patient_id' => $request->patient_id, 'duration' => $key['duration'], 'termination_reason' => $key['reason'], 'job_interest_checklist_id' => $request->id);
-                        JobInterestList::where(['job_interest_checklist_id' => $request->id])->update($data);
+                        if ($key['id']) {
+                            $data = array('type_of_job' => $key['job'], 'patient_id' => $request->patient_id, 'duration' => $key['duration'], 'termination_reason' => $key['reason']);
+                            JobInterestList::where('id', $key['id'])->update($data);
+                        }
                     }
                 }
 
