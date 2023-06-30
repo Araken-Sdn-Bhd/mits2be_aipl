@@ -220,7 +220,7 @@ class WorkAnalysisFormController extends Controller
             if ($validator->fails()) {
                 return response()->json(["message" => $validator->errors(), "code" => 422]);
             }
-
+            // dd($request);
             $ab=WorkAnalysisForm::firstOrCreate($WorkAnalysisForm);
             $WorkAnalysisFormid=($ab->id);
 
@@ -376,7 +376,7 @@ class WorkAnalysisFormController extends Controller
             if ($validator->fails()) {
                 return response()->json(["message" => $validator->errors(), "code" => 422]);
             }
-
+            // dd($request);
             $ab=WorkAnalysisForm::firstOrCreate($WorkAnalysisForm);
             $WorkAnalysisFormid=($ab->id);
 
