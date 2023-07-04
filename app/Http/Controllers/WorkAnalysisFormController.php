@@ -221,8 +221,8 @@ class WorkAnalysisFormController extends Controller
                 return response()->json(["message" => $validator->errors(), "code" => 422]);
             }
             // dd($request);
-            $ab=WorkAnalysisForm::firstOrCreate($WorkAnalysisForm);
-            $WorkAnalysisFormid=($ab->id);
+            WorkAnalysisForm::where(['id' => $request->id])->update($WorkAnalysisForm);
+            $WorkAnalysisFormid=($request->id);
 
             if(!empty($request->jobs)){
                 foreach($request->jobs as $key) {
@@ -241,7 +241,7 @@ class WorkAnalysisFormController extends Controller
                 }
              }
 
-            return response()->json(["message" => "Work Analysis Form Created Successfully!", "code" => 200]);
+            return response()->json(["message" => "Work Analysis Form Updated Successfully!", "code" => 200]);
 
         } else if($request->status == '1') {
             $validator = Validator::make($request->all(), [
@@ -377,28 +377,47 @@ class WorkAnalysisFormController extends Controller
                 return response()->json(["message" => $validator->errors(), "code" => 422]);
             }
             // dd($request);
-            $ab=WorkAnalysisForm::firstOrCreate($WorkAnalysisForm);
-            $WorkAnalysisFormid=($ab->id);
-
-            if(!empty($request->jobs)){
-                foreach($request->jobs as $key) {
-                if($key['task_description']){
-                 $data = array('task_description' => $key['task_description'],'patient_id' =>$request->patient_id,'objectives'=>$key['objectives'],'procedure'=>$key['procedure'],'rate_of_time'=>$key['rate_of_time'],'work_analysis_form_id'=>$WorkAnalysisFormid);
-                    JobDescription::insert($data);
-                }
-                }
-             }
-             if(!empty($request->job_specification)){
-                foreach($request->job_specification as $key) {
-                    if($key['questions']){
-                 $data = array('question_name' => $key['questions'],'patient_id' =>$request->patient_id,'answer'=>$key['answer'],'comment'=>$key['comments'],'work_analysis_form_id'=>$WorkAnalysisFormid);
-                    WorkAnalysisJobSpecification::insert($data);
+            if ($request->id) {
+                WorkAnalysisForm::where(['id' => $request->id])->update($WorkAnalysisForm);
+                $WorkAnalysisFormid=($request->id);
+                if(!empty($request->jobs)){
+                    foreach($request->jobs as $key) {
+                    if($key['task_description']){
+                     $data = array('task_description' => $key['task_description'],'patient_id' =>$request->patient_id,'objectives'=>$key['objectives'],'procedure'=>$key['procedure'],'rate_of_time'=>$key['rate_of_time'],'work_analysis_form_id'=>$WorkAnalysisFormid);
+                        JobDescription::insert($data);
                     }
-                }
-             }
-
-            return response()->json(["message" => "Work Analysis Form Created Successfully!", "code" => 200]);
-
+                    }
+                 }
+                 if(!empty($request->job_specification)){
+                    foreach($request->job_specification as $key) {
+                        if($key['questions']){
+                     $data = array('question_name' => $key['questions'],'patient_id' =>$request->patient_id,'answer'=>$key['answer'],'comment'=>$key['comments'],'work_analysis_form_id'=>$WorkAnalysisFormid);
+                        WorkAnalysisJobSpecification::insert($data);
+                        }
+                    }
+                 }
+                return response()->json(["message" => "Work Analysis Form Created Successfully!", "code" => 200]);
+            } else {
+                $ab=WorkAnalysisForm::firstOrCreate($WorkAnalysisForm);
+                $WorkAnalysisFormid=($ab->id);
+                if(!empty($request->jobs)){
+                    foreach($request->jobs as $key) {
+                    if($key['task_description']){
+                     $data = array('task_description' => $key['task_description'],'patient_id' =>$request->patient_id,'objectives'=>$key['objectives'],'procedure'=>$key['procedure'],'rate_of_time'=>$key['rate_of_time'],'work_analysis_form_id'=>$WorkAnalysisFormid);
+                        JobDescription::insert($data);
+                    }
+                    }
+                 }
+                 if(!empty($request->job_specification)){
+                    foreach($request->job_specification as $key) {
+                        if($key['questions']){
+                     $data = array('question_name' => $key['questions'],'patient_id' =>$request->patient_id,'answer'=>$key['answer'],'comment'=>$key['comments'],'work_analysis_form_id'=>$WorkAnalysisFormid);
+                        WorkAnalysisJobSpecification::insert($data);
+                        }
+                    }
+                 }
+                return response()->json(["message" => "Work Analysis Form Created Successfully!", "code" => 200]);
+            }
         }
         }
 
