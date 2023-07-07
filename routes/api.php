@@ -717,6 +717,7 @@ Route::group(['prefix' => 'job-club-progress'], function () {
 });
 Route::group(['prefix' => 'se-progress-note'], function () {
     Route::post('/add', [SeProgressNoteController::class, 'store']);
+    Route::post('/addMobile', [SeProgressNoteController::class, 'storeMobile']);
     Route::get('/activitylist', [SeProgressNoteController::class, 'GetActivityList']);
     Route::get('/senamelist', [SeProgressNoteController::class, 'GetSENamelist']);
 });
@@ -727,6 +728,7 @@ Route::group(['prefix' => 'rehab-discharge-note'], function () {
 
 Route::group(['prefix' => 'cps-progress-note'], function () {
     Route::post('/add', [CpsProgressNoteController::class, 'store']);
+    Route::post('/addMobile', [CpsProgressNoteController::class, 'storeMobile']);
 });
 
 Route::group(['prefix' => 'cps-discharge-note'], function () {
@@ -755,6 +757,7 @@ Route::group(['prefix' => 'log-employer-meeting'], function () {
 });
 Route::group(['prefix' => 'work-analysis'], function () {
     Route::post('/add', [WorkAnalysisFormController::class, 'store']);
+    Route::post('/addMobile', [WorkAnalysisFormController::class, 'storeMobile']);
 });
 Route::group(['prefix' => 'job-search-list'], function () {
     Route::post('/add', [ListOfJobSearchController::class, 'store']);
