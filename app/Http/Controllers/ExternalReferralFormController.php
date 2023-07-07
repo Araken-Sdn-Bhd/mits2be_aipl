@@ -13,7 +13,7 @@ class ExternalReferralFormController extends Controller
     public function store(Request $request)
     {
     if ($request->status=='0') {
-        
+
         $additional_diagnosis=str_replace('"','',$request->additional_diagnosis);
         $additional_sub_code_id=str_replace('"','',$request->additional_sub_code_id);
         $sub_code_id=str_replace('"','',$request->sub_code_id);
@@ -42,7 +42,7 @@ class ExternalReferralFormController extends Controller
         'outcome' => $request->outcome,
         'medication_des' => $request->medication_des,
         'name' => $request->name,
-        
+
         'designation' => $request->designation,
         'hospital' => $request->hospital,
         'status' => "0",
@@ -124,9 +124,9 @@ class ExternalReferralFormController extends Controller
         'code_id' => $request->code_id,
         'sub_code_id' => $sub_code_id,
         'type_diagnosis_id' => $request->type_diagnosis_id,
-        
+
         'category_services' => $request->category_services,
-        'complexity_services' => $request->complexity_services,
+        'complexity_services' => $request->complexity_of_services,
         'outcome' => $request->outcome,
         'medication_des' => $request->medication_des,
         'name' => $request->name,
