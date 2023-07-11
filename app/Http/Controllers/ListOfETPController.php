@@ -71,7 +71,7 @@ class ListOfETPController extends Controller
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
 
-         ListOfETP::updateOrCreate( ['patient_id' => $request->patient_id], $listofetp);
+         ListOfETP::create($listofetp);
          return response()->json(["message" => "Successfully Saved!", "code" => 200]);
 
     }

@@ -2865,12 +2865,12 @@ class PatientAppointmentDetailsController extends Controller
         }
         if ($request->type == "ListofJobClub") {
             $list = ListJobClub::select('*')
-                ->where('patient_id', '=', $request->id)
+                ->where('id', '=', $request->id)
                 ->get();
         }
         if ($request->type == "ListofEtp") {
             $list = ListOfETP::select('*')
-                ->where('patient_id', '=', $request->id)
+                ->where('id', '=', $request->id)
                 ->get();
         }
         if ($request->type == "ListofJobSearch") {
