@@ -2129,8 +2129,12 @@ class ReportController extends Controller
 
     public function getGeneralReport(Request $request)
     {
-        
-        $appointments = PatientAppointmentDetails::whereBetween('booking_date', [$request->fromDate, $request->toDate])
+        $month = ['January' => 1, 'February' => 2, 'March' => 3, 'April' => 4, 'May' => 5, 'June' => 6, 'July' => 7,
+        'August' => 8, 'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12];
+        $Month=$month[$request->month];
+
+        $appointments = PatientAppointmentDetails::whereYear('booking_date', $request->year)
+        ->whereMonth('booking_date', $Month)
         ->where('appointment_status','!=',0);
         if ($request->type_visit != 0)
             $ssh = $appointments->where('type_visit', $request->type_visit);
@@ -2724,7 +2728,7 @@ class ReportController extends Controller
                   return response([
                     'message' => 'Data successfully retrieved.',
                     'result' => $result,
-                    'header' => 'General Report from '.$request->fromDate.' To '.$request->toDate,
+                    'header' => 'General Report '.$request->month.' '.$request->year,
                     'filename' => $filename,
                     'code' => 200]);
             } else {
