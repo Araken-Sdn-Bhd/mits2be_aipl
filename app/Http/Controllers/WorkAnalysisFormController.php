@@ -423,7 +423,21 @@ class WorkAnalysisFormController extends Controller
         $additional_diagnosis = str_replace('"', "", $request->additional_diagnosis);
         $additional_subcode = str_replace('"', "", $request->additional_sub_code_id);
         $sub_code_id = str_replace('"', "", $request->sub_code_id);
-        if ($request->status == '0') {
+        if ( $request->add_diagnosis_type1 != null && $request->add_diagnosis_type1 != ''){
+            $additional_diagnosis = $request->add_diagnosis_type1;
+            if ($request->add_diagnosis_type2 != null && $request->add_diagnosis_type2 != ''){
+                $additional_diagnosis .= ','.$request->add_diagnosis_type2;
+                if ($request->add_diagnosis_type3 != null && $request->add_diagnosis_type3 != ''){
+                    $additional_diagnosis .= ','.$request->add_diagnosis_type3;
+                    if ($request->add_diagnosis_type4 != null && $request->add_diagnosis_type4 != ''){
+                        $additional_diagnosis .= ','.$request->add_diagnosis_type4;
+                        if ($request->add_diagnosis_type5 != null && $request->add_diagnosis_type5 != ''){
+                            $additional_diagnosis .= ','.$request->add_diagnosis_type5;
+                        }
+                    }
+                }
+            }
+        }
 
             // if ($request->appId == null || $request->appId == '') {
             //     $checkTodayAppointment = PatientAppointmentDetails::where('patient_mrn_id', $request->patient_id)->whereDate("created_at", '=', date('Y-m-d'))->first();
@@ -633,5 +647,4 @@ class WorkAnalysisFormController extends Controller
 
             return response()->json(["message" => "Work Analysis Form Updated Successfully!", "code" => 200]);
         }
-    }
 }
