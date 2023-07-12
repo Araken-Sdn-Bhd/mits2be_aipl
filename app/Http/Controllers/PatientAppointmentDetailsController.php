@@ -2663,7 +2663,7 @@ class PatientAppointmentDetailsController extends Controller
                         $list[$key]['add_code_id'] = $val['add_code_id'] ??  'NA';
                         $list[$key]['add_sub_code_id'] = $val['add_sub_code_id'] ??  'NA';
                         $list[$key]['medication_prescription'] = $val['medication_prescription'] ??  'NA';
-    
+
                         $list[$key]['jobs'] = $ab ??  'NA';
                     }
                 }
@@ -2768,6 +2768,9 @@ class PatientAppointmentDetailsController extends Controller
                             ->get()
                             ->toArray();
 
+                        $comment15 = WorkAnalysisJobSpecification::select('comment')->where('work_analysis_form_id', $val['id'])->where('patient_id', $val['patient_id'])->where('question_name','16.BENEFITS')
+                        ->get()
+                        ->toArray();
                             $a=0;
 
                             foreach($ab as $k => $abk){
@@ -2848,6 +2851,8 @@ class PatientAppointmentDetailsController extends Controller
 
                     $list[$key]['jobs'] = $abArray ??  'NA';
                     $list[$key]['comment'] = $comment_array ??  'NA';
+                    $list[$key]['comment15'] = $comment15 ??  'NA';
+
 
 
                     $list[$key]['jobs_des'] = $jobdes ??  'NA';
@@ -2860,12 +2865,12 @@ class PatientAppointmentDetailsController extends Controller
         }
         if ($request->type == "ListofJobClub") {
             $list = ListJobClub::select('*')
-                ->where('patient_id', '=', $request->id)
+                ->where('id', '=', $request->id)
                 ->get();
         }
         if ($request->type == "ListofEtp") {
             $list = ListOfETP::select('*')
-                ->where('patient_id', '=', $request->id)
+                ->where('id', '=', $request->id)
                 ->get();
         }
         if ($request->type == "ListofJobSearch") {
