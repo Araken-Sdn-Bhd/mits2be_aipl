@@ -588,7 +588,46 @@ class SeProgressNoteController extends Controller
         $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
         $additional_subcode=str_replace('"',"",$request->additional_subcode);
         $sub_code_id=str_replace('"',"",$request->sub_code_id);
+        if ( $request->add_diagnosis_type1 != null && $request->add_diagnosis_type1 != ''){
+            $additional_diagnosis = $request->add_diagnosis_type1;
+            if ($request->add_diagnosis_type2 != null && $request->add_diagnosis_type2 != ''){
+                $additional_diagnosis .= ','.$request->add_diagnosis_type2;
+                if ($request->add_diagnosis_type3 != null && $request->add_diagnosis_type3 != ''){
+                    $additional_diagnosis .= ','.$request->add_diagnosis_type3;
+                    if ($request->add_diagnosis_type4 != null && $request->add_diagnosis_type4 != ''){
+                        $additional_diagnosis .= ','.$request->add_diagnosis_type4;
+                        if ($request->add_diagnosis_type5 != null && $request->add_diagnosis_type5 != ''){
+                            $additional_diagnosis .= ','.$request->add_diagnosis_type5;
+                        }
+                    }
+                }
+            }
+        }
 
+        // if ($request->additional_code_id1 == 1){
+
+        // }else if ($request->additional_code_id1 == 2) {
+
+        // }
+
+        // if ( $request->sub_code_id != null && $request->sub_code_id != ''){
+        //     $additional_subcode = $request->sub_code_id;
+        //     if ($request->additional_sub_code_id1 != null && $request->additional_sub_code_id1 != ''){
+        //         $additional_subcode .= ','.$request->additional_sub_code_id1;
+        //         if ($request->additional_sub_code_id2 != null && $request->additional_sub_code_id2 != ''){
+        //             $additional_subcode .= ','.$request->additional_sub_code_id2;
+        //             if ($request->additional_sub_code_id3 != null && $request->additional_sub_code_id3 != ''){
+        //                 $additional_subcode .= ','.$request->additional_sub_code_id3;
+        //                 if ($request->additional_sub_code_id4 != null && $request->additional_sub_code_id4 != ''){
+        //                     $additional_subcode .= ','.$request->additional_sub_code_id4;
+        //                     if ($request->additional_sub_code_id5 != null && $request->additional_sub_code_id5 != ''){
+        //                         $additional_subcode .= ','.$request->additional_sub_code_id5;
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
             if ($request->appId == null || $request->appId == '') {
                 $checkTodayAppointment = PatientAppointmentDetails::where('patient_mrn_id', $request->patient_id)->whereDate("created_at",'=',date('Y-m-d'))->first();
                 if ($checkTodayAppointment) {
@@ -722,7 +761,6 @@ class SeProgressNoteController extends Controller
                     'appointment_details_id' => $request->appId,
                     'additional_diagnosis' => $additional_diagnosis,
                 ];
-
                 if($request->id) {
                     SeProgressNote::where(
                                 ['id' => $request->id]
