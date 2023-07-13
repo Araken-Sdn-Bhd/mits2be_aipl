@@ -420,9 +420,6 @@ class WorkAnalysisFormController extends Controller
 
     public function storeMobile(Request $request)
     {
-        $additional_diagnosis = str_replace('"', "", $request->additional_diagnosis);
-        $additional_subcode = str_replace('"', "", $request->additional_sub_code_id);
-        $sub_code_id = str_replace('"', "", $request->sub_code_id);
         if ( $request->add_diagnosis_type1 != null && $request->add_diagnosis_type1 != ''){
             $additional_diagnosis = $request->add_diagnosis_type1;
             if ($request->add_diagnosis_type2 != null && $request->add_diagnosis_type2 != ''){
@@ -439,111 +436,149 @@ class WorkAnalysisFormController extends Controller
             }
         }
 
-            // if ($request->appId == null || $request->appId == '') {
-            //     $checkTodayAppointment = PatientAppointmentDetails::where('patient_mrn_id', $request->patient_id)->whereDate("created_at", '=', date('Y-m-d'))->first();
-            //     if ($checkTodayAppointment) {
-            //         $request->appId = $checkTodayAppointment->id;
-            //     } else {
-            //         $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
-            //         $duration_set = 30;
-            //         $booking_date_set = $date->format('Y-m-d H:i:s');
-            //         $booking_time_set = $date->format('Y-m-d H:i:s');
-            //         $assign_team_set = 3;
-            //         $appointment_type = 3;
-            //         $patient_category = 150;
-            //         $type_visit = 153;
+        if ( $request->additional_sub_code_id != null && $request->additional_sub_code_id != ''){
+            $additional_subcode = $request->additional_sub_code_id;
+            if ( $request->additional_sub_code_id1 != null && $request->additional_sub_code_id1 != ''){
+                $additional_subcode .= ','.$request->additional_sub_code_id1;
+                if ( $request->additional_sub_code_id2 != null && $request->additional_sub_code_id2 != ''){
+                    $additional_subcode .= ','.$request->additional_sub_code_id2;
+                    if ( $request->additional_sub_code_id3 != null && $request->additional_sub_code_id3 != ''){
+                        $additional_subcode .= ','.$request->additional_sub_code_id3;
+                        if ( $request->additional_sub_code_id4 != null && $request->additional_sub_code_id4 != ''){
+                            $additional_subcode .= ','.$request->additional_sub_code_id4;
+                            if ( $request->additional_sub_code_id5 != null && $request->additional_sub_code_id5 != ''){
+                                $additional_subcode .= ','.$request->additional_sub_code_id5;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-            //         $PatientDetails = PatientRegistration::where('id', $request->patient_id)->where('patient_mrn', 'like', '%' . $request->patient_mrn_id . '%')->first();
-            //         if ($PatientDetails->nric_no != null || $PatientDetails->nric_no != '') {
-            //             $nric_or_passportno = $PatientDetails->nric_no;
-            //         } else if ($PatientDetails->passport_no != null && $PatientDetails->nric_no == null && $PatientDetails->nric_no != '') {
-            //             $nric_or_passportno = $PatientDetails->passport_no;
-            //         }
-            //         $userDetails = StaffManagement::where('id', $request->added_by)->first();
-            //         $nric_or_passportno = $PatientDetails->nric_no;
-            //         $getmnr_id = PatientRegistration::select('id')
-            //             ->where('nric_no', $nric_or_passportno)
-            //             ->orWhere('passport_no', $nric_or_passportno)
-            //             ->pluck('id');
+        if ( $request->sub_code_id != null && $request->sub_code_id != ''){
+            $sub_code_id = $request->sub_code_id;
+            if ( $request->sub_code_id1 != null && $request->sub_code_id1 != ''){
+                $sub_code_id .= ','.$request->sub_code_id1;
+                if ( $request->sub_code_id2 != null && $request->sub_code_id2 != ''){
+                    $sub_code_id .= ','.$request->additional_sub_code_id2;
+                    if ( $request->sub_code_id3 != null && $request->sub_code_id3 != ''){
+                        $sub_code_id .= ','.$request->sub_code_id3;
+                        if ( $request->sub_code_id4 != null && $request->sub_code_id4 != ''){
+                            $sub_code_id .= ','.$request->additional_sub_code_id4;
+                            if ( $request->sub_code_id5 != null && $request->sub_code_id5 != ''){
+                                $sub_code_id .= ','.$request->sub_code_id5;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-            //         if (count($getmnr_id) == 0) {
-            //             return response()->json(["message" => "This user is not registered", "code" => 401]);
-            //         } else {
-            //             $booking_date = $booking_date_set;
-            //             $booking_time = $booking_time_set;
-            //             $assign_team = $assign_team_set;
-            //             $branch_id = $userDetails->branch_id;
-            //             $duration = "+" . $duration_set . " minutes";
-            //             $endTime = date("H:i", strtotime($duration, strtotime($booking_time)));
+            if ($request->appId == null || $request->appId == '') {
+                $checkTodayAppointment = PatientAppointmentDetails::where('patient_mrn_id', $request->patient_id)->whereDate("created_at", '=', date('Y-m-d'))->first();
+                if ($checkTodayAppointment) {
+                    $request->appId = $checkTodayAppointment->id;
+                } else {
+                    $date = new DateTime('now', new DateTimeZone('Asia/Kuala_Lumpur'));
+                    $duration_set = 30;
+                    $booking_date_set = $date->format('Y-m-d H:i:s');
+                    $booking_time_set = $date->format('Y-m-d H:i:s');
+                    $assign_team_set = 3;
+                    $appointment_type = 3;
+                    $patient_category = 150;
+                    $type_visit = 153;
 
-            //             $chkPoint =  PatientRegistration::join('patient_appointment_details', 'patient_appointment_details.patient_mrn_id', '=', 'patient_registration.id')
-            //                 ->where('patient_registration.branch_id', '=', $branch_id)
-            //                 ->where('patient_appointment_details.booking_date', '=', $booking_date)
-            //                 ->whereBetween('patient_appointment_details.booking_time', [$booking_time, $endTime])
-            //                 ->where('patient_appointment_details.status', '=', '1')
-            //                 ->where('patient_appointment_details.assign_team', '=', $assign_team)
-            //                 ->get();
+                    $PatientDetails = PatientRegistration::where('id', $request->patient_id)->where('patient_mrn', 'like', '%' . $request->patient_mrn_id . '%')->first();
+                    if ($PatientDetails->nric_no != null || $PatientDetails->nric_no != '') {
+                        $nric_or_passportno = $PatientDetails->nric_no;
+                    } else if ($PatientDetails->passport_no != null && $PatientDetails->nric_no == null && $PatientDetails->nric_no != '') {
+                        $nric_or_passportno = $PatientDetails->passport_no;
+                    }
+                    $userDetails = StaffManagement::where('id', $request->added_by)->first();
+                    $nric_or_passportno = $PatientDetails->nric_no;
+                    $getmnr_id = PatientRegistration::select('id')
+                        ->where('nric_no', $nric_or_passportno)
+                        ->orWhere('passport_no', $nric_or_passportno)
+                        ->pluck('id');
 
-            //             if ($chkPoint->count() == 0) {
-            //                 $service = [
-            //                     'added_by' => $request->added_by,
-            //                     'nric_or_passportno' => $nric_or_passportno,
-            //                     'booking_date' => $booking_date_set,
-            //                     'booking_time' => $booking_time_set,
-            //                     'patient_mrn_id' => $getmnr_id[0],
-            //                     'duration' => $duration_set,
-            //                     'appointment_type' => $appointment_type,
-            //                     'type_visit' => $type_visit,
-            //                     'patient_category' => $patient_category,
-            //                     'assign_team' => $assign_team_set
-            //                 ];
-            //                 $patient = PatientAppointmentDetails::create($service);
-            //                 $request->appId = $patient->id;
-            //                 // $notifi = [
-            //                 //     'added_by' => $request->added_by,
-            //                 //     'branch_id' => $userDetails->branch_id,
-            //                 //     'role' => 'Admin/Clerk',
-            //                 //     'patient_mrn' =>   $getmnr_id[0],
-            //                 //     'url_route' => "/Modules/Patient/list-of-appointment",
-            //                 //     'created_at' => $date->format('Y-m-d H:i:s'),
-            //                 //     'message' =>  'Request for appointment(s)',
-            //                 // ];
-            //                 // $HOD = Notifications::insert($notifi);
+                    if (count($getmnr_id) == 0) {
+                        return response()->json(["message" => "This user is not registered", "code" => 401]);
+                    } else {
+                        $booking_date = $booking_date_set;
+                        $booking_time = $booking_time_set;
+                        $assign_team = $assign_team_set;
+                        $branch_id = $userDetails->branch_id;
+                        $duration = "+" . $duration_set . " minutes";
+                        $endTime = date("H:i", strtotime($duration, strtotime($booking_time)));
 
-            //                 // EMAIL
-            //                 $app_request = AppointmentRequest::where('nric_or_passportno', $nric_or_passportno)
-            //                     ->select('name', 'email')->get();
+                        $chkPoint =  PatientRegistration::join('patient_appointment_details', 'patient_appointment_details.patient_mrn_id', '=', 'patient_registration.id')
+                            ->where('patient_registration.branch_id', '=', $branch_id)
+                            ->where('patient_appointment_details.booking_date', '=', $booking_date)
+                            ->whereBetween('patient_appointment_details.booking_time', [$booking_time, $endTime])
+                            ->where('patient_appointment_details.status', '=', '1')
+                            ->where('patient_appointment_details.assign_team', '=', $assign_team)
+                            ->get();
 
-            //                 $hospital_branch = HospitalBranchManagement::where('id', $userDetails->branch_id)
-            //                     ->select('hospital_branch_name')->get();
-            //                 if ($app_request->count() != 0) {
-            //                     $bookingDate = date('d M Y', strtotime($booking_date_set));
-            //                     $bookingTime = date("h:i A", strtotime($booking_time_set));
-            //                     $data = array(
-            //                         'name' => $app_request[0]['name'],
-            //                         'branch' => ucwords(strtolower($hospital_branch[0]['hospital_branch_name'])),
-            //                         'email' => $app_request[0]['email'],
-            //                         'date' => $bookingDate,
-            //                         'time' => $bookingTime,
-            //                     );
+                        if ($chkPoint->count() == 0) {
+                            $service = [
+                                'added_by' => $request->added_by,
+                                'nric_or_passportno' => $nric_or_passportno,
+                                'booking_date' => $booking_date_set,
+                                'booking_time' => $booking_time_set,
+                                'patient_mrn_id' => $getmnr_id[0],
+                                'duration' => $duration_set,
+                                'appointment_type' => $appointment_type,
+                                'type_visit' => $type_visit,
+                                'patient_category' => $patient_category,
+                                'assign_team' => $assign_team_set
+                            ];
+                            $patient = PatientAppointmentDetails::create($service);
+                            $request->appId = $patient->id;
+                            // $notifi = [
+                            //     'added_by' => $request->added_by,
+                            //     'branch_id' => $userDetails->branch_id,
+                            //     'role' => 'Admin/Clerk',
+                            //     'patient_mrn' =>   $getmnr_id[0],
+                            //     'url_route' => "/Modules/Patient/list-of-appointment",
+                            //     'created_at' => $date->format('Y-m-d H:i:s'),
+                            //     'message' =>  'Request for appointment(s)',
+                            // ];
+                            // $HOD = Notifications::insert($notifi);
 
-            //                     try {
-            //                         Mail::to($data['email'])->send(new AppointmentRequestMail($data));
-            //                     } catch (\Exception $err) {
-            //                         var_dump($err);
+                            // EMAIL
+                            $app_request = AppointmentRequest::where('nric_or_passportno', $nric_or_passportno)
+                                ->select('name', 'email')->get();
 
-            //                         return response([
-            //                             'message' => 'Error In Email Configuration: ' . $err,
-            //                             'code' => 500
-            //                         ]);
-            //                     }
-            //                 };
-            //             } else {
-            //                 return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
-            //             }
-            //         }
-            //     }
-            // }
+                            $hospital_branch = HospitalBranchManagement::where('id', $userDetails->branch_id)
+                                ->select('hospital_branch_name')->get();
+                            if ($app_request->count() != 0) {
+                                $bookingDate = date('d M Y', strtotime($booking_date_set));
+                                $bookingTime = date("h:i A", strtotime($booking_time_set));
+                                $data = array(
+                                    'name' => $app_request[0]['name'],
+                                    'branch' => ucwords(strtolower($hospital_branch[0]['hospital_branch_name'])),
+                                    'email' => $app_request[0]['email'],
+                                    'date' => $bookingDate,
+                                    'time' => $bookingTime,
+                                );
+
+                                try {
+                                    Mail::to($data['email'])->send(new AppointmentRequestMail($data));
+                                } catch (\Exception $err) {
+                                    var_dump($err);
+
+                                    return response([
+                                        'message' => 'Error In Email Configuration: ' . $err,
+                                        'code' => 500
+                                    ]);
+                                }
+                            };
+                        } else {
+                            return response()->json(["message" => "Another Appointment already booked for this date and time!", "code" => 400]);
+                        }
+                    }
+                }
+            }
             $WorkAnalysisForm = [
                 'appointment_details_id' => $request->appId,
                 'added_by' => $request->added_by,
@@ -570,9 +605,6 @@ class WorkAnalysisFormController extends Controller
                 'job_experience_months' => $request->job_experience_months,
                 'others' => $request->others,
 
-                'additional_code_id' => $request->additional_code_id,
-                'additional_subcode' => $additional_subcode,
-                'additional_diagnosis' => $additional_diagnosis,
                 'location_services' => $request->location_services,
                 'type_diagnosis_id' => $request->type_diagnosis_id,
                 'category_services' => $request->category_services,
@@ -592,11 +624,9 @@ class WorkAnalysisFormController extends Controller
                 $WorkAnalysisForm['code_id'] =  $request->code_id;
                 $validateWorkAnalysisForm['sub_code_id'] = 'required';
                 $WorkAnalysisForm['sub_code_id'] =  $sub_code_id;
-            } else if ($request->category_services == 'clinical') {
-                $validateWorkAnalysisForm['code_id'] = 'required';
-                $WorkAnalysisForm['code_id'] =  $request->code_id;
-                $validateWorkAnalysisForm['sub_code_id'] = 'required';
-                $WorkAnalysisForm['sub_code_id'] =  $sub_code_id;
+                $WorkAnalysisForm['additional_diagnosis'] = $additional_diagnosis;
+                $WorkAnalysisForm['additional_code_id'] = $request->additional_code_id;
+                $WorkAnalysisForm['additional_subcode'] = $additional_subcode;
             }
 
             if ($request->wage_change_occur == 'yes') {
@@ -624,8 +654,7 @@ class WorkAnalysisFormController extends Controller
             if ($validator->fails()) {
                 return response()->json(["message" => $validator->errors(), "code" => 422]);
             }
-            // dd($request);
-            WorkAnalysisForm::where(['id' => $request->id])->update($WorkAnalysisForm);
+            WorkAnalysisForm::create($WorkAnalysisForm);
             $WorkAnalysisFormid = ($request->id);
 
             if (!empty($request->jobs)) {

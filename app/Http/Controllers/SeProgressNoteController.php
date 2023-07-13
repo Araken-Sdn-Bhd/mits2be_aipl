@@ -585,9 +585,6 @@ class SeProgressNoteController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
 
-        $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
-        $additional_subcode=str_replace('"',"",$request->additional_subcode);
-        $sub_code_id=str_replace('"',"",$request->sub_code_id);
         if ( $request->add_diagnosis_type1 != null && $request->add_diagnosis_type1 != ''){
             $additional_diagnosis = $request->add_diagnosis_type1;
             if ($request->add_diagnosis_type2 != null && $request->add_diagnosis_type2 != ''){
@@ -604,30 +601,44 @@ class SeProgressNoteController extends Controller
             }
         }
 
-        // if ($request->additional_code_id1 == 1){
+        if ( $request->additional_sub_code_id != null && $request->additional_sub_code_id != ''){
+            $additional_subcode = $request->additional_sub_code_id;
+            if ( $request->additional_sub_code_id1 != null && $request->additional_sub_code_id1 != ''){
+                $additional_subcode .= ','.$request->additional_sub_code_id1;
+                if ( $request->additional_sub_code_id2 != null && $request->additional_sub_code_id2 != ''){
+                    $additional_subcode .= ','.$request->additional_sub_code_id2;
+                    if ( $request->additional_sub_code_id3 != null && $request->additional_sub_code_id3 != ''){
+                        $additional_subcode .= ','.$request->additional_sub_code_id3;
+                        if ( $request->additional_sub_code_id4 != null && $request->additional_sub_code_id4 != ''){
+                            $additional_subcode .= ','.$request->additional_sub_code_id4;
+                            if ( $request->additional_sub_code_id5 != null && $request->additional_sub_code_id5 != ''){
+                                $additional_subcode .= ','.$request->additional_sub_code_id5;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-        // }else if ($request->additional_code_id1 == 2) {
+        if ( $request->sub_code_id != null && $request->sub_code_id != ''){
+            $sub_code_id = $request->sub_code_id;
+            if ( $request->sub_code_id1 != null && $request->sub_code_id1 != ''){
+                $sub_code_id .= ','.$request->sub_code_id1;
+                if ( $request->sub_code_id2 != null && $request->sub_code_id2 != ''){
+                    $sub_code_id .= ','.$request->additional_sub_code_id2;
+                    if ( $request->sub_code_id3 != null && $request->sub_code_id3 != ''){
+                        $sub_code_id .= ','.$request->sub_code_id3;
+                        if ( $request->sub_code_id4 != null && $request->sub_code_id4 != ''){
+                            $sub_code_id .= ','.$request->additional_sub_code_id4;
+                            if ( $request->sub_code_id5 != null && $request->sub_code_id5 != ''){
+                                $sub_code_id .= ','.$request->sub_code_id5;
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
-        // }
-
-        // if ( $request->sub_code_id != null && $request->sub_code_id != ''){
-        //     $additional_subcode = $request->sub_code_id;
-        //     if ($request->additional_sub_code_id1 != null && $request->additional_sub_code_id1 != ''){
-        //         $additional_subcode .= ','.$request->additional_sub_code_id1;
-        //         if ($request->additional_sub_code_id2 != null && $request->additional_sub_code_id2 != ''){
-        //             $additional_subcode .= ','.$request->additional_sub_code_id2;
-        //             if ($request->additional_sub_code_id3 != null && $request->additional_sub_code_id3 != ''){
-        //                 $additional_subcode .= ','.$request->additional_sub_code_id3;
-        //                 if ($request->additional_sub_code_id4 != null && $request->additional_sub_code_id4 != ''){
-        //                     $additional_subcode .= ','.$request->additional_sub_code_id4;
-        //                     if ($request->additional_sub_code_id5 != null && $request->additional_sub_code_id5 != ''){
-        //                         $additional_subcode .= ','.$request->additional_sub_code_id5;
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
             if ($request->appId == null || $request->appId == '') {
                 $checkTodayAppointment = PatientAppointmentDetails::where('patient_mrn_id', $request->patient_id)->whereDate("created_at",'=',date('Y-m-d'))->first();
                 if ($checkTodayAppointment) {
@@ -810,42 +821,7 @@ class SeProgressNoteController extends Controller
                 } else {
                     SeProgressNote::create($SeProgress);
                     return response()->json(["message" => "SE progress note created4", "code" => 200]);
-            }
-            } else if ($request->service_category == 'clinical') {
-
-                $SeProgress = [
-                    'services_id' =>  $request->services_id,
-                    'code_id' =>  $request->code_id,
-                    'sub_code_id' =>  $request->sub_code_id,
-                    'added_by' =>  $request->added_by,
-                    'patient_mrn_id' =>  $request->patient_mrn_id,
-                    'patient_id' =>  $request->patient_id,
-                    'name' =>  $request->name,
-                    'mrn' =>  $request->mrn,
-                    'date' =>  $request->date,
-                    'time' =>  $request->time,
-                    'staff_name' =>  $request->staff_name,
-                    'activity_type' =>  $request->activity_type,
-                    'restart' => $request->restart_program,
-                    'progress_note' =>  $request->progress_note,
-                    'employment_status' =>  $request->employment_status,
-                    'management_plan' =>  $request->management_plan,
-                    'location_service' =>  $request->location_service,
-                    'diagnosis_type' =>  $request->diagnosis_type,
-                    'service_category' =>  $request->service_category,
-                    'complexity_service' =>  $request->complexity_service,
-                    'outcome' =>  $request->outcome,
-                    'medication' =>  $request->medication,
-                    'status' => "0",
-                    'appointment_details_id' => $request->appId,
-                ];
-
-                try {
-                    $HOD = SeProgressNote::create($SeProgress);
-                } catch (Exception $e) {
-                    return response()->json(["message" => $e->getMessage(), 'EtpProgress' => $SeProgress, "code" => 200]);
                 }
-                return response()->json(["message" => "Se Progress Note Successfully13", "code" => 200]);
             }
             else {
                 $SeProgress = [
