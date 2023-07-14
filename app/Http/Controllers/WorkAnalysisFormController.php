@@ -204,7 +204,7 @@ class WorkAnalysisFormController extends Controller
                 $validateWorkAnalysisForm['on_date'] = 'required';
                 $WorkAnalysisForm['on_date'] =  $request->on_date;
                 $validateWorkAnalysisForm['works_hour_week'] = 'required';
-                $WorkAnalysisForm['works_hour_week'] =  $request->on_date;
+                $WorkAnalysisForm['works_hour_week'] =  $request->works_hour_week;
                 $validateWorkAnalysisForm['work_schedule'] = 'required';
                 $WorkAnalysisForm['work_schedule'] =  $request->work_schedule;
                 $validateWorkAnalysisForm['no_of_current_employee'] = 'required';
