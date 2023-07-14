@@ -1211,15 +1211,15 @@ class CpsProgressNoteController extends Controller
             $additional_diagnosis = $request->add_diagnosis_type1;
             if ($request->diagnosis_type2 != null && $request->diagnosis_type2 != ''){
                 $additional_diagnosis .= ','.$request->diagnosis_type2;
-                if ($request->diagnosis_type3 != null && $request->diagnosis_type3 != ''){
-                    $additional_diagnosis .= ','.$request->diagnosis_type3;
-                    if ($request->diagnosis_type4 != null && $request->diagnosis_type4 != ''){
-                        $additional_diagnosis .= ','.$request->diagnosis_type4;
-                        if ($request->diagnosis_type5 != null && $request->diagnosis_type5 != ''){
-                            $additional_diagnosis .= ','.$request->diagnosis_type5;
-                        }
-                    }
-                }
+            }
+            if ($request->diagnosis_type3 != null && $request->diagnosis_type3 != ''){
+                $additional_diagnosis .= ','.$request->diagnosis_type3;
+            }
+            if ($request->diagnosis_type4 != null && $request->diagnosis_type4 != ''){
+                $additional_diagnosis .= ','.$request->diagnosis_type4;
+            }
+            if ($request->diagnosis_type5 != null && $request->diagnosis_type5 != ''){
+                $additional_diagnosis .= ','.$request->diagnosis_type5;
             }
         }
 
@@ -1227,18 +1227,18 @@ class CpsProgressNoteController extends Controller
             $additional_subcode = $request->additional_sub_code_id;
             if ( $request->additional_sub_code_id1 != null && $request->additional_sub_code_id1 != ''){
                 $additional_subcode .= ','.$request->additional_sub_code_id1;
-                if ( $request->additional_sub_code_id2 != null && $request->additional_sub_code_id2 != ''){
-                    $additional_subcode .= ','.$request->additional_sub_code_id2;
-                    if ( $request->additional_sub_code_id3 != null && $request->additional_sub_code_id3 != ''){
-                        $additional_subcode .= ','.$request->additional_sub_code_id3;
-                        if ( $request->additional_sub_code_id4 != null && $request->additional_sub_code_id4 != ''){
-                            $additional_subcode .= ','.$request->additional_sub_code_id4;
-                            if ( $request->additional_sub_code_id5 != null && $request->additional_sub_code_id5 != ''){
-                                $additional_subcode .= ','.$request->additional_sub_code_id5;
-                            }
-                        }
-                    }
-                }
+            }
+            if ( $request->additional_sub_code_id2 != null && $request->additional_sub_code_id2 != ''){
+                $additional_subcode .= ','.$request->additional_sub_code_id2;
+            }
+            if ( $request->additional_sub_code_id3 != null && $request->additional_sub_code_id3 != ''){
+                $additional_subcode .= ','.$request->additional_sub_code_id3;
+            }
+            if ( $request->additional_sub_code_id4 != null && $request->additional_sub_code_id4 != ''){
+                $additional_subcode .= ','.$request->additional_sub_code_id4;
+            }
+            if ( $request->additional_sub_code_id5 != null && $request->additional_sub_code_id5 != ''){
+                $additional_subcode .= ','.$request->additional_sub_code_id5;
             }
         }
 
@@ -1246,18 +1246,18 @@ class CpsProgressNoteController extends Controller
             $sub_code_id = $request->sub_code_id;
             if ( $request->sub_code_id1 != null && $request->sub_code_id1 != ''){
                 $sub_code_id .= ','.$request->sub_code_id1;
-                if ( $request->sub_code_id2 != null && $request->sub_code_id2 != ''){
-                    $sub_code_id .= ','.$request->additional_sub_code_id2;
-                    if ( $request->sub_code_id3 != null && $request->sub_code_id3 != ''){
-                        $sub_code_id .= ','.$request->sub_code_id3;
-                        if ( $request->sub_code_id4 != null && $request->sub_code_id4 != ''){
-                            $sub_code_id .= ','.$request->additional_sub_code_id4;
-                            if ( $request->sub_code_id5 != null && $request->sub_code_id5 != ''){
-                                $sub_code_id .= ','.$request->sub_code_id5;
-                            }
-                        }
-                    }
-                }
+            }
+            if ( $request->sub_code_id2 != null && $request->sub_code_id2 != ''){
+                $sub_code_id .= ','.$request->additional_sub_code_id2;
+            }
+            if ( $request->sub_code_id3 != null && $request->sub_code_id3 != ''){
+                $sub_code_id .= ','.$request->sub_code_id3;
+            }
+            if ( $request->sub_code_id4 != null && $request->sub_code_id4 != ''){
+                $sub_code_id .= ','.$request->additional_sub_code_id4;
+            }
+            if ( $request->sub_code_id5 != null && $request->sub_code_id5 != ''){
+                $sub_code_id .= ','.$request->sub_code_id5;
             }
         }
 
