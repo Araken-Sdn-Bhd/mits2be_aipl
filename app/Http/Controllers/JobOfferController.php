@@ -565,8 +565,9 @@ class JobOfferController extends Controller
     {
 
         $additional_diagnosis=str_replace('"',"",$request->additional_diagnosis);
-        $additional_subcode=str_replace('"',"",$request->additional_sub_code_id);
-        $sub_code_id=str_replace('"',"",$request->sub_code_id);
+        $additional_subcode=str_replace('"',"",$request->additional_subcode);
+        $icd_9_subcode=str_replace('"',"",$request->icd_9_subcode);
+
         $result = json_decode($request->result, true);
         $addTestResult = [];
         $level = [];
@@ -630,8 +631,8 @@ class JobOfferController extends Controller
             'complexity_of_services' => $request->complexity_of_services,
             'outcome' => $request->outcome,
             'icd_9_code' => $request->icd_9_code,
-            'icd_9_subcode' => $request->icd_9_subcode,
-            'additional_code_id' => $sub_code_id,
+            'icd_9_subcode' => $icd_9_subcode,
+            'additional_code_id' => $request->additional_code_id,
             'additional_subcode' => $additional_subcode,
             'medication_prescription' => $request->medication_prescription,
             'created_at' => date('Y-m-d H:i:s'),
