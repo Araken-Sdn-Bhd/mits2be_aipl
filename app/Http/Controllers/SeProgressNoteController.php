@@ -626,13 +626,13 @@ class SeProgressNoteController extends Controller
                 $sub_code_id .= ','.$request->sub_code_id1;
             }
             if ( $request->sub_code_id2 != null && $request->sub_code_id2 != ''){
-                $sub_code_id .= ','.$request->additional_sub_code_id2;
+                $sub_code_id .= ','.$request->sub_code_id2;
             }
             if ( $request->sub_code_id3 != null && $request->sub_code_id3 != ''){
                 $sub_code_id .= ','.$request->sub_code_id3;
             }
             if ( $request->sub_code_id4 != null && $request->sub_code_id4 != ''){
-                $sub_code_id .= ','.$request->additional_sub_code_id4;
+                $sub_code_id .= ','.$request->sub_code_id4;
             }
             if ( $request->sub_code_id5 != null && $request->sub_code_id5 != ''){
                 $sub_code_id .= ','.$request->sub_code_id5;
