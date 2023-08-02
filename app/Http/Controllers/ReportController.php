@@ -107,7 +107,7 @@ class ReportController extends Controller
             }
             if ($request->accommodation_id) {
                 $demo['accomodation_id'] = $request->accommodation_id;
-                
+
             }
             if ($request->occupation_status) {
                 $demo['occupation_status'] = $request->occupation_status;
@@ -134,13 +134,13 @@ class ReportController extends Controller
                 'psrhm.id as id2','psrhm.main_psychiatric_diagnosis','psrhm.additional_diagnosis')
                 ->leftjoin('sharp_registraion_final_step as srfs', function($join) {
                     $join->on('srfs.id', '=', 'psrdp.shharp_register_id');
-                })      
+                })
                 ->leftjoin('patient_registration as p', function($join) {
                     $join->on('srfs.patient_id', '=', 'p.id');
                 })
                 ->leftjoin('patient_shharp_registration_hospital_management as psrhm', function($join) {
                     $join->on('psrhm.id', '=', 'srfs.hospital_mgmt');
-                }) 
+                })
                 ->whereBetween('harm_date', [$request->fromDate, $request->toDate])
                 ->where('srfs.hospital_mgmt', '!=','')
                 ->where('srfs.status', '=','1');
@@ -151,10 +151,10 @@ class ReportController extends Controller
 
                 if ($demo)
                 $query->where($demo);
-                
+
                 if ($age){
-                    
-                    
+
+
                     if($age['agemin'] && $age['agemax']!=NULL){
                     $query->whereBetween('age',[$age['agemin'],$age['agemax']]);
                     }
@@ -183,19 +183,19 @@ class ReportController extends Controller
                     $result[$index]['MAIN_DIAGNOSIS'] = $main_diagnosis['icd_code'].' '.$main_diagnosis['icd_name'];
 
                         if($v['additional_diagnosis']!=NULL && !empty($v['additional_diagnosis'])){
-                            
+
                         $d=0;
                             foreach (explode(',',$v['additional_diagnosis']) as $add) {
                                 $add_diagnosis = IcdCode::select('icd_code','icd_name')->where('id', $add)->first();
                                 $additional_diagnosis[$d]['additional_diagnosis']=$add_diagnosis['icd_code'].' '.$add_diagnosis['icd_name'];
-                                $d++;   
+                                $d++;
                             }
                                 $result[$index]['ADDITIONAL_DIAGNOSIS'] ='';
-                                
+
                             for($i=0; $i<$d; $i++){
                             $result[$index]['ADDITIONAL_DIAGNOSIS'] .= $additional_diagnosis[$i]['additional_diagnosis'].'<br/>';
                             }
-        
+
                         }else{
 
                             $result[$index]['ADDITIONAL_DIAGNOSIS'] = 'NA';
@@ -209,10 +209,10 @@ class ReportController extends Controller
                             $add_diagnosis = IcdCode::select('icd_code','icd_name')->where('id', $add)->first();
                             $additional_diagnosis[$d]['additional_diagnosis']=$add_diagnosis['icd_code'].' '.$add_diagnosis['icd_name'];
                             $d++;
-                            
+
                         }
                         $result[$index]['ADDITIONAL_DIAGNOSIS'] ='';
-                        
+
                         for($i=0; $i<$d; $i++){
                         $result[$index]['ADDITIONAL_DIAGNOSIS'] .= $additional_diagnosis[$i]['additional_diagnosis'].'<br/>';
                         }
@@ -223,20 +223,20 @@ class ReportController extends Controller
                     $result[$index]['ADDITIONAL_DIAGNOSIS'] = 'NA';
 
                 }
-                
+
             }else{
 
                     if($v['main_psychiatric_diagnosis']!=NULL){
                         $main_diagnosis = IcdCode::select('icd_code','icd_name')->where('id', $v['main_psychiatric_diagnosis'])->first();
                         $result[$index]['MAIN_DIAGNOSIS'] = $main_diagnosis['icd_code'].' '.$main_diagnosis['icd_name'];
-    
+
                             if($v['additional_diagnosis']!=NULL && !empty($v['additional_diagnosis'])){
-                                
+
                             $d=0;
                                 foreach (explode(',',$v['additional_diagnosis']) as $add) {
                                     $add_diagnosis = IcdCode::select('icd_code','icd_name')->where('id', $add)->first();
                                     $additional_diagnosis[$d]['additional_diagnosis']=$add_diagnosis['icd_code'].' '.$add_diagnosis['icd_name'];
-                                    $d++;   
+                                    $d++;
                                 }
                                     $result[$index]['ADDITIONAL_DIAGNOSIS'] ='';
                                 $d2=$d-1;
@@ -247,24 +247,24 @@ class ReportController extends Controller
                                         $result[$index]['ADDITIONAL_DIAGNOSIS'] .= $additional_diagnosis[$i]['additional_diagnosis'].', ';
                                     }
                                 }
-            
+
                             }else{
-    
+
                                 $result[$index]['ADDITIONAL_DIAGNOSIS'] = 'NA';
                             }
-    
+
                     }else if($v['additional_diagnosis']!=NULL){
-    
+
                         $result[$index]['MAIN_DIAGNOSIS'] = 'NA';
                         $d=0;
                             foreach (explode(',',$v['additional_diagnosis']) as $add) {
                                 $add_diagnosis = IcdCode::select('icd_code','icd_name')->where('id', $add)->first();
                                 $additional_diagnosis[$d]['additional_diagnosis']=$add_diagnosis['icd_code'].' '.$add_diagnosis['icd_name'];
                                 $d++;
-                                
+
                             }
                             $result[$index]['ADDITIONAL_DIAGNOSIS'] ='';
-                            
+
                             for($i=0; $i<$d; $i++){
                                 if($i==$d2){
                                     $result[$index]['ADDITIONAL_DIAGNOSIS'] .= $additional_diagnosis[$i]['additional_diagnosis'];
@@ -273,16 +273,16 @@ class ReportController extends Controller
                                 }
                             }
 
-    
+
                     }else{
-    
+
                         $result[$index]['MAIN_DIAGNOSIS'] = 'NA';
                         $result[$index]['ADDITIONAL_DIAGNOSIS'] = 'NA';
-    
+
                     }
                 }
                 //////////////////////////diagnosis/////////////////////////
-                
+
 
                     if($request->protective_factor!=NULL){
                         $protective=$v['protective'];
@@ -295,7 +295,7 @@ class ReportController extends Controller
 
                         if($request->protective_factor==13){
                         $prpa=PatientRiskProtectiveAnswer::select('Answer')
-                        ->where('id','=',$protectives[0]['protectives']) 
+                        ->where('id','=',$protectives[0]['protectives'])
                         ->where('Answer','=','Yes')
                         ->where('factor_type','=','protective')->first();
                         }
@@ -308,128 +308,128 @@ class ReportController extends Controller
                         if($request->protective_factor==15){
                         $prpa=PatientRiskProtectiveAnswer::select('Answer')
                         ->where('id','=',$protectives[2]['protectives'])
-                        ->where('Answer','=','Yes') 
+                        ->where('Answer','=','Yes')
                         ->where('factor_type','=','protective')->first();
                         }
                         if($request->protective_factor==16){
                         $prpa=PatientRiskProtectiveAnswer::select('Answer')
                         ->where('id','=',$protectives[3]['protectives'])
                         ->where('Answer','=','Yes')
-                        ->where('Answer','=','Yes') 
+                        ->where('Answer','=','Yes')
                         ->where('factor_type','=','protective')->first();
                         }
                         if($request->protective_factor==17){
                         $prpa=PatientRiskProtectiveAnswer::select('Answer')
                         ->where('id','=',$protectives[4]['protectives'])
-                        ->where('Answer','=','Yes') 
+                        ->where('Answer','=','Yes')
                         ->where('factor_type','=','protective')->first();
                         }
                         if($request->protective_factor==18){
                         $prpa=PatientRiskProtectiveAnswer::select('Answer')
                         ->where('id','=',$protectives[5]['protectives'])
-                        ->where('Answer','=','Yes') 
+                        ->where('Answer','=','Yes')
                         ->where('factor_type','=','protective')->first();
                         }
                         if(empty($prpa)){
                         continue;
                         }
-                
+
                     }
 
                     if($request->risk_factor!=NULL){
                             $risk=$v['risk'];
                             $count=0;
                             foreach (explode('^',$risk) as $r) {
-                                $risks[$count]['risks']=$r; 
+                                $risks[$count]['risks']=$r;
                                 $count++;
-                            } 
-                    
+                            }
+
                             if($request->risk_factor==1){
                                 $prpa2=PatientRiskProtectiveAnswer::select('Answer')
-                                ->where('id','=',$risks[0]['risks']) 
+                                ->where('id','=',$risks[0]['risks'])
                                 ->where('Answer','=','Yes')
                                 ->where('factor_type','=','risk')->first();
                                 }
                             if($request->risk_factor==2){
                                 $prpa2=PatientRiskProtectiveAnswer::select('Answer')
-                                ->where('id','=',$risks[1]['risks']) 
+                                ->where('id','=',$risks[1]['risks'])
                                 ->where('Answer','=','Yes')
                                 ->where('factor_type','=','risk')->first();
                                 }
                             if($request->risk_factor==3){
                                 $prpa2=PatientRiskProtectiveAnswer::select('Answer')
-                                ->where('id','=',$risks[2]['risks']) 
+                                ->where('id','=',$risks[2]['risks'])
                                 ->where('Answer','=','Yes')
                                 ->where('factor_type','=','risk')->first();
                                 }
                             if($request->risk_factor==4){
                                 $prpa2=PatientRiskProtectiveAnswer::select('Answer')
-                                ->where('id','=',$risks[3]['risks']) 
+                                ->where('id','=',$risks[3]['risks'])
                                 ->where('Answer','=','Yes')
                                 ->where('factor_type','=','risk')->first();
                                 }
                             if($request->risk_factor==5){
                                 $prpa2=PatientRiskProtectiveAnswer::select('Answer')
-                                ->where('id','=',$risks[4]['risks']) 
+                                ->where('id','=',$risks[4]['risks'])
                                 ->where('Answer','=','Yes')
                                 ->where('factor_type','=','risk')->first();
-                                } 
+                                }
                             if($request->risk_factor==6){
                                 $prpa2=PatientRiskProtectiveAnswer::select('Answer')
-                                ->where('id','=',$risks[5]['risks']) 
+                                ->where('id','=',$risks[5]['risks'])
                                 ->where('Answer','=','Yes')
                                 ->where('factor_type','=','risk')->first();
-                                } 
+                                }
                             if($request->risk_factor==7){
                                  $prpa2=PatientRiskProtectiveAnswer::select('Answer')
-                                ->where('id','=',$risks[6]['risks']) 
+                                ->where('id','=',$risks[6]['risks'])
                                 ->where('Answer','=','Yes')
                                 ->where('factor_type','=','risk')->first();
-                                } 
+                                }
                             if($request->risk_factor==8){
                                 $prpa2=PatientRiskProtectiveAnswer::select('Answer')
-                                ->where('id','=',$risks[7]['risks']) 
+                                ->where('id','=',$risks[7]['risks'])
                                 ->where('Answer','=','Yes')
                                 ->where('factor_type','=','risk')->first();
-                                 } 
+                                 }
                             if($request->risk_factor==9){
                                 $prpa2=PatientRiskProtectiveAnswer::select('Answer')
-                                ->where('id','=',$risks[8]['risks']) 
+                                ->where('id','=',$risks[8]['risks'])
                                 ->where('Answer','=','Yes')
                                 ->where('factor_type','=','risk')->first();
-                                } 
+                                }
                             if($request->risk_factor==10){
                                 $prpa2=PatientRiskProtectiveAnswer::select('Answer')
-                                ->where('id','=',$risks[9]['risks']) 
+                                ->where('id','=',$risks[9]['risks'])
                                 ->where('Answer','=','Yes')
                                 ->where('factor_type','=','risk')->first();
                                 }
                             if($request->risk_factor==11){
                                 $prpa2=PatientRiskProtectiveAnswer::select('Answer')
-                                ->where('id','=',$risks[10]['risks']) 
+                                ->where('id','=',$risks[10]['risks'])
                                 ->where('Answer','=','Yes')
                                 ->where('factor_type','=','risk')->first();
-                                }                              
+                                }
                             if($request->risk_factor==12){
                                 $prpa2=PatientRiskProtectiveAnswer::select('Answer')
-                                ->where('id','=',$risks[11]['risks']) 
+                                ->where('id','=',$risks[11]['risks'])
                                 ->where('Answer','=','Yes')
                                 ->where('factor_type','=','risk')->first();
-                                } 
+                                }
                                 if(empty($prpa2)){
                                     continue;
-                                    }   
-                                            
+                                    }
+
                     }
-                
-                    
-                
+
+
+
                     $self_harm=$v['self_harm'];
                     $count=0;
                     foreach (explode('^',$self_harm) as $sh) {
                         $self_harms[$count]['self_harms']=$sh;
                         $query_protective[$count]=PatientRiskProtectiveAnswer::select('Answer')
-                        ->where('id','=',$self_harms[$count]['self_harms'])->first();     
+                        ->where('id','=',$self_harms[$count]['self_harms'])->first();
                         $count++;
                     }
                     $ssh=SharpRegistrationSelfHarmResult::select('section_value')
@@ -437,36 +437,36 @@ class ReportController extends Controller
                     ->where('section','=','Method of Self-Harm');
 
                     if($request->self_harm!=NULL){
-                        if($request->self_harm=='Overdose/Poisoning'){  
+                        if($request->self_harm=='Overdose/Poisoning'){
                             $sh=$ssh->where('section_value','LIKE','%Poisoning":true%');
 
                         }elseif($request->self_harm=='Hanging/Suffocation'){
-                            
+
                             $sh=$ssh->where('section_value','LIKE','%Suffocation":true%');
-                            
+
                         }elseif($request->self_harm=='Drowning'){
                             $sh=$ssh->where('section_value','LIKE','%"Drowning":true%');
-                            
+
                         }
                         elseif($request->self_harm=='Firearms or explosives'){
                             $sh=$ssh->where('section_value','LIKE','%"Firearms or explosives":true%');
-                        
+
                         }
                         elseif($request->self_harm=='Fire/flames'){
                             $sh=$ssh->where('section_value','LIKE','%flames":true%');
-                            
+
                         }
                         elseif($request->self_harm=='Cutting or Piercing'){
                             $sh=$ssh->where('section_value','LIKE','%"Cutting or Piercing":true%');
-                            
+
                         }
                         elseif($request->self_harm=='Jumping from height'){
                             $sh=$ssh->where('section_value','LIKE','%"Jumping from height":true%');
-                            
+
                         }
                         elseif($request->self_harm=='Other'){
                             $sh=$ssh->where('section_value','LIKE','%"Other":true%');
-                            
+
                         }
                     }
 
@@ -476,7 +476,7 @@ class ReportController extends Controller
                     if(empty($sh)){
                     continue;
                     }
-                    
+
                     $method_self_harm1=str_contains($sh['section_value'],'"Overdose\/Poisoning":true');
                     $method_self_harm2=str_contains($sh['section_value'],'"Hanging\/Suffocation":true');
                     $method_self_harm3=str_contains($sh['section_value'],'"Drowning":true');
@@ -494,21 +494,21 @@ class ReportController extends Controller
 
                     if($method_self_harm2==true){
                         $msh2['METHOD_OF_SELF_HARM'] = 'Hanging/Suffocation';
-                       
+
                     }else{
                         $msh2['METHOD_OF_SELF_HARM']='';
                     }
 
                     if($method_self_harm3==true){
                         $msh3['METHOD_OF_SELF_HARM'] = 'Drowning';
-                        
+
                     }else{
                         $msh3['METHOD_OF_SELF_HARM']='';
                     }
 
                     if($method_self_harm4==true){
                         $msh4['METHOD_OF_SELF_HARM'] = 'Firearms or explosives';
-                        
+
                     }else{
                         $msh4['METHOD_OF_SELF_HARM']='';
                     }
@@ -536,30 +536,30 @@ class ReportController extends Controller
                     }else{
                         $msh8['METHOD_OF_SELF_HARM']='';
                     }
-                
+
                     $imm=SharpRegistrationSelfHarmResult::select('section_value')
                     ->where('id','=',$self_harms[2]['self_harms'])
                     ->where('section','=','How did Patient Get Idea about Method');
 
                     if($request->idea_about_method!=NULL){
-                        if($request->idea_about_method=='Family, friends, peer group'){  
+                        if($request->idea_about_method=='Family, friends, peer group'){
                             $im=$imm->where('section_value','LIKE','%"Family, friends, peer group":true%');
 
                         }elseif($request->idea_about_method=='Internet (website, social media platform, app, blogs, forum, video/photosharing)'){
-                            
+
                             $im=$imm->where('section_value','LIKE','%photosharing)":true%');
-                            
+
                         }elseif($request->idea_about_method=='Printed media (newspaper, books, magazine, etc)'){
                             $im=$imm->where('section_value','LIKE','%"Printed media (newspaper, books, magazine, etc)":true%');
-                            
+
                         }elseif($request->idea_about_method=='Broadcast media (television, radio)'){
                             $im=$imm->where('section_value','LIKE','%"Broadcast media (television, radio)":true%');
-                            
+
                         }elseif($request->idea_about_method=='Specify patient actual words'){
                             $im=$imm->where('section_value','LIKE','%"Specify patient actual words":true%');
-                            
-                        }                         
-                    }               
+
+                        }
+                    }
                     $im=$imm->first();
 
                     if(empty($im)){
@@ -579,21 +579,21 @@ class ReportController extends Controller
 
                     if($idea_method2==true){
                         $im2['IDEA_METHOD'] = 'Internet (website, social media platform, app, blogs, forum, video/photosharing)';
-                       
+
                     }else{
                         $im2['IDEA_METHOD']='';
                     }
 
                     if($idea_method3==true){
                         $im3['IDEA_METHOD'] = 'Printed media (newspaper, books, magazine, etc)';
-                        
+
                     }else{
                         $im3['IDEA_METHOD']='';
                     }
 
                     if($idea_method4==true){
                         $im4['IDEA_METHOD'] = 'Broadcast media (television, radio)';
-                        
+
                     }else{
                         $im4['IDEA_METHOD']='';
                     }
@@ -607,22 +607,22 @@ class ReportController extends Controller
                     $ssi=SharpRegistrationSelfHarmResult::select('section_value')
                     ->where('id','=',$self_harms[3]['self_harms'])
                     ->where('section','=','Suicidal Intent');
-                
-                    if($request->suicidal_intent!=NULL){ 
-                        if($request->suicidal_intent=='Yes'){  
+
+                    if($request->suicidal_intent!=NULL){
+                        if($request->suicidal_intent=='Yes'){
                             $si=$ssi->where('section_value','LIKE','%"intent":"intent-yes%');
 
                         }elseif($request->suicidal_intent=='No'){
-                            
+
                             $si=$ssi->where('section_value','LIKE','%"intent":"no"%');
-                            
+
                         }elseif($request->suicidal_intent=='Undetermined'){
                             $si=$ssi->where('section_value','LIKE','%"intent":"Undetermined"%');
-                            
+
                         }
-                        
+
                     }
-                    
+
                     $si=$ssi->first();
 
                     if(empty($si)){
@@ -641,32 +641,32 @@ class ReportController extends Controller
 
                     if($suicidal_intent2==true){
                         $si2['SUCIDAL_INTENT'] = 'Undetermined';
-                       
+
                     }else{
                         $si2['SUCIDAL_INTENT']='';
                     }
 
                     if($suicidal_intent3==true){
                         $si3['SUCIDAL_INTENT'] = 'No';
-                        
+
                     }else{
                         $si3['SUCIDAL_INTENT']='';
                     }
-                
+
 
 ///////////////////RiskAnswer////////////////////////////////////////////////////////////
-                                    
+
                         $risk=$v['risk'];
                         $count=0;
                         foreach (explode('^',$risk) as $r) {
-                             $risks[$count]['risks']=$r; 
+                             $risks[$count]['risks']=$r;
                         $count++;
-                        } 
+                        }
 
                     $PatientRiskProtectiveAnswer1=PatientRiskProtectiveAnswer::select('Answer')
                     ->where('id','=',$risks[0]['risks'])
                     ->where('factor_type','=','risk')->first();
-                                      
+
 
                     if($PatientRiskProtectiveAnswer1['Answer']=='Yes'){
                         $prpa1['RISK_ANSWER'] = 'Presence of psychiatric disorder';
@@ -677,7 +677,7 @@ class ReportController extends Controller
                     $PatientRiskProtectiveAnswer2=PatientRiskProtectiveAnswer::select('Answer')
                     ->where('id','=',$risks[1]['risks'])
                     ->where('factor_type','=','risk')->first();
-                    
+
                     if($PatientRiskProtectiveAnswer2['Answer']=='Yes'){
                         $prpa2['RISK_ANSWER'] = 'Hopelessness or despair';
 
@@ -784,16 +784,16 @@ class ReportController extends Controller
                     }else{
                         $prpa12['RISK_ANSWER']='';
                     }
-                    
-///////////////////ProtectiveFactorAnswer////////////////////////////////////////////////////////////  
-                
+
+///////////////////ProtectiveFactorAnswer////////////////////////////////////////////////////////////
+
                     $protective=$v['protective'];
                     $count=0;
                     foreach (explode('^',$protective) as $p) {
-                         $protectives[$count]['protectives']=$p;    
+                         $protectives[$count]['protectives']=$p;
                     $count++;
                     }
-                
+
                     $PatientRiskProtectiveAnswer13=PatientRiskProtectiveAnswer::select('Answer')
                     ->where('id','=',$protectives[0]['protectives'])
                     ->where('factor_type','=','protective')->first();
@@ -853,10 +853,10 @@ class ReportController extends Controller
                     }else{
                         $prpa18['PROTECTIVE_FACTORS']='';
                     }
-                
-                
-            
-                
+
+
+
+
                 //////////////////////City///////////////////////
                 $city=Postcode::select('city_name')
                 ->where('id','=',$v['city_id'])->first();
@@ -873,7 +873,7 @@ class ReportController extends Controller
                     $result[$index]['STATE'] = 'NA';
                  }else{
                     $result[$index]['STATE'] = $state['state_name'];
-                 } 
+                 }
                 //////////////////////State///////////////////////
                 $postcode=Postcode::select('postcode')
                 ->where('id','=',$v['postcode'])->first();
@@ -881,12 +881,12 @@ class ReportController extends Controller
                     $result[$index]['POSTCODE'] = 'NA';
                  }else{
                     $result[$index]['POSTCODE'] = $postcode['postcode'];
-                 } 
+                 }
                  if($v['address1']==NULL){
                     $result[$index]['ADDRESS'] = 'NA';
                  }else{
                     $result[$index]['ADDRESS'] = $v['address1'];
-                 } 
+                 }
 
                     $result[$index]['NO'] = $index+1;
                     $result[$index]['HOSPITAL'] = $v['hospital_name'];
@@ -909,7 +909,7 @@ class ReportController extends Controller
                     $result[$index]['RISK_FACTOR10'] = $prpa10['RISK_ANSWER'];
                     $result[$index]['RISK_FACTOR11'] = $prpa11['RISK_ANSWER'];
                     $result[$index]['RISK_FACTOR12'] = $prpa12['RISK_ANSWER'];
-                  
+
 
 
                     $result[$index]['PROTECTIVE_FACTOR13'] =  $prpa13['PROTECTIVE_FACTORS'];
@@ -918,8 +918,8 @@ class ReportController extends Controller
                     $result[$index]['PROTECTIVE_FACTOR16'] =  $prpa16['PROTECTIVE_FACTORS'];
                     $result[$index]['PROTECTIVE_FACTOR17'] =  $prpa17['PROTECTIVE_FACTORS'];
                     $result[$index]['PROTECTIVE_FACTOR18'] =  $prpa18['PROTECTIVE_FACTORS'];
-                 
-                    
+
+
                     $result[$index]['METHOD_OF_SELF_HARM1'] = $msh1['METHOD_OF_SELF_HARM'];
                     $result[$index]['METHOD_OF_SELF_HARM2'] = $msh2['METHOD_OF_SELF_HARM'];
                     $result[$index]['METHOD_OF_SELF_HARM3'] = $msh3['METHOD_OF_SELF_HARM'];
@@ -928,19 +928,19 @@ class ReportController extends Controller
                     $result[$index]['METHOD_OF_SELF_HARM6'] = $msh6['METHOD_OF_SELF_HARM'];
                     $result[$index]['METHOD_OF_SELF_HARM7'] = $msh7['METHOD_OF_SELF_HARM'];
                     $result[$index]['METHOD_OF_SELF_HARM8'] = $msh8['METHOD_OF_SELF_HARM'];
-                    
-                    
+
+
                     $result[$index]['IDEA_OF_METHOD1'] = $im1['IDEA_METHOD'];
                     $result[$index]['IDEA_OF_METHOD2'] = $im2['IDEA_METHOD'];
                     $result[$index]['IDEA_OF_METHOD3'] = $im3['IDEA_METHOD'];
                     $result[$index]['IDEA_OF_METHOD4'] = $im4['IDEA_METHOD'];
                     $result[$index]['IDEA_OF_METHOD5'] = $im5['IDEA_METHOD'];
-                    
-                    
-                    
+
+
+
                     $result[$index]['SUCIDAL_INTENT1'] = $si1['SUCIDAL_INTENT'];
                     $result[$index]['SUCIDAL_INTENT2'] = $si2['SUCIDAL_INTENT'];
-                    $result[$index]['SUCIDAL_INTENT3'] = $si3['SUCIDAL_INTENT'];                   
+                    $result[$index]['SUCIDAL_INTENT3'] = $si3['SUCIDAL_INTENT'];
 
 ////////////////////For Excel//////////////////////////////////////////////
 
@@ -972,20 +972,20 @@ class ReportController extends Controller
 
 
                     $index++;
-                    $totalReports =  $index;                  
-                
-            
-            
+                    $totalReports =  $index;
 
-            
-        
-            }    
+
+
+
+
+
+            }
                     if ($result) {
-                        
+
 
                     if (isset($request->report_type) && $request->report_type == 'excel') {
                         $filename = 'ShharpReport-'.time().'.xls';
-                        
+
                         $totalReports= $index;
 
                         return response([
@@ -997,7 +997,7 @@ class ReportController extends Controller
                             'filename' => $filename,
                             'code' => 200
                         ]);
-                        
+
                     } else {
 
                             $periodofservices= $request->fromDate.' To '.$request->toDate;
@@ -1008,10 +1008,10 @@ class ReportController extends Controller
                 return response()->json(["message" => "Shharp Report", 'result' => [], 'filepath' => null, "code" => 200]);
             }
         }
-        
-    
-        
-    
+
+
+
+
     public function getTotalPatientTypeRefferalReport(Request $request)
     {
         $appointments = PatientAppointmentDetails::whereBetween('booking_date', [$request->fromDate, $request->toDate])
@@ -1039,10 +1039,10 @@ class ReportController extends Controller
                     ->where('staff_management.email', '=', $request->email)
                     ->first();
                     $users2  = json_decode(json_encode($users), true);
-    
+
                     if($users2['code']!='superadmin'){
                         $query->where('branch_id','=',$request->branch_id);
-                    }    
+                    }
 
                 $patientInfon = $query->get()->toArray();
                 if ($patientInfon) {
@@ -1115,7 +1115,7 @@ class ReportController extends Controller
 
 
                 $summary= 'TOTAL PATIENT AND TYPE OF REFERRAL'.'<br>'.'TOTAL DAYS:   '.$totalDays.'<br>'.'TOTAL PATIENT:    '.$totalPatients.'<br>';
-                
+
                 return response([
                     'message' => 'Data successfully retrieved.',
                     'result' => $result,
@@ -1148,15 +1148,15 @@ class ReportController extends Controller
         }
         if ($request->type_visit ) {
             $demo['type_visit'] = $request->type_visit ;
-        }      
+        }
         if ($request->gender) {
             $demo['sex'] = $request->gender;
-        }      
+        }
             $query = DB::table('patient_appointment_details as pad')
             ->select('*')
             ->join('patient_registration as p', function($join) {
                 $join->on('pad.patient_mrn_id', '=', 'p.id');
-            })     
+            })
             ->whereBetween('booking_date', [$request->fromDate, $request->toDate]);
 
             $users = DB::table('staff_management')
@@ -1179,7 +1179,7 @@ class ReportController extends Controller
                     $query->where('appointment_status','=', 2);
 
                 }
-                
+
             }
 
        $response = $query->get()->toArray();
@@ -1212,11 +1212,11 @@ class ReportController extends Controller
 
                 if($request->appointment_type == 1){
 
-        
+
                         $query_diagnosis1 = PatientCounsellorClerkingNotes::where('patient_mrn_id', $v['patient_mrn_id'])
                         ->where('status','=','1');
                             $diagnosis1=$query_diagnosis1->orderBy('id', 'DESC')->first();
-        
+
                             if($diagnosis1!=NULL){
                                 $diagnosis1_ts=strtotime($diagnosis1['updated_at']);
                                 $cd_array[$count]['updated_at']=$diagnosis1_ts;
@@ -1225,11 +1225,11 @@ class ReportController extends Controller
                                 $cd_array[$count]['medication']=$diagnosis1['medication_des'];
                                 $count++;
                             }
-                        
+
                         $query_diagnosis2 = PsychiatryClerkingNote::where('patient_mrn_id', $v['patient_mrn_id'])
                         ->where('status','=','1');
                                 $diagnosis2=$query_diagnosis2->orderBy('id', 'DESC')->first();
-        
+
                             if($diagnosis2!=NULL){
                                     $diagnosis2_ts=strtotime($diagnosis2['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis2_ts;
@@ -1238,11 +1238,11 @@ class ReportController extends Controller
                                     $cd_array[$count]['medication']=$diagnosis2['medication_des'];
                                     $count++;
                                }
-        
+
                             $query_diagnosis3 = PsychiatricProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
                             ->where('status','=','1');
                                     $diagnosis3=$query_diagnosis3->orderBy('id', 'DESC')->first();
-               
+
                                 if($diagnosis3!=NULL){
                                         $diagnosis3_ts=strtotime($diagnosis3['updated_at']);
                                         $cd_array[$count]['updated_at']=$diagnosis3_ts;
@@ -1251,12 +1251,12 @@ class ReportController extends Controller
                                         $cd_array[$count]['medication']=$diagnosis3['medication_des'];
                                         $count++;
                                 }
-                
+
                                 $query_diagnosis4 = PatientIndexForm::where('patient_mrn_id', $v['patient_mrn_id'])
                                 ->where('status','=','1');
-                      
+
                                     $diagnosis4=$query_diagnosis4->orderBy('id', 'DESC')->first();
-                      
+
                                         if($diagnosis4!=NULL){
                                             $diagnosis4_ts=strtotime($diagnosis4['updated_at']);
                                             $cd_array[$count]['updated_at']=$diagnosis4_ts;
@@ -1265,7 +1265,7 @@ class ReportController extends Controller
                                             $cd_array[$count]['medication']=$diagnosis4['medication_des'];
                                             $count++;
                                         }
-        
+
                 $query_diagnosis5 = CounsellingProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
                 ->where('status','=','1');
                     $diagnosis5=$query_diagnosis5->orderBy('id', 'DESC')->first();
@@ -1278,13 +1278,13 @@ class ReportController extends Controller
                         $cd_array[$count]['medication']=$diagnosis5['medication_des'];
                         $count++;
                     }
-                
+
 
                     $query_diagnosis6 = ConsultationDischargeNote::where('patient_id', $v['patient_mrn_id'])
                     ->where('status','=','1');
-              
+
                             $diagnosis6=$query_diagnosis6->orderBy('id', 'DESC')->first();
-              
+
                         if($diagnosis6!=NULL){
                             $diagnosis6_ts=strtotime($diagnosis6['updated_at']);
                             $cd_array[$count]['updated_at']=$diagnosis6_ts;
@@ -1294,15 +1294,15 @@ class ReportController extends Controller
                             $count++;
                         }
 
-                        
+
             if(!empty($cd_array)){
-                                                                    
+
                     $Dates = array_map(fn($entry) => $entry['updated_at'], $cd_array);
-                    $array_date=max($Dates); 
-                                
-                                
+                    $array_date=max($Dates);
+
+
                     foreach ($cd_array as $c => $d){
-                        
+
                         if($array_date==$d['updated_at']){
                             $icd=$d['diagnosis_id'];
                             $procedure=$d['procedure'];
@@ -1321,7 +1321,7 @@ class ReportController extends Controller
                     }else{
                         $icd_name='NA';
                     }
-                    
+
             }else{
                 $icd_name = 'NA';
                 $procedure='NA';
@@ -1333,14 +1333,14 @@ class ReportController extends Controller
                     continue;
                 }
             }
-        
+
 
                 }elseif($request->appointment_type == 3){
 
                     $query_diagnosis1 = SeProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
                     ->where('status','=','1');
                         $diagnosis1=$query_diagnosis1->orderBy('id', 'DESC')->first();
-          
+
                             if($diagnosis1!=NULL){
                                 $diagnosis1_ts=strtotime($diagnosis1['updated_at']);
                                 $cd_array[$count]['updated_at']=$diagnosis1_ts;
@@ -1360,7 +1360,7 @@ class ReportController extends Controller
                         $query_diagnosis2 = PatientIndexForm::where('patient_mrn_id', $v['patient_mrn_id'])
                         ->where('status','=','1');
                             $diagnosis2=$query_diagnosis2->orderBy('id', 'DESC')->first();
-              
+
                                 if($diagnosis2!=NULL){
                                     $diagnosis2_ts=strtotime($diagnosis2['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis2_ts;
@@ -1373,7 +1373,7 @@ class ReportController extends Controller
                         $query_diagnosis3 = RehabDischargeNote::where('patient_mrn_id', $v['patient_mrn_id'])
                         ->where('status','=','1');
                             $diagnosis3=$query_diagnosis3->orderBy('id', 'DESC')->first();
-              
+
                                 if($diagnosis3!=NULL){
                                     $diagnosis3_ts=strtotime($diagnosis3['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis3_ts;
@@ -1384,19 +1384,19 @@ class ReportController extends Controller
                                 }
 
                                 if($request->diagnosis_id){
-                                    if($diagnosis1==NULL && $diagnosis2==NULL && $diagnosis3==NULL){            
-                                        continue;  
+                                    if($diagnosis1==NULL && $diagnosis2==NULL && $diagnosis3==NULL){
+                                        continue;
                                     }
                                  }
-        
+
                 if(!empty($cd_array)){
-                                                                      
+
                     $Dates = array_map(fn($entry) => $entry['updated_at'], $cd_array);
-                    $array_date=max($Dates); 
-                                 
-                                
+                    $array_date=max($Dates);
+
+
                     foreach ($cd_array as $c => $d){
-                        
+
                         if($array_date==$d['updated_at']){
                             $icd=$d['diagnosis_id'];
                             $procedure=$d['procedure'];
@@ -1428,7 +1428,7 @@ class ReportController extends Controller
                         continue;
                     }
                 }
-                
+
 
                     if($request->employment_status){
                         $employment_status = SeProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
@@ -1438,7 +1438,7 @@ class ReportController extends Controller
 
                         if(empty($employment_status)){
                             continue;
-                        }   
+                        }
                     }
                     if($request->case_manager){
                         $case_manager = JobStartForm::where('patient_id', $v['patient_mrn_id'])
@@ -1448,7 +1448,7 @@ class ReportController extends Controller
                         ->get()->toArray();
                         if(empty($case_manager)){
                             continue;
-                        }   
+                        }
                     }
                     if($request->employer_list){
                         $employer_list = JobStartForm::where('patient_id', $v['patient_mrn_id'])
@@ -1458,11 +1458,11 @@ class ReportController extends Controller
                         ->get()->toArray();
                         if(empty($employer_list)){
                             continue;
-                        } 
+                        }
                     }
 
 
-                
+
                     $jobStart = JobStartForm::where('patient_id', $v['patient_mrn_id'])
                                             ->where('status', '1')
                                             ->where('is_deleted', 0)
@@ -1475,19 +1475,19 @@ class ReportController extends Controller
                             $jv += 1;
                         }
                         $empStatus = GeneralSetting::where('id', $diagnosis1['employment_status'])->get()->toArray();
-                    }               
+                    }
                         $log_meeting = LogMeetingWithEmployer::where(['patient_id' => $v['patient_mrn_id']])->where('status','=','1')->get()->toArray();
                     if($log_meeting){
                         $jv = $jv + count($log_meeting);
                     }
                 }
                 elseif($request->appointment_type == 4){
-                    
+
 
                      $query_diagnosis1 = PatientIndexForm::where('patient_mrn_id', $v['patient_mrn_id'])
                         ->where('status','=','1');
                             $diagnosis1=$query_diagnosis1->orderBy('id', 'DESC')->first();
-              
+
                                 if($diagnosis1!=NULL){
                                     $diagnosis1_ts=strtotime($diagnosis1['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis1_ts;
@@ -1507,14 +1507,14 @@ class ReportController extends Controller
                                 $cd_array[$count]['diagnosis_id']=$diagnosis2['diagnosis_type'];
                                 $cd_array[$count]['procedure']=$diagnosis2['service_category'];
                                 $cd_array[$count]['medication']=$diagnosis2['medication'];
-                                
+
                                 $count++;
                         }
 
                         $query_diagnosis3 = RehabDischargeNote::where('patient_mrn_id', $v['patient_mrn_id'])
                         ->where('status','=','1');
                             $diagnosis3=$query_diagnosis3->orderBy('id', 'DESC')->first();
-              
+
                                 if($diagnosis3!=NULL){
                                     $diagnosis3_ts=strtotime($diagnosis3['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis3_ts;
@@ -1524,19 +1524,19 @@ class ReportController extends Controller
                                     $count++;
                                 }
                                 if($request->diagnosis_id){
-                                    if($diagnosis1==NULL && $diagnosis2==NULL && $diagnosis3==NULL){            
-                                        continue;  
+                                    if($diagnosis1==NULL && $diagnosis2==NULL && $diagnosis3==NULL){
+                                        continue;
                                     }
                                  }
-        
+
                 if(!empty($cd_array)){
-                                                                      
+
                                 $Dates = array_map(fn($entry) => $entry['updated_at'], $cd_array);
-                                $array_date=max($Dates); 
-                                 
-                                
+                                $array_date=max($Dates);
+
+
                     foreach ($cd_array as $c => $d){
-                        
+
                         if($array_date==$d['updated_at']){
                             $icd=$d['diagnosis_id'];
                             $procedure=$d['procedure'];
@@ -1549,7 +1549,7 @@ class ReportController extends Controller
                             }
                         }
                     }
-                
+
                     if($icd!=NULL){
                         $icd_query = IcdCode::where('id', $icd)->first();
                         $icd_name=$icd_query['icd_name'];
@@ -1568,7 +1568,7 @@ class ReportController extends Controller
                         continue;
                     }
                 }
-                
+
                 if($request->work_readiness){
                         $work_readiness = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                         ->where('work_readiness',$request->work_readiness)
@@ -1577,7 +1577,7 @@ class ReportController extends Controller
                         ->get()->toArray();
                         if(empty($work_readiness)){
                             continue;
-                        }   
+                        }
                     }
                     if($request->case_manager){
                         $staff_name = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
@@ -1589,7 +1589,7 @@ class ReportController extends Controller
                         ->get()->toArray();
                         if(empty($case_manager)){
                             continue;
-                        }   
+                        }
                     }
                     $etp = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                     ->get()->toArray();
@@ -1598,12 +1598,12 @@ class ReportController extends Controller
 
 
                 }elseif($request->appointment_type == 5){
-                    
+
 
                         $query_diagnosis1 = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
                         ->where('status','=','1');
                                 $diagnosis1=$query_diagnosis1->orderBy('id', 'DESC')->first();
-           
+
                             if($diagnosis1!=NULL){
                                     $diagnosis1_ts=strtotime($diagnosis1['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis1_ts;
@@ -1613,19 +1613,19 @@ class ReportController extends Controller
                                     $count++;
                             }
                             if($request->diagnosis_id){
-                                if($diagnosis1==NULL){            
-                                    continue;  
+                                if($diagnosis1==NULL){
+                                    continue;
                                 }
                              }
-    
+
             if(!empty($cd_array)){
-                                                                  
+
                     $Dates = array_map(fn($entry) => $entry['updated_at'], $cd_array);
-                    $array_date=max($Dates); 
-                             
-                            
+                    $array_date=max($Dates);
+
+
                         foreach ($cd_array as $c => $d){
-                            
+
                             if($array_date==$d['updated_at']){
                                 $icd=$d['diagnosis_id'];
                                 $procedure=$d['procedure'];
@@ -1656,8 +1656,8 @@ class ReportController extends Controller
                     continue;
                 }
             }
-            
-            
+
+
 
                     if($request->work_readiness){
                         $work_readiness = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
@@ -1667,7 +1667,7 @@ class ReportController extends Controller
                         ->get()->toArray();
                         if(empty($employment_status)){
                             continue;
-                        }   
+                        }
                     }
                     if($request->case_manager){
                         $staff_name = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
@@ -1679,18 +1679,18 @@ class ReportController extends Controller
                         ->get()->toArray();
                         if(empty($case_manager)){
                             continue;
-                        }   
+                        }
                     }
                     $job_club = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                     ->get()->toArray();
 
                 }elseif($request->appointment_type == 6){
 
-                    
+
                     $query_diagnosis1 = PatientIndexForm::where('patient_mrn_id', $v['patient_mrn_id'])
                     ->where('status','=','1');
                         $diagnosis1=$query_diagnosis1->orderBy('id', 'DESC')->first();
-          
+
                             if($diagnosis1!=NULL){
                                 $diagnosis1_ts=strtotime($diagnosis1['updated_at']);
                                 $cd_array[$count]['updated_at']=$diagnosis1_ts;
@@ -1699,11 +1699,11 @@ class ReportController extends Controller
                                 $cd_array[$count]['medication']=$diagnosis1['medication'];
                                 $count++;
                             }
-                    
+
                         $query_diagnosis2 = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
                         ->where('status','=','1');
                             $diagnosis2=$query_diagnosis2->orderBy('id', 'DESC')->first();
-              
+
                                 if($diagnosis2!=NULL){
                                     $diagnosis2_ts=strtotime($diagnosis2['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis2_ts;
@@ -1716,7 +1716,7 @@ class ReportController extends Controller
                         $query_diagnosis3 = CpsDischargeNote::where('patient_mrn_id', $v['patient_mrn_id'])
                         ->where('status','=','1');
                             $diagnosis3=$query_diagnosis3->orderBy('id', 'DESC')->first();
-              
+
                                 if($diagnosis3!=NULL){
                                     $diagnosis3_ts=strtotime($diagnosis3['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis3_ts;
@@ -1725,15 +1725,15 @@ class ReportController extends Controller
                                     $cd_array[$count]['medication']=$diagnosis3['medication'];
                                     $count++;
                                 }
-                                    
+
                              if(!empty($cd_array)){
-                                                                  
+
                             $Dates = array_map(fn($entry) => $entry['updated_at'], $cd_array);
-                            $array_date=max($Dates); 
-                             
-                            
+                            $array_date=max($Dates);
+
+
                     foreach ($cd_array as $c => $d){
-                        
+
                         if($array_date==$d['updated_at']){
                             $icd=$d['diagnosis_id'];
                             $procedure=$d['procedure'];
@@ -1752,7 +1752,7 @@ class ReportController extends Controller
                     }else{
                         $icd_name='NA';
                     }
-                    
+
 
             }else{
                 $icd_name = 'NA';
@@ -1765,8 +1765,8 @@ class ReportController extends Controller
                     continue;
                 }
             }
-            
-                      
+
+
                     if($request->current_intervention){
                         $current_intervention = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                         ->where('current_intervention',$request->current_intervention)
@@ -1775,7 +1775,7 @@ class ReportController extends Controller
                         ->get()->toArray();
                         if(empty($employment_status)){
                             continue;
-                        }   
+                        }
                     }
                     if($request->case_manager){
                         $case_manager_name = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
@@ -1787,14 +1787,14 @@ class ReportController extends Controller
                         ->get()->toArray();
                         if(empty($case_manager)){
                             continue;
-                        }   
+                        }
                     }
 
                     $cps = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])->where('status','=','1')
                     ->get()->toArray();
                     if(count($cps) != 0){
                         $curr_interv = GeneralSetting::where('id', $cps[0]['current_intervention'])->get()->toArray();
-                        
+
                     }
                 }
 
@@ -1809,7 +1809,7 @@ class ReportController extends Controller
                     $vt = GeneralSetting::where('id', $v['type_visit'])->get()->toArray();
                     $cp = GeneralSetting::where('id', $v['patient_category'])->get()->toArray();
                     $reftyp = GeneralSetting::where(['id' => $v['referral_type']])->get()->toArray();
-                    
+
 
                     // if ($notes)
                     //     $icd = IcdCode::where('id', $notes[0]['code_id'])->get()->toArray();
@@ -1878,12 +1878,12 @@ class ReportController extends Controller
 
                     $index++;
 
-                
+
 
             }
         }
         if ($result) {
-            
+
             $totalPatients ='Total Patient:   '.count($result).'<br>';
             $totalPatientsPDF =count($result);
             $diff = date_diff(date_create($request->fromDate), date_create($request->toDate));
@@ -1915,7 +1915,7 @@ class ReportController extends Controller
             else{
                 $summary= $periodofservice.'<br>'.$totalDays.'<br>'.$totalPatients.'<br>'.$Attend.'<br>'.$NoShow.'<br>';
             }
-            
+
             if (isset($request->report_type) && $request->report_type == 'excel') {
                 if($request->appointment_type == 1){
                     $filename = 'consultation-report-'.time().'.xls';
@@ -1979,25 +1979,25 @@ class ReportController extends Controller
         }
         $response = $ssh->get()->toArray();
         $vorb  = json_decode(json_encode($response), true);
-        
+
         if ($vorb) {
             foreach ($vorb as $k => $v) {
                 if ($request->location == NULL) {
-                    
+
                         $location_value1=OutReachProjects::where('parent_section_id', $v['id'])
                         ->where('project_loaction','mentari')
                         ->where('project_loaction_value', $request->branch_name)->first();
-    
+
                         $location_value2=NetworkingContribution::where('parent_section_id', $v['id'])
                         ->where('project_loaction','project-location-mentari')
                         ->where('project_loaction_value', $request->branch_name)->first();
 
                             if(empty($location_value1) && empty($location_value2)){
                                 continue;
-                            }                 
+                            }
                  }
                 if ($request->event != NULL){
-                    
+
                     $event=OutReachProjects::where('parent_section_id', $v['id'])
                     ->where('project_name','LIKE','%'.$request->event.'%')->first();
 
@@ -2006,11 +2006,11 @@ class ReportController extends Controller
                     }
                 }
                 if ($request->others_value != NULL) {
-                    
+
                     $location_value_other=OutReachProjects::where('parent_section_id', $v['id'])
                     ->where('project_loaction','=','project-location-others')
                     ->where('project_loaction_value','LIKE',"%".$request->others_value."%")->first();
-                    
+
                     if(empty($location_value_other)){
                         continue;
                     }
@@ -2023,8 +2023,8 @@ class ReportController extends Controller
 
                     if(empty($location_value)){
                         continue;
-                    }                   
-                        
+                    }
+
                 }
                 $result[$index]['No']=$index+1;
                 $result[$index]['Name'] = $v['name'];
@@ -2177,7 +2177,7 @@ class ReportController extends Controller
         }
         if ($request->accommodation_id) {
             $demo['accomodation_id'] = $request->accommodation_id;
-            
+
         }
         if ($request->occupation_status) {
             $demo['occupation_status'] = $request->occupation_status;
@@ -2214,7 +2214,7 @@ class ReportController extends Controller
 
                         $count++;
                     }
-                
+
                 $query_diagnosis2 = PsychiatryClerkingNote::where('patient_mrn_id', $v['patient_mrn_id'])
                 ->where('status','=','1');
 
@@ -2236,10 +2236,10 @@ class ReportController extends Controller
 
                     $query_diagnosis3 = PsychiatricProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
                     ->where('status','=','1');
-       
+
 
                             $diagnosis3=$query_diagnosis3->orderBy('id', 'DESC')->first();
-       
+
                         if($diagnosis3!=NULL){
                                 $diagnosis3_ts=strtotime($diagnosis3['updated_at']);
                                 $cd_array[$count]['updated_at']=$diagnosis3_ts;
@@ -2270,10 +2270,10 @@ class ReportController extends Controller
 
                         $query_diagnosis5 = SeProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
                         ->where('status','=','1');
-              
+
 
                             $diagnosis5=$query_diagnosis5->orderBy('id', 'DESC')->first();
-              
+
                                 if($diagnosis5!=NULL){
                                     $diagnosis5_ts=strtotime($diagnosis5['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis5_ts;
@@ -2288,10 +2288,10 @@ class ReportController extends Controller
 
                         $query_diagnosis6 = PatientIndexForm::where('patient_mrn_id', $v['patient_mrn_id'])
                         ->where('status','=','1');
-              
+
 
                             $diagnosis6=$query_diagnosis6->orderBy('id', 'DESC')->first();
-              
+
                                 if($diagnosis6!=NULL){
                                     $diagnosis6_ts=strtotime($diagnosis6['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis6_ts;
@@ -2320,7 +2320,7 @@ class ReportController extends Controller
                         $cd_array[$count]['add_sub_code_id']=$diagnosis7['additional_subcode'];
                         $count++;
                     }
-                
+
                 $query_diagnosis8 = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
                 ->where('status','=','1');
 
@@ -2341,10 +2341,10 @@ class ReportController extends Controller
 
                     $query_diagnosis9 = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
                     ->where('status','=','1');
-       
+
 
                             $diagnosis9=$query_diagnosis9->orderBy('id', 'DESC')->first();
-       
+
                         if($diagnosis9!=NULL){
                                 $diagnosis9_ts=strtotime($diagnosis9['updated_at']);
                                 $cd_array[$count]['updated_at']=$diagnosis9_ts;
@@ -2359,10 +2359,10 @@ class ReportController extends Controller
 
                     $query_diagnosis10 = ConsultationDischargeNote::where('patient_id', $v['patient_mrn_id'])
                     ->where('status','=','1');
-              
+
 
                             $diagnosis10=$query_diagnosis10->orderBy('id', 'DESC')->first();
-              
+
                         if($diagnosis10!=NULL){
                             $diagnosis10_ts=strtotime($diagnosis10['updated_at']);
                             $cd_array[$count]['updated_at']=$diagnosis10_ts;
@@ -2397,7 +2397,7 @@ class ReportController extends Controller
                         ->where('status','=','1');
 
                             $diagnosis12=$query_diagnosis12->orderBy('id', 'DESC')->first();
-              
+
                                 if($diagnosis12!=NULL){
                                     $diagnosis12_ts=strtotime($diagnosis12['updated_at']);
                                     $cd_array[$count]['updated_at']=$diagnosis12_ts;
@@ -2409,13 +2409,13 @@ class ReportController extends Controller
                                     $cd_array[$count]['add_sub_code_id']=$diagnosis12['add_sub_code_id'];
                                     $count++;
                                 }
-                               
-                                 
+
+
                 if(!empty($cd_array)){
-                                                                        
+
                         $Dates = array_map(fn($entry) => $entry['updated_at'], $cd_array);
-                        $array_date=max($Dates); 
-                                 
+                        $array_date=max($Dates);
+
                         foreach ($cd_array as $c => $d){
                             if($array_date==$d['updated_at']){
                                 $icd=$d['diagnosis_id'];
@@ -2430,8 +2430,8 @@ class ReportController extends Controller
                                                     $add_diagnosis = IcdCode::select('icd_code','icd_name')->where('id', $add)->first();
                                                     $additional_diagnosis[$e]['additional_diagnosis']=$add_diagnosis['icd_code'].' '.$add_diagnosis['icd_name'];
                                                 }
-                                            $e++;   
-                                        }                                  
+                                            $e++;
+                                        }
                                         if($e==1){
                                             $result[$index]['additional_diagnosis1']=$additional_diagnosis[0]['additional_diagnosis'];
                                             $result[$index]['additional_diagnosis2']='NA';
@@ -2464,7 +2464,7 @@ class ReportController extends Controller
                                             $result[$index]['additional_diagnosis5']=$additional_diagnosis[4]['additional_diagnosis'];
                                         }
 
-                                    
+
                                 }else{
                                     $result[$index]['additional_diagnosis1']='NA';
                                     $result[$index]['additional_diagnosis2']='NA';
@@ -2490,7 +2490,7 @@ class ReportController extends Controller
                                 if($d['sub_code_id']!=NULL && $d['sub_code_id']!='0'){
                                     $f=0;
                                         foreach (explode(',',$d['sub_code_id']) as $sub) {
- 
+
                                                     $sub_code = IcdCode::select('icd_code','icd_name')->where('id', $sub)->first();
                                                     if($sub_code==!NULL){
                                                         $sub_code = $sub_code->jsonserialize();
@@ -2499,9 +2499,9 @@ class ReportController extends Controller
                                                         $sub_code_id[$f]['add_sub_code']='NA';
                                                         }
 
-                                                    $f++; 
-                                                }                                             
-                                                                       
+                                                    $f++;
+                                                }
+
                                         if($f==1){
                                             $result[$index]['sub_code1']=$sub_code_id[0]['sub_code'];
                                             $result[$index]['sub_code2']='NA';
@@ -2534,7 +2534,7 @@ class ReportController extends Controller
                                             $result[$index]['sub_code5']=$sub_code_id[4]['sub_code'];
                                         }
 
-                                    
+
                                 }else{
                                     $result[$index]['sub_code1']='NA';
                                     $result[$index]['sub_code2']='NA';
@@ -2542,7 +2542,7 @@ class ReportController extends Controller
                                     $result[$index]['sub_code4']='NA';
                                     $result[$index]['sub_code5']='NA';
                                 }
-                            
+
                                 ///////////////////////////for additional sub code/////////////////////////////////////
                                 if($d['add_sub_code_id']!=NULL && $d['add_sub_code_id']!='0'){
                                     $f=0;
@@ -2555,8 +2555,8 @@ class ReportController extends Controller
                                                         $add_sub_code_id[$f]['add_sub_code']='NA';
                                                         }
                                                 }
-                                            $f++;   
-                                                                         
+                                            $f++;
+
                                         if($f==1){
                                             $result[$index]['add_sub_code1']=$add_sub_code_id[0]['add_sub_code'];
                                             $result[$index]['add_sub_code2']='NA';
@@ -2589,17 +2589,17 @@ class ReportController extends Controller
                                             $result[$index]['add_sub_code5']=$add_sub_code_id[4]['add_sub_code'];
                                         }
 
-                                    
+
                                 }else{
                                     $result[$index]['add_sub_code1']='NA';
                                     $result[$index]['add_sub_code2']='NA';
                                     $result[$index]['add_sub_code3']='NA';
                                     $result[$index]['add_sub_code4']='NA';
                                     $result[$index]['add_sub_code5']='NA';
-                                }      
+                                }
                             }
-                            
-                        
+
+
                         }
                 }else{
 
@@ -2610,11 +2610,11 @@ class ReportController extends Controller
                         continue;
                     }
                 }
-                
+
                 $icd = IcdCode::where('id', $icd)->first();
 
                 $staff = StaffManagement::select('name')->where('id', $v['staff_id'])->get()->toArray();
-                
+
 
                 $users = DB::table('staff_management')
                 ->select('roles.code')
@@ -2655,7 +2655,7 @@ class ReportController extends Controller
 
                     $occupation_status = GeneralSetting::where(['id' => $patientInfo['occupation_status']])->get()->toArray();
                     $occupation_sector = GeneralSetting::where(['id' => $patientInfo['occupation_sector']])->get()->toArray();
-                    
+
                     $reftyp = GeneralSetting::where(['id' => $patientInfo['referral_type']])->get()->toArray();
                     $city_name = ($pc) ? $pc[0]['city_name'] : 'NA';
                     $state_name = ($st) ? $st[0]['state_name'] : 'NA';
@@ -2673,8 +2673,8 @@ class ReportController extends Controller
                     $apt = ServiceRegister::where(['id' => $v['appointment_type']])->get()->toArray();
                     $vt = GeneralSetting::where('id', $v['type_visit'])->get()->toArray();
                     $cp = GeneralSetting::where('id', $v['patient_category'])->get()->toArray();
-                    
-                        
+
+
 
                     $appointment_type = ($apt) ? $apt[0]['service_name'] : 'NA';
                     $visit_type = ($vt) ? $vt[0]['section_value'] : 'NA';
@@ -2719,7 +2719,7 @@ class ReportController extends Controller
                     $index++;
                 }
             }
-        } 
+        }
         if ($result) {
             $totalReports = count($result);
             $filePath = '';
@@ -2742,7 +2742,7 @@ class ReportController extends Controller
 
     public function getKPIReport(Request $request)
     {
-        
+
         $month = ['January' => 1, 'February' => 2, 'March' => 3, 'April' => 4, 'May' => 5, 'June' => 6, 'July' => 7,
         'August' => 8, 'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12];
         $year=$request->year;
@@ -2755,7 +2755,7 @@ class ReportController extends Controller
             $month_array=[];
         if(!in_array($m, $month_array, true)){
             array_push($month_array, $m);
-               
+
             $averageResult['average'][$m]=0;
 
             }
@@ -2767,22 +2767,22 @@ class ReportController extends Controller
             ->first();
             $users2  = json_decode(json_encode($users), true);
         $index=0;
-        
-        if($users2['code']=='superadmin' || $users2['code']='high level'){
-            if($request->hospital!=NULL){  
+
+        if($users2['code']=='superadmin' || $users2['code']=='high level'){
+            if($request->hospital!=NULL){
                         $branchName=HospitalBranchManagement::where('id', '=', $request->hospital)->get()->toArray();
 
             } else if($request->state!=NULL){
                         $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')
-                        ->where('branch_state','=', $request->state)->get()->toArray();                   
+                        ->where('branch_state','=', $request->state)->get()->toArray();
             }else{
                 $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->get()->toArray();
             }
 
-        }else{ 
+        }else{
             $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->where('id',$request->branch_id)->get()->toArray();
         }
-        
+
         $totalBranch=count($branchName);
 
         foreach($branchName as $v =>$val){
@@ -2794,7 +2794,7 @@ class ReportController extends Controller
             ->join('patient_registration as p', function($join) {
                 $join->on('jsf.patient_id', '=', 'p.id');
             })
-            ->whereYear('jsf.updated_at', '=', $request->year)     
+            ->whereYear('jsf.updated_at', '=', $request->year)
             ->whereMonth('jsf.updated_at', '=', $m)
             ->where('jsf.status', '=', '1')
             ->where('p.branch_id',$val['id'])
@@ -2825,13 +2825,13 @@ class ReportController extends Controller
             ->join('patient_registration as p', function($join) {
                 $join->on('p.id', '=', 'spn.patient_mrn_id');
             })
-            ->whereYear('spn.updated_at', '=', $request->year)     
+            ->whereYear('spn.updated_at', '=', $request->year)
             ->whereMonth('spn.updated_at', '=', $m)
             ->where('gs.section_value','=','Employed')
             ->where('spn.status', '=', '1')
             ->where('p.branch_id',$val['id'])
             ->GroupBy('spn.patient_mrn_id');
-            
+
 
             if($request->state!=NULL){
                 $b1->where('p.state_id','=', $request->state);
@@ -2841,7 +2841,7 @@ class ReportController extends Controller
             $b2=$b1->get()->toArray();
             $b  = json_decode(json_encode($b2), true);
             $mainResult['group_name'][$val['hospital_branch_name']][$m]['b'] = count($b);
-          
+
             if($b!=Null && $a!=Null){
                 foreach($a as $k =>$y){
                     foreach($b as $v => $z){
@@ -2894,7 +2894,7 @@ class ReportController extends Controller
             // ->join('patient_registration as p', function($join) {
             //     $join->on('p.id', '=', 'spn.patient_mrn_id');
             // })
-            // ->whereYear('spn.updated_at', '=', $request->year)     
+            // ->whereYear('spn.updated_at', '=', $request->year)
             // ->whereMonth('spn.updated_at', '=', $m)
             // ->where('gs.section_value','!=','Employed')
             // ->where('spn.status', '=', '1')
@@ -2908,30 +2908,30 @@ class ReportController extends Controller
             // $d2=$d1->get()->toArray();
             // $d  = json_decode(json_encode($d2), true);
             // $mainResult['group_name'][$val['hospital_branch_name']][$m]['d'] = count($d);
-        
-            
+
+
         if((count($a)!=0 || count($b)!=0) && count($c)!=0){
             $kpi=(($mainResult['group_name'][$val['hospital_branch_name']][$m]['a']+$mainResult['group_name'][$val['hospital_branch_name']][$m]['b'])
             /$mainResult['group_name'][$val['hospital_branch_name']][$m]['c'])*(100);
             $mainResult['group_name'][$val['hospital_branch_name']][$m]['kpi'] = number_format($kpi,2);
             $averagekpi[$index]=number_format($kpi,2);
-            
-            
+
+
         }else{
             $mainResult['group_name'][$val['hospital_branch_name']][$m]['kpi'] = 0;
             $averagekpi[$index]=0;
         }
-    
+
         $averageResult['average'][$m] += $averagekpi[$index];
         $index++;
     }
         }
         for ($m=$fromMonth; $m<=$toMonth; $m++){
 
-               
+
             $averageResult['average'][$m]= number_format(($averageResult['average'][$m]/$totalBranch),2);
 
-            
+
         }
     }else{//IF  PDF
 
@@ -2940,7 +2940,7 @@ class ReportController extends Controller
             $month_array=[];
         if(!in_array($m, $month_array, true)){
             array_push($month_array, $m);
-               
+
             $averageResult['average'][$m]=0;
 
             }
@@ -2954,17 +2954,17 @@ class ReportController extends Controller
             $users2  = json_decode(json_encode($users), true);
         $index=0;
         if($users2['code']=='superadmin' || $users2['code']='high level'){
-            if($request->hospital!=NULL){  
+            if($request->hospital!=NULL){
                         $branchName=HospitalBranchManagement::where('id', '=', $request->hospital)->get()->toArray();
 
             } else if($request->state!=NULL){
                         $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')
-                        ->where('branch_state','=', $request->state)->get()->toArray();                   
+                        ->where('branch_state','=', $request->state)->get()->toArray();
             }else{
                 $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->get()->toArray();
             }
 
-        }else{ 
+        }else{
             $branchName=HospitalBranchManagement::where('hospital_branch_name', 'LIKE', '%mentari%')->where('id',$request->branch_id)->get()->toArray();
         }
 
@@ -2973,13 +2973,13 @@ class ReportController extends Controller
         foreach($branchName as $v =>$val){
 
         for ($m=$fromMonth; $m<=$toMonth; $m++){
-           
+
             $a1 = DB::table('job_start_form as jsf')
             ->select('jsf.id','jsf.patient_id')
             ->join('patient_registration as p', function($join) {
                 $join->on('jsf.patient_id', '=', 'p.id');
             })
-            ->whereYear('jsf.updated_at', '=', $request->year)     
+            ->whereYear('jsf.updated_at', '=', $request->year)
             ->whereMonth('jsf.updated_at', '=', $m)
             ->where('jsf.status', '=', '1')
             ->where('p.branch_id',$val['id'])
@@ -3003,7 +3003,7 @@ class ReportController extends Controller
             ->join('patient_registration as p', function($join) {
                 $join->on('p.id', '=', 'spn.patient_mrn_id');
             })
-            ->whereYear('spn.updated_at', '=', $request->year)     
+            ->whereYear('spn.updated_at', '=', $request->year)
             ->whereMonth('spn.updated_at', '=', $m)
             ->where('gs.section_value','=','Employed')
             ->where('spn.status', '=', '1')
@@ -3022,7 +3022,7 @@ class ReportController extends Controller
             if($b!=Null && $a!=Null){
                 foreach($a as $k =>$y){
                     foreach($b as $v => $z){
-                        
+
                         if($y['patient_id']==$z['patient_mrn_id']){
                             $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['b'] -= 1;
                         }
@@ -3071,7 +3071,7 @@ class ReportController extends Controller
             // ->join('patient_registration as p', function($join) {
             //     $join->on('p.id', '=', 'spn.patient_mrn_id');
             // })
-            // ->whereYear('spn.updated_at', '=', $request->year)     
+            // ->whereYear('spn.updated_at', '=', $request->year)
             // ->whereMonth('spn.updated_at', '=', $m)
             // ->where('gs.section_value','!=','Employed')
             // ->where('spn.status', '=', '1')
@@ -3085,35 +3085,35 @@ class ReportController extends Controller
             // $d2=$d1->get()->toArray();
             // $d  = json_decode(json_encode($d2), true);
             // $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['d'] = count($d);
-        
-            
+
+
         if((count($a)!=0 || count($b)!=0) && count($c)!=0){
             $kpi=(($mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['a']+$mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['b'])
             /$mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['c'])*(100);
             $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['kpi'] = number_format($kpi,2);
             $averagekpi[$index]=number_format($kpi,2);
-            
-            
+
+
         }else{
             $mainResult[0]['group_name'][$val['hospital_branch_name']][$m]['kpi'] = 0;
             $averagekpi[$index]=0;
         }
-    
+
         $averageResult['average'][$m] += $averagekpi[$index];
         $index++;
     }
         }
         for ($m=$fromMonth; $m<=$toMonth; $m++){
 
-               
+
             $averageResult['average'][$m]= number_format(($averageResult['average'][$m]/$totalBranch),2);
 
-            
+
         }
 
     }
 
-       
+
         if ($mainResult) {
             $headers = [
                 'Content-Type' => 'application/vnd.ms-excel',
@@ -3133,7 +3133,7 @@ class ReportController extends Controller
             } else {
 
                 return response()->json(["message" => "KPI Report", 'result' => $mainResult, 'averageResult'=>$averageResult, 'year'=>$year , "code" => 200]);
-            
+
             }
 
         }return response()->json(["message" => "KPI Report", 'result' => [], 'filepath' => null, "code" => 200]);
