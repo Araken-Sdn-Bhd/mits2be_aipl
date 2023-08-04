@@ -79,7 +79,7 @@ class AttemptTestController extends Controller
                         $testResult = $this->prepareDASSResult($vv, $request);
                         $level = $this->getDassLevel($testResult);
                     }
-                    
+
                     $sri = 0;
                     $sri = $request->shharp_reg_id;
                     if($sri != 0){
@@ -155,10 +155,10 @@ class AttemptTestController extends Controller
         if($testName=='cbi'){
         foreach ($resultSet as $k => $v) {
             if($i<7){
-            $result += $values[$v];
+            $result += $revValues[$v];
             }
             else{
-            $result += $revValues[$v];
+            $result += $values[$v];
             }
 
             $i++;
@@ -398,11 +398,11 @@ class AttemptTestController extends Controller
                 }
                 return $value;
             }
-       
+
     }
 
     public function preparePHQ9Level($value, $level)
-    {   
+    {
         if ($value >= 0 && $value <= 4) {
             return 'Minimal Depression';
         } else if ($value >= 5 && $value <= 9) {
@@ -424,7 +424,7 @@ class AttemptTestController extends Controller
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
-        $list1 = TestResult::select(DB::raw('SUM(result) AS result'), 'test_name','patient_id',DB::raw('group_concat(test_section_name) as test_section_name'),DB::raw('group_concat(result) as results'), 
+        $list1 = TestResult::select(DB::raw('SUM(result) AS result'), 'test_name','patient_id',DB::raw('group_concat(test_section_name) as test_section_name'),DB::raw('group_concat(result) as results'),
         DB::raw("DATE_FORMAT(created_at, '%d-%m-%Y') as date")
         ,DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') as datetime"))
             ->where('patient_id', $request->patient_id)->groupBy('created_at', 'test_name','patient_id')->get();
@@ -447,7 +447,7 @@ class AttemptTestController extends Controller
                     }elseif($val['test_name'] == 'phq9'){
                     $val['levels'] = $this->preparePHQ9Level($val['results'],'phq9');
                     }
-                    
+
                     elseif($val['test_name'] == 'dass'){
                     $brk = explode(',',$val['results']);
                     $brk_txt = explode(',',$val['test_section_name']);
@@ -465,7 +465,7 @@ class AttemptTestController extends Controller
                         }
                 $list[] = $val;
             }
-            
+
             foreach ($sr as $key => $val) {
                 $list[] = $val;
             }
@@ -488,11 +488,11 @@ class AttemptTestController extends Controller
             ->where('attempt_test.patient_mrn_id', $request->patient_id)->where('attempt_test.created_at', $request->datetime)
             ->where('attempt_test.test_name', $request->type)
             ->get();
-            
+
             $list=[];
             foreach ($list1 as $key => $val) {
                 $tmp1 =(array) $val;
-                for ($iii=0; $iii <6; $iii++) { 
+                for ($iii=0; $iii <6; $iii++) {
                     $tmp1["Answer$iii"] = array('value' => ($val->answer_id==$iii)? 'true':'false','text'=> $tmp1["Answer$iii"]);
                 }
                 $list[] =  $tmp1;
@@ -510,7 +510,7 @@ class AttemptTestController extends Controller
             $list=[];
             foreach ($list1 as $key => $val) {
                 $tmp1 =(array) $val;
-                for ($iii=0; $iii <6; $iii++) { 
+                for ($iii=0; $iii <6; $iii++) {
                     $tmp1["Answer$iii"] = array('value' => ($val->answer_id==$iii)? 'true':'false','text'=> $tmp1["Answer$iii"]);
                 }
                 $list[] =  $tmp1;
@@ -637,7 +637,7 @@ class AttemptTestController extends Controller
                                     ->where('shharp_reg_id', $sri)
                                     ->get();
         }
-        
+
         return response()->json(["message" => "SIS answers.", 'attemptlist' => $attempt_test, "code" => 200]);
     }
 }
