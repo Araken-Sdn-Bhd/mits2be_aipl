@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\AttemptTest;
 use App\Models\TestResult;
 use App\Models\TestResultSuicidalRisk;
+use App\Models\PatientCbiOnlineTest;
+use App\Models\PatientRegistration;
 use Validator;
 use Exception;
 use Illuminate\Support\Facades\DB;
@@ -639,5 +641,119 @@ class AttemptTestController extends Controller
         }
 
         return response()->json(["message" => "SIS answers.", 'attemptlist' => $attempt_test, "code" => 200]);
+    }
+
+    //Test Result
+    public function fetchOnlineTest(Request $request)
+    {
+        $otest=DB::table('attempt_test')
+            ->select('test_name')
+            ->get();
+
+            return response()->json(["message" => "List of Online Tests.", 'onlinetest' => $otest, "code" => 200]);
+    }
+    //Test Result
+
+    //View Answered Result
+    public function fetchAnsweredTest(Request $request)
+    {
+        $demo = [];
+        if ($request->branch_id != 0) {
+            $demo['branch_id'] = $request->branch_id;
+        }
+        if ($request->test_name != "0") {
+            $demo['attempt_test.test_name'] = $request->test_name;
+        }
+
+        $searchWord = $request->keyword;
+
+            $sql = AttemptTest::select('attempt_test.id','attempt_test.test_name','attempt_test.question_id',
+            'attempt_test.answer_id','attempt_test.created_at','attempt_test.user_ip_address','patient_registration.id as pid')
+            ->join('patient_registration', 'patient_registration.id', '=', 'attempt_test.patient_mrn_id');
+
+                if ($demo)
+                    $sql->where($demo);
+
+                $sql = $sql->where(function ($query) use ($searchWord) {
+                    $query->where('patient_mrn', 'LIKE', '%' . $searchWord . '%')
+                        ->orWhere('name_asin_nric', 'LIKE', '%' . $searchWord . '%')
+                        ->orWhere('passport_no', 'LIKE', '%' . $searchWord . '%')
+                        ->orWhere('nric_no', 'LIKE', '%' . $searchWord . '%')
+                        ->orWhere('services_type', '=', $searchWord)
+                        ->orWhereRaw("REPLACE(nric_no, '-', '') LIKE ?", ["%$searchWord%"]);
+                        });
+            $test = $sql->Groupby('attempt_test.created_at')->get()->toArray();
+
+        $count=0;
+        $result=[];
+        if($test!=NULL && $test!=0){
+            foreach($test as $t =>$tval){
+                $p=PatientRegistration::select('name_asin_nric')->where('id',$tval['pid'])->first();
+                $at=AttemptTest::select('test_name','created_at')->where('user_ip_address',$tval['user_ip_address'])->first();
+                $atr1=TestResult::select('result')
+                ->where('ip_address',$tval['user_ip_address'])
+                ->where('test_section_name','Depression')
+                ->first();
+                $atr2=TestResult::select('result')
+                ->where('ip_address',$tval['user_ip_address'])
+                ->where('test_section_name','Anxiety')
+                ->first();
+                $atr3=TestResult::select('result')
+                ->where('ip_address',$tval['user_ip_address'])
+                ->where('test_section_name','Stress')
+                ->first();
+
+                $result[$count]['NAME']=$p['name_asin_nric'];
+                $result[$count]['TEST_NAME']=$at['test_name'];
+                $result[$count]['DEPRESSION']=$atr1['result'];
+                $result[$count]['ANXIETY']=$atr2['result'];
+                $result[$count]['STRESS']=$atr3['result'];
+                $result[$count]['DATE']=date("Y-m-d h:i:s", strtotime($at['created_at']));
+                $result[$count]['id']=$tval['pid'];
+                $result[$count]['ip']=$tval['user_ip_address'];
+        $count++;
+            }
+        }
+        return response()->json(["message" => "List of Patient Tests Result.", 'resulttest' => $result, "code" => 200]);
+
+    }
+    //View Answered Result
+//$request->date nak kena tukar format date from page dass (list online test)
+    public function fetchDass (Request $request){
+        $dass_que=AttemptTest::select('Question','question_ml','attempt_test.answer_id')
+        ->join('patient_cbi_onlinetest','attempt_test.question_id','=','patient_cbi_onlinetest.question_order')
+        ->where('patient_cbi_onlinetest.Type','=', 'DASS')
+        ->where('attempt_test.patient_mrn_id',$request->id)
+        ->where('attempt_test.user_ip_address',$request->ip)
+        ->where('attempt_test.created_at',$request->date)
+        ->where('test_name','dass')
+        ->get()->toArray();
+
+        $totalDepression=TestResult::select('result')
+        ->where('test_name','dass')
+        ->where('test_section_name','Depression')
+        ->where('patient_id',$request->id)
+        ->where('ip_address',$request->ip)
+        ->where('created_at',$request->date)
+        ->first();
+
+        $totalAnxiety=TestResult::select('result')
+        ->where('test_name','dass')
+        ->where('test_section_name','Anxiety')
+        ->where('patient_id',$request->id)
+        ->where('ip_address',$request->ip)
+        ->where('created_at',$request->date)
+        ->first();
+
+        $totalStress=TestResult::select('result')
+        ->where('test_name','dass')
+        ->where('test_section_name','Stress')
+        ->where('patient_id',$request->id)
+        ->where('ip_address',$request->ip)
+        ->where('created_at',$request->date)
+        ->first();
+
+
+         return response()->json(["message" => "Online Test Result.", 'totalDepression'=>$totalDepression,'totalAnxiety'=>$totalAnxiety,'totalStress'=> $totalStress,'result' => $dass_que, "code" => 200]);
     }
 }
