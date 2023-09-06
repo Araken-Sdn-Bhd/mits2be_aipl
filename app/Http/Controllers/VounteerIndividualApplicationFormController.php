@@ -1892,63 +1892,123 @@ class VounteerIndividualApplicationFormController extends Controller
         ->where('staff_management.email', '=', $request->email)
         ->first();
 
-        // if($role->code == 'superadmin') {
-        //     $record=DB::table('von_org_representative_background')
-        //     ->where('von_org_representative_background.status','1');
-        // }
-        // else {
-        //     $record=DB::table('von_org_representative_background')
-        //     ->where('von_org_representative_background.branch_id',$request->branch_id)
-        //     ->where('von_org_representative_background.status','1');
-        // }
+    //     if($role->code == 'superadmin'){
+    //         $record= DB::table('von_org_representative_background')
+    //     ->select('von_org_representative_background.*','von_appointment.area_of_involvement as aoi')
+
+    //     ->leftJoin('von_appointment', 'von_org_representative_background.id', '=', 'von_appointment.parent_section_id')
+    //     ->where(function ($query) {
+    //         $query->orWhere('von_appointment.status','1')
+    //         ->orWhere('von_org_representative_background.status','1');
+    //     });
+    //  }else{
+
+    //     $record= DB::table('von_org_representative_background')
+    //     ->select('von_org_representative_background.*','von_appointment.area_of_involvement as aoi')
+
+    //     ->leftJoin('von_appointment', 'von_org_representative_background.id', '=', 'von_appointment.parent_section_id')
+    //     ->where('von_org_representative_background.branch_id',$request->branch_id)
+    //     ->where(function ($query) {
+    //         $query->orWhere('von_appointment.status','1')
+    //         ->orWhere('von_org_representative_background.status','1');
+    //     });
+    // }
 
 
-        if($role->code == 'superadmin'){
-            $record= DB::table('von_appointment')
-        ->select('von_appointment.*','von_appointment.area_of_involvement as aoi','staff_management.name as dr_name','von_org_representative_background.*')
+    if($role->code == 'superadmin'){
+        $record= DB::table('von_org_representative_background as vb')
+    ->select('vb.id','vb.name', 'vb.section', 'vb.phone_number','vb.email','vb.area_of_involvement',
+     'v.mentari_services as v_mentari_services', 'op.mentari_services as o_mentari_services',
+     'nc.mentari_services as n_mentari_services', 'vo.org_name')
 
-        ->leftJoin('von_org_representative_background', 'von_org_representative_background.id', '=', 'von_appointment.parent_section_id')
-        ->leftJoin('staff_management','von_appointment.interviewer_id','=','staff_management.id')
-        ->where(function ($query) {
-            $query->orWhere('von_appointment.status','1')
-            ->orWhere('von_org_representative_background.status','1');
-        });
-     }else{
+    ->leftJoin('von_org_background as vo', 'vb.org_background_id', '=', 'vo.id')
+    ->leftJoin('volunteerism as v', 'v.parent_section_id', '=', 'vb.id')
+    ->leftJoin('out_reach_projects as op', 'op.parent_section_id', '=', 'vb.id')
+    ->leftJoin('networking_contribution as nc', 'nc.parent_section', '=', 'vb.id')
+    ->where('vb.status','1');
+ }else{
 
-        $record= DB::table('von_appointment')
-        ->select('von_appointment.*','von_appointment.area_of_involvement as aoi','staff_management.name as dr_name','von_org_representative_background.*')
+    $record= DB::table('von_org_representative_background as vb')
+    ->select('vb.id','vb.name', 'vb.section', 'vb.phone_number','vb.email','vb.area_of_involvement',
+     'v.mentari_services as v_mentari_services', 'op.mentari_services as o_mentari_services',
+     'nc.mentari_services as n_mentari_services', 'vo.org_name')
+    ->leftJoin('von_org_background as vo', 'vb.org_background_id', '=', 'vo.id')
+    ->leftJoin('volunteerism as v', 'v.parent_section_id', '=', 'vb.id')
+    ->leftJoin('out_reach_projects as op', 'op.parent_section_id', '=', 'vb.id')
+    ->leftJoin('networking_contribution as nc', 'nc.parent_section', '=', 'vb.id')
+    ->where('vb.branch_id',$request->branch_id)
+    ->where('vb.status','1');
 
-        ->leftJoin('von_org_representative_background', 'von_org_representative_background.id', '=', 'von_appointment.parent_section_id')
-        ->leftJoin('staff_management','von_appointment.interviewer_id','=','staff_management.id')
-        ->where('von_org_representative_background.branch_id',$request->branch_id)
-        ->where(function ($query) {
-            $query->orWhere('von_appointment.status','1')
-            ->orWhere('von_org_representative_background.status','1');
-        });
-    }
+}
 
      if($request->name != "" || $request->name != null) {
-        $record->where('von_appointment.name', 'like', '%'.$request->name.'%');
+        $record->where('vb.name', 'like', '%'.$request->name.'%');
 
      }
      if ($request->section != null || $request->section != ""){
-         $record->where('von_org_representative_background.section','=', $request->section);
-     }
-     if ($request->service != null || $request->service != ""){
-         $record->where('von_appointment.services_type','=', $request->service);
+         $record->where('vb.section','=', $request->section);
      }
      if ($request->area_of_involvement != null || $request->area_of_involvement != ""){
-        $record->where('von_org_representative_background.area_of_involvement','=', $request->area_of_involvement);
+        $record->where('vb.area_of_involvement','=', $request->area_of_involvement);
     }
 
 
-  $list = $record->get();
+  $list = $record->get()->toArray();
+
+  $list2  = json_decode(json_encode($list), true);
+
+  $result = [];
+  $count=0;
+  foreach ($list2 as $k =>$v) {
+    if ($request->service != null || $request->service != ""){
+// s
+
+       // if($request->service == $v['v_mentari_services'] || $request->service == $v['o_mentari_services'] || $request->service == $v['n_mentari_services']) {
+
+            if (str_contains($v['v_mentari_services'], $request->service)) {
+                $result[$count]['services_type']=$v['v_mentari_services'];
+
+            } else if (str_contains($v['o_mentari_services'], $request->service)) {
+
+                $result[$count]['services_type']=$v['o_mentari_services'];
+
+            } else if (str_contains($v['n_mentari_services'], $request->service)) {
+
+                $result[$count]['services_type']=$v['n_mentari_services'];
+            }else {
+                continue;
+            }
+        //}
+
+    }
+    if ($v['v_mentari_services'] !=null) {
+        $result[$count]['services_type']=$v['v_mentari_services'];
+    } else if ($v['o_mentari_services'] !=null) {
+        $result[$count]['services_type']=$v['o_mentari_services'];
+    } else if ($v['n_mentari_services'] !=null) {
+        $result[$count]['services_type']=$v['n_mentari_services'];
+    }
+
+    if ($v['org_name'] !=null) {
+        $result[$count]['name']= $v['org_name'];
+    } else {
+        $result[$count]['name']= $v['name'];
+    }
+
+    $result[$count]['id']=$v['id'];
+    $result[$count]['section']=$v['section'];
+    $result[$count]['area_of_involvement']=$v['area_of_involvement'];
+    $result[$count]['phone_number']=$v['phone_number'];
+    $result[$count]['email']=$v['email'];
+    $count++;
+  }
 
 
 
 
 
-     return response()->json(["message" => "Von List", "list" => $list, "code" => 200]);
+
+     return response()->json(["message" => "Von List", "list" => $result, "code" => 200]);
 
     }
 }
