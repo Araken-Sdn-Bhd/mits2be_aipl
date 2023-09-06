@@ -485,6 +485,9 @@ Route::group(['prefix' => 'patient'], function () {
     Route::post('/resultdetail', [AttemptTestController::class, 'resultdetail']);
     Route::post('/test-history-show', [AttemptTestController::class, 'testHistoryResultShow']);
     Route::post('/answered-si',[AttemptTestController::class, 'answeredSI']);
+    Route::get('/list-online-test', [AttemptTestController::class, 'fetchOnlineTest']);
+    Route::post('/answered-test', [AttemptTestController::class, 'fetchAnsweredTest']);
+    Route::post('/view-dass', [AttemptTestController::class, 'fetchDass']);
 });
 Route::group(['prefix' => 'patient-suicidal-risk-assessment'], function () {
     Route::post('/add', [PatientSuicidalRiskAssessmentController::class, 'store']);
