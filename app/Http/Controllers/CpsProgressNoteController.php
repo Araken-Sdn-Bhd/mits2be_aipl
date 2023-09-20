@@ -14,6 +14,7 @@ use App\Models\StaffManagement;
 use App\Models\Notifications;
 use App\Models\AppointmentRequest;
 use App\Models\HospitalBranchManagement;
+use App\Models\UserDiagnosis;
 use DateTime;
 use App\Models\TransactionLog;
 use DateTimeZone;
@@ -128,7 +129,15 @@ class CpsProgressNoteController extends Controller
                         'status' => "1",
                         'additional_diagnosis' => $additional_diagnosis,
                     ];
-
+                    $user_diagnosis = [
+                        'app_id' => $request->appId,
+                        'patient_id' =>  $request->patient_mrn_id,
+                        'diagnosis_id' =>  $request->diagnosis_type,
+                        'outcome_id' =>  $request->outcome,
+                        'category_services' =>  $request->service_category,
+                        'created_at' => date('Y-m-d H:i:s'),
+                    ];
+                    UserDiagnosis::create($user_diagnosis);
                     try {
                         CpsProgressNote::where(
                             ['id' => $request->id]
@@ -222,6 +231,20 @@ class CpsProgressNoteController extends Controller
                         'additional_code_id' => $request->additional_code_id,
                         'additional_subcode' => $additional_subcode,
                     ];
+                    $user_diagnosis = [
+                        'app_id' => $request->appId,
+                        'patient_id' =>  $request->patient_mrn_id,
+                        'diagnosis_id' =>  $request->diagnosis_type,
+                        'add_diagnosis_id' => $additional_diagnosis,
+                        'code_id' =>  $request->code_id,
+                        'sub_code_id' =>  $sub_code_id,
+                        'add_code_id'=> $request->additional_code_id,
+                        'add_sub_code_id' => $additional_subcode,
+                        'outcome_id' =>  $request->outcome,
+                        'category_services' =>  $request->service_category,
+                        'created_at' => date('Y-m-d H:i:s'),
+                    ];
+                    UserDiagnosis::create($user_diagnosis);
 
                     try {
                         CpsProgressNote::where(
@@ -407,7 +430,20 @@ class CpsProgressNoteController extends Controller
                         'additional_code_id' => $request->additional_code_id,
                         'additional_subcode' => $additional_subcode,
                     ];
-
+                    $user_diagnosis = [
+                        'app_id' => $request->appId,
+                        'patient_id' =>  $request->patient_mrn_id,
+                        'diagnosis_id' =>  $request->diagnosis_type,
+                        'add_diagnosis_id' => $additional_diagnosis,
+                        'code_id' =>  $request->code_id,
+                        'sub_code_id' =>  $sub_code_id,
+                        'add_code_id'=> $request->additional_code_id,
+                        'add_sub_code_id' => $additional_subcode,
+                        'outcome_id' =>  $request->outcome,
+                        'category_services' =>  $request->service_category,
+                        'created_at' => date('Y-m-d H:i:s'),
+                    ];
+                    UserDiagnosis::create($user_diagnosis);
                     try {
                         $HOD = CpsProgressNote::create($CpsProgress);
                     } catch (Exception $e) {

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\PatientCounsellorClerkingNotes;
 use DateTime;
 use DateTimeZone;
+use App\Models\UserDiagnosis;
 
 class PatientCounsellorClerkingNotesController extends Controller
 {
@@ -130,7 +131,16 @@ class PatientCounsellorClerkingNotesController extends Controller
                     'created_at' => $date->format('Y-m-d H:i:s'),
 
                 ];
-
+                $user_diagnosis = [
+                    'app_id' => $request->appId,
+                    'patient_id' =>  $request->patient_mrn_id,
+                    'diagnosis_id' =>  $request->diagnosis_id,
+                    'add_diagnosis_id' => $additional_diagnosis,
+                    'outcome_id' =>  $request->outcome_id,
+                    'category_services' =>  $request->category_services,
+                    'created_at' => date('Y-m-d H:i:s'),
+                ];
+                UserDiagnosis::create($user_diagnosis);
                 if($request->id) {
                     PatientCounsellorClerkingNotes::where(
                                 ['id' => $request->id]
@@ -175,7 +185,21 @@ class PatientCounsellorClerkingNotesController extends Controller
                     'created_at' => $date->format('Y-m-d H:i:s'),
                     'appointment_details_id' => $request->appId,
                 ];
-
+                
+                $user_diagnosis = [
+                    'app_id' => $request->appId,
+                    'patient_id' =>  $request->patient_mrn_id,
+                    'diagnosis_id' =>  $request->diagnosis_id,
+                    'add_diagnosis_id' => $additional_diagnosis,
+                    'code_id' =>  $request->code_id,
+                    'sub_code_id' =>  $sub_code_id,
+                    'add_code_id'=> $request->additional_code_id,
+                    'add_sub_code_id' => $additional_subcode,
+                    'outcome_id' =>  $request->outcome_id,
+                    'category_services' =>  $request->category_services,
+                    'created_at' => date('Y-m-d H:i:s'),
+                ];
+                UserDiagnosis::create($user_diagnosis);
                 if($request->id) {
                     PatientCounsellorClerkingNotes::where(
                                 ['id' => $request->id]

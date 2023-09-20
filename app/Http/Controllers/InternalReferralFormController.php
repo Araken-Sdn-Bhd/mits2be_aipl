@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\InternalReferralForm;
 use Validator;
+use App\Models\UserDiagnosis;
 
 class InternalReferralFormController extends Controller
 {
@@ -70,7 +71,20 @@ class InternalReferralFormController extends Controller
          if ($validator->fails()) {
              return response()->json(["message" => $validator->errors(), "code" => 422]);
          }
-
+         $user_diagnosis = [
+            'app_id' => $request->appId,
+            'patient_id' =>  $request->patient_mrn_id,
+            'diagnosis_id' =>  $request->diagnosis,
+            'add_diagnosis_id' => $additional_diagnosis,
+            'code_id' =>  $request->code_id,
+            'sub_code_id' =>  $sub_code_id,
+            'add_code_id'=> $request-> additional_code_id,
+            'add_sub_code_id' => $additional_sub_code_id,
+            'outcome_id' =>  $request->outcome,
+            'category_services' =>  $request->category_services,
+            'created_at' => date('Y-m-d H:i:s'),
+        ];
+        UserDiagnosis::create($user_diagnosis);
          InternalReferralForm::where('id',$request->pid)->update($internalform);
          return response()->json(["message" => "Internal Referral Form Created Successfully!", "code" => 200]);
         } else if ($request->status == "0"){

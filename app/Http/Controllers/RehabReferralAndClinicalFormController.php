@@ -7,7 +7,7 @@ use Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\RehabReferralAndClinicalForm;
-
+use App\Models\UserDiagnosis;
 class RehabReferralAndClinicalFormController extends Controller
 {
     public function store(Request $request)
@@ -177,6 +177,20 @@ class RehabReferralAndClinicalFormController extends Controller
             if ($validator->fails()) {
                 return response()->json(["message" => $validator->errors(), "code" => 422]);
             }
+            $user_diagnosis = [
+                'app_id' => $request->appId,
+                'patient_id' =>  $request->patient_mrn_id,
+                'diagnosis_id' =>  $request->diagnosis,
+                'add_diagnosis_id' => $additional_diagnosis,
+                'code_id' =>  $request->code_id,
+                'sub_code_id' =>  $sub_code_id,
+                'add_code_id'=> $request-> additional_code_id,
+                'add_sub_code_id' => $additional_sub_code_id,
+                'outcome_id' =>  $request->outcome,
+                'category_services' =>  $request->category_services,
+                'created_at' => date('Y-m-d H:i:s'),
+            ];
+            UserDiagnosis::create($user_diagnosis);
             if ($request->id) {
                 RehabReferralAndClinicalForm::where(['id' => $request->id])->update($rehabreferralandclinicalform);
                 return response()->json(["message" => "Successfully updated", "code" => 200]);

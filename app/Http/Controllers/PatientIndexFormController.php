@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\UserDiagnosis;
 use App\Models\Notifications;
 use Exception;
 use Validator;
@@ -220,7 +220,20 @@ class PatientIndexFormController extends Controller
                 $validatePatientIndex['sub_code_id'] = 'required';
                 $patientindexform['sub_code_id'] =  $sub_code_id;
             }
-
+            $user_diagnosis = [
+                'app_id' => $request->appId,
+                'patient_id' =>  $request->patient_mrn_id,
+                'diagnosis_id' =>  $request->diagnosis,
+                'add_diagnosis_id' => $additional_diagnosis,
+                'code_id' =>  $request->code_id,
+                'sub_code_id' =>  $sub_code_id,
+                'add_code_id'=> $request->additional_code_id,
+                'add_sub_code_id' => $additional_subcode,
+                'outcome_id' =>  $request->outcome,
+                'category_services' =>  $request->location_of_services,
+                'created_at' => date('Y-m-d H:i:s'),
+            ];
+            UserDiagnosis::create($user_diagnosis);
                 if($request->id) {
                     PatientIndexForm::where(
                                 ['id' => $request->id]

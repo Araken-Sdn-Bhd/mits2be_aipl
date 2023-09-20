@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\ListOfJobSearch;
 use App\Models\JobSearchList;
-
+use App\Models\UserDiagnosis;
 class ListOfJobSearchController extends Controller
 {
     public function store(Request $request)
@@ -70,7 +70,20 @@ class ListOfJobSearchController extends Controller
              if ($validator->fails()) {
                  return response()->json(["message" => $validator->errors(), "code" => 422]);
              }
-
+             $user_diagnosis = [
+                'app_id' => $request->appId,
+                'patient_id' =>  $request->patient_id,
+                'diagnosis_id' =>  $request->type_diagnosis_id,
+                'add_diagnosis_id' => str_replace('"',"",$request->add_type_of_diagnosis),
+                'code_id' =>  $request->code_id,
+                'sub_code_id' =>  str_replace('"',"",$request->sub_code_id),
+                'add_code_id'=> $request->add_code_id,
+                'add_sub_code_id' => str_replace('"',"",$request->add_sub_code_id),
+                'outcome_id' =>  $request->outcome,
+                'category_services' =>  $request->category_services,
+                'created_at' => date('Y-m-d H:i:s'),
+            ];
+            UserDiagnosis::create($user_diagnosis);
          $listofjobsearch=ListOfJobSearch::firstOrCreate($listofjobsearch);
          $listofjobsearchid=($listofjobsearch->id);
          if(!empty($request->job_listed)){

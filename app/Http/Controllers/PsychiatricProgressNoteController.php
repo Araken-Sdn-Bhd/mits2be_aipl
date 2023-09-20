@@ -7,6 +7,7 @@ use Exception;
 use Validator;
 use Illuminate\Support\Facades\DB;
 use App\Models\PsychiatricProgressNote;
+use App\Models\UserDiagnosis;
 use DateTime;
 use DateTimeZone;
 
@@ -121,7 +122,20 @@ class PsychiatricProgressNoteController extends Controller
                         $validatePsychiatricprogress['sub_code_id'] = 'required';
                         $counsellingprogess['sub_code_id'] =  $sub_code_id;
                     }
-
+                    $user_diagnosis = [
+                        'app_id' => $request->appId,
+                        'patient_id' =>  $request->patient_mrn_id,
+                        'diagnosis_id' =>  $request->type_diagnosis_id,
+                        'add_diagnosis_id' => $additional_diagnosis,
+                        'code_id' =>  $request->code_id,
+                        'sub_code_id' =>  $sub_code_id,
+                        'add_code_id'=> $request->additional_code_id,
+                        'add_sub_code_id' => $additional_subcode,
+                        'outcome_id' =>  $request->outcome_id,
+                        'category_services' =>  $request->category_services,
+                        'created_at' => date('Y-m-d H:i:s'),
+                    ];
+                    UserDiagnosis::create($user_diagnosis);
                     if($request->id) {
                         PsychiatricProgressNote::where(
                                     ['id' => $request->id]

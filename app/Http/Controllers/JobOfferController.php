@@ -27,6 +27,7 @@ use App\Models\JobStartFormList;
 use App\Models\Notifications;
 use App\Models\TestResult;
 use App\Models\TreatmentPlan;
+use App\Models\UserDiagnosis;
 use DateTime;
 use DateTimeZone;
 use Validator;
@@ -550,6 +551,21 @@ class JobOfferController extends Controller
             if ($validator->fails()) {
                 return response()->json(["message" => $validator->errors(), "code" => 422]);
             }
+
+            $user_diagnosis = [
+                'app_id' => $request->appId,
+                'patient_id' =>  $request->patient_id,
+                'diagnosis_id' =>  $request->type_of_diagnosis,
+                'add_diagnosis_id' => $additional_diagnosis,
+                'code_id' =>  $request->icd_9_code,
+                'sub_code_id' =>  $icd_9_subcode,
+                'add_code_id'=> $request->additional_code_id,
+                'add_sub_code_id' => $additional_sub_code_id,
+                'outcome_id' =>  $request->outcome,
+                'category_services' =>  $request->category_of_services,
+                'created_at' => date('Y-m-d H:i:s'),
+            ];
+            UserDiagnosis::create($user_diagnosis);
             if ($request->id) {
                 CPSReferralForm::where(['id' => $request->id])->update($cpsreferralform);
                 return response()->json(["message" => "Successfully updated", "code" => 200]);
@@ -638,6 +654,20 @@ class JobOfferController extends Controller
             'created_at' => date('Y-m-d H:i:s'),
             'appointment_details_id' => $request->appId,
         ];
+        $user_diagnosis = [
+            'app_id' => $request->appId,
+            'patient_id' =>  $request->patient_id,
+            'diagnosis_id' =>  $request->type_of_diagnosis,
+            'add_diagnosis_id' => $additional_diagnosis,
+            'code_id' =>  $request->icd_9_code,
+            'sub_code_id' =>  $icd_9_subcode,
+            'add_code_id'=> $request->additional_code_id,
+            'add_sub_code_id' => $additional_subcode,
+            'outcome_id' =>  $request->outcome,
+            'category_services' =>  $request->category_services,
+            'created_at' => date('Y-m-d H:i:s'),
+        ];
+        UserDiagnosis::create($user_diagnosis);
         if($request->id){
             LASERAssesmenForm::where(['id' => $request->id])->update($laserreferral);
             return response()->json(["message" => "Updated", "code" => 200]);
@@ -706,6 +736,25 @@ class JobOfferController extends Controller
                 'appointment_details_id' => $request->appId,
                 'status' => $request->status,
             ];
+
+            if($request->status=='1'){
+                $user_diagnosis = [
+                    'app_id' => $request->appId,
+                    'patient_id' =>  $request->patient_id,
+                    'diagnosis_id' =>  $request->diagnosis_type,
+                    'add_diagnosis_id' => str_replace('"',"",$request->add_diagnosis_type),
+                    'code_id' =>  $request->code_id,
+                    'sub_code_id' =>  str_replace('"',"",$request->sub_code_id),
+                    'add_code_id'=> $request->add_code_id,
+                    'add_sub_code_id' => str_replace('"',"",$request->add_sub_code_id),
+                    'outcome_id' =>  $request->outcome,
+                    'category_services' =>  $request->category_of_services,
+                    'created_at' => date('Y-m-d H:i:s'),
+                ];
+                UserDiagnosis::create($user_diagnosis);
+            }
+
+
 
             if($request->id){
                 PatientCarePaln::where(['id' => $request->id])->update($patientcarepln);
@@ -1027,6 +1076,21 @@ class JobOfferController extends Controller
                 'appointment_details_id' => $request->appId,
                 'status' => "1",
             ];
+
+            $user_diagnosis = [
+                'app_id' => $request->appId,
+                'patient_id' =>  $request->patient_id,
+                'diagnosis_id' =>  $request->diagnosis_type,
+                'add_diagnosis_id' => str_replace('"',"",$request->add_diagnosis_type),
+                'code_id' =>  $request->code_id,
+                'sub_code_id' =>  str_replace('"',"",$request->sub_code_id),
+                'add_code_id'=> $request->add_code_id,
+                'add_sub_code_id' => str_replace('"',"",$request->add_sub_code_id),
+                'outcome_id' =>  $request->outcome,
+                'category_services' =>  $request->category_of_services,
+                'created_at' => date('Y-m-d H:i:s'),
+            ];
+            UserDiagnosis::create($user_diagnosis);
             if($request->id) {
                 JobStartForm::where(['id' => $request->id])->update($jobstart);
                 return response()->json(["message" => "Updated", "code" => 200]);
@@ -1116,6 +1180,21 @@ class JobOfferController extends Controller
                 'status' => "1",
 
             ];
+
+            $user_diagnosis = [
+                'app_id' => $request->appId,
+                'patient_id' =>  $request->patient_id,
+                'diagnosis_id' =>  $request->type_of_diagnosis,
+                'add_diagnosis_id' => str_replace('"',"",$request->add_type_of_diagnosis),
+                'code_id' =>  $request->icd_9_code,
+                'sub_code_id' =>  str_replace('"',"",$request->icd_9_subcode),
+                'add_code_id'=> $request->add_code_id,
+                'add_sub_code_id' => str_replace('"',"",$request->add_sub_code_id),
+                'outcome_id' =>  $request->outcome,
+                'category_services' =>  $request->category_of_services,
+                'created_at' => date('Y-m-d H:i:s'),
+            ];
+            UserDiagnosis::create($user_diagnosis);
             if($request->id) {
                 JobEndReport::where(['id' => $request->id])->update($jobend);
                 return response()->json(["message" => "Updated", "code" => 200]);
@@ -1232,6 +1311,21 @@ class JobOfferController extends Controller
                 'status' => "1",
                 'appointment_details_id' => $request->appId,
             ];
+            $user_diagnosis = [
+                'app_id' => $request->appId,
+                'patient_id' =>  $request->patient_id,
+                'diagnosis_id' =>  $request->diagnosis_type,
+                'add_diagnosis_id' => str_replace('"',"",$request->add_diagnosis_type),
+                'code_id' =>  $request->code_id,
+                'sub_code_id' =>  str_replace('"',"",$request->sub_code_id),
+                'add_code_id'=> $request->add_code_id,
+                'add_sub_code_id' => str_replace('"',"",$request->add_sub_code_id),
+                'outcome_id' =>  $request->outcome,
+                'category_services' =>  $request->category_of_services,
+                'created_at' => date('Y-m-d H:i:s'),
+            ];
+            UserDiagnosis::create($user_diagnosis);
+            
             if($request->id){
                 JobTransitionReport::where(['id' => $request->id])->update($jobtransition);
                 return response()->json(["message" => "Updated", "code" => 200]);

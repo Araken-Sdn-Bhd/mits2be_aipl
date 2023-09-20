@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Occt_Referral_Form;
 use Validator;
+use App\Models\UserDiagnosis;
 
 class OcctReferralFormController extends Controller
 {
@@ -113,6 +114,20 @@ class OcctReferralFormController extends Controller
         'add_code_id' => $request->additional_code_id, //newly added
         'appointment_details_id' => $request->appId,
         ];
+        $user_diagnosis = [
+            'app_id' => $request->appId,
+            'patient_id' =>  $request->patient_mrn_id,
+            'diagnosis_id' =>  $request->diagnosis_id,
+            'add_diagnosis_id' => $additional_diagnosis,
+            'code_id' =>  $request->code_id,
+            'sub_code_id' =>  $sub_code_id,
+            'add_code_id'=> $request-> additional_code_id,
+            'add_sub_code_id' => $additional_sub_code_id,
+            'outcome_id' =>  $request->outcome,
+            'category_services' =>  $request->category_services,
+            'created_at' => date('Y-m-d H:i:s'),
+        ];
+        UserDiagnosis::create($user_diagnosis);
         if($request->id){
             Occt_Referral_Form::where(['id' => $request->id])->update($occtform);
             return response()->json(["message" => "Successfully updated", "code" => 200]);

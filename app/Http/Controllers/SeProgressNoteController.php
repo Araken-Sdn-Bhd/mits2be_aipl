@@ -12,6 +12,7 @@ use App\Models\PatientRegistration;
 use App\Models\StaffManagement;
 use App\Models\Notifications;
 use App\Models\AppointmentRequest;
+use App\Models\UserDiagnosis;
 use App\Models\HospitalBranchManagement;
 use DateTime;
 use App\Models\TransactionLog;
@@ -84,7 +85,16 @@ class SeProgressNoteController extends Controller
                         'appointment_details_id' => $request->appId,
                         'additional_diagnosis' => $additional_diagnosis,
                     ];
-
+                    $user_diagnosis = [
+                        'app_id' => $request->appId,
+                        'patient_id' =>  $request->patient_mrn_id,
+                        'diagnosis_id' =>  $request->diagnosis_type,
+                        'add_diagnosis_id' => $additional_diagnosis,
+                        'outcome_id' =>  $request->outcome,
+                        'category_services' =>  $request->service_category,
+                        'created_at' => date('Y-m-d H:i:s'),
+                    ];
+                    UserDiagnosis::create($user_diagnosis);
                     try {
                         $HOD = SeProgressNote::where(
                             ['id' => $request->id]
@@ -131,7 +141,20 @@ class SeProgressNoteController extends Controller
                         'additional_code_id' => $request->additional_code_id,
                         'additional_subcode' => $additional_subcode,
                     ];
-
+                    $user_diagnosis = [
+                        'app_id' => $request->appId,
+                        'patient_id' =>  $request->patient_mrn_id,
+                        'diagnosis_id' =>  $request->diagnosis_type,
+                        'add_diagnosis_id' => $additional_diagnosis,
+                        'code_id' =>  $request->code_id,
+                        'sub_code_id' =>  $sub_code_id,
+                        'add_code_id'=> $request->additional_code_id,
+                        'add_sub_code_id' => $additional_subcode,
+                        'outcome_id' =>  $request->outcome,
+                        'category_services' =>  $request->service_category,
+                        'created_at' => date('Y-m-d H:i:s'),
+                    ];
+                    UserDiagnosis::create($user_diagnosis);
                     try {
                         $HOD = SeProgressNote::where(
                             ['id' => $request->id]
@@ -218,7 +241,16 @@ class SeProgressNoteController extends Controller
                         'status' => "1",
                         'appointment_details_id' => $request->appId,
                     ];
-
+                    $user_diagnosis = [
+                        'app_id' => $request->appId,
+                        'patient_id' =>  $request->patient_mrn_id,
+                        'diagnosis_id' =>  $request->diagnosis_type,
+                        'add_diagnosis_id' => $additional_diagnosis,
+                        'outcome_id' =>  $request->outcome,
+                        'category_services' =>  $request->service_category,
+                        'created_at' => date('Y-m-d H:i:s'),
+                    ];
+                    UserDiagnosis::create($user_diagnosis);
                     try {
                         $HOD = SeProgressNote::create($seprogressnote);
                     } catch (Exception $e) {
@@ -263,7 +295,20 @@ class SeProgressNoteController extends Controller
                         'additional_code_id' => $request->additional_code_id,
                         'additional_subcode' => $additional_subcode,
                     ];
-
+                    $user_diagnosis = [
+                        'app_id' => $request->appId,
+                        'patient_id' =>  $request->patient_mrn_id,
+                        'diagnosis_id' =>  $request->diagnosis_type,
+                        'add_diagnosis_id' => $additional_diagnosis,
+                        'code_id' =>  $request->code_id,
+                        'sub_code_id' =>  $sub_code_id,
+                        'add_code_id'=> $request->additional_code_id,
+                        'add_sub_code_id' => $additional_subcode,
+                        'outcome_id' =>  $request->outcome,
+                        'category_services' =>  $request->service_category,
+                        'created_at' => date('Y-m-d H:i:s'),
+                    ];
+                    UserDiagnosis::create($user_diagnosis);
                     try {
                         $HOD = SeProgressNote::create($SeProgress);
                     } catch (Exception $e) {

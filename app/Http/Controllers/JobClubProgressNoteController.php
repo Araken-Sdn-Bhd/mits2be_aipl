@@ -7,7 +7,7 @@ use Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\JobClubProgressNote;
-
+use App\Models\UserDiagnosis;
 class JobClubProgressNoteController extends Controller
 {
     public function store(Request $request)
@@ -99,7 +99,21 @@ class JobClubProgressNoteController extends Controller
                         'status' => "1",
                         'appointment_details_id' => $request->appId,
                     ];
-
+                    $user_diagnosis = [
+                        'app_id' => $request->appId,
+                        'patient_id' =>  $request->patient_mrn_id,
+                        'diagnosis_id' =>  $request->diagnosis_type,
+                        'add_diagnosis_id' => str_replace('"',"",$request->add_diagnosis_type),
+                        'code_id' =>  $request->code_id,
+                        'sub_code_id' =>  str_replace('"',"",$request->sub_code_id),
+                        'add_code_id'=> $request->add_code_id,
+                        'add_sub_code_id' => str_replace('"',"",$request->add_sub_code_id),
+                        'outcome_id' =>  $request->outcome,
+                        'category_services' =>  $request->service_category,
+                        'created_at' => date('Y-m-d H:i:s'),
+                    ];
+                    UserDiagnosis::create($user_diagnosis);
+                    
                     try {
                         JobClubProgressNote::where(
                             ['id' => $request->id]
@@ -176,6 +190,16 @@ class JobClubProgressNoteController extends Controller
                         'status' => "1",
                         'appointment_details_id' => $request->appId,
                     ];
+                    $user_diagnosis = [
+                        'app_id' => $request->appId,
+                        'patient_id' =>  $request->patient_mrn_id,
+                        'diagnosis_id' =>  $request->diagnosis_type,
+                        'add_diagnosis_id' => str_replace('"',"",$request->add_diagnosis_type),
+                        'outcome_id' =>  $request->outcome,
+                        'category_services' =>  $request->service_category,
+                        'created_at' => date('Y-m-d H:i:s'),
+                    ];
+                    UserDiagnosis::create($user_diagnosis);
                     try {
                         $HOD = JobClubProgressNote::firstOrCreate($jobclubprogressnote);
                     } catch (Exception $e) {
@@ -217,7 +241,20 @@ class JobClubProgressNoteController extends Controller
                         'status' => "1",
                         'appointment_details_id' => $request->appId,
                     ];
-
+                    $user_diagnosis = [
+                        'app_id' => $request->appId,
+                        'patient_id' =>  $request->patient_mrn_id,
+                        'diagnosis_id' =>  $request->diagnosis_type,
+                        'add_diagnosis_id' => str_replace('"',"",$request->add_diagnosis_type),
+                        'code_id' =>  $request->code_id,
+                        'sub_code_id' =>  str_replace('"',"",$request->sub_code_id),
+                        'add_code_id'=> $request->add_code_id,
+                        'add_sub_code_id' => str_replace('"',"",$request->add_sub_code_id),
+                        'outcome_id' =>  $request->outcome,
+                        'category_services' =>  $request->service_category,
+                        'created_at' => date('Y-m-d H:i:s'),
+                    ];
+                    UserDiagnosis::create($user_diagnosis);
                     try {
                         $HOD = JobClubProgressNote::firstOrCreate($JobClubProgress);
                     } catch (Exception $e) {

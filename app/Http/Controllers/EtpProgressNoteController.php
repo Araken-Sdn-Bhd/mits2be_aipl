@@ -7,7 +7,7 @@ use Validator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\EtpProgressNote;
-
+use App\Models\UserDiagnosis;
 class EtpProgressNoteController extends Controller
 {
     public function store(Request $request)
@@ -142,7 +142,15 @@ class EtpProgressNoteController extends Controller
                         'appointment_details_id' => $request->appId,
                         'additional_diagnosis' => $additional_diagnosis,
                     ];
-
+                    $user_diagnosis = [
+                        'app_id' => $request->appId,
+                        'patient_id' =>  $request->patient_mrn_id,
+                        'diagnosis_id' =>  $request->diagnosis_type,
+                        'outcome_id' =>  $request->outcome,
+                        'category_services' =>  $request->service_category,
+                        'created_at' => date('Y-m-d H:i:s'),
+                    ];
+                    UserDiagnosis::create($user_diagnosis);
                     if($request->id) {
                         EtpProgressNote::where(
                             ['id' => $request->id]
@@ -187,7 +195,20 @@ class EtpProgressNoteController extends Controller
                         'additional_code_id' => $request->additional_code_id,
                         'additional_subcode' => $additional_subcode,
                     ];
-
+                    $user_diagnosis = [
+                        'app_id' => $request->appId,
+                        'patient_id' =>  $request->patient_mrn_id,
+                        'diagnosis_id' =>  $request->diagnosis_type,
+                        'add_diagnosis_id' => $additional_diagnosis,
+                        'code_id' =>  $request->code_id,
+                        'sub_code_id' =>  $sub_code_id,
+                        'add_code_id'=> $request->additional_code_id,
+                        'add_sub_code_id' => $additional_subcode,
+                        'outcome_id' =>  $request->outcome,
+                        'category_services' =>  $request->service_category,
+                        'created_at' => date('Y-m-d H:i:s'),
+                    ];
+                    UserDiagnosis::create($user_diagnosis);
                     if($request->id) {
                         EtpProgressNote::where(
                             ['id' => $request->id]

@@ -2129,36 +2129,26 @@ class ReportController extends Controller
 
     public function getGeneralReport(Request $request)
     {
+        $user = DB::table('staff_management')
+        ->select('roles.code')
+        ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+        ->where('staff_management.email', '=', $request->email)
+        ->first();
+
         $month = ['January' => 1, 'February' => 2, 'March' => 3, 'April' => 4, 'May' => 5, 'June' => 6, 'July' => 7,
         'August' => 8, 'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12];
         $Month=$month[$request->month];
 
-        $appointments = PatientAppointmentDetails::whereYear('booking_date', $request->year)
-        ->whereMonth('booking_date', $Month)
-        ->where('appointment_status','!=',0);
-        if ($request->type_visit != 0)
-            $ssh = $appointments->where('type_visit', $request->type_visit);
-        if ($request->patient_category != 0)
-            $ssh =  $appointments->where('patient_category', $request->patient_category);
-        if ($request->appointment_type != 0)
-            $ssh = $appointments->where('appointment_type', $request->appointment_type);
-
-        $ssh = $appointments->get()->toArray();
-
         $demo = [];
         $age=[];
-        $result = [];
-        $cd_array=[];
+        if($user->code!='superadmin'){
+            $demo['pr.branch_id'] = $request->branch_id;
+        }
         if ($request->name) {
-            $demo['name_asin_nric'] = $request->name;
+            $demo['pr.name_asin_nric'] = $request->name;
         }
         if ($request->citizenship) {
-            $demo['citizenship'] = $request->citizenship;
-        }
-        if ($request->Age) {
-            $age = GeneralSetting::where('id', $request->Age)->first();
-            $age['agemin']=$age['min_age'];
-            $age['agemax']=$age['max_age'];
+            $demo['pr.citizenship'] = $request->citizenship;
         }
         if ($request->gender) {
             $demo['sex'] = $request->gender;
@@ -2189,537 +2179,286 @@ class ReportController extends Controller
             $demo['occupation_sector'] = $request->occupation_sector;
         }
 
+        if ($request->referral_type){
+            $demo['referral_type'] = $request->referral_type;
+        }
+        if ($request->diagnosis_id){
+            $demo['ud.diagnosis_id'] = $request->diagnosis_id;
+        }
+        $appointments = DB::table('user_diagnosis as ud')->select('pad.id','pad.patient_mrn_id','pad.booking_date',
+        'pad.booking_time','pr.created_at','pr.nric_no','pr.passport_no','name_asin_nric','pad.appointment_status','pr.address1','pr.address2',
+        'pr.address3','pc.city_name','s.state_name','pc.postcode','pr.mobile_no','pr.birth_date','pr.age','gs1.section_value as citizenship','gs2.section_value as race',
+        'gs3.section_value as marital','gs4.section_value as religion','gs5.section_value as accomodation','gs6.section_Value as education_level',
+        'gs7.section_value as occupation_status','gs8.section_value as fee_exemption_status','gs9.section_value as occupation_sector','gs10.section_value as sex',
+        'sr.service_name','gs11.section_value as patient_category','gs12.section_value as type_visit','gs13.section_value as type_referral','sm.name as staff_name',
+        'gs14.section_value as outcome','ud.diagnosis_id','ud.add_diagnosis_id','ud.code_id','ud.sub_code_id','ud.add_code_id',
+        'ud.add_sub_code_id','ud.category_services','ic.icd_code as diagnosis_code','ic.icd_name as diagnosis_name','icat.icd_category_code as code','icat.icd_category_name as code_name',
+        'icat2.icd_category_code as add_code','icat2.icd_category_name as add_code_name')
+
+        ->leftJoin('patient_appointment_details as pad', 'pad.id', '=', 'ud.app_id')
+        ->leftJoin('patient_registration as pr', 'pr.id', '=', 'pad.patient_mrn_id')
+        ->leftJoin('state as s', 's.id', '=', 'pr.state_id')
+        ->leftJoin('postcode as pc', 'pc.id', '=', 'pr.postcode')
+        ->leftJoin('service_register as sr','sr.id', '=', 'pad.appointment_type')
+        ->leftJoin('staff_management as sm','sm.id', '=', 'pad.staff_id')
+        ->leftJoin('general_setting as gs1', 'gs1.id', '=', 'pr.citizenship')
+        ->leftJoin('general_setting as gs2', 'gs2.id', '=', 'pr.race_id')
+        ->leftJoin('general_setting as gs3', 'gs3.id', '=', 'pr.marital_id')
+        ->leftJoin('general_setting as gs4', 'gs4.id', '=', 'pr.religion_id')
+        ->leftJoin('general_setting as gs5', 'gs5.id', '=', 'pr.accomodation_id')
+        ->leftJoin('general_setting as gs6', 'gs6.id', '=', 'pr.education_level')
+        ->leftJoin('general_setting as gs7', 'gs7.id', '=', 'pr.occupation_status')
+        ->leftJoin('general_setting as gs8', 'gs8.id', '=', 'pr.fee_exemption_status')
+        ->leftJoin('general_setting as gs9', 'gs9.id', '=', 'pr.occupation_sector')
+        ->leftJoin('general_setting as gs10','gs10.id', '=', 'pr.sex')
+        ->leftJoin('general_setting as gs11','gs11.id', '=', 'pad.patient_category')
+        ->leftJoin('general_setting as gs12','gs12.id', '=', 'pad.type_visit')
+        ->leftJoin('general_setting as gs13','gs13.id', '=', 'pr.referral_type')
+        //->leftJoin('user_diagnosis as ud','ud.app_id','=','pad.id')
+        ->leftJoin('general_setting as gs14','gs14.id','=','ud.outcome_id')
+        ->leftJoin('icd_code as ic','ic.id','=','ud.diagnosis_id')
+        ->leftJoin('icd_category as icat','icat.id','=','ud.code_id')
+        ->leftJoin('icd_category as icat2','icat2.id','=','ud.add_code_id')
+
+        ->whereYear('pad.booking_date', $request->year)
+        ->whereMonth('pad.booking_date', $Month)
+        ->where('pad.appointment_status','!=',0);
+        if ($request->type_visit != 0)
+            $appointments = $appointments->where('type_visit', $request->type_visit);
+        if ($request->patient_category != 0)
+            $appointments =  $appointments->where('patient_category', $request->patient_category);
+        if ($request->appointment_type != 0)
+            $appointments = $appointments->where('appointment_type', $request->appointment_type);
+
+        if ($request->Age) {
+            $age = GeneralSetting::where('id', $request->Age)->first();
+            $age['agemin']=$age['min_age'];
+            $age['agemax']=$age['max_age'];
+                if ($age){
+                    if($age['agemin'] && $age['agemax']!=NULL){
+                        $appointments->whereBetween('age',[$age['agemin'],$age['agemax']]);
+                    }else if($age['agemin']==NULL) {
+                        $ssh->where('age','<=',$age['agemax']);
+                    }else if($age['agemax']==NULL) {
+                        $appointments->where('age','>=',$age['agemin']);
+                    }
+                }
+        }
+        if ($demo){
+            $appointments->where($demo);
+        }
+
+        $ssh = $appointments->get()->toArray();
+
         if ($ssh) {
-            $index = 0;
-            foreach ($ssh as $k => $v) {
-                $notes = [];
-                $icd=NULL;
-                $cd_array=[];
-                $count=0;
+            $result = [];
+            $index=0;
+            $ssh  = json_decode(json_encode($ssh), true);
 
-                $query_diagnosis1 = PatientCounsellorClerkingNotes::where('patient_mrn_id', $v['patient_mrn_id'])
-                ->where('status','=','1');
+            foreach($ssh as $k=>$v){
 
-                    $diagnosis1=$query_diagnosis1->orderBy('id', 'DESC')->first();
-
-                    if($diagnosis1!=NULL){
-                        $diagnosis1_ts=strtotime($diagnosis1['updated_at']);
-                        $cd_array[$count]['updated_at']=$diagnosis1_ts;
-                        $cd_array[$count]['diagnosis_id']=$diagnosis1['diagnosis_id'];
-                        $cd_array[$count]['additional_diagnosis']=$diagnosis1['additional_diagnosis'];
-                        $cd_array[$count]['code_id']=$diagnosis1['code_id'];
-                        $cd_array[$count]['sub_code_id']=$diagnosis1['sub_code_id'];
-                        $cd_array[$count]['add_code_id']=$diagnosis1['additional_code_id'];
-                        $cd_array[$count]['add_sub_code_id']=$diagnosis1['additional_subcode'];
-
-                        $count++;
-                    }
-
-                $query_diagnosis2 = PsychiatryClerkingNote::where('patient_mrn_id', $v['patient_mrn_id'])
-                ->where('status','=','1');
-
-
-                        $diagnosis2=$query_diagnosis2->orderBy('id', 'DESC')->first();
-
-                    if($diagnosis2!=NULL){
-                            $diagnosis2_ts=strtotime($diagnosis2['updated_at']);
-                            $cd_array[$count]['updated_at']=$diagnosis2_ts;
-                            $cd_array[$count]['diagnosis_id']=$diagnosis2['diagnosis_id'];
-                            $cd_array[$count]['additional_diagnosis']=$diagnosis2['additional_diagnosis'];
-                            $cd_array[$count]['code_id']=$diagnosis2['code_id'];
-                            $cd_array[$count]['sub_code_id']=$diagnosis2['sub_code_id'];
-                            $cd_array[$count]['add_code_id']=$diagnosis2['additional_code_id'];
-                            $cd_array[$count]['add_sub_code_id']=$diagnosis2['additional_subcode'];
-                            $count++;
-                       }
-
-
-                    $query_diagnosis3 = PsychiatricProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
-                    ->where('status','=','1');
-
-
-                            $diagnosis3=$query_diagnosis3->orderBy('id', 'DESC')->first();
-
-                        if($diagnosis3!=NULL){
-                                $diagnosis3_ts=strtotime($diagnosis3['updated_at']);
-                                $cd_array[$count]['updated_at']=$diagnosis3_ts;
-                                $cd_array[$count]['diagnosis_id']=$diagnosis3['diagnosis'];
-                                $cd_array[$count]['additional_diagnosis']=$diagnosis3['additional_diagnosis'];
-                                $cd_array[$count]['code_id']=$diagnosis3['code_id'];
-                                $cd_array[$count]['sub_code_id']=$diagnosis3['sub_code_id'];
-                                $cd_array[$count]['add_code_id']=$diagnosis3['additional_code_id'];
-                                $cd_array[$count]['add_sub_code_id']=$diagnosis3['additional_subcode'];
-                                $count++;
+                ////////////////////////////////////////////for additional diagnosis/////////////////////////////////////////////////
+                if($v['add_diagnosis_id']!=NULL && $v['add_diagnosis_id']!='0' && $v['add_diagnosis_id']!='-'){
+                    $e=0;
+                    $add_diagnosis_id=[];
+                        foreach (explode(',',$v['add_diagnosis_id']) as $add) {
+                                if($add!='0'|| $add!=NULL){
+                                    $add_diagnosis=DB::select('CALL icd_code(' . $add . ')');
+                                    $additional_diagnosis_id[$e]['additional_diagnosis']=$add_diagnosis[0]->icd_code.' '.$add_diagnosis[0]->icd_name;
+                                }else{                                   
+                                    $additional_diagnosis_id[$e]['additional_diagnosis']='-';
+                                }
+                            $e++;
                         }
-
-                    $query_diagnosis4 = CpsProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
-                    ->where('status','=','1');
-
-                            $diagnosis4=$query_diagnosis4->orderBy('id', 'DESC')->first();
-                        if($diagnosis4!=NULL){
-                            $diagnosis4_ts=strtotime($diagnosis4['updated_at']);
-                            $cd_array[$count]['updated_at']=$diagnosis4_ts;
-                            $cd_array[$count]['diagnosis_id']=$diagnosis4['diagnosis_type'];
-                            $cd_array[$count]['additional_diagnosis']=$diagnosis4['additional_diagnosis'];
-                            $cd_array[$count]['code_id']=$diagnosis4['code_id'];
-                            $cd_array[$count]['sub_code_id']=$diagnosis4['sub_code_id'];
-                            $cd_array[$count]['add_code_id']=$diagnosis4['additional_code_id'];
-                            $cd_array[$count]['add_sub_code_id']=$diagnosis4['additional_subcode'];
-                            $count++;
-                        }
-
-                        $query_diagnosis5 = SeProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
-                        ->where('status','=','1');
-
-
-                            $diagnosis5=$query_diagnosis5->orderBy('id', 'DESC')->first();
-
-                                if($diagnosis5!=NULL){
-                                    $diagnosis5_ts=strtotime($diagnosis5['updated_at']);
-                                    $cd_array[$count]['updated_at']=$diagnosis5_ts;
-                                    $cd_array[$count]['diagnosis_id']=$diagnosis5['diagnosis_type'];
-                                    $cd_array[$count]['additional_diagnosis']=$diagnosis5['additional_diagnosis'];
-                                    $cd_array[$count]['code_id']=$diagnosis5['code_id'];
-                                    $cd_array[$count]['sub_code_id']=$diagnosis5['sub_code_id'];
-                                    $cd_array[$count]['add_code_id']=$diagnosis5['additional_code_id'];
-                                    $cd_array[$count]['add_sub_code_id']=$diagnosis5['additional_subcode'];
-                                    $count++;
-                                }
-
-                        $query_diagnosis6 = PatientIndexForm::where('patient_mrn_id', $v['patient_mrn_id'])
-                        ->where('status','=','1');
-
-
-                            $diagnosis6=$query_diagnosis6->orderBy('id', 'DESC')->first();
-
-                                if($diagnosis6!=NULL){
-                                    $diagnosis6_ts=strtotime($diagnosis6['updated_at']);
-                                    $cd_array[$count]['updated_at']=$diagnosis6_ts;
-                                    $cd_array[$count]['diagnosis_id']=$diagnosis6['diagnosis'];
-                                    $cd_array[$count]['additional_diagnosis']=$diagnosis6['additional_diagnosis'];
-                                    $cd_array[$count]['code_id']=$diagnosis6['code_id'];
-                                    $cd_array[$count]['sub_code_id']=$diagnosis6['sub_code_id'];
-                                    $cd_array[$count]['add_code_id']=$diagnosis6['additional_code_id'];
-                                    $cd_array[$count]['add_sub_code_id']=$diagnosis6['additional_subcode'];
-                                    $count++;
-                                }
-
-                $query_diagnosis7 = CounsellingProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
-                ->where('status','=','1');
-
-                    $diagnosis7=$query_diagnosis7->orderBy('id', 'DESC')->first();
-
-                    if($diagnosis7!=NULL){
-                        $diagnosis7_ts=strtotime($diagnosis7['updated_at']);
-                        $cd_array[$count]['updated_at']=$diagnosis7_ts;
-                        $cd_array[$count]['diagnosis_id']=$diagnosis7['diagnosis_id'];
-                        $cd_array[$count]['additional_diagnosis']=$diagnosis7['additional_diagnosis'];
-                        $cd_array[$count]['code_id']=$diagnosis7['code_id'];
-                        $cd_array[$count]['sub_code_id']=$diagnosis7['sub_code_id'];
-                        $cd_array[$count]['add_code_id']=$diagnosis7['additional_code_id'];
-                        $cd_array[$count]['add_sub_code_id']=$diagnosis7['additional_subcode'];
-                        $count++;
-                    }
-
-                $query_diagnosis8 = EtpProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
-                ->where('status','=','1');
-
-                        $diagnosis8=$query_diagnosis8->orderBy('id', 'DESC')->first();
-
-                    if($diagnosis8!=NULL){
-                            $diagnosis8_ts=strtotime($diagnosis8['updated_at']);
-                            $cd_array[$count]['updated_at']=$diagnosis8_ts;
-                            $cd_array[$count]['diagnosis_id']=$diagnosis8['diagnosis_type'];
-                            $cd_array[$count]['additional_diagnosis']=$diagnosis8['additional_diagnosis'];
-                            $cd_array[$count]['code_id']=$diagnosis8['code_id'];
-                            $cd_array[$count]['sub_code_id']=$diagnosis8['sub_code_id'];
-                            $cd_array[$count]['add_code_id']=$diagnosis8['additional_code_id'];
-                            $cd_array[$count]['add_sub_code_id']=$diagnosis8['additional_subcode'];
-                            $count++;
-                       }
+                        if($e==1){
+                            $result[$index]['additional_diagnosis1']=$additional_diagnosis_id[0]['additional_diagnosis'];
+                            $result[$index]['additional_diagnosis2']='-';
+                            $result[$index]['additional_diagnosis3']='-';
+                            $result[$index]['additional_diagnosis4']='-';
+                            $result[$index]['additional_diagnosis5']='-';
+                        }else if($e==2){
+                            $result[$index]['additional_diagnosis1']=$additional_diagnosis_id[0]['additional_diagnosis'];
+                            $result[$index]['additional_diagnosis2']=$additional_diagnosis_id[1]['additional_diagnosis'];
+                            $result[$index]['additional_diagnosis3']='-';
+                            $result[$index]['additional_diagnosis4']='-';
+                            $result[$index]['additional_diagnosis5']='-';
+                        }else if($e==3){
+                            $result[$index]['additional_diagnosis1']=$additional_diagnosis_id[0]['additional_diagnosis'];
+                            $result[$index]['additional_diagnosis2']=$additional_diagnosis_id[1]['additional_diagnosis'];
+                            $result[$index]['additional_diagnosis3']=$additional_diagnosis_id[2]['additional_diagnosis'];
+                            $result[$index]['additional_diagnosis4']='-';
+                            $result[$index]['additional_diagnosis5']='-';
+                        }else if($e==4){
+                            $result[$index]['additional_diagnosis1']=$additional_diagnosis_id[0]['additional_diagnosis'];
+                            $result[$index]['additional_diagnosis2']=$additional_diagnosis_id[1]['additional_diagnosis'];
+                            $result[$index]['additional_diagnosis3']=$additional_diagnosis_id[2]['additional_diagnosis'];
+                            $result[$index]['additional_diagnosis4']=$additional_diagnosis_id[3]['additional_diagnosis'];
+                            $result[$index]['additional_diagnosis5']='-';
+                        }else if($e==5){
+                            $result[$index]['additional_diagnosis1']=$additional_diagnosis_id[0]['additional_diagnosis'];
+                            $result[$index]['additional_diagnosis2']=$additional_diagnosis_id[1]['additional_diagnosis'];
+                            $result[$index]['additional_diagnosis3']=$additional_diagnosis_id[2]['additional_diagnosis'];
+                            $result[$index]['additional_diagnosis4']=$additional_diagnosis_id[3]['additional_diagnosis'];
+                            $result[$index]['additional_diagnosis5']=$additional_diagnosis_id[4]['additional_diagnosis'];
+                        } 
+                }else{
+                    $result[$index]['additional_diagnosis1']='-';
+                    $result[$index]['additional_diagnosis2']='-';
+                    $result[$index]['additional_diagnosis3']='-';
+                    $result[$index]['additional_diagnosis4']='-';
+                    $result[$index]['additional_diagnosis5']='-';
+                }
 
 
-                    $query_diagnosis9 = JobClubProgressNote::where('patient_mrn_id', $v['patient_mrn_id'])
-                    ->where('status','=','1');
-
-
-                            $diagnosis9=$query_diagnosis9->orderBy('id', 'DESC')->first();
-
-                        if($diagnosis9!=NULL){
-                                $diagnosis9_ts=strtotime($diagnosis9['updated_at']);
-                                $cd_array[$count]['updated_at']=$diagnosis9_ts;
-                                $cd_array[$count]['diagnosis_id']=$diagnosis9['diagnosis_type'];
-                                $cd_array[$count]['additional_diagnosis']=$diagnosis9['add_diagnosis_type'];
-                                $cd_array[$count]['code_id']=$diagnosis9['code_id'];
-                                $cd_array[$count]['sub_code_id']=$diagnosis9['sub_code_id'];
-                                $cd_array[$count]['add_code_id']=$diagnosis9['add_code_id'];
-                                $cd_array[$count]['add_sub_code_id']=$diagnosis9['add_sub_code_id'];
-                                $count++;
-                        }
-
-                    $query_diagnosis10 = ConsultationDischargeNote::where('patient_id', $v['patient_mrn_id'])
-                    ->where('status','=','1');
-
-
-                            $diagnosis10=$query_diagnosis10->orderBy('id', 'DESC')->first();
-
-                        if($diagnosis10!=NULL){
-                            $diagnosis10_ts=strtotime($diagnosis10['updated_at']);
-                            $cd_array[$count]['updated_at']=$diagnosis10_ts;
-                            $cd_array[$count]['diagnosis_id']=$diagnosis10['diagnosis_id'];
-                            $cd_array[$count]['additional_diagnosis']=$diagnosis10['add_type_diagnosis_id'];
-                            $cd_array[$count]['code_id']=$diagnosis10['code_id'];
-                            $cd_array[$count]['sub_code_id']=$diagnosis10['sub_code_id'];
-                            $cd_array[$count]['add_code_id']=$diagnosis10['add_code_id'];
-                            $cd_array[$count]['add_sub_code_id']=$diagnosis10['add_sub_code_id'];
-                            $count++;
-                        }
-
-                        $query_diagnosis11 = RehabDischargeNote::where('patient_mrn_id', $v['patient_mrn_id'])
-                        ->where('status','=','1');
-
-
-                            $diagnosis11=$query_diagnosis11->orderBy('id', 'DESC')->first();
-
-                                if($diagnosis11!=NULL){
-                                    $diagnosis11_ts=strtotime($diagnosis11['updated_at']);
-                                    $cd_array[$count]['updated_at']=$diagnosis11_ts;
-                                    $cd_array[$count]['diagnosis_id']=$diagnosis11['diagnosis_id'];
-                                    $cd_array[$count]['additional_diagnosis']=$diagnosis11['add_diagnosis_type'];
-                                    $cd_array[$count]['code_id']=$diagnosis11['code_id'];
-                                    $cd_array[$count]['sub_code_id']=$diagnosis11['sub_code_id'];
-                                    $cd_array[$count]['add_code_id']=$diagnosis11['add_code_id'];
-                                    $cd_array[$count]['add_sub_code_id']=$diagnosis11['add_sub_code_id'];
-                                    $count++;
-                                }
-
-                        $query_diagnosis12 = CpsDischargeNote::where('patient_mrn_id', $v['patient_mrn_id'])
-                        ->where('status','=','1');
-
-                            $diagnosis12=$query_diagnosis12->orderBy('id', 'DESC')->first();
-
-                                if($diagnosis12!=NULL){
-                                    $diagnosis12_ts=strtotime($diagnosis12['updated_at']);
-                                    $cd_array[$count]['updated_at']=$diagnosis12_ts;
-                                    $cd_array[$count]['diagnosis_id']=$diagnosis12['diagnosis'];
-                                    $cd_array[$count]['additional_diagnosis']=$diagnosis12['diagnosis_type'];
-                                    $cd_array[$count]['code_id']=$diagnosis12['code_id'];
-                                    $cd_array[$count]['sub_code_id']=$diagnosis12['sub_code_id'];
-                                    $cd_array[$count]['add_code_id']=$diagnosis12['add_code_id'];
-                                    $cd_array[$count]['add_sub_code_id']=$diagnosis12['add_sub_code_id'];
-                                    $count++;
-                                }
-
-
-                if(!empty($cd_array)){
-
-                        $Dates = array_map(fn($entry) => $entry['updated_at'], $cd_array);
-                        $array_date=max($Dates);
-
-                        foreach ($cd_array as $c => $d){
-                            if($array_date==$d['updated_at']){
-                                $icd=$d['diagnosis_id'];
-                                ////////////////////////////////////////////for additional diagnosis/////////////////////////////////////////////////
-                                if($d['additional_diagnosis']!=NULL){
-                                    $e=0;
-
-                                        foreach (explode(',',$d['additional_diagnosis']) as $add) {
-                                                if($add=='0'){
-                                                    $additional_diagnosis[$e]['additional_diagnosis']='NA';
-                                                }else{
-                                                    $add_diagnosis = IcdCode::select('icd_code','icd_name')->where('id', $add)->first();
-                                                    $additional_diagnosis[$e]['additional_diagnosis']=$add_diagnosis['icd_code'].' '.$add_diagnosis['icd_name'];
-                                                }
-                                            $e++;
-                                        }
-                                        if($e==1){
-                                            $result[$index]['additional_diagnosis1']=$additional_diagnosis[0]['additional_diagnosis'];
-                                            $result[$index]['additional_diagnosis2']='NA';
-                                            $result[$index]['additional_diagnosis3']='NA';
-                                            $result[$index]['additional_diagnosis4']='NA';
-                                            $result[$index]['additional_diagnosis5']='NA';
-                                        }else if($e==2){
-                                            $result[$index]['additional_diagnosis1']=$additional_diagnosis[0]['additional_diagnosis'];
-                                            $result[$index]['additional_diagnosis2']=$additional_diagnosis[1]['additional_diagnosis'];
-                                            $result[$index]['additional_diagnosis3']='NA';
-                                            $result[$index]['additional_diagnosis4']='NA';
-                                            $result[$index]['additional_diagnosis5']='NA';
-                                        }else if($e==3){
-                                            $result[$index]['additional_diagnosis1']=$additional_diagnosis[0]['additional_diagnosis'];
-                                            $result[$index]['additional_diagnosis2']=$additional_diagnosis[1]['additional_diagnosis'];
-                                            $result[$index]['additional_diagnosis3']=$additional_diagnosis[2]['additional_diagnosis'];
-                                            $result[$index]['additional_diagnosis4']='NA';
-                                            $result[$index]['additional_diagnosis5']='NA';
-                                        }else if($e==4){
-                                            $result[$index]['additional_diagnosis1']=$additional_diagnosis[0]['additional_diagnosis'];
-                                            $result[$index]['additional_diagnosis2']=$additional_diagnosis[1]['additional_diagnosis'];
-                                            $result[$index]['additional_diagnosis3']=$additional_diagnosis[2]['additional_diagnosis'];
-                                            $result[$index]['additional_diagnosis4']=$additional_diagnosis[3]['additional_diagnosis'];
-                                            $result[$index]['additional_diagnosis5']='NA';
-                                        }else if($e==5){
-                                            $result[$index]['additional_diagnosis1']=$additional_diagnosis[0]['additional_diagnosis'];
-                                            $result[$index]['additional_diagnosis2']=$additional_diagnosis[1]['additional_diagnosis'];
-                                            $result[$index]['additional_diagnosis3']=$additional_diagnosis[2]['additional_diagnosis'];
-                                            $result[$index]['additional_diagnosis4']=$additional_diagnosis[3]['additional_diagnosis'];
-                                            $result[$index]['additional_diagnosis5']=$additional_diagnosis[4]['additional_diagnosis'];
-                                        }
-
-
-                                }else{
-                                    $result[$index]['additional_diagnosis1']='NA';
-                                    $result[$index]['additional_diagnosis2']='NA';
-                                    $result[$index]['additional_diagnosis3']='NA';
-                                    $result[$index]['additional_diagnosis4']='NA';
-                                    $result[$index]['additional_diagnosis5']='NA';
-                                }
-                                ///////////////////////////for code and additional code/////////////////////////////////////
-                                if($d['code_id']!=NULL && $d['code_id']!='0'){
-                                    $code_id = IcdCode::select('icd_code','icd_name')->where('id', $d['code_id'])->first();
-                                    $result[$index]['code_id']=$code_id['icd_code'].''.$code_id['icd_name'];
-                                }else{
-                                    $result[$index]['code_id']='NA';
-                                }
-
-                                if($d['add_code_id']!=NULL && $d['add_code_id']!='0'){
-                                    $add_code_id = IcdCode::select('icd_code','icd_name')->where('id', $d['add_code_id'])->first();
-                                    $result[$index]['add_code_id']=$add_code_id['icd_code'].''.$add_code_id['icd_name'];;
-                                }else{
-                                    $result[$index]['add_code_id']='NA';
-                                }
                                 ///////////////////////////for sub code///////////////////////////////////////////
-                                if($d['sub_code_id']!=NULL && $d['sub_code_id']!='0'){
-                                    $f=0;
-                                        foreach (explode(',',$d['sub_code_id']) as $sub) {
-
-                                                    $sub_code = IcdCode::select('icd_code','icd_name')->where('id', $sub)->first();
-                                                    if($sub_code==!NULL){
-                                                        $sub_code = $sub_code->jsonserialize();
-                                                        $sub_code_id[$f]['sub_code']=$sub_code['icd_code'].' '.$sub_code['icd_name'];
-                                                    }else{
-                                                        $sub_code_id[$f]['add_sub_code']='NA';
-                                                        }
-
-                                                    $f++;
-                                                }
-
-                                        if($f==1){
-                                            $result[$index]['sub_code1']=$sub_code_id[0]['sub_code'];
-                                            $result[$index]['sub_code2']='NA';
-                                            $result[$index]['sub_code3']='NA';
-                                            $result[$index]['sub_code4']='NA';
-                                            $result[$index]['sub_code5']='NA';
-                                        }else if($f==2){
-                                            $result[$index]['sub_code1']=$sub_code_id[0]['sub_code'];
-                                            $result[$index]['sub_code2']=$sub_code_id[1]['sub_code'];
-                                            $result[$index]['sub_code3']='NA';
-                                            $result[$index]['sub_code4']='NA';
-                                            $result[$index]['sub_code5']='NA';
-                                        }else if($f==3){
-                                            $result[$index]['sub_code1']=$sub_code_id[0]['sub_code'];
-                                            $result[$index]['sub_code2']=$sub_code_id[1]['sub_code'];
-                                            $result[$index]['sub_code3']=$sub_code_id[2]['sub_code'];
-                                            $result[$index]['sub_code4']='NA';
-                                            $result[$index]['sub_code5']='NA';
-                                        }else if($f==4){
-                                            $result[$index]['sub_code1']=$sub_code_id[0]['sub_code'];
-                                            $result[$index]['sub_code2']=$sub_code_id[1]['sub_code'];
-                                            $result[$index]['sub_code3']=$sub_code_id[2]['sub_code'];
-                                            $result[$index]['sub_code4']=$sub_code_id[3]['sub_code'];
-                                            $result[$index]['sub_code5']='NA';
-                                        }else if($f==5){
-                                            $result[$index]['sub_code1']=$sub_code_id[0]['sub_code'];
-                                            $result[$index]['sub_code2']=$sub_code_id[1]['sub_code'];
-                                            $result[$index]['sub_code3']=$sub_code_id[2]['sub_code'];
-                                            $result[$index]['sub_code4']=$sub_code_id[3]['sub_code'];
-                                            $result[$index]['sub_code5']=$sub_code_id[4]['sub_code'];
+                if($v['sub_code_id']!=NULL && $v['sub_code_id']!='0' && $v['sub_code_id']!='-'){
+                    $f=0;
+                    $sub_code_id_array=[];
+                        foreach (explode(',',$v['sub_code_id']) as $sub) {
+                                    if($sub!=NULL && $sub!='0'){
+                                        $sub_code=DB::select('CALL icd_code(' . $sub . ')');
+                                        $sub_code_id_array[$f]['sub_code']=$sub_code[0]->icd_code.' '.$sub_code[0]->icd_name;
+                                    }else{
+                                        $sub_code_id_array[$f]['sub_code']='-';
                                         }
-
-
-                                }else{
-                                    $result[$index]['sub_code1']='NA';
-                                    $result[$index]['sub_code2']='NA';
-                                    $result[$index]['sub_code3']='NA';
-                                    $result[$index]['sub_code4']='NA';
-                                    $result[$index]['sub_code5']='NA';
+                                    $f++;
                                 }
-
-                                ///////////////////////////for additional sub code/////////////////////////////////////
-                                if($d['add_sub_code_id']!=NULL && $d['add_sub_code_id']!='0'){
-                                    $f=0;
-                                        foreach (explode(',',$d['add_sub_code_id']) as $add_sub) {
-                                                    $add_sub_code = IcdCode::select('icd_code','icd_name')->where('id', $add_sub)->first();
-                                                        if($add_sub_code==!NULL){
-                                                        $add_sub_code = $add_sub_code->jsonserialize();
-                                                        $add_sub_code_id[$f]['add_sub_code']=$add_sub_code['icd_code'].' '.$add_sub_code['icd_name'];
-                                                        }else{
-                                                        $add_sub_code_id[$f]['add_sub_code']='NA';
-                                                        }
-                                                }
-                                            $f++;
-
-                                        if($f==1){
-                                            $result[$index]['add_sub_code1']=$add_sub_code_id[0]['add_sub_code'];
-                                            $result[$index]['add_sub_code2']='NA';
-                                            $result[$index]['add_sub_code3']='NA';
-                                            $result[$index]['add_sub_code4']='NA';
-                                            $result[$index]['add_sub_code5']='NA';
-                                        }else if($f==2){
-                                            $result[$index]['add_sub_code1']=$add_sub_code_id[0]['add_sub_code'];
-                                            $result[$index]['add_sub_code2']=$add_sub_code_id[1]['add_sub_code'];
-                                            $result[$index]['add_sub_code3']='NA';
-                                            $result[$index]['add_sub_code4']='NA';
-                                            $result[$index]['add_sub_code5']='NA';
-                                        }else if($f==3){
-                                            $result[$index]['add_sub_code1']=$add_sub_code_id[0]['add_sub_code'];
-                                            $result[$index]['add_sub_code2']=$add_sub_code_id[1]['add_sub_code'];
-                                            $result[$index]['add_sub_code3']=$add_sub_code_id[2]['add_sub_code'];
-                                            $result[$index]['add_sub_code4']='NA';
-                                            $result[$index]['add_sub_code5']='NA';
-                                        }else if($f==4){
-                                            $result[$index]['add_sub_code1']=$add_sub_code_id[0]['add_sub_code'];
-                                            $result[$index]['add_sub_code2']=$add_sub_code_id[1]['add_sub_code'];
-                                            $result[$index]['add_sub_code3']=$add_sub_code_id[2]['add_sub_code'];
-                                            $result[$index]['add_sub_code4']=$add_sub_code_id[3]['add_sub_code'];
-                                            $result[$index]['add_sub_code5']='NA';
-                                        }else if($f==5){
-                                            $result[$index]['add_sub_code1']=$add_sub_code_id[0]['add_sub_code'];
-                                            $result[$index]['add_sub_code2']=$add_sub_code_id[1]['add_sub_code'];
-                                            $result[$index]['add_sub_code3']=$add_sub_code_id[2]['add_sub_code'];
-                                            $result[$index]['add_sub_code4']=$add_sub_code_id[3]['add_sub_code'];
-                                            $result[$index]['add_sub_code5']=$add_sub_code_id[4]['add_sub_code'];
-                                        }
-
-
-                                }else{
-                                    $result[$index]['add_sub_code1']='NA';
-                                    $result[$index]['add_sub_code2']='NA';
-                                    $result[$index]['add_sub_code3']='NA';
-                                    $result[$index]['add_sub_code4']='NA';
-                                    $result[$index]['add_sub_code5']='NA';
-                                }
-                            }
-
-
+                        if($f==1){
+                            $result[$index]['sub_code1']=$sub_code_id_array[0]['sub_code'];
+                            $result[$index]['sub_code2']='-';
+                            $result[$index]['sub_code3']='-';
+                            $result[$index]['sub_code4']='-';
+                            $result[$index]['sub_code5']='-';
+                        }else if($f==2){
+                            $result[$index]['sub_code1']=$sub_code_id_array[0]['sub_code'];
+                            $result[$index]['sub_code2']=$sub_code_id_array[1]['sub_code'];
+                            $result[$index]['sub_code3']='-';
+                            $result[$index]['sub_code4']='-';
+                            $result[$index]['sub_code5']='-';
+                        }else if($f==3){
+                            $result[$index]['sub_code1']=$sub_code_id_array[0]['sub_code'];
+                            $result[$index]['sub_code2']=$sub_code_id_array[1]['sub_code'];
+                            $result[$index]['sub_code3']=$sub_code_id_array[2]['sub_code'];
+                            $result[$index]['sub_code4']='-';
+                            $result[$index]['sub_code5']='-';
+                        }else if($f==4){
+                            $result[$index]['sub_code1']=$sub_code_id_array[0]['sub_code'];
+                            $result[$index]['sub_code2']=$sub_code_id_array[1]['sub_code'];
+                            $result[$index]['sub_code3']=$sub_code_id_array[2]['sub_code'];
+                            $result[$index]['sub_code4']=$sub_code_id_array[3]['sub_code'];
+                            $result[$index]['sub_code5']='-';
+                        }else if($f==5){
+                            $result[$index]['sub_code1']=$sub_code_id_array[0]['sub_code'];
+                            $result[$index]['sub_code2']=$sub_code_id_array[1]['sub_code'];
+                            $result[$index]['sub_code3']=$sub_code_id_array[2]['sub_code'];
+                            $result[$index]['sub_code4']=$sub_code_id_array[3]['sub_code'];
+                            $result[$index]['sub_code5']=$sub_code_id_array[4]['sub_code'];
                         }
                 }else{
-
+                    $result[$index]['sub_code1']='-';
+                    $result[$index]['sub_code2']='-';
+                    $result[$index]['sub_code3']='-';
+                    $result[$index]['sub_code4']='-';
+                    $result[$index]['sub_code5']='-';
                 }
 
-                if($request->diagnosis_id!=NULL){
-                    if($icd!=$request->diagnosis_id){
-                        continue;
+                            ///////////////////////////for additional sub code/////////////////////////////////////
+            if($v['add_sub_code_id']!=NULL && $v['add_sub_code_id']!='0' && $v['add_sub_code_id']!='-'){
+                $f=0;
+                $add_sub_code_val=[];
+                    foreach (explode(',',$v['add_sub_code_id']) as $add_sub) {
+                                    if($add_sub!=NULL && $add_sub!='0'){
+                                    $add_sub_code=DB::select('CALL icd_code(' . $add_sub . ')');
+                                    $add_sub_code_val[$f]['add_sub_code']=$add_sub_code[0]->icd_code.' '.$add_sub_code[0]->icd_name;
+                                    }else{
+                                    $add_sub_code_val[$f]['add_sub_code']='-';
+                                    }
+                            }$f++;
+                    if($f==1){
+                        $result[$index]['add_sub_code1']=$add_sub_code_val[0]['add_sub_code'];
+                        $result[$index]['add_sub_code2']='-';
+                        $result[$index]['add_sub_code3']='-';
+                        $result[$index]['add_sub_code4']='-';
+                        $result[$index]['add_sub_code5']='-';
+                    }else if($f==2){
+                        $result[$index]['add_sub_code1']=$add_sub_code_val[0]['add_sub_code'];
+                        $result[$index]['add_sub_code2']=$add_sub_code_val[1]['add_sub_code'];
+                        $result[$index]['add_sub_code3']='-';
+                        $result[$index]['add_sub_code4']='-';
+                        $result[$index]['add_sub_code5']='-';
+                    }else if($f==3){
+                        $result[$index]['add_sub_code1']=$add_sub_code_val[0]['add_sub_code'];
+                        $result[$index]['add_sub_code2']=$add_sub_code_val[1]['add_sub_code'];
+                        $result[$index]['add_sub_code3']=$add_sub_code_val[2]['add_sub_code'];
+                        $result[$index]['add_sub_code4']='-';
+                        $result[$index]['add_sub_code5']='-';
+                    }else if($f==4){
+                        $result[$index]['add_sub_code1']=$add_sub_code_val[0]['add_sub_code'];
+                        $result[$index]['add_sub_code2']=$add_sub_code_val[1]['add_sub_code'];
+                        $result[$index]['add_sub_code3']=$add_sub_code_val[2]['add_sub_code'];
+                        $result[$index]['add_sub_code4']=$add_sub_code_val[3]['add_sub_code'];
+                        $result[$index]['add_sub_code5']='-';
+                    }else if($f==5){
+                        $result[$index]['add_sub_code1']=$add_sub_code_val[0]['add_sub_code'];
+                        $result[$index]['add_sub_code2']=$add_sub_code_val[1]['add_sub_code'];
+                        $result[$index]['add_sub_code3']=$add_sub_code_val[2]['add_sub_code'];
+                        $result[$index]['add_sub_code4']=$add_sub_code_val[3]['add_sub_code'];
+                        $result[$index]['add_sub_code5']=$add_sub_code_val[4]['add_sub_code'];
                     }
-                }
-
-                $icd = IcdCode::where('id', $icd)->first();
-
-                $staff = StaffManagement::select('name')->where('id', $v['staff_id'])->get()->toArray();
-
-
-                $users = DB::table('staff_management')
-                ->select('roles.code')
-                ->join('roles', 'staff_management.role_id', '=', 'roles.id')
-                ->where('staff_management.email', '=', $request->email)
-                ->first();
-                $users2  = json_decode(json_encode($users), true);
-                $query = PatientRegistration::where('id', $v['patient_mrn_id']);
-                if($users2['code']!='superadmin'){
-                    $query->where('branch_id','=',$request->branch_id);
-                }
-                if ($demo)
-                    $query->where($demo);
-                if ($age)
-                    if($age['agemin'] && $age['agemax']!=NULL){
-                    $query->whereBetween('age',[$age['agemin'],$age['agemax']]);
-                    }else if($age['agemin']==NULL) {
-                        $query->where('age','<=',$age['agemax']);
-                    }else if($age['agemax']==NULL) {
-                        $query->where('age','>=',$age['agemin']);
-                    }
-                if ($request->referral_type != 0)
-                    $query->where('referral_type', $request->referral_type);
-
-                $patientInfon = $query->get()->toArray();
-                if ($patientInfon) {
-                    $patientInfo = $patientInfon[0];
-                    $pc = Postcode::where(['id' => $patientInfo['postcode']])->get()->toArray();
-                    $st = State::where(['id' => $patientInfo['state_id']])->get()->toArray();
-                    $sex = GeneralSetting::where(['id' => $patientInfo['sex']])->get()->toArray();
-                    $citizenship = GeneralSetting::where(['id' => $patientInfo['citizenship']])->get()->toArray();
-                    $race = GeneralSetting::where(['id' => $patientInfo['race_id']])->get()->toArray();
-                    $religion = GeneralSetting::where(['id' => $patientInfo['religion_id']])->get()->toArray();
-                    $marital = GeneralSetting::where(['id' => $patientInfo['marital_id']])->get()->toArray();
-                    $accomodation = GeneralSetting::where(['id' => $patientInfo['accomodation_id']])->get()->toArray();
-                    $education_level = GeneralSetting::where(['id' => $patientInfo['education_level']])->get()->toArray();
-                    $fee_exemption_status = GeneralSetting::where(['id' => $patientInfo['fee_exemption_status']])->get()->toArray();
-
-                    $occupation_status = GeneralSetting::where(['id' => $patientInfo['occupation_status']])->get()->toArray();
-                    $occupation_sector = GeneralSetting::where(['id' => $patientInfo['occupation_sector']])->get()->toArray();
-
-                    $reftyp = GeneralSetting::where(['id' => $patientInfo['referral_type']])->get()->toArray();
-                    $city_name = ($pc) ? $pc[0]['city_name'] : 'NA';
-                    $state_name = ($st) ? $st[0]['state_name'] : 'NA';
-                    $postcode = ($pc) ? $pc[0]['postcode'] : 'NA';
-                    $gender = ($sex) ? $sex[0]['section_value'] : 'NA';
-                    $citizenshipValue = ($citizenship) ? $citizenship[0]['section_value'] : 'NA';
-                    $raceValue = ($race) ? $race[0]['section_value'] : 'NA';
-                    $religionValue = ($religion) ? $religion[0]['section_value'] : 'NA';
-                    $maritalValue = ($marital) ? $marital[0]['section_value'] : 'NA';
-                    $accomodationValue = ($accomodation) ? $accomodation[0]['section_value'] : 'NA';
-                    $education_levelValue = ($education_level) ? $education_level[0]['section_value'] : 'NA';
-                    $occupation_statusValue = ($occupation_status) ? $occupation_status[0]['section_value'] : 'NA';
-                    $fee_exemption_statusValue = ($fee_exemption_status) ? $fee_exemption_status[0]['section_value'] : 'NA';
-                    $occupation_sectorValue = ($occupation_sector) ? $occupation_sector[0]['section_value'] : 'NA';
-                    $apt = ServiceRegister::where(['id' => $v['appointment_type']])->get()->toArray();
-                    $vt = GeneralSetting::where('id', $v['type_visit'])->get()->toArray();
-                    $cp = GeneralSetting::where('id', $v['patient_category'])->get()->toArray();
+            }else{
+                $result[$index]['add_sub_code1']='-';
+                $result[$index]['add_sub_code2']='-';
+                $result[$index]['add_sub_code3']='-';
+                $result[$index]['add_sub_code4']='-';
+                $result[$index]['add_sub_code5']='-';
+            }     
 
 
-
-                    $appointment_type = ($apt) ? $apt[0]['service_name'] : 'NA';
-                    $visit_type = ($vt) ? $vt[0]['section_value'] : 'NA';
-                    $category = ($cp) ? $cp[0]['section_value'] : 'NA';
-                    $result[$index]['No']=$index+1;
-                    $result[$index]['Registration_date'] = date('d/m/Y', strtotime($patientInfo['created_at']));
-                    $result[$index]['Registration_Time'] = date('h:i:s A', strtotime($patientInfo['created_at']));
-                    if($patientInfo['nric_no']==NULL){
-                        $result[$index]['nric_no'] = $patientInfo['passport_no'];
-                    }else{
-                        $result[$index]['nric_no'] = $patientInfo['nric_no'];
-                    }
-                    $result[$index]['Name'] = $patientInfo['name_asin_nric'];
-                    $result[$index]['Attendance_status'] = $v['appointment_status'];
-                    $result[$index]['Name'] = $patientInfo['name_asin_nric'];
-                    $result[$index]['ADDRESS'] = $patientInfo['address1'] . ' ' . $patientInfo['address2'] . ' ' . $patientInfo['address3'];
-                    $result[$index]['CITY'] = $city_name;
-                    $result[$index]['STATE'] = $state_name;
-                    $result[$index]['POSTCODE'] = $postcode;
-                    $result[$index]['PHONE_NUMBER'] = $patientInfo['mobile_no'];
-                    $result[$index]['DATE_OF_BIRTH'] = $patientInfo['birth_date'];
-                    $result[$index]['AGE'] = $patientInfo['age'];
-                    $result[$index]['citizenship'] = $citizenshipValue;
-                    $result[$index]['race'] = $raceValue;
-                    $result[$index]['religion'] = $religionValue;
-                    $result[$index]['marital'] = $maritalValue;
-                    $result[$index]['accomodation'] = $accomodationValue;
-                    $result[$index]['education_level'] = $education_levelValue;
-                    $result[$index]['occupation_status'] = $occupation_statusValue;
-                    $result[$index]['fee_exemption_status'] = $fee_exemption_statusValue;
-                    $result[$index]['occupation_sector'] = $occupation_sectorValue;
-                    $result[$index]['GENDER'] = $gender;
-                    $result[$index]['APPOINTMENT_TYPE'] = $appointment_type;
-                    $result[$index]['DIAGNOSIS'] = ($icd) ? $icd['icd_name'] : 'NA';
-                    $result[$index]['DIAGNOSIS_CODE'] = ($icd) ? $icd['icd_code'] : 'NA';
-                    $result[$index]['CATEGORY_OF_PATIENTS'] = $category;
-                    $result[$index]['TYPE_OF_Visit'] = $visit_type;
-                    $result[$index]['TYPE_OF_Refferal'] = ($reftyp) ? $reftyp[0]['section_value'] : 'NA';
-                    $result[$index]['Attending_staff'] = ($staff) ? $staff[0]['name'] : 'NA';
-                    $result[$index]['outcome'] = '-';
-                    $result[$index]['category_of_services'] = '-';
-                    $index++;
-                }
+            $result[$index]['No']=$index+1;
+            $result[$index]['Registration_date'] = date('d/m/Y', strtotime($v['created_at']));
+            $result[$index]['Registration_Time'] = date('h:i:s A', strtotime($v['created_at']));
+            if($v['nric_no']==NULL){
+                $result[$index]['nric_no'] = $v['passport_no'];
+            }else{
+                $result[$index]['nric_no'] = $v['nric_no'];
             }
+            $result[$index]['Name'] = $v['name_asin_nric'];
+            $result[$index]['Attendance_status'] = $v['appointment_status'];
+            $result[$index]['ADDRESS'] = $v['address1'] . ' ' . $v['address2'] . ' ' . $v['address3'];
+            $result[$index]['CITY'] = $v['city_name'];
+            $result[$index]['STATE'] = $v['state_name'];
+            $result[$index]['POSTCODE'] = $v['postcode'];
+            $result[$index]['PHONE_NUMBER'] = $v['mobile_no'];
+            $result[$index]['DATE_OF_BIRTH'] = $v['birth_date'];
+            $result[$index]['AGE'] = $v['age'];
+            $result[$index]['citizenship'] = $v['citizenship'];
+            $result[$index]['race'] = $v['race'];
+            $result[$index]['religion'] = $v['religion'];
+            $result[$index]['marital'] = $v['marital'];
+            $result[$index]['accomodation'] = $v['accomodation'];
+            $result[$index]['education_level'] = $v['education_level'];
+            $result[$index]['occupation_status'] = $v['occupation_status'];
+            $result[$index]['fee_exemption_status'] = $v['fee_exemption_status'];
+            $result[$index]['occupation_sector'] = $v['occupation_sector'];
+            $result[$index]['GENDER'] = $v['sex'];
+            $result[$index]['APPOINTMENT_TYPE'] = $v['service_name'];
+            $result[$index]['DIAGNOSIS'] = $v['diagnosis_name'];
+            $result[$index]['DIAGNOSIS_CODE'] = $v['diagnosis_code'];
+            $result[$index]['code_id'] = $v['code'].' '.$v['code_name'];
+            $result[$index]['add_code_id'] = $v['add_code'].' '.$v['add_code_name'];
+            $result[$index]['CATEGORY_OF_PATIENTS'] = $v['patient_category'];
+            $result[$index]['TYPE_OF_Visit'] = $v['type_visit'];
+            $result[$index]['TYPE_OF_Refferal'] = $v['type_referral'] ;
+            $result[$index]['Attending_staff'] = $v['staff_name'];
+            $result[$index]['outcome'] = $v['outcome'];
+            $result[$index]['category_of_services'] = $v['category_services'];
+
+            $index++;
+            }
+
+
         }
+        //dd($result); //confirmkan status and data yang amik based on table2 cd yang lain. takut nama column lain. and check either data is correct
         if ($result) {
             $totalReports = count($result);
             $filePath = '';
@@ -2739,6 +2478,744 @@ class ReportController extends Controller
             return response()->json(["message" => "General Report", 'result' => [], 'filename' => null, "code" => 200]);
         }
     }
+    // { 
+    //     $user = DB::table('staff_management')
+    //     ->select('roles.code')
+    //     ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+    //     ->where('staff_management.email', '=', $request->email)
+    //     ->first();
+
+    //     $month = ['January' => 1, 'February' => 2, 'March' => 3, 'April' => 4, 'May' => 5, 'June' => 6, 'July' => 7,
+    //     'August' => 8, 'September' => 9, 'October' => 10, 'November' => 11, 'December' => 12];
+    //     $Month=$month[$request->month];
+
+    //     $demo = [];
+    //     $age=[];
+
+    //     if($user->code!='superadmin'){
+    //         $demo['pr.branch_id'] = $request->branch_id;
+    //     }
+    //     if ($request->name) {
+    //         $demo['pr.name_asin_nric'] = $request->name;
+    //     }
+    //     if ($request->citizenship) {
+    //         $demo['pr.citizenship'] = $request->citizenship;
+    //     }
+    //     if ($request->gender) {
+    //         $demo['sex'] = $request->gender;
+    //     }
+    //     if ($request->race) {
+    //         $demo['race_id'] = $request->race;
+    //     }
+    //     if ($request->religion) {
+    //         $demo['religion_id'] = $request->religion;
+    //     }
+    //     if ($request->marital_status) {
+    //         $demo['marital_id'] = $request->marital_status;
+    //     }
+    //     if ($request->education_level) {
+    //         $demo['education_level'] = $request->education_level;
+    //     }
+    //     if ($request->accommodation_id) {
+    //         $demo['accomodation_id'] = $request->accommodation_id;
+
+    //     }
+    //     if ($request->occupation_status) {
+    //         $demo['occupation_status'] = $request->occupation_status;
+    //     }
+    //     if ($request->fee_exemption_status) {
+    //         $demo['fee_exemption_status'] = $request->fee_exemption_status;
+    //     }
+    //     if ($request->occupation_sector) {
+    //         $demo['occupation_sector'] = $request->occupation_sector;
+    //     }
+
+    //     if ($request->referral_type){
+    //         $demo['referral_type'] = $request->referral_type;
+    //     }
+
+    //     $appointments = DB::table('patient_appointment_details as pad')->select('pad.id','pad.patient_mrn_id','pad.booking_date',
+    //     'pad.booking_time','pr.created_at','pr.nric_no','pr.passport_no','name_asin_nric','pad.appointment_status','pr.address1','pr.address2',
+    //     'pr.address3','pc.city_name','s.state_name','pc.postcode','pr.mobile_no','pr.birth_date','pr.age','gs1.section_value as citizenship','gs2.section_value as race',
+    //     'gs3.section_value as marital','gs4.section_value as religion','gs5.section_value as accomodation','gs6.section_Value as education_level',
+    //     'gs7.section_value as occupation_status','gs8.section_value as fee_exemption_status','gs9.section_value as occupation_sector','gs10.section_value as sex',
+    //     'sr.service_name','gs11.section_value as patient_category','gs12.section_value as type_visit','gs13.section_value as type_referral','sm.name as staff_name')
+        
+    //     ->leftJoin('patient_registration as pr', 'pr.id', '=', 'pad.patient_mrn_id')
+    //     ->leftJoin('state as s', 's.id', '=', 'pr.state_id')
+    //     ->leftJoin('postcode as pc', 'pc.id', '=', 'pr.postcode')
+    //     ->leftJoin('service_register as sr','sr.id', '=', 'pad.appointment_type')
+    //     ->leftJoin('staff_management as sm','sm.id', '=', 'pad.staff_id')
+    //     ->leftJoin('general_setting as gs1', 'gs1.id', '=', 'pr.citizenship')
+    //     ->leftJoin('general_setting as gs2', 'gs2.id', '=', 'pr.race_id')
+    //     ->leftJoin('general_setting as gs3', 'gs3.id', '=', 'pr.marital_id')
+    //     ->leftJoin('general_setting as gs4', 'gs4.id', '=', 'pr.religion_id')
+    //     ->leftJoin('general_setting as gs5', 'gs5.id', '=', 'pr.accomodation_id')
+    //     ->leftJoin('general_setting as gs6', 'gs6.id', '=', 'pr.education_level')
+    //     ->leftJoin('general_setting as gs7', 'gs7.id', '=', 'pr.occupation_status')
+    //     ->leftJoin('general_setting as gs8', 'gs8.id', '=', 'pr.fee_exemption_status')
+    //     ->leftJoin('general_setting as gs9', 'gs9.id', '=', 'pr.occupation_sector')
+    //     ->leftJoin('general_setting as gs10','gs10.id', '=', 'pr.sex')
+    //     ->leftJoin('general_setting as gs11','gs11.id', '=', 'pad.patient_category')
+    //     ->leftJoin('general_setting as gs12','gs12.id', '=', 'pad.type_visit')
+    //     ->leftJoin('general_setting as gs13','gs13.id', '=', 'pr.referral_type')
+
+    //     ->whereYear('pad.booking_date', $request->year)
+    //     ->whereMonth('pad.booking_date', $Month)
+    //     ->where('pad.appointment_status','!=',0);
+    //     if ($request->type_visit != 0)
+    //         $appointments = $appointments->where('type_visit', $request->type_visit);
+    //     if ($request->patient_category != 0)
+    //         $appointments =  $appointments->where('patient_category', $request->patient_category);
+    //     if ($request->appointment_type != 0)
+    //         $appointments = $appointments->where('appointment_type', $request->appointment_type);
+
+    //     if ($request->Age) {
+    //         $age = GeneralSetting::where('id', $request->Age)->first();
+    //         // $age=DB::select('CALL general_setting(' . $request->Age . ')');
+    //         $age['agemin']=$age['min_age'];
+    //         $age['agemax']=$age['max_age'];
+    //             if ($age){
+    //                 if($age['agemin'] && $age['agemax']!=NULL){
+    //                     $appointments->whereBetween('age',[$age['agemin'],$age['agemax']]);
+    //                 }else if($age['agemin']==NULL) {
+    //                     $ssh->where('age','<=',$age['agemax']);
+    //                 }else if($age['agemax']==NULL) {
+    //                     $appointments->where('age','>=',$age['agemin']);
+    //                 }
+    //             }
+    //     }
+
+
+    //     if ($demo){
+    //         $appointments->where($demo);
+    //     }
+    //     $ssh = $appointments->get()->toArray();
+    //     if ($ssh) {
+    //         $result = [];
+    //         $index=0;
+    //         $ssh  = json_decode(json_encode($ssh), true);
+
+    //         foreach($ssh as $k=>$v){
+
+    //             $id=$v['id'];
+
+    //             if (PatientCounsellorClerkingNotes::where('appointment_details_id', $id)
+    //                 ->where('status','1')->exists()) {
+    //                     $diagnosis=DB::select('CALL patient_counsellor_clerking_notes(' . $id . ')');
+    //                     //dd($diagnosis[0]->icd_name); /////////////// sambung sini
+    //                 // $diagnosis = PatientCounsellorClerkingNotes::select('icd_code.icd_code','icd_code.icd_name','diagnosis_id','additional_diagnosis','code_id','sub_code_id',
+    //                 // 'additional_code_id','additional_subcode','outcome_id','category_services')
+    //                 // ->leftjoin('icd_code','icd_code.id','=','patient_counsellor_clerking_notes.diagnosis_id')
+    //                 // ->where('appointment_details_id', $id)
+    //                 // ->where('patient_counsellor_clerking_notes.status','=','1')->first();
+    //                     $outcome=$diagnosis[0]->outcome_id;
+    //                     $category_services=$diagnosis[0]->category_services;
+    //                     // $diagnosis_id=$diagnosis['diagnosis_id'];
+    //                     $additional_diagnosis=$diagnosis[0]->additional_diagnosis;
+    //                     $code_id=$diagnosis[0]->code_id;
+    //                     $sub_code_id=$diagnosis[0]->sub_code_id;
+    //                     $add_code_id=$diagnosis[0]->additional_code_id;
+    //                     $add_sub_code_id=$diagnosis[0]->additional_subcode;
+    //                     if($request->diagnosis_id!=NULL && $request->diagnosis_id!='0'){
+    //                         if( $diagnosis[0]->diagnosis_id!=$request->diagnosis_id ){
+    //                             continue;
+    //                         }
+    //                     }
+    //                     if($diagnosis[0]->diagnosis_id!=0){
+    //                         $icd_code=$diagnosis[0]->icd_code;
+    //                         $icd_name=$diagnosis[0]->icd_name; //dah
+    //                     }else{
+    //                         $icd_code='-';
+    //                         $icd_name='-'; //dah
+    //                     }
+                        
+
+    //             }else if (PsychiatryClerkingNote::where('appointment_details_id', $id)->where('status','1')->exists()) {
+    //                     $diagnosis=DB::select('CALL psychiatry_clerking_note(' . $id . ')');
+    //                     // $diagnosis = PsychiatryClerkingNote::select('icd_code.icd_code','icd_code.icd_name','diagnosis_id','additional_diagnosis','code_id','sub_code_id',
+    //                     // 'additional_code_id','additional_subcode','outcome_id','category_services')
+    //                     // ->leftjoin('icd_code','icd_code.id','=','psychiatry_clerking_note.diagnosis_id')
+    //                     // ->where('appointment_details_id', $id)
+    //                     // ->where('psychiatry_clerking_note.status','=','1')->first();
+    //                     // if($diagnosis){
+                               
+    //                     // }else{
+    //                     //     dd($id);
+    //                     // }
+    //                     $outcome=$diagnosis[0]->outcome_id;
+    //                     $category_services=$diagnosis[0]->category_services;
+    //                     // $diagnosis_id=$diagnosis['diagnosis_id'];
+    //                     $additional_diagnosis=$diagnosis[0]->additional_diagnosis;
+    //                     $code_id=$diagnosis[0]->code_id;
+    //                     $sub_code_id=$diagnosis[0]->sub_code_id;
+    //                     $add_code_id=$diagnosis[0]->additional_code_id;
+    //                     $add_sub_code_id=$diagnosis[0]->additional_subcode;
+    //                     if($request->diagnosis_id!=NULL && $request->diagnosis_id!='0'){
+    //                         if( $diagnosis[0]->diagnosis_id!=$request->diagnosis_id ){
+    //                             continue;
+    //                         }
+    //                     }
+    //                     if($diagnosis[0]->diagnosis_id!=0){
+    //                         $icd_code=$diagnosis[0]->icd_code;
+    //                         $icd_name=$diagnosis[0]->icd_name; //dah
+    //                     }else{
+    //                         $icd_code='-';
+    //                         $icd_name='-'; //dah
+    //                     }
+
+    //             }else if (PsychiatricProgressNote::where('appointment_details_id', $id)->where('status','1')->exists()) {   
+    //                 $diagnosis=DB::select('CALL psychiatric_progress_note(' . $id . ')');
+    //                 // $diagnosis = PsychiatricProgressNote::select('icd_code.icd_code','icd_code.icd_name','diagnosis','additional_diagnosis','code_id','sub_code_id',
+    //                 //     'additional_code_id','additional_subcode','outcome_id','category_services')
+    //                 //     ->leftjoin('icd_code','icd_code.id','=','psychiatric_progress_note.diagnosis')
+    //                 //     ->where('appointment_details_id', $id)
+    //                 //     ->where('psychiatric_progress_note.status','=','1')->first();
+    //                     $outcome=$diagnosis[0]->outcome_id;
+    //                     $category_services=$diagnosis[0]->category_services;
+    //                     // $diagnosis_id=$diagnosis['diagnosis'];
+    //                     $additional_diagnosis=$diagnosis[0]->additional_diagnosis;
+    //                     $code_id=$diagnosis[0]->code_id;
+    //                     $sub_code_id=$diagnosis[0]->sub_code_id;
+    //                     $add_code_id=$diagnosis[0]->additional_code_id;
+    //                     $add_sub_code_id=$diagnosis[0]->additional_subcode;
+    //                     if($request->diagnosis_id!=NULL && $request->diagnosis_id!='0'){
+    //                         if( $diagnosis[0]->diagnosis!=$request->diagnosis_id ){
+    //                             continue;
+    //                         }
+    //                     }
+    //                     if($diagnosis[0]->diagnosis!=0){
+    //                         $icd_code=$diagnosis[0]->icd_code;
+    //                         $icd_name=$diagnosis[0]->icd_name; //dah
+    //                     }else{
+    //                         $icd_code='-';
+    //                         $icd_name='-'; //dah
+    //                     }
+
+    //             }else if (CpsProgressNote::where('appointment_details_id', $id)->where('status','1')->exists()) {
+    //                     $diagnosis=DB::select('CALL cps_progress_note(' . $id . ')');
+    //                     // $diagnosis = CpsProgressNote::select('icd_code.icd_code','icd_code.icd_name','diagnosis_type','additional_diagnosis','code_id','sub_code_id',
+    //                     // 'additional_code_id','additional_subcode','outcome','service_category')
+    //                     // ->leftjoin('icd_code','icd_code.id','=','cps_progress_note.diagnosis_type')
+    //                     // ->where('appointment_details_id', $id)
+    //                     // ->where('cps_progress_note.status','=','1')->first();
+    //                     $outcome=$diagnosis[0]->outcome;
+    //                     $category_services=$diagnosis[0]->service_category;
+    //                     // $diagnosis_id=$diagnosis['diagnosis_type'];
+    //                     $additional_diagnosis=$diagnosis[0]->additional_diagnosis;
+    //                     $code_id=$diagnosis[0]->code_id;
+    //                     $sub_code_id=$diagnosis[0]->sub_code_id;
+    //                     $add_code_id=$diagnosis[0]->additional_code_id;
+    //                     $add_sub_code_id=$diagnosis[0]->additional_subcode;
+    //                     if($request->diagnosis_id!=NULL && $request->diagnosis_id!='0'){
+    //                         if( $diagnosis[0]->diagnosis_type!=$request->diagnosis_id ){
+    //                             continue;
+    //                         }
+    //                     }
+    //                     if($diagnosis[0]->diagnosis_type!=0){
+    //                         $icd_code=$diagnosis[0]->icd_code;
+    //                         $icd_name=$diagnosis[0]->icd_name; //dah
+    //                     }else{
+    //                         $icd_code='-';
+    //                         $icd_name='-'; //dah
+    //                     }
+
+    //              }else if (SeProgressNote::where('appointment_details_id', $id)->where('status','1')->exists()) {
+    //                 $diagnosis=DB::select('CALL se_progress_note(' . $id . ')');
+    //                 // $diagnosis = SeProgressNote::select('icd_code.icd_code','icd_code.icd_name','diagnosis_type','additional_diagnosis','code_id','sub_code_id',
+    //                 // 'additional_code_id','additional_subcode','outcome','service_category')
+    //                 // ->leftjoin('icd_code','icd_code.id','=','se_progress_note.diagnosis_type')
+    //                 // ->where('appointment_details_id', $id)
+    //                 // ->where('se_progress_note.status','=','1')->first();
+    //                 $outcome=$diagnosis[0]->outcome;
+    //                 $category_services=$diagnosis[0]->service_category;
+    //                 // $diagnosis_id=$diagnosis['diagnosis_type'];
+    //                 $additional_diagnosis=$diagnosis[0]->additional_diagnosis;
+    //                 $code_id=$diagnosis[0]->code_id;
+    //                 $sub_code_id=$diagnosis[0]->sub_code_id;
+    //                 $add_code_id=$diagnosis[0]->additional_code_id;
+    //                 $add_sub_code_id=$diagnosis[0]->additional_subcode;
+    //                 if($request->diagnosis_id!=NULL && $request->diagnosis_id!='0'){
+    //                     if( $diagnosis[0]->diagnosis_type!=$request->diagnosis_id ){
+    //                         continue;
+    //                     }
+    //                 }
+    //                 if($diagnosis[0]->diagnosis_type!=0){
+    //                     $icd_code=$diagnosis[0]->icd_code;
+    //                     $icd_name=$diagnosis[0]->icd_name; //dah
+    //                 }else{
+    //                     $icd_code='-';
+    //                     $icd_name='-'; //dah
+    //                 }
+
+    //             }else if (PatientIndexForm::where('appointment_details_id', $id)->where('status','1')->exists()) {
+    //                 $diagnosis=DB::select('CALL patient_index_form(' . $id . ')');
+    //                 // $diagnosis = PatientIndexForm::select('icd_code.icd_code','icd_code.icd_name','diagnosis','additional_diagnosis','code_id','sub_code_id',
+    //                 // 'additional_code_id','additional_subcode','outcome','category_of_services')
+    //                 // ->leftjoin('icd_code','icd_code.id','=','patient_index_form.diagnosis')
+    //                 // ->where('appointment_details_id', $id)
+    //                 // ->where('patient_index_form.status','=','1')->first();
+    //                 $outcome=$diagnosis[0]->outcome;
+    //                 $category_services=$diagnosis[0]->category_of_services;
+    //                 // $diagnosis_id=$diagnosis['diagnosis'];
+    //                 $additional_diagnosis=$diagnosis[0]->additional_diagnosis;
+    //                 $code_id=$diagnosis[0]->code_id;
+    //                 $sub_code_id=$diagnosis[0]->sub_code_id;
+    //                 $add_code_id=$diagnosis[0]->additional_code_id;
+    //                 $add_sub_code_id=$diagnosis[0]->additional_subcode;
+    //                 if($request->diagnosis_id!=NULL && $request->diagnosis_id!='0'){
+    //                     if( $diagnosis[0]->diagnosis!=$request->diagnosis_id ){
+    //                         continue;
+    //                     }
+    //                 }
+    //                 if($diagnosis[0]->diagnosis!=0){
+    //                     $icd_code=$diagnosis[0]->icd_code;
+    //                     $icd_name=$diagnosis[0]->icd_name; //dah
+    //                 }else{
+    //                     $icd_code='-';
+    //                     $icd_name='-'; //dah
+    //                 }
+
+    //              }else if (CounsellingProgressNote::where('appointment_details_id', $id)->where('status','1')->exists()) {
+    //                 $diagnosis=DB::select('CALL counselling_progress_note(' . $id . ')');
+    //                 // $diagnosis = CounsellingProgressNote::select('icd_code.icd_code','icd_code.icd_name','diagnosis_id','additional_diagnosis','code_id',
+    //                 // 'sub_code_id','additional_code_id','additional_subcode','outcome_id','category_services')
+    //                 // ->leftjoin('icd_code','icd_code.id','=','counselling_progress_note.diagnosis_id')
+    //                 // ->where('appointment_details_id', $id)
+    //                 // ->where('counselling_progress_note.status','=','1')->first();
+    //                 $outcome=$diagnosis[0]->outcome_id;
+    //                 $category_services=$diagnosis[0]->category_services;
+    //                 // $diagnosis_id=$diagnosis['diagnosis_id'];
+    //                 $additional_diagnosis=$diagnosis[0]->additional_diagnosis;
+    //                 $code_id=$diagnosis[0]->code_id;
+    //                 $sub_code_id=$diagnosis[0]->sub_code_id;
+    //                 $add_code_id=$diagnosis[0]->additional_code_id;
+    //                 $add_sub_code_id=$diagnosis[0]->additional_subcode;
+    //                 if($request->diagnosis_id!=NULL && $request->diagnosis_id!='0'){
+    //                     if( $diagnosis[0]->diagnosis_id!=$request->diagnosis_id ){
+    //                         continue;
+    //                     }
+    //                 }
+    //                 if($diagnosis[0]->diagnosis_id!=0){
+    //                     $icd_code=$diagnosis[0]->icd_code;
+    //                     $icd_name=$diagnosis[0]->icd_name; //dah
+    //                 }else{
+    //                     $icd_code='-';
+    //                     $icd_name='-'; //dah
+    //                 }
+
+    //             }else if (EtpProgressNote::where('appointment_details_id', $id)->where('status','1')->exists()) { //sambung sini
+    //                 $diagnosis=DB::select('CALL etp_progress_note(' . $id . ')');
+    //                 // $diagnosis = EtpProgressNote::select('icd_code.icd_code','icd_code.icd_name','diagnosis_type','additional_diagnosis','code_id',
+    //                 // 'sub_code_id','additional_code_id','additional_subcode','outcome','service_category')
+    //                 // ->leftjoin('icd_code','icd_code.id','=','etp_progress_note.diagnosis_type')
+    //                 // ->where('appointment_details_id', $id)
+    //                 // ->where('etp_progress_note.status','=','1')->first();
+    //                 $outcome=$diagnosis[0]->outcome;
+    //                 $category_services=$diagnosis[0]->service_category;
+    //                 // $diagnosis_id=$diagnosis['diagnosis_type'];
+    //                 $additional_diagnosis=$diagnosis[0]->additional_diagnosis;
+    //                 $code_id=$diagnosis[0]->code_id;
+    //                 $sub_code_id=$diagnosis[0]->sub_code_id;
+    //                 $add_code_id=$diagnosis[0]->additional_code_id;
+    //                 $add_sub_code_id=$diagnosis[0]->additional_subcode;
+    //                 if($request->diagnosis_id!=NULL && $request->diagnosis_id!='0'){
+    //                     if( $diagnosis[0]->diagnosis_type!=$request->diagnosis_id ){
+    //                         continue;
+    //                     }
+    //                 }
+    //                 if($diagnosis[0]->diagnosis_type!=0){
+    //                     $icd_code=$diagnosis[0]->icd_code;
+    //                     $icd_name=$diagnosis[0]->icd_name; //dah
+    //                 }else{
+    //                     $icd_code='-';
+    //                     $icd_name='-'; //dah
+    //                 }
+
+    //             }else if (JobClubProgressNote::where('appointment_details_id', $id)->where('status','1')->exists()) {
+    //                 $diagnosis=DB::select('CALL job_club_progress_note(' . $id . ')');
+    //                 // $diagnosis = JobClubProgressNote::select('icd_code.icd_code','icd_code.icd_name','diagnosis_type','add_diagnosis_type','code_id',
+    //                 // 'sub_code_id','add_code_id','add_sub_code_id','outcome','service_category')
+    //                 // ->leftjoin('icd_code','icd_code.id','=','job_club_progress_note.diagnosis_type')
+    //                 // ->where('appointment_details_id', $id)
+    //                 // ->where('job_club_progress_note.status','=','1')->first();
+    //                 $outcome=$diagnosis[0]->outcome;
+    //                 $category_services=$diagnosis[0]->service_category;
+    //                 // $diagnosis_id=$diagnosis['diagnosis_type'];
+    //                 $additional_diagnosis=$diagnosis[0]->add_diagnosis_type;
+    //                 $code_id=$diagnosis[0]->code_id;
+    //                 $sub_code_id=$diagnosis[0]->sub_code_id;
+    //                 $add_code_id=$diagnosis[0]->add_code_id;
+    //                 $add_sub_code_id=$diagnosis[0]->add_sub_code_id;
+    //                 if($request->diagnosis_id!=NULL && $request->diagnosis_id!='0'){
+    //                     if( $diagnosis[0]->diagnosis_type!=$request->diagnosis_id ){
+    //                         continue;
+    //                     }
+    //                 }
+    //                 if($diagnosis[0]->diagnosis_type!=0){
+    //                     $icd_code=$diagnosis[0]->icd_code;
+    //                     $icd_name=$diagnosis[0]->icd_name; //dah
+    //                 }else{
+    //                     $icd_code='-';
+    //                     $icd_name='-'; //dah
+    //                 }
+
+    //              }else if (ConsultationDischargeNote::where('appointment_details_id', $id)->where('status','1')->exists()) {  
+    //                 $diagnosis=DB::select('CALL consultation_discharge_note(' . $id . ')');
+    //                 // $diagnosis = ConsultationDischargeNote::select('icd_code.icd_code','icd_code.icd_name','diagnosis_id','add_type_diagnosis_id','code_id',
+    //                 // 'sub_code_id','add_code_id','add_sub_code_id','outcome','category_services')
+    //                 // ->leftjoin('icd_code','icd_code.id','=','consultation_discharge_note.diagnosis_id')
+    //                 // ->where('appointment_details_id', $id)
+    //                 // ->where('consultation_discharge_note.status','=','1')->first();
+    //                 $outcome=$diagnosis[0]->outcome;
+    //                 $category_services=$diagnosis[0]->category_services;
+    //                 // $diagnosis_id=$diagnosis['diagnosis_id'];
+    //                 $additional_diagnosis=$diagnosis[0]->add_type_diagnosis_id;
+    //                 $code_id=$diagnosis[0]->code_id;
+    //                 $sub_code_id=$diagnosis[0]->sub_code_id;
+    //                 $add_code_id=$diagnosis[0]->add_code_id;
+    //                 $add_sub_code_id=$diagnosis[0]->add_sub_code_id;
+    //                 if($request->diagnosis_id!=NULL && $request->diagnosis_id!='0'){
+    //                     if( $diagnosis[0]->diagnosis_id!=$request->diagnosis_id ){
+    //                         continue;
+    //                     }
+    //                 }
+    //                 if($diagnosis[0]->diagnosis_id!=0){
+    //                     $icd_code=$diagnosis[0]->icd_code;
+    //                     $icd_name=$diagnosis[0]->icd_name; //dah
+    //                 }else{
+    //                     $icd_code='-';
+    //                     $icd_name='-'; //dah
+    //                 }
+
+    //             }else if (RehabDischargeNote::where('appointment_details_id', $id)->where('status','1')->exists()) {
+    //                 $diagnosis=DB::select('CALL rehab_discharge_note(' . $id . ')');
+    //                 // $diagnosis = RehabDischargeNote::select('icd_code.icd_code','icd_code.icd_name','diagnosis_id','add_diagnosis_type','code_id','sub_code_id',
+    //                 // 'add_code_id','add_sub_code_id','outcome','service_category')
+    //                 // ->leftjoin('icd_code','icd_code.id','=','rehab_discharge_note.diagnosis_id')
+    //                 // ->where('appointment_details_id', $id)
+    //                 // ->where('rehab_discharge_note.status','=','1')->first();
+    //                 $outcome=$diagnosis[0]->outcome;
+    //                 $category_services=$diagnosis[0]->service_category;
+    //                 // $diagnosis_id=$diagnosis['diagnosis_id'];
+    //                 $additional_diagnosis=$diagnosis[0]->add_diagnosis_type;
+    //                 $code_id=$diagnosis[0]->code_id;
+    //                 $sub_code_id=$diagnosis[0]->sub_code_id;
+    //                 $add_code_id=$diagnosis[0]->add_code_id;
+    //                 $add_sub_code_id=$diagnosis[0]->add_sub_code_id;
+    //                 if($request->diagnosis_id!=NULL && $request->diagnosis_id!='0'){
+    //                     if( $diagnosis[0]->diagnosis_id!=$request->diagnosis_id ){
+    //                         continue;
+    //                     }
+    //                 }
+    //                 if($diagnosis[0]->diagnosis_id!=0){
+    //                     $icd_code=$diagnosis[0]->icd_code;
+    //                     $icd_name=$diagnosis[0]->icd_name; //dah
+    //                 }else{
+    //                     $icd_code='-';
+    //                     $icd_name='-'; //dah
+    //                 }
+
+    //             }else if (CpsDischargeNote::where('appointment_details_id', $id)->where('status','1')->exists()) {
+    //                 $diagnosis=DB::select('CALL cps_discharge_note(' . $id . ')');
+    //                 // $diagnosis = CpsDischargeNote::select('icd_code.icd_code','icd_code.icd_name','diagnosis','add_diagnosis_type','code_id','sub_code_id',
+    //                 // 'add_code_id','add_sub_code_id','outcome','service_category')
+    //                 // ->leftjoin('icd_code','icd_code.id','=','cps_discharge_note.diagnosis')
+    //                 // ->where('appointment_details_id', $id)
+    //                 // ->where('cps_discharge_note.status','=','1')->first();
+    //                 $outcome=$diagnosis[0]->outcome;
+    //                 $category_services=$diagnosis[0]->service_category;
+    //                 // $diagnosis_id=$diagnosis['diagnosis'];
+    //                 $additional_diagnosis=$diagnosis[0]->add_diagnosis_type;
+    //                 $code_id=$diagnosis[0]->code_id;
+    //                 $sub_code_id=$diagnosis[0]->sub_code_id;
+    //                 $add_code_id=$diagnosis[0]->add_code_id;
+    //                 $add_sub_code_id=$diagnosis[0]->add_sub_code_id;
+    //                 if($request->diagnosis_id!=NULL && $request->diagnosis_id!='0'){
+    //                     if( $diagnosis[0]->diagnosis!=$request->diagnosis_id ){
+    //                         continue;
+    //                     }
+    //                 }
+    //                 if($diagnosis[0]->diagnosis!=0){
+    //                     $icd_code=$diagnosis[0]->icd_code;
+    //                     $icd_name=$diagnosis[0]->icd_name; //dah
+    //                 }else{
+    //                     $icd_code='-';
+    //                     $icd_name='-'; //dah
+    //                 }
+    //             }else{
+
+    //                 //$result[$index]['diagnosis']='-'; //untuk filter sahaja
+    //                 if($request->diagnosis_id!=NULL && $request->diagnosis_id!='0'){
+    //                         continue;
+
+    //                 }
+    //                  $outcome='-';
+    //                  $category_services='-';
+    //                  $additional_diagnosis='-';
+    //                  $code_id='-';
+    //                  $sub_code_id='-';
+    //                  $add_code_id='-';
+    //                  $icd_code='-';
+    //                  $icd_name='-'; //dah
+    //                  $add_sub_code_id='-';
+    //              }
+    //             ////////////////////////////////////////////for additional diagnosis/////////////////////////////////////////////////
+    //             if($additional_diagnosis!=NULL && $additional_diagnosis!='0' && $additional_diagnosis!='-'){
+    //                 $e=0;
+    //                 $additional_diagnosis_id=[];
+    //                     foreach (explode(',',$additional_diagnosis) as $add) {
+    //                             if($add!='0'|| $add!=NULL){
+    //                                 // $add_diagnosis = IcdCode::select('icd_code','icd_name')->where('id', $add)->first();
+    //                                 $add_diagnosis=DB::select('CALL icd_code(' . $add . ')');
+
+    //                         // if($add_diagnosis){
+                               
+    //                         // }else{
+    //                         //     dd($ssh[$index]->id);
+    //                         // }
+    //                                 $additional_diagnosis_id[$e]['additional_diagnosis']=$add_diagnosis[0]->icd_code.' '.$add_diagnosis[0]->icd_name;
+    //                             }else{                                   
+    //                                 $additional_diagnosis_id[$e]['additional_diagnosis']='-';
+    //                             }
+    //                         $e++;
+    //                     }
+    //                     if($e==1){
+    //                         $result[$index]['additional_diagnosis1']=$additional_diagnosis_id[0]['additional_diagnosis'];
+    //                         $result[$index]['additional_diagnosis2']='-';
+    //                         $result[$index]['additional_diagnosis3']='-';
+    //                         $result[$index]['additional_diagnosis4']='-';
+    //                         $result[$index]['additional_diagnosis5']='-';
+    //                     }else if($e==2){
+    //                         $result[$index]['additional_diagnosis1']=$additional_diagnosis_id[0]['additional_diagnosis'];
+    //                         $result[$index]['additional_diagnosis2']=$additional_diagnosis_id[1]['additional_diagnosis'];
+    //                         $result[$index]['additional_diagnosis3']='-';
+    //                         $result[$index]['additional_diagnosis4']='-';
+    //                         $result[$index]['additional_diagnosis5']='-';
+    //                     }else if($e==3){
+    //                         $result[$index]['additional_diagnosis1']=$additional_diagnosis_id[0]['additional_diagnosis'];
+    //                         $result[$index]['additional_diagnosis2']=$additional_diagnosis_id[1]['additional_diagnosis'];
+    //                         $result[$index]['additional_diagnosis3']=$additional_diagnosis_id[2]['additional_diagnosis'];
+    //                         $result[$index]['additional_diagnosis4']='-';
+    //                         $result[$index]['additional_diagnosis5']='-';
+    //                     }else if($e==4){
+    //                         $result[$index]['additional_diagnosis1']=$additional_diagnosis_id[0]['additional_diagnosis'];
+    //                         $result[$index]['additional_diagnosis2']=$additional_diagnosis_id[1]['additional_diagnosis'];
+    //                         $result[$index]['additional_diagnosis3']=$additional_diagnosis_id[2]['additional_diagnosis'];
+    //                         $result[$index]['additional_diagnosis4']=$additional_diagnosis_id[3]['additional_diagnosis'];
+    //                         $result[$index]['additional_diagnosis5']='-';
+    //                     }else if($e==5){
+    //                         $result[$index]['additional_diagnosis1']=$additional_diagnosis_id[0]['additional_diagnosis'];
+    //                         $result[$index]['additional_diagnosis2']=$additional_diagnosis_id[1]['additional_diagnosis'];
+    //                         $result[$index]['additional_diagnosis3']=$additional_diagnosis_id[2]['additional_diagnosis'];
+    //                         $result[$index]['additional_diagnosis4']=$additional_diagnosis_id[3]['additional_diagnosis'];
+    //                         $result[$index]['additional_diagnosis5']=$additional_diagnosis_id[4]['additional_diagnosis'];
+    //                     } 
+    //             }else{
+    //                 $result[$index]['additional_diagnosis1']='-';
+    //                 $result[$index]['additional_diagnosis2']='-';
+    //                 $result[$index]['additional_diagnosis3']='-';
+    //                 $result[$index]['additional_diagnosis4']='-';
+    //                 $result[$index]['additional_diagnosis5']='-';
+    //             }
+
+    //             ///////////////////////////for code and additional code/////////////////////////////////////
+
+    //             if($add_code_id!=NULL && $add_code_id!='0' && $add_code_id!='-'){
+    //                 // $add_code_id = IcdCode::select('icd_code','icd_name')->where('id', $add_code_id)->first();
+    //                 $add_code_id=DB::select('CALL icd_code(' . $add_code_id . ')');
+    //                 $result[$index]['add_code_id']=$add_code_id[0]->icd_code.''.$add_code_id[0]->icd_name;
+    //             }else{
+    //                 $result[$index]['add_code_id']='-';
+    //             }
+
+    //                             ///////////////////////////for sub code///////////////////////////////////////////
+    //             if($sub_code_id!=NULL && $sub_code_id!='0' && $add_code_id!='-'){
+    //                 $f=0;
+    //                 $sub_code_id_array=[];
+    //                     foreach (explode(',',$sub_code_id) as $sub) {
+    //                                 if($sub!=NULL && $sub!='0'){
+    //                                     // $sub_code = IcdCode::select('icd_code','icd_name')->where('id', $sub)->first();
+    //                                     $sub_code=DB::select('CALL icd_code(' . $sub . ')');
+    //                                     //$sub_code = $sub_code->jsonserialize();
+    //                                     $sub_code_id_array[$f]['sub_code']=$sub_code[0]->icd_code.' '.$sub_code[0]->icd_name;
+    //                                 }else{
+    //                                     $sub_code_id_array[$f]['sub_code']='-';
+    //                                     }
+    //                                 $f++;
+    //                             }
+    //                     if($f==1){
+    //                         $result[$index]['sub_code1']=$sub_code_id_array[0]['sub_code'];
+    //                         $result[$index]['sub_code2']='-';
+    //                         $result[$index]['sub_code3']='-';
+    //                         $result[$index]['sub_code4']='-';
+    //                         $result[$index]['sub_code5']='-';
+    //                     }else if($f==2){
+    //                         // if(isset($sub_code_id_array[0]['sub_code'])){
+                               
+    //                         // }else{
+    //                         //     dd($ssh[$index]->id);
+    //                         // }
+    //                         $result[$index]['sub_code1']=$sub_code_id_array[0]['sub_code'];
+    //                         $result[$index]['sub_code2']=$sub_code_id_array[1]['sub_code'];
+    //                         $result[$index]['sub_code3']='-';
+    //                         $result[$index]['sub_code4']='-';
+    //                         $result[$index]['sub_code5']='-';
+    //                     }else if($f==3){
+    //                         $result[$index]['sub_code1']=$sub_code_id_array[0]['sub_code'];
+    //                         $result[$index]['sub_code2']=$sub_code_id_array[1]['sub_code'];
+    //                         $result[$index]['sub_code3']=$sub_code_id_array[2]['sub_code'];
+    //                         $result[$index]['sub_code4']='-';
+    //                         $result[$index]['sub_code5']='-';
+    //                     }else if($f==4){
+    //                         $result[$index]['sub_code1']=$sub_code_id_array[0]['sub_code'];
+    //                         $result[$index]['sub_code2']=$sub_code_id_array[1]['sub_code'];
+    //                         $result[$index]['sub_code3']=$sub_code_id_array[2]['sub_code'];
+    //                         $result[$index]['sub_code4']=$sub_code_id_array[3]['sub_code'];
+    //                         $result[$index]['sub_code5']='-';
+    //                     }else if($f==5){
+    //                         $result[$index]['sub_code1']=$sub_code_id_array[0]['sub_code'];
+    //                         $result[$index]['sub_code2']=$sub_code_id_array[1]['sub_code'];
+    //                         $result[$index]['sub_code3']=$sub_code_id_array[2]['sub_code'];
+    //                         $result[$index]['sub_code4']=$sub_code_id_array[3]['sub_code'];
+    //                         $result[$index]['sub_code5']=$sub_code_id_array[4]['sub_code'];
+    //                     }
+    //             }else{
+    //                 $result[$index]['sub_code1']='-';
+    //                 $result[$index]['sub_code2']='-';
+    //                 $result[$index]['sub_code3']='-';
+    //                 $result[$index]['sub_code4']='-';
+    //                 $result[$index]['sub_code5']='-';
+    //             }
+
+    //                         ///////////////////////////for additional sub code/////////////////////////////////////
+    //         if($add_sub_code_id!=NULL && $add_sub_code_id!='0' && $add_code_id!='-'){
+    //             $f=0;
+    //             $add_sub_code_val=[];
+    //                 foreach (explode(',',$add_sub_code_id) as $add_sub) {
+    //                                 if($add_sub!=NULL && $add_sub!='0'){
+    //                                 // $add_sub_code = IcdCode::select('icd_code','icd_name')->where('id', $add_sub)->first();
+    //                                 $add_sub_code=DB::select('CALL icd_code(' . $add_sub . ')');
+    //                                // $add_sub_code = $add_sub_code->jsonserialize();
+    //                                 $add_sub_code_val[$f]['add_sub_code']=$add_sub_code[0]->icd_code.' '.$add_sub_code[0]->icd_name;
+    //                                 }else{
+    //                                 $add_sub_code_val[$f]['add_sub_code']='-';
+    //                                 }
+    //                         }$f++;
+    //                 if($f==1){
+    //                     $result[$index]['add_sub_code1']=$add_sub_code_val[0]['add_sub_code'];
+    //                     $result[$index]['add_sub_code2']='-';
+    //                     $result[$index]['add_sub_code3']='-';
+    //                     $result[$index]['add_sub_code4']='-';
+    //                     $result[$index]['add_sub_code5']='-';
+    //                 }else if($f==2){
+    //                     $result[$index]['add_sub_code1']=$add_sub_code_val[0]['add_sub_code'];
+    //                     $result[$index]['add_sub_code2']=$add_sub_code_val[1]['add_sub_code'];
+    //                     $result[$index]['add_sub_code3']='-';
+    //                     $result[$index]['add_sub_code4']='-';
+    //                     $result[$index]['add_sub_code5']='-';
+    //                 }else if($f==3){
+    //                     $result[$index]['add_sub_code1']=$add_sub_code_val[0]['add_sub_code'];
+    //                     $result[$index]['add_sub_code2']=$add_sub_code_val[1]['add_sub_code'];
+    //                     $result[$index]['add_sub_code3']=$add_sub_code_val[2]['add_sub_code'];
+    //                     $result[$index]['add_sub_code4']='-';
+    //                     $result[$index]['add_sub_code5']='-';
+    //                 }else if($f==4){
+    //                     $result[$index]['add_sub_code1']=$add_sub_code_val[0]['add_sub_code'];
+    //                     $result[$index]['add_sub_code2']=$add_sub_code_val[1]['add_sub_code'];
+    //                     $result[$index]['add_sub_code3']=$add_sub_code_val[2]['add_sub_code'];
+    //                     $result[$index]['add_sub_code4']=$add_sub_code_val[3]['add_sub_code'];
+    //                     $result[$index]['add_sub_code5']='-';
+    //                 }else if($f==5){
+    //                     $result[$index]['add_sub_code1']=$add_sub_code_val[0]['add_sub_code'];
+    //                     $result[$index]['add_sub_code2']=$add_sub_code_val[1]['add_sub_code'];
+    //                     $result[$index]['add_sub_code3']=$add_sub_code_val[2]['add_sub_code'];
+    //                     $result[$index]['add_sub_code4']=$add_sub_code_val[3]['add_sub_code'];
+    //                     $result[$index]['add_sub_code5']=$add_sub_code_val[4]['add_sub_code'];
+    //                 }
+    //         }else{
+    //             $result[$index]['add_sub_code1']='-';
+    //             $result[$index]['add_sub_code2']='-';
+    //             $result[$index]['add_sub_code3']='-';
+    //             $result[$index]['add_sub_code4']='-';
+    //             $result[$index]['add_sub_code5']='-';
+    //         }
+
+
+    //         if($outcome!=NULL && $outcome!='0' && $outcome!='-'){
+    //             $outcome_q = GeneralSetting::where('id',$outcome)->first();
+    //             // $outcome_q=DB::select('CALL general_setting(' . $outcome . ')');
+    //             $outcome_value=$outcome_q['section_value'];
+    //         }else{
+    //             $outcome_value='-';
+    //         }
+            
+
+
+
+    //         $result[$index]['No']=$index+1;
+    //         $result[$index]['Registration_date'] = date('d/m/Y', strtotime($v['created_at']));
+    //         $result[$index]['Registration_Time'] = date('h:i:s A', strtotime($v['created_at']));
+    //         if($v['nric_no']==NULL){
+    //             $result[$index]['nric_no'] = $v['passport_no'];
+    //         }else{
+    //             $result[$index]['nric_no'] = $v['nric_no'];
+    //         }
+    //         $result[$index]['Name'] = $v['name_asin_nric'];
+    //         $result[$index]['Attendance_status'] = $v['appointment_status'];
+    //         $result[$index]['ADDRESS'] = $v['address1'] . ' ' . $v['address2'] . ' ' . $v['address3'];
+    //         $result[$index]['CITY'] = $v['city_name'];
+    //         $result[$index]['STATE'] = $v['state_name'];
+    //         $result[$index]['POSTCODE'] = $v['postcode'];
+    //         $result[$index]['PHONE_NUMBER'] = $v['mobile_no'];
+    //         $result[$index]['DATE_OF_BIRTH'] = $v['birth_date'];
+    //         $result[$index]['AGE'] = $v['age'];
+    //         $result[$index]['citizenship'] = $v['citizenship'];
+    //         $result[$index]['race'] = $v['race'];
+    //         $result[$index]['religion'] = $v['religion'];
+    //         $result[$index]['marital'] = $v['marital'];
+    //         $result[$index]['accomodation'] = $v['accomodation'];
+    //         $result[$index]['education_level'] = $v['education_level'];
+    //         $result[$index]['occupation_status'] = $v['occupation_status'];
+    //         $result[$index]['fee_exemption_status'] = $v['fee_exemption_status'];
+    //         $result[$index]['occupation_sector'] = $v['occupation_sector'];
+    //         $result[$index]['GENDER'] = $v['sex'];
+    //         $result[$index]['APPOINTMENT_TYPE'] = $v['service_name'];
+    //         $result[$index]['DIAGNOSIS'] = $icd_name;
+    //         $result[$index]['DIAGNOSIS_CODE'] = $icd_code;
+    //         $result[$index]['CATEGORY_OF_PATIENTS'] = $v['patient_category'];
+    //         $result[$index]['TYPE_OF_Visit'] = $v['type_visit'];
+    //         $result[$index]['TYPE_OF_Refferal'] = $v['type_referral'] ;
+    //         $result[$index]['Attending_staff'] = $v['staff_name'];
+    //         $result[$index]['outcome'] = $outcome_value;
+    //         $result[$index]['category_of_services'] = $category_services;
+
+    //         $index++;
+    //         }
+
+
+    //     }
+    //     //dd($result); //confirmkan status and data yang amik based on table2 cd yang lain. takut nama column lain. and check either data is correct
+    //     if ($result) {
+    //         $totalReports = count($result);
+    //         $filePath = '';
+    //         if (isset($request->report_type) && $request->report_type == 'excel') {
+    //             $filename = 'GeneralReport-'.time().'.xls';
+    //               return response([
+    //                 'message' => 'Data successfully retrieved.',
+    //                 'result' => $result,
+    //                 'header' => 'General Report '.$request->month.' '.$request->year,
+    //                 'filename' => $filename,
+    //                 'code' => 200]);
+    //         } else {
+    //             $filename = 'GeneralReport-'.time().'.pdf';
+    //             return response()->json(["message" => "General Report", 'result' => $result, 'filename' => $filename, "code" => 200]);
+    //         }
+    //     } else {
+    //         return response()->json(["message" => "General Report", 'result' => [], 'filename' => null, "code" => 200]);
+    //     }
+    // }
+   
 
     public function getKPIReport(Request $request)
     {

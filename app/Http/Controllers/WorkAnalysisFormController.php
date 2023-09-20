@@ -19,7 +19,7 @@ use App\Models\TransactionLog;
 use DateTimeZone;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\AppointmentRequestMail as AppointmentRequestMail;
-
+use App\Models\UserDiagnosis;
 use CreateWorkAnalysisJobSpecificationTable;
 use Validator;
 use DB;
@@ -374,6 +374,20 @@ class WorkAnalysisFormController extends Controller
                 return response()->json(["message" => $validator->errors(), "code" => 422]);
             }
             // dd($request);
+            $user_diagnosis = [
+                'app_id' => $request->appId,
+                'patient_id' =>  $request->patient_id,
+                'diagnosis_id' =>  $request->type_diagnosis_id,
+                'add_diagnosis_id' => $additional_diagnosis,
+                'code_id' =>  $request->code_id,
+                'sub_code_id' =>  $sub_code_id,
+                'add_code_id'=> $request->additional_code_id,
+                'add_sub_code_id' => $additional_subcode,
+                'outcome_id' =>  $request->outcome,
+                'category_services' =>  $request->category_services,
+                'created_at' => date('Y-m-d H:i:s'),
+            ];
+            UserDiagnosis::create($user_diagnosis);
             if ($request->id) {
                 WorkAnalysisForm::where(['id' => $request->id])->update($WorkAnalysisForm);
                 $WorkAnalysisFormid = ($request->id);
