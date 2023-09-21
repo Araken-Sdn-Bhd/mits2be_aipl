@@ -2373,7 +2373,8 @@ class ReportController extends Controller
                                     }else{
                                     $add_sub_code_val[$f]['add_sub_code']='-';
                                     }
-                            }$f++;
+                            $f++;
+                    }
                     if($f==1){
                         $result[$index]['add_sub_code1']=$add_sub_code_val[0]['add_sub_code'];
                         $result[$index]['add_sub_code2']='-';
