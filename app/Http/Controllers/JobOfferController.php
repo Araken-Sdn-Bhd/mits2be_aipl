@@ -563,6 +563,7 @@ class JobOfferController extends Controller
                 'add_sub_code_id' => $additional_sub_code_id,
                 'outcome_id' =>  $request->outcome,
                 'category_services' =>  $request->category_of_services,
+                'remarks' => 'cps_referral_form',
                 'created_at' => date('Y-m-d H:i:s'),
             ];
             UserDiagnosis::create($user_diagnosis);
@@ -665,6 +666,7 @@ class JobOfferController extends Controller
             'add_sub_code_id' => $additional_subcode,
             'outcome_id' =>  $request->outcome,
             'category_services' =>  $request->category_services,
+            'remarks' => 'laser_assesmen_form',
             'created_at' => date('Y-m-d H:i:s'),
         ];
         UserDiagnosis::create($user_diagnosis);
@@ -749,6 +751,7 @@ class JobOfferController extends Controller
                     'add_sub_code_id' => str_replace('"',"",$request->add_sub_code_id),
                     'outcome_id' =>  $request->outcome,
                     'category_services' =>  $request->category_of_services,
+                    'remarks' => 'patient_care_paln',
                     'created_at' => date('Y-m-d H:i:s'),
                 ];
                 UserDiagnosis::create($user_diagnosis);
@@ -1088,6 +1091,7 @@ class JobOfferController extends Controller
                 'add_sub_code_id' => str_replace('"',"",$request->add_sub_code_id),
                 'outcome_id' =>  $request->outcome,
                 'category_services' =>  $request->category_of_services,
+                'remarks' => 'job_start_form',
                 'created_at' => date('Y-m-d H:i:s'),
             ];
             UserDiagnosis::create($user_diagnosis);
@@ -1192,6 +1196,7 @@ class JobOfferController extends Controller
                 'add_sub_code_id' => str_replace('"',"",$request->add_sub_code_id),
                 'outcome_id' =>  $request->outcome,
                 'category_services' =>  $request->category_of_services,
+                'remarks' => 'job_end_report',
                 'created_at' => date('Y-m-d H:i:s'),
             ];
             UserDiagnosis::create($user_diagnosis);
@@ -1322,6 +1327,7 @@ class JobOfferController extends Controller
                 'add_sub_code_id' => str_replace('"',"",$request->add_sub_code_id),
                 'outcome_id' =>  $request->outcome,
                 'category_services' =>  $request->category_of_services,
+                'remarks' => 'job_transition_report',
                 'created_at' => date('Y-m-d H:i:s'),
             ];
             UserDiagnosis::create($user_diagnosis);

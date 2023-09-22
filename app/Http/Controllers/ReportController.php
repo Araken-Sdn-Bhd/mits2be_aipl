@@ -2249,12 +2249,11 @@ class ReportController extends Controller
         }
 
         $ssh = $appointments->get()->toArray();
+        $result = [];
 
         if ($ssh) {
-            $result = [];
-            $index=0;
             $ssh  = json_decode(json_encode($ssh), true);
-
+            $index=0;
             foreach($ssh as $k=>$v){
 
                 ////////////////////////////////////////////for additional diagnosis/////////////////////////////////////////////////

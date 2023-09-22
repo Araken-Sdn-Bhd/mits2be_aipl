@@ -81,6 +81,7 @@ class ListPreviousCurrentJobController extends Controller
             'add_sub_code_id' => $additional_sub_code_id,
             'outcome_id' =>  $request->outcome,
             'category_services' =>  $request->category_services,
+            'remarks' => 'list_previous_current_job',
             'created_at' => date('Y-m-d H:i:s'),
         ];
         UserDiagnosis::create($user_diagnosis);

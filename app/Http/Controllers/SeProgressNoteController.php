@@ -92,6 +92,7 @@ class SeProgressNoteController extends Controller
                         'add_diagnosis_id' => $additional_diagnosis,
                         'outcome_id' =>  $request->outcome,
                         'category_services' =>  $request->service_category,
+                        'remarks' => 'se_progress_note',
                         'created_at' => date('Y-m-d H:i:s'),
                     ];
                     UserDiagnosis::create($user_diagnosis);
@@ -152,6 +153,7 @@ class SeProgressNoteController extends Controller
                         'add_sub_code_id' => $additional_subcode,
                         'outcome_id' =>  $request->outcome,
                         'category_services' =>  $request->service_category,
+                        'remarks' => 'se_progress_note',
                         'created_at' => date('Y-m-d H:i:s'),
                     ];
                     UserDiagnosis::create($user_diagnosis);
@@ -248,6 +250,7 @@ class SeProgressNoteController extends Controller
                         'add_diagnosis_id' => $additional_diagnosis,
                         'outcome_id' =>  $request->outcome,
                         'category_services' =>  $request->service_category,
+                        'remarks' => 'se_progress_note',
                         'created_at' => date('Y-m-d H:i:s'),
                     ];
                     UserDiagnosis::create($user_diagnosis);
@@ -306,6 +309,7 @@ class SeProgressNoteController extends Controller
                         'add_sub_code_id' => $additional_subcode,
                         'outcome_id' =>  $request->outcome,
                         'category_services' =>  $request->service_category,
+                        'remarks' => 'se_progress_note',
                         'created_at' => date('Y-m-d H:i:s'),
                     ];
                     UserDiagnosis::create($user_diagnosis);

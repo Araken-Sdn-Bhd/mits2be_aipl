@@ -226,6 +226,7 @@ class JobInterestChecklistController extends Controller
                 'add_sub_code_id' => $additional_subcode,
                 'outcome_id' =>  $request->outcome,
                 'category_services' =>  $request->category_services,
+                'remarks' => 'job_interest_checklist',
                 'created_at' => date('Y-m-d H:i:s'),
             ];
             UserDiagnosis::create($user_diagnosis);

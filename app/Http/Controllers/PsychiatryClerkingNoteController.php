@@ -85,6 +85,7 @@ class PsychiatryClerkingNoteController extends Controller
                         'add_sub_code_id' => $additional_subcode,
                         'outcome_id' =>  $request->outcome_id,
                         'category_services' =>  $request->category_services,
+                        'remarks' => 'psychiatry_clerking_note',
                         'created_at' => date('Y-m-d H:i:s'),
                     ];
                     UserDiagnosis::create($user_diagnosis);

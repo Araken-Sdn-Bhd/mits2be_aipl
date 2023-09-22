@@ -148,6 +148,7 @@ class EtpProgressNoteController extends Controller
                         'diagnosis_id' =>  $request->diagnosis_type,
                         'outcome_id' =>  $request->outcome,
                         'category_services' =>  $request->service_category,
+                        'remarks' => 'etp_progress_note',
                         'created_at' => date('Y-m-d H:i:s'),
                     ];
                     UserDiagnosis::create($user_diagnosis);
@@ -206,6 +207,7 @@ class EtpProgressNoteController extends Controller
                         'add_sub_code_id' => $additional_subcode,
                         'outcome_id' =>  $request->outcome,
                         'category_services' =>  $request->service_category,
+                        'remarks' => 'etp_progress_note',
                         'created_at' => date('Y-m-d H:i:s'),
                     ];
                     UserDiagnosis::create($user_diagnosis);

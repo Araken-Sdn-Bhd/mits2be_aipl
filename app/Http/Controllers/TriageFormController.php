@@ -302,6 +302,7 @@ class TriageFormController extends Controller
                             'add_sub_code_id' => $additional_subcode,
                             'outcome_id' =>  $request->outcome_id,
                             'category_services' =>  $request->category_services,
+                            'remarks' => 'triage_form',
                             'created_at' => date('Y-m-d H:i:s'),
                         ];
                         UserDiagnosis::create($user_diagnosis);

@@ -125,6 +125,7 @@ class OcctReferralFormController extends Controller
             'add_sub_code_id' => $additional_sub_code_id,
             'outcome_id' =>  $request->outcome,
             'category_services' =>  $request->category_services,
+            'remarks' => 'occt_referral_form',
             'created_at' => date('Y-m-d H:i:s'),
         ];
         UserDiagnosis::create($user_diagnosis);

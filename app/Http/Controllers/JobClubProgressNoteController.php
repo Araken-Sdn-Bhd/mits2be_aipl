@@ -110,6 +110,7 @@ class JobClubProgressNoteController extends Controller
                         'add_sub_code_id' => str_replace('"',"",$request->add_sub_code_id),
                         'outcome_id' =>  $request->outcome,
                         'category_services' =>  $request->service_category,
+                        'remarks' => 'job_club_progress_note',
                         'created_at' => date('Y-m-d H:i:s'),
                     ];
                     UserDiagnosis::create($user_diagnosis);
@@ -197,6 +198,7 @@ class JobClubProgressNoteController extends Controller
                         'add_diagnosis_id' => str_replace('"',"",$request->add_diagnosis_type),
                         'outcome_id' =>  $request->outcome,
                         'category_services' =>  $request->service_category,
+                        'remarks' => 'job_club_progress_note',
                         'created_at' => date('Y-m-d H:i:s'),
                     ];
                     UserDiagnosis::create($user_diagnosis);
@@ -252,6 +254,7 @@ class JobClubProgressNoteController extends Controller
                         'add_sub_code_id' => str_replace('"',"",$request->add_sub_code_id),
                         'outcome_id' =>  $request->outcome,
                         'category_services' =>  $request->service_category,
+                        'remarks' => 'job_club_progress_note',
                         'created_at' => date('Y-m-d H:i:s'),
                     ];
                     UserDiagnosis::create($user_diagnosis);

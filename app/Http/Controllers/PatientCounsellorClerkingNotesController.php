@@ -138,6 +138,7 @@ class PatientCounsellorClerkingNotesController extends Controller
                     'add_diagnosis_id' => $additional_diagnosis,
                     'outcome_id' =>  $request->outcome_id,
                     'category_services' =>  $request->category_services,
+                    'remarks' => 'patient_counsellor_clerking_notes',
                     'created_at' => date('Y-m-d H:i:s'),
                 ];
                 UserDiagnosis::create($user_diagnosis);
@@ -197,6 +198,7 @@ class PatientCounsellorClerkingNotesController extends Controller
                     'add_sub_code_id' => $additional_subcode,
                     'outcome_id' =>  $request->outcome_id,
                     'category_services' =>  $request->category_services,
+                    'remarks' => 'patient_counsellor_clerking_notes',
                     'created_at' => date('Y-m-d H:i:s'),
                 ];
                 UserDiagnosis::create($user_diagnosis);
