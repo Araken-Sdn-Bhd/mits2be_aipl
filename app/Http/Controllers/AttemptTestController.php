@@ -648,6 +648,8 @@ class AttemptTestController extends Controller
     {
         $otest=DB::table('attempt_test')
             ->select('test_name')
+            ->groupBy('test_name')
+            ->orderby('test_name','ASC')
             ->get();
 
             return response()->json(["message" => "List of Online Tests.", 'onlinetest' => $otest, "code" => 200]);
@@ -670,20 +672,17 @@ class AttemptTestController extends Controller
             $sql = AttemptTest::select('attempt_test.id','attempt_test.test_name','attempt_test.question_id',
             'attempt_test.answer_id','attempt_test.created_at','attempt_test.user_ip_address','patient_registration.id as pid')
             ->join('patient_registration', 'patient_registration.id', '=', 'attempt_test.patient_mrn_id');
-
+       
                 if ($demo)
                     $sql->where($demo);
 
                 $sql = $sql->where(function ($query) use ($searchWord) {
-                    $query->where('patient_mrn', 'LIKE', '%' . $searchWord . '%')
-                        ->orWhere('name_asin_nric', 'LIKE', '%' . $searchWord . '%')
-                        ->orWhere('passport_no', 'LIKE', '%' . $searchWord . '%')
-                        ->orWhere('nric_no', 'LIKE', '%' . $searchWord . '%')
-                        ->orWhere('services_type', '=', $searchWord)
-                        ->orWhereRaw("REPLACE(nric_no, '-', '') LIKE ?", ["%$searchWord%"]);
+                    $query->where('patient_mrn', 'LIKE', '%' . $searchWord . '%');
+                    $query->orWhere('name_asin_nric', 'LIKE', '%' . $searchWord . '%');
+                        //->orWhereRaw("REPLACE(nric_no, '-', '') LIKE ?", ["%$searchWord%"]);
                         });
             $test = $sql->Groupby('attempt_test.created_at')->get()->toArray();
-
+            
         $count=0;
         $result=[];
         if($test!=NULL && $test!=0){
