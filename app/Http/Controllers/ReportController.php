@@ -2424,7 +2424,7 @@ class ReportController extends Controller
             }
             $result[$index]['Name'] = $v['name_asin_nric'];
             $result[$index]['Attendance_status'] = $v['appointment_status'];
-            $result[$index]['ADDRESS'] = $v['address1'] . ' ' . $v['address2'] . ' ' . $v['address3'];
+            $result[$index]['ADDRESS'] = strtoupper($v['address1'] . ' ' . $v['address2'] . ' ' . $v['address3']);
             $result[$index]['CITY'] = $v['city_name'];
             $result[$index]['STATE'] = $v['state_name'];
             $result[$index]['POSTCODE'] = $v['postcode'];
@@ -2451,7 +2451,7 @@ class ReportController extends Controller
             $result[$index]['TYPE_OF_Refferal'] = $v['type_referral'] ;
             $result[$index]['Attending_staff'] = $v['staff_name'];
             $result[$index]['outcome'] = $v['outcome'];
-            $result[$index]['category_of_services'] = $v['category_services'];
+            $result[$index]['category_of_services'] = ucwords($v['category_services']);
 
             $index++;
             }
@@ -2472,7 +2472,8 @@ class ReportController extends Controller
                     'code' => 200]);
             } else {
                 $filename = 'GeneralReport-'.time().'.pdf';
-                return response()->json(["message" => "General Report", 'result' => $result, 'filename' => $filename, "code" => 200]);
+                return response()->json(["message" => "General Report", 'result' => $result, 'header' => 'General Report '.$request->month.' '.$request->year,
+                'filename' => $filename, "code" => 200]);
             }
         } else {
             return response()->json(["message" => "General Report", 'result' => [], 'filename' => null, "code" => 200]);
