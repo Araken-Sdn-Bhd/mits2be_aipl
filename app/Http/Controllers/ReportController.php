@@ -942,6 +942,40 @@ class ReportController extends Controller
                     $result[$index]['SUCIDAL_INTENT2'] = $si2['SUCIDAL_INTENT'];
                     $result[$index]['SUCIDAL_INTENT3'] = $si3['SUCIDAL_INTENT'];
 
+
+                    $result[$index]['RISK_FACTORpdf'] =    '('.$prpa1['RISK_ANSWER'].'),'.'('.$prpa2['RISK_ANSWER'].'),'.
+                                                        '('.$prpa3['RISK_ANSWER'].'),'.'('.$prpa4['RISK_ANSWER'].'),'.
+                                                        '('.$prpa5['RISK_ANSWER'].'),'.'('.$prpa6['RISK_ANSWER'].'),'.
+                                                        '('.$prpa7['RISK_ANSWER'].'),'.'('.$prpa8['RISK_ANSWER'].'),'.
+                                                        '('.$prpa9['RISK_ANSWER'].'),'.'('.$prpa10['RISK_ANSWER'].'),'.
+                                                        '('.$prpa11['RISK_ANSWER'].'),'.'('.$prpa12['RISK_ANSWER'].')';
+
+
+                    $result[$index]['PROTECTIVE_FACTORpdf'] =  '('.$prpa13['PROTECTIVE_FACTORS'].'),'.'('.$prpa14['PROTECTIVE_FACTORS'].'),'.
+                                                            '('.$prpa15['PROTECTIVE_FACTORS'].'),'.'('.$prpa16['PROTECTIVE_FACTORS'].'),'.
+                                                            '('.$prpa17['PROTECTIVE_FACTORS'].'),'.'('.$prpa18['PROTECTIVE_FACTORS'].')';
+
+                    $result[$index]['METHOD_OF_SELF_HARMpdf'] = '('.$msh1['METHOD_OF_SELF_HARM'].'),'.'('.$msh2['METHOD_OF_SELF_HARM'].'),'.
+                                                             '('.$msh3['METHOD_OF_SELF_HARM'].'),'.'('.$msh4['METHOD_OF_SELF_HARM'].'),'.
+                                                             '('.$msh5['METHOD_OF_SELF_HARM'].'),'.'('.$msh6['METHOD_OF_SELF_HARM'].'),'.
+                                                             '('.$msh7['METHOD_OF_SELF_HARM'].'),'.'('.$msh8['METHOD_OF_SELF_HARM'].')';
+
+                    $result[$index]['IDEA_OF_METHODpdf'] = '('.$im1['IDEA_METHOD'].'),'.'('.$im2['IDEA_METHOD'].'),'.
+                                                        '('.$im3['IDEA_METHOD'].'),'.'('.$im4['IDEA_METHOD'].'),'.
+                                                        '('.$im5['IDEA_METHOD'].')';
+
+                    $result[$index]['SUCIDAL_INTENTpdf'] = '('.$si1['SUCIDAL_INTENT'].'),'.'('.$si2['SUCIDAL_INTENT'].'),'.
+                                                        '('.$si3['SUCIDAL_INTENT'].')';
+
+
+
+
+
+
+
+
+
+
 ////////////////////For Excel//////////////////////////////////////////////
 
                     $result[$index]['RISK_FACTOR'] =    $prpa1['RISK_ANSWER'].'<br>'.$prpa2['RISK_ANSWER'].'<br>'.
@@ -984,7 +1018,7 @@ class ReportController extends Controller
 
 
                     if (isset($request->report_type) && $request->report_type == 'excel') {
-                        $filename = 'ShharpReport-'.time().'.xls';
+                        $filename = 'SHHARPReport-'.time().'.xls';
 
                         $totalReports= $index;
 
@@ -999,8 +1033,8 @@ class ReportController extends Controller
                         ]);
 
                     } else {
-
-                            $periodofservices= $request->fromDate.' To '.$request->toDate;
+                        
+                            $periodofservices= date('d/m/Y', strtotime($request->fromDate)).' To '.date('d/m/Y', strtotime($request->toDate));
                             return response()->json(["message" => "Shharp Report", 'result' => $result,'periodofservices' => $periodofservices,
                              'TotalReport'=>$totalReports, "code" => 200]);
                     }
@@ -1014,83 +1048,167 @@ class ReportController extends Controller
 
     public function getTotalPatientTypeRefferalReport(Request $request)
     {
-        $appointments = PatientAppointmentDetails::whereBetween('booking_date', [$request->fromDate, $request->toDate])
-        ->where('status','=',1);
+        // $appointments = PatientAppointmentDetails::whereBetween('booking_date', [$request->fromDate, $request->toDate])
+        // ->where('status','=',1);
+        // if ($request->type_visit != 0)
+        //     $ssh = $appointments->where('type_visit', $request->type_visit);
+        // if ($request->patient_category != 0)
+        //     $ssh =  $appointments->where('patient_category', $request->patient_category);
+
+        // $ssh = $appointments->get()->toArray();
+        // $result = [];
+        // $cpa = [];
+        // $vta = [];
+        // $rfa = ['Walk-In' => 0, 'Refferal' => 0];
+        // if ($ssh) {
+        //     $index = 0;
+        //     foreach ($ssh as $k => $v) {
+        //         $query = PatientRegistration::where('id', $v['patient_mrn_id']);
+        //         if ($request->referral_type != 0)
+        //             $query->where('referral_type', $request->referral_type);
+
+        //             $users = DB::table('staff_management')
+        //             ->select('roles.code')
+        //             ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+        //             ->where('staff_management.email', '=', $request->email)
+        //             ->first();
+        //             $users2  = json_decode(json_encode($users), true);
+
+        //             if($users2['code']!='superadmin'){
+        //                 $query->where('branch_id','=',$request->branch_id);
+        //             }
+
+        //         $patientInfon = $query->get()->toArray();
+        //         if ($patientInfon) {
+        //             $patientInfo = $patientInfon[0];
+        //             $pc = Postcode::where(['id' => $patientInfo['postcode']])->get()->toArray();
+        //             $st = State::where(['id' => $patientInfo['state_id']])->get()->toArray();
+        //             $vt = GeneralSetting::where('id', $v['type_visit'])->get()->toArray();
+        //             $cp = GeneralSetting::where('id', $v['patient_category'])->get()->toArray();
+        //             $reftyp = GeneralSetting::where(['id' => $patientInfo['referral_type']])->get()->toArray();
+        //             $city_name = ($pc) ? $pc[0]['city_name'] : 'NA';
+        //             $state_name = ($st) ? $st[0]['state_name'] : 'NA';
+        //             $postcode = ($pc) ? $pc[0]['postcode'] : 'NA';
+        //             $visit_type = ($vt) ? $vt[0]['section_value'] : 'NA';
+        //             $category = ($cp) ? $cp[0]['section_value'] : 'NA';
+        //             if (array_key_exists($cp[0]['section_value'], $cpa)) {
+        //                 $cpa[$cp[0]['section_value']] = $cpa[$cp[0]['section_value']] + 1;
+        //             } else {
+        //                 $cpa[$cp[0]['section_value']] = 1;
+        //             }
+        //             if (array_key_exists($vt[0]['section_value'], $vta)) {
+        //                 $vta[$vt[0]['section_value']] = $vta[$vt[0]['section_value']] + 1;
+        //             } else {
+        //                 $vta[$vt[0]['section_value']] = 1;
+        //             }
+
+        //             if (in_array($request->referral_type, [7, 253])) {
+        //                 $rfa['Walk-In'] = $rfa['Walk-In'] + 1;
+        //             } else {
+        //                 $rfa['Refferal'] = $rfa['Refferal'] + 1;
+        //             }
+        //             $result[$index]['No']=$index+1;
+        //             $result[$index]['DATE'] = date('d/m/Y', strtotime($v['booking_date']));
+        //             $result[$index]['TIME'] = date('h:i:s A', strtotime($v['booking_time']));
+        //             $result[$index]['NRIC_NO_PASSPORT_NO'] = ($patientInfo['nric_no']) ? $patientInfo['nric_no'] : $patientInfo['passport_no'];;
+        //             $result[$index]['Name'] = $patientInfo['name_asin_nric'];
+        //             $result[$index]['ADDRESS'] = $patientInfo['address1'] . ' ' . $patientInfo['address2'] . ' ' . $patientInfo['address3'];
+        //             $result[$index]['CITY'] = $city_name;
+        //             $result[$index]['STATE'] = $state_name;
+        //             $result[$index]['POSTCODE'] = $postcode;
+        //             $result[$index]['PHONE_NUMBER'] = $patientInfo['mobile_no'];
+        //             $result[$index]['DATE_OF_BIRTH'] = $patientInfo['birth_date'];
+        //             $result[$index]['CATEGORY_OF_PATIENTS'] = $category;
+        //             $result[$index]['TYPE_OF_Visit'] = $visit_type;
+        //             $result[$index]['TYPE_OF_Refferal'] = ($reftyp) ? $reftyp[0]['section_value'] : 'NA';
+        //             $index++;
+        //         }
+        //     }
+        // }
+
+        $user = DB::table('staff_management')
+        ->select('roles.code')
+        ->join('roles', 'staff_management.role_id', '=', 'roles.id')
+        ->where('staff_management.email', '=', $request->email)
+        ->first();        
+$demo=[];
+	if($user->code!='superadmin'){
+            $demo['pr.branch_id'] = $request->branch_id;
+        }
+
+        $appointments = DB::table('patient_appointment_details as pad')->select('pad.id','pad.booking_date',
+        'pad.booking_time','pr.nric_no','pr.passport_no','pr.name_asin_nric','pc.city_name','s.state_name',
+        'pc.postcode','gs1.section_value as type_visit','pr.address1','pr.address2','pr.address3','pr.mobile_no',
+        'pr.birth_date','gs2.section_value as patient_category','gs3.section_value as referral_type')
+
+        ->leftJoin('patient_registration as pr', 'pr.id', '=', 'pad.patient_mrn_id')
+        ->leftJoin('postcode as pc', 'pc.id', '=', 'pr.postcode')
+        ->leftJoin('state as s', 's.id', '=', 'pr.state_id')
+        ->leftJoin('general_setting as gs1', 'gs1.id', '=', 'pad.type_visit')
+        ->leftJoin('general_setting as gs2', 'gs2.id', '=', 'pad.patient_category')
+        ->leftJoin('general_setting as gs3', 'gs3.id', '=', 'pr.referral_type')
+
+
+        ->whereBetween('pad.booking_date', [$request->fromDate, $request->toDate])
+        ->where('pad.status','=',1);
         if ($request->type_visit != 0)
             $ssh = $appointments->where('type_visit', $request->type_visit);
         if ($request->patient_category != 0)
             $ssh =  $appointments->where('patient_category', $request->patient_category);
 
+        if ($demo){
+            $appointments->where($demo);
+        }
+
         $ssh = $appointments->get()->toArray();
-        $result = [];
+        $ssh  = json_decode(json_encode($ssh), true);
+     
         $cpa = [];
         $vta = [];
-        $rfa = ['Walk-In' => 0, 'Refferal' => 0];
-        if ($ssh) {
-            $index = 0;
-            foreach ($ssh as $k => $v) {
-                $query = PatientRegistration::where('id', $v['patient_mrn_id']);
-                if ($request->referral_type != 0)
-                    $query->where('referral_type', $request->referral_type);
-
-                    $users = DB::table('staff_management')
-                    ->select('roles.code')
-                    ->join('roles', 'staff_management.role_id', '=', 'roles.id')
-                    ->where('staff_management.email', '=', $request->email)
-                    ->first();
-                    $users2  = json_decode(json_encode($users), true);
-
-                    if($users2['code']!='superadmin'){
-                        $query->where('branch_id','=',$request->branch_id);
-                    }
-
-                $patientInfon = $query->get()->toArray();
-                if ($patientInfon) {
-                    $patientInfo = $patientInfon[0];
-                    $pc = Postcode::where(['id' => $patientInfo['postcode']])->get()->toArray();
-                    $st = State::where(['id' => $patientInfo['state_id']])->get()->toArray();
-                    $vt = GeneralSetting::where('id', $v['type_visit'])->get()->toArray();
-                    $cp = GeneralSetting::where('id', $v['patient_category'])->get()->toArray();
-                    $reftyp = GeneralSetting::where(['id' => $patientInfo['referral_type']])->get()->toArray();
-                    $city_name = ($pc) ? $pc[0]['city_name'] : 'NA';
-                    $state_name = ($st) ? $st[0]['state_name'] : 'NA';
-                    $postcode = ($pc) ? $pc[0]['postcode'] : 'NA';
-                    $visit_type = ($vt) ? $vt[0]['section_value'] : 'NA';
-                    $category = ($cp) ? $cp[0]['section_value'] : 'NA';
-                    if (array_key_exists($cp[0]['section_value'], $cpa)) {
-                        $cpa[$cp[0]['section_value']] = $cpa[$cp[0]['section_value']] + 1;
+        $index=0;
+        $rfa = ['Walk_In' => 0, 'Referral' => 0];
+                foreach ($ssh as $k => $v) {
+ 
+                    if (array_key_exists($v['patient_category'], $cpa)) {
+                        $cpa[$v['patient_category']] = $cpa[$v['patient_category']] + 1;
                     } else {
-                        $cpa[$cp[0]['section_value']] = 1;
-                    }
-                    if (array_key_exists($vt[0]['section_value'], $vta)) {
-                        $vta[$vt[0]['section_value']] = $vta[$vt[0]['section_value']] + 1;
-                    } else {
-                        $vta[$vt[0]['section_value']] = 1;
+                        $cpa[$v['patient_category']] = 1;
                     }
 
-                    if (in_array($request->referral_type, [7, 253])) {
-                        $rfa['Walk-In'] = $rfa['Walk-In'] + 1;
+                    if (array_key_exists($v['type_visit'], $vta)) {
+                        $vta[$v['type_visit']] = $vta[$v['type_visit']] + 1;
                     } else {
-                        $rfa['Refferal'] = $rfa['Refferal'] + 1;
+                        $vta[$v['type_visit']] = 1;
+                    }                    
+
+                    if ($v['referral_type']=='Self-Referral') {
+                        $rfa['Walk_In'] = $rfa['Walk_In'] + 1;
+                    } else {
+                        $rfa['Referral'] = $rfa['Referral'] + 1;
                     }
+
                     $result[$index]['No']=$index+1;
                     $result[$index]['DATE'] = date('d/m/Y', strtotime($v['booking_date']));
                     $result[$index]['TIME'] = date('h:i:s A', strtotime($v['booking_time']));
-                    $result[$index]['NRIC_NO_PASSPORT_NO'] = ($patientInfo['nric_no']) ? $patientInfo['nric_no'] : $patientInfo['passport_no'];;
-                    $result[$index]['Name'] = $patientInfo['name_asin_nric'];
-                    $result[$index]['ADDRESS'] = $patientInfo['address1'] . ' ' . $patientInfo['address2'] . ' ' . $patientInfo['address3'];
-                    $result[$index]['CITY'] = $city_name;
-                    $result[$index]['STATE'] = $state_name;
-                    $result[$index]['POSTCODE'] = $postcode;
-                    $result[$index]['PHONE_NUMBER'] = $patientInfo['mobile_no'];
-                    $result[$index]['DATE_OF_BIRTH'] = $patientInfo['birth_date'];
-                    $result[$index]['CATEGORY_OF_PATIENTS'] = $category;
-                    $result[$index]['TYPE_OF_Visit'] = $visit_type;
-                    $result[$index]['TYPE_OF_Refferal'] = ($reftyp) ? $reftyp[0]['section_value'] : 'NA';
+                    $result[$index]['NRIC_NO_PASSPORT_NO'] = ($v['nric_no']) ? $v['nric_no'] : $v['passport_no'];
+                    $result[$index]['Name'] = $v['name_asin_nric'];
+		            $result[$index]['ADDRESS'] = strtoupper($v['address1'] . ' ' . $v['address2'] . ' ' . $v['address3']);
+                    $result[$index]['CITY'] = $v['city_name'];
+                    $result[$index]['STATE'] = $v['state_name'];
+                    $result[$index]['POSTCODE'] = $v['postcode'];
+                    $result[$index]['PHONE_NUMBER'] = $v['mobile_no'];
+                    $result[$index]['DATE_OF_BIRTH'] = $v['birth_date'];
+                    $result[$index]['CATEGORY_OF_PATIENTS'] = $v['patient_category'];
+                    $result[$index]['TYPE_OF_Visit'] = $v['type_visit'];
+                    $result[$index]['TYPE_OF_Refferal'] = $v['referral_type'] ? $v['referral_type'] : 'NA';
                     $index++;
+
                 }
-            }
-        }
+                foreach($vta as $v=>$t){
+                    $vta[str_replace(' ', '_', $v)]=$t;
+                }
+
+
         if ($result) {
             $totalPatients = count($result);
             $diff = date_diff(date_create($request->fromDate), date_create($request->toDate));
@@ -1099,15 +1217,6 @@ class ReportController extends Controller
 
             $visitTypes = $vta;
 
-            foreach ($visitTypes as $k => $v) {
-                $visitTypes[str_replace(' ', '_', $k)] = $v;
-            }
-
-            $refferals = $rfa;
-
-            foreach ($refferals as $k => $v) {
-                $refferals[str_replace('-', '_', $k)] = $v;
-            }
 
             $filePath = '';
             if (isset($request->report_type) && $request->report_type == 'excel') {
@@ -1126,7 +1235,7 @@ class ReportController extends Controller
             } else {
                 return response()->json([
                     "message" => "Toal Patient & Type of Refferal Report", 'result' => $result, 'filepath' => '', 'Total_Patient' => $totalPatients, 'Total_Days' => $totalDays,
-                    'Referal_walk' => $rfa, 'Visit_Type' => $visitTypes, 'refferals' =>  $refferals, 'Category_Patient' => $patientCategories, "code" => 200
+                    'Referal_walk' => $rfa, 'Visit_Type' => $visitTypes, 'Category_Patient' => $patientCategories, "code" => 200
                 ]);
             }
         } else {
@@ -1211,7 +1320,6 @@ class ReportController extends Controller
                 $count=0;
 
                 if($request->appointment_type == 1){
-
 
                         $query_diagnosis1 = PatientCounsellorClerkingNotes::where('patient_mrn_id', $v['patient_mrn_id'])
                         ->where('status','=','1');
@@ -1956,6 +2064,7 @@ class ReportController extends Controller
             return response()->json(["message" => "Activity Report", 'result' => [], 'filepath' => null, "code" => 200]);
         }
     }
+    
 
     public function getVONActivityReport(Request $request)
     {

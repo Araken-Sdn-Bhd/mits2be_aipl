@@ -40,7 +40,9 @@ class RequestAppointmentReportController extends Controller
 
         }else{
 
-            $response = AppointmentRequest::select('*')
+            $response = AppointmentRequest::select('id', 'added_by','branch_id','name','nric_or_passportno',
+            'contact_no', 'address', 'address1', 'email','ip_address','remark',
+            DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as date"))
             ->whereBetween('created_at', [$request->fromDate, $request->toDate])
             ->where('branch_id','=',$request->branch_id); 
 
@@ -72,7 +74,7 @@ class RequestAppointmentReportController extends Controller
 
         $result[$index]['contact_no']=$v['contact_no'];
         $result[$index]['email']=$v['email'];
-        $result[$index]['created_at']=$v['created_at'];
+        $result[$index]['created_at']=$date  = date("d-m-Y ", strtotime($v['created_at']));
         $result[$index]['remark']=$v['remark'];
 
         if($v['status']=='0'){
