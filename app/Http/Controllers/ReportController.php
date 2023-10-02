@@ -4,28 +4,16 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\PatientShharpRegistrationHospitalManagement;
 use App\Models\PatientRiskProtectiveAnswer;
 use App\Models\SharpRegistrationSelfHarmResult;
-use App\Models\SharpRegistrationFinalStep;
-use App\Models\PatientRegistration;
 use App\Models\PatientAppointmentDetails;
 use App\Models\Postcode;
 use App\Models\State;
-use App\Models\PatientShharpRegistrationRiskProtective;
 use Maatwebsite\Excel\Facades\Excel;
-use App\Exports\ShharpReportExport;
-use App\Exports\WorkloadTotalPatienTypeRefferalReportExport;
-use App\Exports\PatientActivityReportExport;
-use App\Exports\VONActivityReportExport;
-use App\Exports\GeneralReportExport;
 use App\Exports\KPIReportExport;
-use App\Models\ShharpReportGenerateHistory;
-use App\Models\PatientAppointmentCategory;
-use App\Models\PatientAppointmentVisit;
+use App\Models\Citizenship;
 use App\Models\PatientCounsellorClerkingNotes;
 use App\Models\PsychiatryClerkingNote;
-use App\Models\PatientAppointmentType;
 use App\Models\GeneralSetting;
 use App\Models\IcdCode;
 use App\Models\StaffManagement;
@@ -43,32 +31,14 @@ use App\Models\ListOfJobSearch;
 use App\Models\LogMeetingWithEmployer;
 use App\Models\JobStartForm;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
-use App\Models\PatientCounsellingClerkingNote;
 use App\Models\PsychiatricProgressNote;
 use App\Models\PatientIndexForm;
 use App\Models\CounsellingProgressNote;
 use App\Models\ConsultationDischargeNote;
 use App\Models\RehabDischargeNote;
 use App\Models\CpsDischargeNote;
-use App\Models\PatientCarePlan;
-use App\Models\JobEndReport;
-use App\Models\JobTransitionReport;
-use App\Models\LaserAssesmentForm;
-use App\Models\TriageForm;
-use App\Models\JobInterestChecklist;
-use App\Models\WorkAnalysisForm;
-use App\Models\ListJobClub;
-use App\Models\ListOfETP;
-use App\Models\ListPreviousCurrentJob;
-use App\Models\InternalReferralForm;
-use App\Models\ExternalReferralForm;
-use App\Models\CPSReferralForm;
-use App\Models\Occt_Referral_Form;
-use App\Models\PsychologyReferral;
-use App\Models\RehabReferralAndClinicalForm;
-use Carbon\Carbon;
+
 
 
 
@@ -86,6 +56,7 @@ class ReportController extends Controller
                 $demo['citizenship'] = $request->citizenship;
             }
             if ($request->Age) {
+                
                 $age = GeneralSetting::where('id', $request->Age)->first();
                 $age['agemin']=$age['min_age'];
                 $age['agemax']=$age['max_age'];
@@ -129,7 +100,8 @@ class ReportController extends Controller
 
                 $query = DB::table('patient_shharp_registration_data_producer as psrdp')
                 ->select('srfs.id','srfs.risk','srfs.protective','srfs.self_harm','srfs.patient_id',
-                'p.name_asin_nric','p.address1','p.city_id','p.nric_no','p.state_id','p.postcode',
+                'p.name_asin_nric','p.address1','p.city_id','p.nric_no','p.state_id','p.postcode','p.age','p.sex','p.citizenship','p.race_id','p.employment_status',
+                'p.hospital_mrn_no','p.religion_id','p.marital_id',
                 'p.mobile_no','p.birth_date','srfs.harm_date','srfs.harm_time','psrdp.hospital_name',
                 'psrhm.id as id2','psrhm.main_psychiatric_diagnosis','psrhm.additional_diagnosis')
                 ->leftjoin('sharp_registraion_final_step as srfs', function($join) {
@@ -149,24 +121,31 @@ class ReportController extends Controller
                     $query->where('p.branch_id','=',$request->branch_id);
                 }
 
-                if ($demo)
-                $query->where($demo);
+                //if ($demo){
+                //$query->where($demo);
+                //}
+                if($request->citizenship){
+                    $query->where('citizenship',$request->citizenship);
+                }
+                if($request->gender){
+                    $query->where('sex',$request->gender);
+                }
 
                 if ($age){
-
-
-                    if($age['agemin'] && $age['agemax']!=NULL){
+                   
+                    //if($age['agemin'] && $age['agemax']!=NULL){
                     $query->whereBetween('age',[$age['agemin'],$age['agemax']]);
-                    }
-                    else if($age['agemin']==NULL) {
-                        $query->where('age','<=',$age['agemax']);
-                    }else if($age['agemax']==NULL) {
-                        $query->where('age','>=',$age['agemin']);
-                    }
+                    //}
+                    //else if($age['agemin']==NULL) {
+                    //    $query->where('age','<=',$age['agemax']);
+                    //}else if($age['agemax']==NULL) {
+                    //    $query->where('age','>=',$age['agemin']);
+                    //}
                 }
                 $run_query = $query->get()->toArray();
+               
                 $response  = json_decode(json_encode($run_query), true);
-
+                
                 $icd=NULL;
                 $cd_array=[];
                 $count=0;
@@ -176,6 +155,7 @@ class ReportController extends Controller
                 $result = [];
 
                 foreach ($response as $k => $v) {
+                
                 //////////////////////////diagnosis/////////////////////////
             if (isset($request->report_type) && $request->report_type == 'excel') {
                 if($v['main_psychiatric_diagnosis']!=NULL){
@@ -264,7 +244,7 @@ class ReportController extends Controller
 
                             }
                             $result[$index]['ADDITIONAL_DIAGNOSIS'] ='';
-
+                            $d2=$d-1; //just added
                             for($i=0; $i<$d; $i++){
                                 if($i==$d2){
                                     $result[$index]['ADDITIONAL_DIAGNOSIS'] .= $additional_diagnosis[$i]['additional_diagnosis'];
@@ -654,7 +634,7 @@ class ReportController extends Controller
                     }
 
 
-///////////////////RiskAnswer////////////////////////////////////////////////////////////
+               ///////////////////RiskAnswer////////////////////////////////////////////////////////////
 
                         $risk=$v['risk'];
                         $count=0;
@@ -854,8 +834,67 @@ class ReportController extends Controller
                         $prpa18['PROTECTIVE_FACTORS']='';
                     }
 
+                /***************************************************************************************************** */
+                   //////////////////////MARITAL///////////////////////
+                   $marital=GeneralSetting::select('section_value')
+                   ->where('id','=',$v['marital_id'])->first();
+                   if($marital==NULL){
+                       $result[$index]['MARITAL'] = 'NA';
+                    }else{
+                       $result[$index]['MARITAL'] = $marital['section_value'];
+                    }
+                    //////////////////////RELIGION///////////////////////
+                $religion=GeneralSetting::select('section_value')
+                ->where('id','=',$v['religion_id'])->first();
+                if($religion==NULL){
+                    $result[$index]['RELIGION'] = 'NA';
+                 }else{
+                    $result[$index]['RELIGION'] = $religion['section_value'];
+                 }
+                //////////////////////EMPLOYEMENT STATUS///////////////////////
+                $employment=GeneralSetting::select('section_value')
+                ->where('id','=',$v['employment_status'])->first();
+                if($employment==NULL){
+                    $result[$index]['EMPLOYMENT_STATUS'] = 'NA';
+                 }else{
+                    $result[$index]['EMPLOYMENT_STATUS'] = $employment['section_value'];
+                 }
+                //////////////////////RACE///////////////////////
+                $race=GeneralSetting::select('section_value')
+                ->where('id','=',$v['race_id'])->first();
+                if($race==NULL){
+                    $result[$index]['RACE'] = 'NA';
+                 }else{
+                    $result[$index]['RACE'] = $race['section_value'];
+                 }
 
+                //////////////////////CiTIZENSHIP///////////////////////
+                
+                $citizen=GeneralSetting::select('section_value')
+                ->where('id','=',$v['citizenship'])->first();
+                if($citizen == NULL){
+                    $result[$index]['CITIZENSHIP'] = 'NA';
+                 }else{
+                    $result[$index]['CITIZENSHIP'] = $citizen['section_value'];
+                 }
 
+                //////////////////////GENDER///////////////////////
+                $gender=GeneralSetting::select('section_value')
+                ->where('id','=',$v['sex'])->first();
+                if($gender==NULL){
+                    $result[$index]['GENDER'] = 'NA';
+                 }else{
+                    $result[$index]['GENDER'] = $gender['section_value'];
+                 }
+
+                //////////////////////State///////////////////////
+                $state=State::select('state_name')
+                ->where('id','=',$v['state_id'])->first();
+                if($state==NULL){
+                    $result[$index]['STATE'] = 'NA';
+                 }else{
+                    $result[$index]['STATE'] = $state['state_name'];
+                 }
 
                 //////////////////////City///////////////////////
                 $city=Postcode::select('city_name')
@@ -893,7 +932,9 @@ class ReportController extends Controller
                     $result[$index]['DATE'] = $v['harm_date'];
                     $result[$index]['TIME'] = $v['harm_time'];
                     $result[$index]['NRIC_NO_PASSPORT_NO'] = $v['nric_no'];
+                    $result[$index]['AGE'] = $v['age'];
                     $result[$index]['NAME'] = $v['name_asin_nric'];
+                    $result[$index]['HOSPITAL_MRN_NO'] = $v['hospital_mrn_no'];
                     $result[$index]['PHONE_NUMBER'] = $v['mobile_no'];
                     $result[$index]['DATE_OF_BIRTH'] = $v['birth_date'];
 
@@ -1048,84 +1089,7 @@ class ReportController extends Controller
 
     public function getTotalPatientTypeRefferalReport(Request $request)
     {
-        // $appointments = PatientAppointmentDetails::whereBetween('booking_date', [$request->fromDate, $request->toDate])
-        // ->where('status','=',1);
-        // if ($request->type_visit != 0)
-        //     $ssh = $appointments->where('type_visit', $request->type_visit);
-        // if ($request->patient_category != 0)
-        //     $ssh =  $appointments->where('patient_category', $request->patient_category);
-
-        // $ssh = $appointments->get()->toArray();
-        // $result = [];
-        // $cpa = [];
-        // $vta = [];
-        // $rfa = ['Walk-In' => 0, 'Refferal' => 0];
-        // if ($ssh) {
-        //     $index = 0;
-        //     foreach ($ssh as $k => $v) {
-        //         $query = PatientRegistration::where('id', $v['patient_mrn_id']);
-        //         if ($request->referral_type != 0)
-        //             $query->where('referral_type', $request->referral_type);
-
-        //             $users = DB::table('staff_management')
-        //             ->select('roles.code')
-        //             ->join('roles', 'staff_management.role_id', '=', 'roles.id')
-        //             ->where('staff_management.email', '=', $request->email)
-        //             ->first();
-        //             $users2  = json_decode(json_encode($users), true);
-
-        //             if($users2['code']!='superadmin'){
-        //                 $query->where('branch_id','=',$request->branch_id);
-        //             }
-
-        //         $patientInfon = $query->get()->toArray();
-        //         if ($patientInfon) {
-        //             $patientInfo = $patientInfon[0];
-        //             $pc = Postcode::where(['id' => $patientInfo['postcode']])->get()->toArray();
-        //             $st = State::where(['id' => $patientInfo['state_id']])->get()->toArray();
-        //             $vt = GeneralSetting::where('id', $v['type_visit'])->get()->toArray();
-        //             $cp = GeneralSetting::where('id', $v['patient_category'])->get()->toArray();
-        //             $reftyp = GeneralSetting::where(['id' => $patientInfo['referral_type']])->get()->toArray();
-        //             $city_name = ($pc) ? $pc[0]['city_name'] : 'NA';
-        //             $state_name = ($st) ? $st[0]['state_name'] : 'NA';
-        //             $postcode = ($pc) ? $pc[0]['postcode'] : 'NA';
-        //             $visit_type = ($vt) ? $vt[0]['section_value'] : 'NA';
-        //             $category = ($cp) ? $cp[0]['section_value'] : 'NA';
-        //             if (array_key_exists($cp[0]['section_value'], $cpa)) {
-        //                 $cpa[$cp[0]['section_value']] = $cpa[$cp[0]['section_value']] + 1;
-        //             } else {
-        //                 $cpa[$cp[0]['section_value']] = 1;
-        //             }
-        //             if (array_key_exists($vt[0]['section_value'], $vta)) {
-        //                 $vta[$vt[0]['section_value']] = $vta[$vt[0]['section_value']] + 1;
-        //             } else {
-        //                 $vta[$vt[0]['section_value']] = 1;
-        //             }
-
-        //             if (in_array($request->referral_type, [7, 253])) {
-        //                 $rfa['Walk-In'] = $rfa['Walk-In'] + 1;
-        //             } else {
-        //                 $rfa['Refferal'] = $rfa['Refferal'] + 1;
-        //             }
-        //             $result[$index]['No']=$index+1;
-        //             $result[$index]['DATE'] = date('d/m/Y', strtotime($v['booking_date']));
-        //             $result[$index]['TIME'] = date('h:i:s A', strtotime($v['booking_time']));
-        //             $result[$index]['NRIC_NO_PASSPORT_NO'] = ($patientInfo['nric_no']) ? $patientInfo['nric_no'] : $patientInfo['passport_no'];;
-        //             $result[$index]['Name'] = $patientInfo['name_asin_nric'];
-        //             $result[$index]['ADDRESS'] = $patientInfo['address1'] . ' ' . $patientInfo['address2'] . ' ' . $patientInfo['address3'];
-        //             $result[$index]['CITY'] = $city_name;
-        //             $result[$index]['STATE'] = $state_name;
-        //             $result[$index]['POSTCODE'] = $postcode;
-        //             $result[$index]['PHONE_NUMBER'] = $patientInfo['mobile_no'];
-        //             $result[$index]['DATE_OF_BIRTH'] = $patientInfo['birth_date'];
-        //             $result[$index]['CATEGORY_OF_PATIENTS'] = $category;
-        //             $result[$index]['TYPE_OF_Visit'] = $visit_type;
-        //             $result[$index]['TYPE_OF_Refferal'] = ($reftyp) ? $reftyp[0]['section_value'] : 'NA';
-        //             $index++;
-        //         }
-        //     }
-        // }
-
+       
         $user = DB::table('staff_management')
         ->select('roles.code')
         ->join('roles', 'staff_management.role_id', '=', 'roles.id')
