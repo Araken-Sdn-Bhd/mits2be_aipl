@@ -101,7 +101,8 @@ class ReportController extends Controller
                 $query = DB::table('patient_shharp_registration_data_producer as psrdp')
                 ->select('srfs.id','srfs.risk','srfs.protective','srfs.self_harm','srfs.patient_id',
                 'p.name_asin_nric','p.address1','p.city_id','p.nric_no','p.state_id','p.postcode','p.age','p.sex','p.citizenship','p.race_id','p.employment_status',
-                'p.hospital_mrn_no','p.religion_id','p.marital_id',
+                'p.hospital_mrn_no','p.religion_id','p.marital_id','p.accomodation_id','p.education_level','p.occupation_status','p.occupation_sector',
+                'p.fee_exemption_status',
                 'p.mobile_no','p.birth_date','srfs.harm_date','srfs.harm_time','psrdp.hospital_name',
                 'psrhm.id as id2','psrhm.main_psychiatric_diagnosis','psrhm.additional_diagnosis')
                 ->leftjoin('sharp_registraion_final_step as srfs', function($join) {
@@ -128,14 +129,14 @@ class ReportController extends Controller
 
                 if ($age){
                    
-                    if($age['agemin'] && $age['agemax']!=NULL){
+                    //if($age['agemin'] && $age['agemax']!=NULL){
                     $query->whereBetween('age',[$age['agemin'],$age['agemax']]);
-                    }
-                    else if($age['agemin']==NULL) {
-                        $query->where('age','<=',$age['agemax']);
-                    }else if($age['agemax']==NULL) {
-                        $query->where('age','>=',$age['agemin']);
-                    }
+                    //}
+                    //else if($age['agemin']==NULL) {
+                    //    $query->where('age','<=',$age['agemax']);
+                    //}else if($age['agemax']==NULL) {
+                    //    $query->where('age','>=',$age['agemin']);
+                    //}
                 }
                 $run_query = $query->get()->toArray();
                
@@ -830,6 +831,46 @@ class ReportController extends Controller
                     }
 
                 /***************************************************************************************************** */
+                //////////////////////fee///////////////////////
+                $fee=GeneralSetting::select('section_value')
+                ->where('id','=',$v['fee_exemption_status'])->first();
+                if($fee==NULL){
+                    $result[$index]['FEE_EXEMPTION'] = 'NA';
+                 }else{
+                    $result[$index]['FEE_EXEMPTION'] = $fee['section_value'];
+                 }
+                //////////////////////OCCUPATION SECTOR///////////////////////
+                $occupationSector=GeneralSetting::select('section_value')
+                ->where('id','=',$v['occupation_sector'])->first();
+                if($occupationSector==NULL){
+                    $result[$index]['OCCUPATION_SECTOR'] = 'NA';
+                 }else{
+                    $result[$index]['OCCUPATION_SECTOR'] = $occupationSector['section_value'];
+                 }
+                 //////////////////////OCCUPATION STATUS///////////////////////
+                 $occupationStatus=GeneralSetting::select('section_value')
+                 ->where('id','=',$v['occupation_status'])->first();
+                 if($occupationStatus==NULL){
+                     $result[$index]['OCCUPATION_STATUS'] = 'NA';
+                  }else{
+                     $result[$index]['OCCUPATION_STATUS'] = $occupationStatus['section_value'];
+                  }
+                //////////////////////EDUCATION LEVEL///////////////////////
+                $education=GeneralSetting::select('section_value')
+                ->where('id','=',$v['education_level'])->first();
+                if($education==NULL){
+                    $result[$index]['EDUCATION'] = 'NA';
+                 }else{
+                    $result[$index]['EDUCATION'] = $education['section_value'];
+                 }
+                //////////////////////ACCOMONDATION///////////////////////
+                $accomodation=GeneralSetting::select('section_value')
+                ->where('id','=',$v['accomodation_id'])->first();
+                if($accomodation==NULL){
+                    $result[$index]['ACCOMONDATION'] = 'NA';
+                 }else{
+                    $result[$index]['ACCOMONDATION'] = $accomodation['section_value'];
+                 }
                    //////////////////////MARITAL///////////////////////
                    $marital=GeneralSetting::select('section_value')
                    ->where('id','=',$v['marital_id'])->first();
