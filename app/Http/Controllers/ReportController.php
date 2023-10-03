@@ -100,7 +100,7 @@ class ReportController extends Controller
 
                 $query = DB::table('patient_shharp_registration_data_producer as psrdp')
                 ->select('srfs.id','srfs.risk','srfs.protective','srfs.self_harm','srfs.patient_id',
-                'p.name_asin_nric','p.address1','p.city_id','p.nric_no','p.state_id','p.postcode','p.age','p.sex','p.citizenship','p.race_id','p.employment_status',
+                'p.name_asin_nric','p.address1','p.city_id','p.nric_no','p.passport_no','p.state_id','p.postcode','p.age','p.sex','p.citizenship','p.race_id','p.employment_status',
                 'p.hospital_mrn_no','p.religion_id','p.marital_id','p.accomodation_id','p.education_level','p.occupation_status','p.occupation_sector',
                 'p.fee_exemption_status',
                 'p.mobile_no','p.birth_date','srfs.harm_date','srfs.harm_time','psrdp.hospital_name',
@@ -967,11 +967,11 @@ class ReportController extends Controller
                     $result[$index]['HOSPITAL'] = $v['hospital_name'];
                     $result[$index]['DATE'] = $v['harm_date'];
                     $result[$index]['TIME'] = $v['harm_time'];
-                    $result[$index]['NRIC_NO_PASSPORT_NO'] = strval($v['nric_no']);
+                    $result[$index]['NRIC_NO_PASSPORT_NO'] = $v['nric_no'] ? sprintf("'%s", $v['nric_no']) : $v['passport_no'];
                     $result[$index]['AGE'] = $v['age'];
                     $result[$index]['NAME'] = $v['name_asin_nric'];
-                    $result[$index]['HOSPITAL_MRN_NO'] = $v['hospital_mrn_no'];
-                    $result[$index]['PHONE_NUMBER'] = strval($v['mobile_no']);
+                    $result[$index]['HOSPITAL_MRN_NO'] = sprintf("'%s",$v['hospital_mrn_no']);
+                    $result[$index]['PHONE_NUMBER'] = sprintf("'%s",$v['mobile_no']);
                     $result[$index]['DATE_OF_BIRTH'] = $v['birth_date'];
 
                     $result[$index]['RISK_FACTOR1'] = $prpa1['RISK_ANSWER'];
@@ -1056,28 +1056,28 @@ class ReportController extends Controller
 
 ////////////////////For Excel//////////////////////////////////////////////
 
-                    $result[$index]['RISK_FACTOR'] =    $prpa1['RISK_ANSWER'].'<br>'.$prpa2['RISK_ANSWER'].'<br>'.
-                                                        $prpa3['RISK_ANSWER'].'<br>'.$prpa4['RISK_ANSWER'].'<br>'.
-                                                        $prpa5['RISK_ANSWER'].'<br>'.$prpa6['RISK_ANSWER'].'<br>'.
-                                                        $prpa7['RISK_ANSWER'].'<br>'.$prpa8['RISK_ANSWER'].'<br>'.
-                                                        $prpa9['RISK_ANSWER'].'<br>'.$prpa10['RISK_ANSWER'].'<br>'.
-                                                        $prpa11['RISK_ANSWER'].'<br>'.$prpa12['RISK_ANSWER'];
+                    $result[$index]['RISK_FACTOR'] =    $prpa1['RISK_ANSWER'].' <br>'.$prpa2['RISK_ANSWER'].' <br>'.
+                                                        $prpa3['RISK_ANSWER'].' <br>'.$prpa4['RISK_ANSWER'].' <br>'.
+                                                        $prpa5['RISK_ANSWER'].' <br>'.$prpa6['RISK_ANSWER'].' <br>'.
+                                                        $prpa7['RISK_ANSWER'].' <br>'.$prpa8['RISK_ANSWER'].' <br>'.
+                                                        $prpa9['RISK_ANSWER'].' <br>'.$prpa10['RISK_ANSWER'].' <br>'.
+                                                        $prpa11['RISK_ANSWER'].' <br>'.$prpa12['RISK_ANSWER'];
 
 
-                    $result[$index]['PROTECTIVE_FACTOR'] =  $prpa13['PROTECTIVE_FACTORS'].'<br>'.$prpa14['PROTECTIVE_FACTORS'].'<br>'.
-                                                            $prpa15['PROTECTIVE_FACTORS'].'<br>'.$prpa16['PROTECTIVE_FACTORS'].'<br>'.
-                                                            $prpa17['PROTECTIVE_FACTORS'].'<br>'.$prpa18['PROTECTIVE_FACTORS'];
+                    $result[$index]['PROTECTIVE_FACTOR'] =  $prpa13['PROTECTIVE_FACTORS'].' <br>'.$prpa14['PROTECTIVE_FACTORS'].' <br>'.
+                                                            $prpa15['PROTECTIVE_FACTORS'].' <br>'.$prpa16['PROTECTIVE_FACTORS'].' <br>'.
+                                                            $prpa17['PROTECTIVE_FACTORS'].' <br>'.$prpa18['PROTECTIVE_FACTORS'];
 
-                    $result[$index]['METHOD_OF_SELF_HARM'] = $msh1['METHOD_OF_SELF_HARM'].'<br>'.$msh2['METHOD_OF_SELF_HARM'].'<br>'.
-                                                             $msh3['METHOD_OF_SELF_HARM'].'<br>'.$msh4['METHOD_OF_SELF_HARM'].'<br>'.
-                                                             $msh5['METHOD_OF_SELF_HARM'].'<br>'.$msh6['METHOD_OF_SELF_HARM'].'<br>'.
-                                                             $msh7['METHOD_OF_SELF_HARM'].'<br>'.$msh8['METHOD_OF_SELF_HARM'];
+                    $result[$index]['METHOD_OF_SELF_HARM'] = $msh1['METHOD_OF_SELF_HARM'].' <br>'.$msh2['METHOD_OF_SELF_HARM'].' <br>'.
+                                                             $msh3['METHOD_OF_SELF_HARM'].' <br>'.$msh4['METHOD_OF_SELF_HARM'].' <br>'.
+                                                             $msh5['METHOD_OF_SELF_HARM'].' <br>'.$msh6['METHOD_OF_SELF_HARM'].' <br>'.
+                                                             $msh7['METHOD_OF_SELF_HARM'].' <br>'.$msh8['METHOD_OF_SELF_HARM'];
 
-                    $result[$index]['IDEA_OF_METHOD'] = $im1['IDEA_METHOD'].'<br>'.$im2['IDEA_METHOD'].'<br>'.
-                                                        $im3['IDEA_METHOD'].'<br>'.$im4['IDEA_METHOD'].'<br>'.
+                    $result[$index]['IDEA_OF_METHOD'] = $im1['IDEA_METHOD'].' <br>'.$im2['IDEA_METHOD'].' <br>'.
+                                                        $im3['IDEA_METHOD'].' <br>'.$im4['IDEA_METHOD'].' <br>'.
                                                         $im5['IDEA_METHOD'];
 
-                    $result[$index]['SUCIDAL_INTENT'] = $si1['SUCIDAL_INTENT'].'<br>'.$si2['SUCIDAL_INTENT'].'<br>'.
+                    $result[$index]['SUCIDAL_INTENT'] = $si1['SUCIDAL_INTENT'].' <br>'.$si2['SUCIDAL_INTENT'].' <br>'.
                                                         $si3['SUCIDAL_INTENT'];
 
 
