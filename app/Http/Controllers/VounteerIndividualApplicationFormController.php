@@ -1989,14 +1989,14 @@ class VounteerIndividualApplicationFormController extends Controller
         $result[$count]['services_type']=$v['n_mentari_services'];
     }
 
-    if ($v['org_name'] !=null) {
-        $result[$count]['name']= $v['org_name'];
-    } else {
-        $result[$count]['name']= $v['name'];
-    }
-
     $result[$count]['id']=$v['id'];
+    // $result[$count]['name']=$v['name'];
     $result[$count]['section']=$v['section'];
+    if ($v['section'] !='org') {
+            $result[$count]['name']= $v['name'];
+        } else {
+            $result[$count]['name']= $v['org_name'];
+        }
     $result[$count]['area_of_involvement']=$v['area_of_involvement'];
     $result[$count]['phone_number']=$v['phone_number'];
     $result[$count]['email']=$v['email'];
