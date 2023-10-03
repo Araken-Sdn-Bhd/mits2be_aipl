@@ -967,11 +967,11 @@ class ReportController extends Controller
                     $result[$index]['HOSPITAL'] = $v['hospital_name'];
                     $result[$index]['DATE'] = $v['harm_date'];
                     $result[$index]['TIME'] = $v['harm_time'];
-                    $result[$index]['NRIC_NO_PASSPORT_NO'] = $v['nric_no'];
+                    $result[$index]['NRIC_NO_PASSPORT_NO'] = strval($v['nric_no']);
                     $result[$index]['AGE'] = $v['age'];
                     $result[$index]['NAME'] = $v['name_asin_nric'];
                     $result[$index]['HOSPITAL_MRN_NO'] = $v['hospital_mrn_no'];
-                    $result[$index]['PHONE_NUMBER'] = $v['mobile_no'];
+                    $result[$index]['PHONE_NUMBER'] = strval($v['mobile_no']);
                     $result[$index]['DATE_OF_BIRTH'] = $v['birth_date'];
 
                     $result[$index]['RISK_FACTOR1'] = $prpa1['RISK_ANSWER'];
