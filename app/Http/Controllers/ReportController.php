@@ -1019,30 +1019,31 @@ class ReportController extends Controller
                     $result[$index]['SUCIDAL_INTENT2'] = $si2['SUCIDAL_INTENT'];
                     $result[$index]['SUCIDAL_INTENT3'] = $si3['SUCIDAL_INTENT'];
 
+                   
+                   
 
-                    $result[$index]['RISK_FACTORpdf'] =    '('.$prpa1['RISK_ANSWER'].'),'.'('.$prpa2['RISK_ANSWER'].'),'.
-                                                        '('.$prpa3['RISK_ANSWER'].'),'.'('.$prpa4['RISK_ANSWER'].'),'.
-                                                        '('.$prpa5['RISK_ANSWER'].'),'.'('.$prpa6['RISK_ANSWER'].'),'.
-                                                        '('.$prpa7['RISK_ANSWER'].'),'.'('.$prpa8['RISK_ANSWER'].'),'.
-                                                        '('.$prpa9['RISK_ANSWER'].'),'.'('.$prpa10['RISK_ANSWER'].'),'.
-                                                        '('.$prpa11['RISK_ANSWER'].'),'.'('.$prpa12['RISK_ANSWER'].')';
+                    $result[$index]['RISK_FACTORpdf'] =  '1- '.$prpa1['RISK_ANSWER'].', 2-'.$prpa2['RISK_ANSWER'].', 3-'.
+                                                         $prpa3['RISK_ANSWER'].', 4-'.$prpa4['RISK_ANSWER'].' , 5-'.
+                                                         $prpa5['RISK_ANSWER'].', 6-'.$prpa6['RISK_ANSWER'].', 7- '.
+                                                         $prpa7['RISK_ANSWER'].', 8- '.$prpa8['RISK_ANSWER'].', 9- '.
+                                                         $prpa9['RISK_ANSWER'].', 10- '.$prpa10['RISK_ANSWER'].', 11-'.
+                                                         $prpa11['RISK_ANSWER'].', 12-'.$prpa12['RISK_ANSWER'].' ';
 
 
-                    $result[$index]['PROTECTIVE_FACTORpdf'] =  '('.$prpa13['PROTECTIVE_FACTORS'].'),'.'('.$prpa14['PROTECTIVE_FACTORS'].'),'.
-                                                            '('.$prpa15['PROTECTIVE_FACTORS'].'),'.'('.$prpa16['PROTECTIVE_FACTORS'].'),'.
-                                                            '('.$prpa17['PROTECTIVE_FACTORS'].'),'.'('.$prpa18['PROTECTIVE_FACTORS'].')';
+                    $result[$index]['PROTECTIVE_FACTORpdf'] =  '1-'.$prpa13['PROTECTIVE_FACTORS'].', 2-'.$prpa14['PROTECTIVE_FACTORS'].', 3-'.
+                                                            $prpa15['PROTECTIVE_FACTORS'].', 4-'.$prpa16['PROTECTIVE_FACTORS'].', 5-'.
+                                                            $prpa17['PROTECTIVE_FACTORS'].', 6-'.$prpa18['PROTECTIVE_FACTORS'];
 
-                    $result[$index]['METHOD_OF_SELF_HARMpdf'] = '('.$msh1['METHOD_OF_SELF_HARM'].'),'.'('.$msh2['METHOD_OF_SELF_HARM'].'),'.
-                                                             '('.$msh3['METHOD_OF_SELF_HARM'].'),'.'('.$msh4['METHOD_OF_SELF_HARM'].'),'.
-                                                             '('.$msh5['METHOD_OF_SELF_HARM'].'),'.'('.$msh6['METHOD_OF_SELF_HARM'].'),'.
-                                                             '('.$msh7['METHOD_OF_SELF_HARM'].'),'.'('.$msh8['METHOD_OF_SELF_HARM'].')';
+                    $result[$index]['METHOD_OF_SELF_HARMpdf'] = '1-'.$msh1['METHOD_OF_SELF_HARM'].', 2-'.$msh2['METHOD_OF_SELF_HARM'].', 3-'.
+                                                             $msh3['METHOD_OF_SELF_HARM'].', 4-'.$msh4['METHOD_OF_SELF_HARM'].', 5-'.
+                                                             $msh5['METHOD_OF_SELF_HARM'].', 6-'.$msh6['METHOD_OF_SELF_HARM'].', 7-'.
+                                                             $msh7['METHOD_OF_SELF_HARM'].', 8-'.$msh8['METHOD_OF_SELF_HARM'];
 
-                    $result[$index]['IDEA_OF_METHODpdf'] = '('.$im1['IDEA_METHOD'].'),'.'('.$im2['IDEA_METHOD'].'),'.
-                                                        '('.$im3['IDEA_METHOD'].'),'.'('.$im4['IDEA_METHOD'].'),'.
-                                                        '('.$im5['IDEA_METHOD'].')';
+                    $result[$index]['IDEA_OF_METHODpdf'] = '1-'.$im1['IDEA_METHOD'].', 2-'.$im2['IDEA_METHOD'].', 3-'.
+                                                         $im3['IDEA_METHOD'].', 4-'.$im4['IDEA_METHOD'].', 5-'.
+                                                         $im5['IDEA_METHOD'];
 
-                    $result[$index]['SUCIDAL_INTENTpdf'] = '('.$si1['SUCIDAL_INTENT'].'),'.'('.$si2['SUCIDAL_INTENT'].'),'.
-                                                        '('.$si3['SUCIDAL_INTENT'].')';
+                    $result[$index]['SUCIDAL_INTENTpdf'] = '1-'.$si1['SUCIDAL_INTENT'].', 2-'.$si2['SUCIDAL_INTENT'].', 3-'.$si3['SUCIDAL_INTENT'];
 
 
 
