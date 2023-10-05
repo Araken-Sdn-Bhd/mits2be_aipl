@@ -171,7 +171,7 @@ class HospitalManagementController extends Controller
             'isHeadquator' => 'required|integer',
             'branch_adrress_1' => 'required|string',
             'branch_state' => 'required|integer',
-            'branch_city' => 'required|string',
+            'branch_city' => 'required|integer',
             'branch_postcode' => 'required|integer',
             'branch_contact_number_office' => 'required|string',
             'branch_contact_number_mobile' => 'required|string',
