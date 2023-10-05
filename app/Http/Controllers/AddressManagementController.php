@@ -404,6 +404,7 @@ class AddressManagementController extends Controller
 
     public function getCityList(Request $request, $id)
     {
+      
         $city = DB::table('state')
             ->join('postcode', 'postcode.state_id', '=', 'state.id')
             ->select('postcode.city_name','postcode.id')
@@ -417,8 +418,8 @@ class AddressManagementController extends Controller
     public function getPostcodeListById(Request $request, $id)
     {
         $postcode = DB::table('postcode')
-            ->select('id', 'postcode')
-            ->where('city_name', '=', $id)
+            ->select('id', 'postcode','city_name')
+            ->where('id', '=', $id)
             ->orderBy('postcode', 'ASC')
             ->get();
         return response()->json(["message" => "postcode List", 'list' => $postcode, "code" => 200]);
