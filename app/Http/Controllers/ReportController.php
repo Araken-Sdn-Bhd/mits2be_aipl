@@ -56,7 +56,7 @@ class ReportController extends Controller
                 $demo['citizenship'] = $request->citizenship;
             }
             if ($request->Age) {
-                
+
                 $age = GeneralSetting::where('id', $request->Age)->first();
                 $age['agemin']=$age['min_age'];
                 $age['agemax']=$age['max_age'];
@@ -125,10 +125,10 @@ class ReportController extends Controller
                 if ($demo){
                 $query->where($demo);
                 }
-                
+
 
                 if ($age){
-                   
+
                     //if($age['agemin'] && $age['agemax']!=NULL){
                     $query->whereBetween('age',[$age['agemin'],$age['agemax']]);
                     //}
@@ -139,9 +139,9 @@ class ReportController extends Controller
                     //}
                 }
                 $run_query = $query->get()->toArray();
-               
+
                 $response  = json_decode(json_encode($run_query), true);
-                
+
                 $icd=NULL;
                 $cd_array=[];
                 $count=0;
@@ -151,7 +151,7 @@ class ReportController extends Controller
                 $result = [];
 
                 foreach ($response as $k => $v) {
-                
+
                 //////////////////////////diagnosis/////////////////////////
             if (isset($request->report_type) && $request->report_type == 'excel') {
                 if($v['main_psychiatric_diagnosis']!=NULL){
@@ -905,7 +905,7 @@ class ReportController extends Controller
                  }
 
                 //////////////////////CiTIZENSHIP///////////////////////
-                
+
                 $citizen=GeneralSetting::select('section_value')
                 ->where('id','=',$v['citizenship'])->first();
                 if($citizen == NULL){
@@ -1019,8 +1019,8 @@ class ReportController extends Controller
                     $result[$index]['SUCIDAL_INTENT2'] = $si2['SUCIDAL_INTENT'];
                     $result[$index]['SUCIDAL_INTENT3'] = $si3['SUCIDAL_INTENT'];
 
-                   
-                   
+
+
 
                     $result[$index]['RISK_FACTORpdf'] =  '1- '.$prpa1['RISK_ANSWER'].', 2-'.$prpa2['RISK_ANSWER'].', 3-'.
                                                          $prpa3['RISK_ANSWER'].', 4-'.$prpa4['RISK_ANSWER'].' , 5-'.
@@ -1111,7 +1111,7 @@ class ReportController extends Controller
                         ]);
 
                     } else {
-                        
+
                             $periodofservices= date('d/m/Y', strtotime($request->fromDate)).' To '.date('d/m/Y', strtotime($request->toDate));
                             return response()->json(["message" => "Shharp Report", 'result' => $result,'periodofservices' => $periodofservices,
                              'TotalReport'=>$totalReports, "code" => 200]);
@@ -1126,12 +1126,12 @@ class ReportController extends Controller
 
     public function getTotalPatientTypeRefferalReport(Request $request)
     {
-       
+
         $user = DB::table('staff_management')
         ->select('roles.code')
         ->join('roles', 'staff_management.role_id', '=', 'roles.id')
         ->where('staff_management.email', '=', $request->email)
-        ->first();        
+        ->first();
 $demo=[];
 	if($user->code!='superadmin'){
             $demo['pr.branch_id'] = $request->branch_id;
@@ -1163,13 +1163,13 @@ $demo=[];
 
         $ssh = $appointments->get()->toArray();
         $ssh  = json_decode(json_encode($ssh), true);
-     
+
         $cpa = [];
         $vta = [];
         $index=0;
         $rfa = ['Walk_In' => 0, 'Referral' => 0];
                 foreach ($ssh as $k => $v) {
- 
+
                     if (array_key_exists($v['patient_category'], $cpa)) {
                         $cpa[$v['patient_category']] = $cpa[$v['patient_category']] + 1;
                     } else {
@@ -1180,7 +1180,7 @@ $demo=[];
                         $vta[$v['type_visit']] = $vta[$v['type_visit']] + 1;
                     } else {
                         $vta[$v['type_visit']] = 1;
-                    }                    
+                    }
 
                     if ($v['referral_type']=='Self-Referral') {
                         $rfa['Walk_In'] = $rfa['Walk_In'] + 1;
@@ -2065,7 +2065,7 @@ $demo=[];
             return response()->json(["message" => "Activity Report", 'result' => [], 'filepath' => null, "code" => 200]);
         }
     }
-    
+
 
     public function getVONActivityReport(Request $request)
     {
@@ -2348,7 +2348,7 @@ $demo=[];
                     if($age['agemin'] && $age['agemax']!=NULL){
                         $appointments->whereBetween('age',[$age['agemin'],$age['agemax']]);
                     }else if($age['agemin']==NULL) {
-                        $ssh->where('age','<=',$age['agemax']);
+                        $age->where('age','<=',$age['agemax']);
                     }else if($age['agemax']==NULL) {
                         $appointments->where('age','>=',$age['agemin']);
                     }
@@ -2374,7 +2374,7 @@ $demo=[];
                                 if($add!='0'|| $add!=NULL){
                                     $add_diagnosis=DB::select('CALL icd_code(' . $add . ')');
                                     $additional_diagnosis_id[$e]['additional_diagnosis']=$add_diagnosis[0]->icd_code.' '.$add_diagnosis[0]->icd_name;
-                                }else{                                   
+                                }else{
                                     $additional_diagnosis_id[$e]['additional_diagnosis']='-';
                                 }
                             $e++;
@@ -2409,7 +2409,7 @@ $demo=[];
                             $result[$index]['additional_diagnosis3']=$additional_diagnosis_id[2]['additional_diagnosis'];
                             $result[$index]['additional_diagnosis4']=$additional_diagnosis_id[3]['additional_diagnosis'];
                             $result[$index]['additional_diagnosis5']=$additional_diagnosis_id[4]['additional_diagnosis'];
-                        } 
+                        }
                 }else{
                     $result[$index]['additional_diagnosis1']='-';
                     $result[$index]['additional_diagnosis2']='-';
@@ -2521,7 +2521,7 @@ $demo=[];
                 $result[$index]['add_sub_code3']='-';
                 $result[$index]['add_sub_code4']='-';
                 $result[$index]['add_sub_code5']='-';
-            }     
+            }
 
 
             $result[$index]['No']=$index+1;
@@ -2589,8 +2589,8 @@ $demo=[];
             return response()->json(["message" => "General Report", 'result' => [], 'filename' => null, "code" => 200]);
         }
     }
-  
-   
+
+
 
     public function getKPIReport(Request $request)
     {
