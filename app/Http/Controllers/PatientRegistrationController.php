@@ -587,7 +587,8 @@ class PatientRegistrationController extends Controller
             'other_occupationStatus' => $request->other_occupationStatus,
             'other_maritalList' => $request->other_maritalList,
             'other_education' => $request->other_education,
-
+            'employment_status' => $request->employment_status,
+            'household_income' => $request->household_income
         ];
 
         $validateCitizenship = [];

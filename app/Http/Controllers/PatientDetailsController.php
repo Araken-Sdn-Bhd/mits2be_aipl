@@ -445,7 +445,7 @@ class PatientDetailsController extends Controller
                     $result[$key]['harm_date'] = $val->harm_date ??  '-';
                     $result[$key]['patient_id'] = $val->id ??  'NA';
                     $result[$key]['patient_mrn'] = $val->patient_mrn ??  'NA';
-                    $result[$key]['age'] = $val->age ??  'NA';
+                    $result[$key]['age'] = date_diff(date_create($val->birth_date), date_create('today'))->y ?? 'NA';
                     $result[$key]['name_asin_nric'] = $val->name_asin_nric ??  'NA';
                     $result[$key]['nric_no'] = $val->nric_no ??  'NA';
                     if ($val->nric_no == null || $val->nric_no == ''){
@@ -490,7 +490,7 @@ class PatientDetailsController extends Controller
                 $result[$key]['harm_date'] = $val->harm_date ??  '-';
                 $result[$key]['patient_id'] = $val->id ??  'NA';
                 $result[$key]['patient_mrn'] = $val->patient_mrn ??  'NA';
-                $result[$key]['age'] = $val->age ??  'NA';
+                $result[$key]['age'] = date_diff(date_create($val->birth_date), date_create('today'))->y ?? 'NA';
                 $result[$key]['name_asin_nric'] = $val->name_asin_nric ??  'NA';
                 $result[$key]['nric_no'] = $val->nric_no ??  'NA';
 
