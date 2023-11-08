@@ -218,10 +218,13 @@ class PatientDetailsController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
 
-        $details = PatientRegistration::select('id', 'patient_mrn', 'sex', 'birth_date', 'mobile_no', 'nric_no', 'citizenship', 'name_asin_nric', 'marital_id')->where('id', $request->patient_id)->get();
+        $details = PatientRegistration::select('id', 'patient_mrn', 'sex', 'birth_date', 'mobile_no', 'nric_no', 'citizenship', 'name_asin_nric', 'marital_id', 'address1', 'address2', 'address3', 'postcode', 'city_id', 'education_level')
+                    ->with('city:city_name,postcode,id')
+                    ->where('id', $request->patient_id)
+                    ->get();
         $result = [];
         $result['id'] = $details[0]->id;
-        $result['patient_name'] = $details[0]->name_asin_nric;
+        $result['patient_name'] = $details[0]->name_asin_nric;  
         $result['patient_mrn'] = $details[0]->patient_mrn;
         $result['nric'] = $details[0]->nric_no;
         $result['birth_date'] = date('d/m/Y', strtotime($details[0]->birth_date));
@@ -239,6 +242,15 @@ class PatientDetailsController extends Controller
         }
         $result['contact_no'] = $details[0]->mobile_no;
         $result['nationality'] = ($details[0]->citizenship == 0) ? 'Malaysian' : (($details[0]->citizenship == 1) ? 'Permanent Resident' : 'Foreigner');
+        
+        $result['address1'] = $details[0]->address1;
+        $result['address2'] = $details[0]->address2;
+        $result['address3'] = $details[0]->address3;
+        if(isset($details[0]->city[0])){
+            $result['city_name'] = $details[0]->city[0]->city_name;
+            $result['postcode'] = $details[0]->city[0]->postcode;
+        };
+        $result['education_level'] = $this->getGeneralSettingValue($details[0]->education_level);
 
         return response()->json(["message" => "Patient Details", 'details' => $result, "code" => 200]);
     }
