@@ -55,8 +55,13 @@ class PatientDetailsController extends Controller
 
     public function getGeneralSettingValue($id)
     {
-        $val = GeneralSetting::where('id', $id)->pluck('section_value');
-        return $val[0];
+        if($id == 0 || $id == ''){
+            return "NA";
+        }
+        else{
+            $val = GeneralSetting::where('id', $id)->pluck('section_value');
+            return $val[0];
+        }
     }
 
     public function serachPatient(Request $request)
@@ -242,7 +247,7 @@ class PatientDetailsController extends Controller
         }
         $result['contact_no'] = $details[0]->mobile_no;
         $result['nationality'] = ($details[0]->citizenship == 0) ? 'Malaysian' : (($details[0]->citizenship == 1) ? 'Permanent Resident' : 'Foreigner');
-        
+            
         $result['address1'] = $details[0]->address1;
         $result['address2'] = $details[0]->address2;
         $result['address3'] = $details[0]->address3;
@@ -250,6 +255,7 @@ class PatientDetailsController extends Controller
             $result['city_name'] = $details[0]->city[0]->city_name;
             $result['postcode'] = $details[0]->city[0]->postcode;
         };
+        
         $result['education_level'] = $this->getGeneralSettingValue($details[0]->education_level);
 
         return response()->json(["message" => "Patient Details", 'details' => $result, "code" => 200]);
