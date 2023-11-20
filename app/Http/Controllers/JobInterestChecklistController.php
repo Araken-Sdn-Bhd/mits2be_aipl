@@ -80,12 +80,20 @@ class JobInterestChecklistController extends Controller
                 $validateJobInterestChecklist['sub_code_id'] = 'required';
                 $jobinterestchecklist['sub_code_id'] =  $sub_code_id;
             }
-            JobInterestChecklist::where(['id' => $request->id])->update($jobinterestchecklist);
+            if(isset($request->id)){
+                JobInterestChecklist::where(['id' => $request->id])->update($jobinterestchecklist);
+            }
+            else{
+                JobInterestChecklist::create($jobinterestchecklist);
+            }
             if (!empty($request->jobs)) {
                 foreach ($request->jobs as $key) {
-                    if ($key['id']) {
+                    if (isset($key['id'])) {
                         $data = array('type_of_job' => $key['job'], 'patient_id' => $request->patient_id, 'duration' => $key['duration'], 'termination_reason' => $key['reason']);
                         JobInterestList::where('id', $key['id'])->update($data);
+                    }else{
+                        $data = array('type_of_job' => $key['job'], 'patient_id' => $request->patient_id, 'duration' => $key['duration'], 'termination_reason' => $key['reason']);
+                        JobInterestList::create($data);
                     }
                 }
                 return response()->json(["message" => "Job Interest Checklist Updated Successfully!", "code" => 200]);
