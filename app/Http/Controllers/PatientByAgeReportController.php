@@ -40,7 +40,7 @@ class PatientByAgeReportController extends Controller
             }
 
         $query = DB::table('patient_appointment_details as pad')
-        ->select('*')
+        ->select('p.name_asin_nric','p.sex', 'p.race_id', 'p.branch_id', 'p.birth_date', DB::raw("DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(),p.birth_date)), '%Y') + 0 AS age"), 'pad.booking_date', 'pad.appointment_status')
         ->join('patient_registration as p', function($join) {
             $join->on('pad.patient_mrn_id', '=', 'p.id');
         })
@@ -66,20 +66,20 @@ class PatientByAgeReportController extends Controller
             
             if($age['agemin'] && $age['agemax']!=NULL){
                 
-            $query->whereBetween('age',[$age['agemin'],$age['agemax']]);
+            $query->whereBetween(DB::raw("DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(),p.birth_date)), '%Y') + 0"),[$age['agemin'],$age['agemax']]);
             }
             if($age['agemin']==NULL) {
 
-                $query->where('age','<=',$age['agemax']);
+                $query->where(DB::raw("DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(),p.birth_date)), '%Y') + 0"),'<=',$age['agemax']);
                 
             }
             if($age['agemax']==NULL) {
-                $query->where('age','>=',$age['agemin']);
+                $query->where(DB::raw("DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(),p.birth_date)), '%Y') + 0"),'>=',$age['agemin']);
             }
         }
         $query2=$query->get()->toArray();
+
         $response  = json_decode(json_encode($query2), true);
-        
 
         $patient = [];
         $result = [];

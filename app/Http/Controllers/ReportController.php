@@ -38,7 +38,8 @@ use App\Models\CounsellingProgressNote;
 use App\Models\ConsultationDischargeNote;
 use App\Models\RehabDischargeNote;
 use App\Models\CpsDischargeNote;
-
+use App\Models\PatientRegistration;
+use Carbon\Carbon;
 
 
 
@@ -100,7 +101,7 @@ class ReportController extends Controller
 
                 $query = DB::table('patient_shharp_registration_data_producer as psrdp')
                 ->select('srfs.id','srfs.risk','srfs.protective','srfs.self_harm','srfs.patient_id',
-                'p.name_asin_nric','p.address1','p.city_id','p.nric_no','p.passport_no','p.state_id','p.postcode','p.age','p.sex','p.citizenship','p.race_id','p.employment_status',
+                'p.name_asin_nric','p.address1','p.city_id','p.nric_no','p.passport_no','p.state_id','p.postcode',DB::raw("DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(),p.birth_date)), '%Y') + 0 AS age"),'p.sex','p.citizenship','p.race_id','p.employment_status',
                 'p.hospital_mrn_no','p.religion_id','p.marital_id','p.accomodation_id','p.education_level','p.occupation_status','p.occupation_sector',
                 'p.fee_exemption_status',
                 'p.mobile_no','p.birth_date','srfs.harm_date','srfs.harm_time','psrdp.hospital_name',
@@ -130,7 +131,7 @@ class ReportController extends Controller
                 if ($age){
 
                     //if($age['agemin'] && $age['agemax']!=NULL){
-                    $query->whereBetween('age',[$age['agemin'],$age['agemax']]);
+                    $query->whereBetween(DB::raw("DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(),p.birth_date)), '%Y') + 0"),[$age['agemin'],$age['agemax']]);
                     //}
                     //else if($age['agemin']==NULL) {
                     //    $query->where('age','<=',$age['agemax']);
@@ -139,7 +140,7 @@ class ReportController extends Controller
                     //}
                 }
                 $run_query = $query->get()->toArray();
-
+                
                 $response  = json_decode(json_encode($run_query), true);
 
                 $icd=NULL;
@@ -1263,7 +1264,7 @@ $demo=[];
             $demo['sex'] = $request->gender;
         }
             $query = DB::table('patient_appointment_details as pad')
-            ->select('*')
+            ->select('*', DB::raw("DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(),p.birth_date)), '%Y') + 0 AS age"))
             ->join('patient_registration as p', function($join) {
                 $join->on('pad.patient_mrn_id', '=', 'p.id');
             })
@@ -1299,6 +1300,7 @@ $demo=[];
         $attendanceStatus = [];
         $attend = 0;
         $noShow = 0;
+        
         if ($ssh) {
             $index = 0;
             foreach ($ssh as $k => $v) {
@@ -2297,7 +2299,7 @@ $demo=[];
         }
         $appointments = DB::table('user_diagnosis as ud')->select('pad.id','pad.patient_mrn_id','pad.booking_date',
         'pad.booking_time','pr.created_at','pr.nric_no','pr.passport_no','name_asin_nric','pad.appointment_status','pr.address1','pr.address2',
-        'pr.address3','pc.city_name','s.state_name','pc.postcode','pr.mobile_no','pr.birth_date','pr.age','gs1.section_value as citizenship','gs2.section_value as race',
+        'pr.address3','pc.city_name','s.state_name','pc.postcode','pr.mobile_no','pr.birth_date',DB::raw("DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(),pr.birth_date)), '%Y') + 0 AS age"),'gs1.section_value as citizenship','gs2.section_value as race',
         'gs3.section_value as marital','gs4.section_value as religion','gs5.section_value as accomodation','gs6.section_Value as education_level',
         'gs7.section_value as occupation_status','gs8.section_value as fee_exemption_status','gs9.section_value as occupation_sector','gs10.section_value as sex',
         'sr.service_name','gs11.section_value as patient_category','gs12.section_value as type_visit','gs13.section_value as type_referral','sm.name as staff_name',
@@ -2344,23 +2346,23 @@ $demo=[];
             $age = GeneralSetting::where('id', $request->Age)->first();
             $age['agemin']=$age['min_age'];
             $age['agemax']=$age['max_age'];
+
                 if ($age){
                     if($age['agemin'] && $age['agemax']!=NULL){
-                        $appointments->whereBetween('age',[$age['agemin'],$age['agemax']]);
+                        $appointments->whereBetween( DB::raw("DATE_FORMAT(FROM_DAYS(DATEDIFF(NOW(),birth_date)), '%Y') + 0"), [$age['agemin'],$age['agemax']]);
                     }else if($age['agemin']==NULL) {
                         $age->where('age','<=',$age['agemax']);
                     }else if($age['agemax']==NULL) {
                         $appointments->where('age','>=',$age['agemin']);
                     }
                 }
+
         }
         if ($demo){
             $appointments->where($demo);
         }
-
         $ssh = $appointments->get()->toArray();
         $result = [];
-
         if ($ssh) {
             $ssh  = json_decode(json_encode($ssh), true);
             $index=0;
@@ -2540,7 +2542,7 @@ $demo=[];
             $result[$index]['POSTCODE'] = $v['postcode'];
             $result[$index]['PHONE_NUMBER'] = $v['mobile_no'];
             $result[$index]['DATE_OF_BIRTH'] = $v['birth_date'];
-            $result[$index]['AGE'] = $v['age'];
+            $result[$index]['AGE'] = date_diff(date_create($v['birth_date']), date_create('today'))->y ?? 'NA';
             $result[$index]['citizenship'] = $v['citizenship'];
             $result[$index]['race'] = $v['race'];
             $result[$index]['religion'] = $v['religion'];
@@ -2565,7 +2567,6 @@ $demo=[];
 
             $index++;
             }
-
 
         }
         //dd($result); //confirmkan status and data yang amik based on table2 cd yang lain. takut nama column lain. and check either data is correct
