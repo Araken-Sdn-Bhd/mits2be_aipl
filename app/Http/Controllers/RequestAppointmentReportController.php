@@ -15,8 +15,8 @@ use App\Models\PatientShharpRegistrationRiskProtective;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\RequestAppointmentReportExport;
 use App\Models\PatientAppointmentDetails;
-use App\Models\AppointmentRequest; 
-use App\Models\StaffManagement; 
+use App\Models\AppointmentRequest;
+use App\Models\StaffManagement;
 
 
 class RequestAppointmentReportController extends Controller
@@ -30,25 +30,23 @@ class RequestAppointmentReportController extends Controller
         ->where('staff_management.email', '=', $request->email)
         ->first();
         $users2  = json_decode(json_encode($users), true);
- 
+
         if($users2['code']=='superadmin'){
             $response = AppointmentRequest::select('*')
             ->whereBetween('created_at', [$request->fromDate, $request->toDate]);
-            
-            
+
             $ssh= $response->get()->toArray();
 
         }else{
 
             $response = AppointmentRequest::select('id', 'added_by','branch_id','name','nric_or_passportno',
-            'contact_no', 'address', 'address1', 'email','ip_address','remark',
-            DB::raw("DATE_FORMAT(created_at, '%Y-%m-%d') as date"))
+            'contact_no', 'address', 'address1', 'email','ip_address','remark','status','created_at')
             ->whereBetween('created_at', [$request->fromDate, $request->toDate])
-            ->where('branch_id','=',$request->branch_id); 
+            ->where('branch_id','=',$request->branch_id);
 
             $ssh= $response->get()->toArray();
         }
-        
+
 
         $result = [];
         $index=0;
@@ -62,11 +60,11 @@ class RequestAppointmentReportController extends Controller
             $result[$index]['nric_or_passportno']=$v['nric_or_passportno'];
         }
 
-     
-        
+
+
         if($v['address']==NULL && $v['address1']==NULL){
             $result[$index]['address']='NA';
-        }else if($v['address']==NULL||$v['address1']==NULL){  
+        }else if($v['address']==NULL||$v['address1']==NULL){
             $result[$index]['address']=$v['address'].$v['address1'];
         }else{
             $result[$index]['address']=$v['address'].', '.$v['address1'];
@@ -84,7 +82,7 @@ class RequestAppointmentReportController extends Controller
         }else if(($v['status']=='2')){
         $result[$index]['status']='Deleted';
         }
-        
+
         $index++;
         }
         if ($response) {
@@ -110,5 +108,5 @@ class RequestAppointmentReportController extends Controller
         }
     }
 
-    
+
 }
