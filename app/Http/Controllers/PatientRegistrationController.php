@@ -29,7 +29,6 @@ class PatientRegistrationController extends Controller
             'citizenship' => 'required|integer',
             'sex' => 'required|integer',
             'birth_date' => '',
-            'age' => '',
             'mobile_no' => '',
             'house_no' => '',
             'services_type' => '',
@@ -77,7 +76,6 @@ class PatientRegistrationController extends Controller
             'name_asin_nric' =>  $request->name_asin_nric,
             'sex' =>  $request->sex,
             'birth_date' =>  $request->birth_date,
-            'age' =>  $request->age,
             'mobile_no' =>  $request->mobile_no,
             'house_no' =>  $request->house_no,
             'hospital_mrn_no' =>  $request->hospital_mrn_no,
@@ -213,7 +211,7 @@ class PatientRegistrationController extends Controller
                 AppointmentRequest::where('id',$request->patient_request_id)->update(['status'=>'0']);
             }
         } catch (Exception $e) {
-            return response()->json(["message" => $e->getMessage(), 'Patient Registration' => $patientregistration, "code" => 200]);
+            return response()->json(["message" => $e->getMessage(), 'Patient Registration' => $patientregistration, "code" => 422]);
         }
         return response()->json(["message" => "Patient Registration has been done successfully!", "code" => 200]);
     }
@@ -503,7 +501,6 @@ class PatientRegistrationController extends Controller
             'citizenship' => 'required|integer',
             'sex' => 'required|integer',
             'birth_date' => '',
-            'age' => 'integer',
             'mobile_no' => '',
             'house_no' => '',
             'services_type' => '',
@@ -539,7 +536,6 @@ class PatientRegistrationController extends Controller
             'name_asin_nric' =>  $request->name_asin_nric,
             'sex' =>  $request->sex,
             'birth_date' =>  $request->birth_date,
-            'age' =>  $request->age,
             'mobile_no' =>  $request->mobile_no,
             'house_no' =>  $request->house_no,
             'hospital_mrn_no' =>  $request->hospital_mrn_no,
