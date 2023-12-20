@@ -2525,8 +2525,9 @@ class PatientAppointmentDetailsController extends Controller
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
         if ($request->type == "PsychiatryClerkingNote") {
-            $list = PsychiatryClerkingNote::select('*')
-                ->where('id', '=', $request->id)
+            $list = PsychiatryClerkingNote::join('users', 'psychiatry_clerking_note.added_by', '=', 'users.id')
+            ->select('psychiatry_clerking_note.*', 'users.name as name', 'users.role as designation')
+                ->where('psychiatry_clerking_note.id', '=', $request->id)
                 ->get();
         }
         if ($request->type == "CounsellorClerkingNote") {
