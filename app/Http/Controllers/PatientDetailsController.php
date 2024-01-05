@@ -116,6 +116,8 @@ class PatientDetailsController extends Controller
                 ->with('appointments', function ($query) {
                     $query->where('appointment_status', '=', '1');
                 })
+                
+                
                 ->get()->toArray();
         }
         $result = [];
@@ -126,6 +128,7 @@ class PatientDetailsController extends Controller
                 ->with('appointments', function ($query) {
                     $query->where('appointment_status', '=', '1');
                 })
+                
                 ->get()->toArray();
             }else{
 
@@ -135,6 +138,7 @@ class PatientDetailsController extends Controller
                     $query->where('appointment_status', '=', '1');
                 })
                 ->where($search)
+              
                 ->get()->toArray();
             }
             foreach ($list as $key => $val) {
