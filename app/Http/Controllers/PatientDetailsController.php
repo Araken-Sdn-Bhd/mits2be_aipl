@@ -86,7 +86,7 @@ class PatientDetailsController extends Controller
         $searchWord = $request->keyword;
         $resultSet = [];
         if ($searchWord) {
-            $sql = PatientRegistration::select('id', 'patient_mrn', 'name_asin_nric', 'passport_no', 'nric_no', 'salutation_id','services_type')
+            $sql = PatientRegistration::select('id', 'patient_mrn', 'name_asin_nric', 'passport_no', 'nric_no', 'salutation_id','services_type','branch_id')
             ->where('sharp', '=', '0');
             if (count($search) > 0) {
 
@@ -123,6 +123,7 @@ class PatientDetailsController extends Controller
         $result = [];
         if ($request->keyword == "no-keyword") {
             if(!$search){
+              
             $list = PatientRegistration::where('status', '=', '1')->where('sharp', '=', '0')
                 ->with('salutation:section_value,id')->with('service:service_name,id')
                 ->with('appointments', function ($query) {
@@ -142,6 +143,7 @@ class PatientDetailsController extends Controller
                 ->get()->toArray();
             }
             foreach ($list as $key => $val) {
+                $result[$key]['branch_id'] = $val['branch_id'];
                 $result[$key]['patient_mrn'] = $val['patient_mrn'];
                 $result[$key]['name_asin_nric'] = $val['name_asin_nric'];
                 $result[$key]['id'] = $val['id'];
@@ -180,6 +182,7 @@ class PatientDetailsController extends Controller
         }
         if (count($resultSet) > 0) {
             foreach ($resultSet as $key => $val) {
+                $result[$key]['branch_id'] = $val['branch_id'];
                 $result[$key]['patient_mrn'] = $val['patient_mrn'];
                 $result[$key]['name_asin_nric'] = $val['name_asin_nric'];
                 $result[$key]['id'] = $val['id'];
