@@ -1184,7 +1184,9 @@ $announcment_route=$screen_id_announcement->dashboard_route;
                                             ->groupby('patient_registration.id');
 
         $shharpcaseSQL = PatientRegistration::distinct()
-                                            ->select('patient_registration.id', 'patient_registration.race_id', 'patient_registration.age', 'patient_registration.sex', 'patient_registration.religion_id', 'patient_registration.marital_id', 'patient_registration.education_level', 'patient_registration.occupation_status', DB::raw('count(distinct patient_registration.id) as Sharptotal'))
+                                            //->select('patient_registration.id', 'patient_registration.race_id', 'patient_registration.age', 'patient_registration.sex', 'patient_registration.religion_id', 'patient_registration.marital_id', 'patient_registration.education_level', 'patient_registration.occupation_status', DB::raw('count(distinct patient_registration.id) as Sharptotal'))
+                                            ->select('patient_registration.id', 'patient_registration.race_id', 'patient_registration.sex', 'patient_registration.religion_id', 'patient_registration.marital_id', 'patient_registration.education_level', 'patient_registration.occupation_status', DB::raw('count(distinct patient_registration.id) as Sharptotal'))
+                                            
                                             ->join('sharp_registraion_final_step as srfs',function($join) {
                                                 $join->on('srfs.patient_id', '=', 'patient_registration.id');
                                                 })
@@ -1308,8 +1310,10 @@ $announcment_route=$screen_id_announcement->dashboard_route;
                 }
             }
         } else if ($request->sharprace == "Range of Age") {
-            $shharpRangeAge = $shharpcaseSQL->select(DB::raw('(CASE WHEN `age` < 10 THEN "Less Than 10 Years" WHEN `age` BETWEEN 10 and 19 THEN "Between 10 and 19 Years" WHEN `age` BETWEEN 20 and 59 THEN "Between 20 and 59 Years" WHEN `age` > 59 THEN "60 Years and Above" ELSE "null" END) AS RANGE_AGE, count(distinct patient_registration.id) as COUNT'))->groupBy('RANGE_AGE')->orderBy('patient_registration.age')->get()->toArray();
-            foreach ($shharpRangeAge as $key => $value) {
+           // $shharpRangeAge = $shharpcaseSQL->select(DB::raw('(CASE WHEN `age` < 10 THEN "Less Than 10 Years" WHEN `age` BETWEEN 10 and 19 THEN "Between 10 and 19 Years" WHEN `age` BETWEEN 20 and 59 THEN "Between 20 and 59 Years" WHEN `age` > 59 THEN "60 Years and Above" ELSE "null" END) AS RANGE_AGE, count(distinct patient_registration.id) as COUNT'))->groupBy('RANGE_AGE')->orderBy('patient_registration.age')->get()->toArray();
+           $shharpRangeAge = $shharpcaseSQL->select(DB::raw('(CASE WHEN `age` < 10 THEN "Less Than 10 Years" WHEN `age` BETWEEN 10 and 19 THEN "Between 10 and 19 Years" WHEN `age` BETWEEN 20 and 59 THEN "Between 20 and 59 Years" WHEN `age` > 59 THEN "60 Years and Above" ELSE "null" END) AS RANGE_AGE, count(distinct patient_registration.id) as COUNT'))->groupBy('RANGE_AGE')->get()->toArray();
+           
+           foreach ($shharpRangeAge as $key => $value) {
                 if ($value['RANGE_AGE']) {
                     $rangeofage = GeneralSetting::select('id', 'section_value')->where('section_value', $value['RANGE_AGE'])->where('status', '=', '1')->get()->toArray();
                     if (isset($rangeofage)) {
