@@ -64,6 +64,169 @@ class PatientDetailsController extends Controller
         }
     }
 
+//    public function serachPatient(Request $request)
+//    {
+//        $validator = Validator::make($request->all(), [
+//            'keyword' => 'required',
+//            'branch_id' => 'required|integer',
+//            'service_id' => 'required|integer'
+//        ]);
+//        if ($validator->fails()) {
+//            return response()->json(["message" => $validator->errors(), "code" => 422]);
+//        }
+//
+//        $search = [];
+//        if ($request->branch_id != 0) {
+//            $search['branch_id'] = $request->branch_id;
+//        }
+//        if ($request->service_id != "0") {
+//            $search['services_type'] = $request->service_id;
+//        }
+//
+//        $searchWord = $request->keyword;
+//        $resultSet = [];
+//        if ($searchWord) {
+//            $sql = PatientRegistration::select('id', 'patient_mrn', 'name_asin_nric', 'passport_no', 'nric_no', 'salutation_id','services_type','branch_id')
+//            ->where('sharp', '=', '0');
+//            if (count($search) > 0) {
+//
+//                $sql = $sql->where(function ($query) use ($searchWord) {
+//
+//                    $query->where('patient_mrn', 'LIKE', '%' . $searchWord . '%')
+//                        ->orWhere('name_asin_nric', 'LIKE', '%' . $searchWord . '%')
+//                        ->orWhere('passport_no', 'LIKE', '%' . $searchWord . '%')
+//                        ->orWhere('nric_no', 'LIKE', '%' . $searchWord . '%')
+//                        ->orWhere('services_type', '=', $searchWord)
+//                        ->orWhereRaw("REPLACE(nric_no, '-', '') LIKE ?", ["%$searchWord%"]);
+//                        });
+//                        $sql->where($search);
+//            } else {
+//                $sql = $sql->where(function ($query) use ($searchWord) {
+//
+//                    $query->where('patient_mrn', 'LIKE', '%' . $searchWord . '%')
+//                        ->orWhere('name_asin_nric', 'LIKE', '%' . $searchWord . '%')
+//                        ->orWhere('passport_no', 'LIKE', '%' . $searchWord . '%')
+//                        ->orWhere('nric_no', 'LIKE', '%' . $searchWord . '%')
+//                        ->orWhere('services_type', '=', $searchWord)
+//                        ->orWhereRaw("REPLACE(nric_no, '-', '') LIKE ?", ["%$searchWord%"]);
+//                });
+//            }
+//            $resultSet =
+//                $sql->with('salutation:section_value,id')->with('service:service_name,id')
+//                ->with('appointments', function ($query) {
+//                    $query->where('appointment_status', '=', '1');
+//                })
+//
+//
+//                ->get()->toArray();
+//        }
+//        $result = [];
+//        if ($request->keyword == "no-keyword") {
+//            if(!$search){
+//
+//            $list = PatientRegistration::where('status', '=', '1')->where('sharp', '=', '0')
+//                ->with('salutation:section_value,id')->with('service:service_name,id')
+//                ->with('appointments', function ($query) {
+//                    $query->where('appointment_status', '=', '1');
+//                })
+//
+//                ->get()->toArray();
+//            }else{
+//
+//                $list = PatientRegistration::where('status', '=', '1')->where('sharp', '=', '0')
+//                ->with('salutation:section_value,id')->with('service:service_name,id')
+//                ->with('appointments', function ($query) {
+//                    $query->where('appointment_status', '=', '1');
+//                })
+//                ->where($search)
+//
+//                ->get()->toArray();
+//            }
+//            foreach ($list as $key => $val) {
+//                $result[$key]['branch_id'] = $val['branch_id'];
+//                $result[$key]['patient_mrn'] = $val['patient_mrn'];
+//                $result[$key]['name_asin_nric'] = $val['name_asin_nric'];
+//                $result[$key]['id'] = $val['id'];
+//                $result[$key]['age'] = date_diff(date_create($val['birth_date']), date_create('today'))->y;
+//                if ($val['nric_no'] != null){
+//                    $result[$key]['nric_id'] = $val['nric_no'];
+//                }
+//                if ($val['passport_no'] != null){
+//                    $result[$key]['nric_id'] = $val['passport_no'];
+//                }
+//
+//                if ($val['nric_no'] == null && $val['passport_no'] == null ){
+//                    $result[$key]['nric_id'] = 'NA';
+//                }
+//                if ($val['salutation'] != null) {
+//                    $result[$key]['salutation'] = $val['salutation'][0]['section_value'];
+//                } else {
+//                    $result[$key]['salutation'] = 'NA';
+//                }
+//                if ($val['service'] != null) {
+//                    $result[$key]['service'] = $val['service']['service_name'];
+//                } else {
+//                    $result[$key]['service'] = 'NA';
+//                }
+//
+//                if ($val['appointments'] != null) {
+//                    $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
+//                    $team_id = $val['appointments'][0]['assign_team'];
+//                    $teamName = ServiceRegister::where('id', $team_id)->get();
+//                    $result[$key]['team_name'] = $teamName[0]['service_name'];
+//                } else {
+//                    $result[$key]['appointments'] = 'NA';
+//                    $result[$key]['team_name'] = 'NA';
+//                }
+//            }
+//        }
+//        if (count($resultSet) > 0) {
+//            foreach ($resultSet as $key => $val) {
+//                $result[$key]['branch_id'] = $val['branch_id'];
+//                $result[$key]['patient_mrn'] = $val['patient_mrn'];
+//                $result[$key]['name_asin_nric'] = $val['name_asin_nric'];
+//                $result[$key]['id'] = $val['id'];
+//                if ($val['nric_no'] != null){
+//                    $result[$key]['nric_id'] = $val['nric_no'];
+//                }
+//                if ($val['passport_no'] != null){
+//                    $result[$key]['nric_id'] = $val['passport_no'];
+//                }
+//
+//                if ($val['nric_no'] == null && $val['passport_no'] == null ){
+//                    $result[$key]['nric_id'] = 'NA';
+//                }
+//
+//                if (!empty($val['salutation'][0])) {
+//                    $result[$key]['salutation'] = $val['salutation'][0]['section_value'];
+//                } else {
+//                    $result[$key]['salutation'] = 'NA';
+//                }
+//                if ($val['service'] != null) {
+//                    $result[$key]['service'] = $val['service']['service_name'];
+//                } else {
+//                    $result[$key]['service'] = 'NA';
+//                }
+//                if ($val['appointments'] != null) {
+//                    $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
+//                    $team_id = $val['appointments'][0]['assign_team'];
+//                    $teamName = ServiceRegister::where('id', $team_id)->get();
+//                    $result[$key]['team_name'] = $teamName[0]['service_name'];
+//                } else {
+//                    $result[$key]['appointments'] = 'NA';
+//                    $result[$key]['team_name'] = 'NA';
+//                }
+//            }
+//        }
+//        return response()->json(["message" => "Patients List", 'list' => $result, "code" => 200]);
+//    }
+
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     *
+     * Mohamad: This optimized version reduces redundancy, optimizes database queries, and improves code readability
+     */
     public function serachPatient(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -71,11 +234,14 @@ class PatientDetailsController extends Controller
             'branch_id' => 'required|integer',
             'service_id' => 'required|integer'
         ]);
+
         if ($validator->fails()) {
             return response()->json(["message" => $validator->errors(), "code" => 422]);
         }
 
         $search = [];
+        $keyword = $request->keyword;
+
         if ($request->branch_id != 0) {
             $search['branch_id'] = $request->branch_id;
         }
@@ -83,141 +249,87 @@ class PatientDetailsController extends Controller
             $search['services_type'] = $request->service_id;
         }
 
-        $searchWord = $request->keyword;
-        $resultSet = [];
-        if ($searchWord) {
-            $sql = PatientRegistration::select('id', 'patient_mrn', 'name_asin_nric', 'passport_no', 'nric_no', 'salutation_id','services_type','branch_id')
-            ->where('sharp', '=', '0');
-            if (count($search) > 0) {
-
-                $sql = $sql->where(function ($query) use ($searchWord) {
-
-                    $query->where('patient_mrn', 'LIKE', '%' . $searchWord . '%')
-                        ->orWhere('name_asin_nric', 'LIKE', '%' . $searchWord . '%')
-                        ->orWhere('passport_no', 'LIKE', '%' . $searchWord . '%')
-                        ->orWhere('nric_no', 'LIKE', '%' . $searchWord . '%')
-                        ->orWhere('services_type', '=', $searchWord)
-                        ->orWhereRaw("REPLACE(nric_no, '-', '') LIKE ?", ["%$searchWord%"]);
-                        });
-                        $sql->where($search);
-            } else {
-                $sql = $sql->where(function ($query) use ($searchWord) {
-
-                    $query->where('patient_mrn', 'LIKE', '%' . $searchWord . '%')
-                        ->orWhere('name_asin_nric', 'LIKE', '%' . $searchWord . '%')
-                        ->orWhere('passport_no', 'LIKE', '%' . $searchWord . '%')
-                        ->orWhere('nric_no', 'LIKE', '%' . $searchWord . '%')
-                        ->orWhere('services_type', '=', $searchWord)
-                        ->orWhereRaw("REPLACE(nric_no, '-', '') LIKE ?", ["%$searchWord%"]);
-                });
-            }
-            $resultSet =
-                $sql->with('salutation:section_value,id')->with('service:service_name,id')
-                ->with('appointments', function ($query) {
-                    $query->where('appointment_status', '=', '1');
-                })
-                
-                
-                ->get()->toArray();
-        }
         $result = [];
-        if ($request->keyword == "no-keyword") {
-            if(!$search){
-              
-            $list = PatientRegistration::where('status', '=', '1')->where('sharp', '=', '0')
-                ->with('salutation:section_value,id')->with('service:service_name,id')
-                ->with('appointments', function ($query) {
-                    $query->where('appointment_status', '=', '1');
+        if ($keyword == "no-keyword") {
+            $list = PatientRegistration::where('status', '=', '1')
+                ->where('sharp', '=', '0')
+                ->when($search, function ($query) use ($search) {
+                    $query->where($search);
                 })
-                
-                ->get()->toArray();
-            }else{
+                ->with('salutation:section_value,id')
+                ->with('service:service_name,id')
+                ->with(['appointments' => function ($query) {
+                    $query->where('appointment_status', '=', '1');
+                }])
+                ->get()
+                ->toArray();
 
-                $list = PatientRegistration::where('status', '=', '1')->where('sharp', '=', '0')
-                ->with('salutation:section_value,id')->with('service:service_name,id')
-                ->with('appointments', function ($query) {
-                    $query->where('appointment_status', '=', '1');
-                })
-                ->where($search)
-              
-                ->get()->toArray();
-            }
             foreach ($list as $key => $val) {
                 $result[$key]['branch_id'] = $val['branch_id'];
                 $result[$key]['patient_mrn'] = $val['patient_mrn'];
                 $result[$key]['name_asin_nric'] = $val['name_asin_nric'];
                 $result[$key]['id'] = $val['id'];
                 $result[$key]['age'] = date_diff(date_create($val['birth_date']), date_create('today'))->y;
-                if ($val['nric_no'] != null){
-                    $result[$key]['nric_id'] = $val['nric_no'];
-                }
-                if ($val['passport_no'] != null){
-                    $result[$key]['nric_id'] = $val['passport_no'];
-                }
-
-                if ($val['nric_no'] == null && $val['passport_no'] == null ){
-                    $result[$key]['nric_id'] = 'NA';
-                }
-                if ($val['salutation'] != null) {
-                    $result[$key]['salutation'] = $val['salutation'][0]['section_value'];
-                } else {
-                    $result[$key]['salutation'] = 'NA';
-                }
-                if ($val['service'] != null) {
-                    $result[$key]['service'] = $val['service']['service_name'];
-                } else {
-                    $result[$key]['service'] = 'NA';
-                }
+                $result[$key]['nric_id'] = $val['nric_no'] ?? $val['passport_no'] ?? 'NA';
+                $result[$key]['salutation'] = $val['salutation'][0]['section_value'] ?? 'NA';
+                $result[$key]['service'] = $val['service']['service_name'] ?? 'NA';
 
                 if ($val['appointments'] != null) {
                     $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
-                    $team_id = $val['appointments'][0]['assign_team'];
-                    $teamName = ServiceRegister::where('id', $team_id)->get();
+                    $teamName = ServiceRegister::where('id', $val['appointments'][0]['assign_team'])->get();
                     $result[$key]['team_name'] = $teamName[0]['service_name'];
                 } else {
                     $result[$key]['appointments'] = 'NA';
                     $result[$key]['team_name'] = 'NA';
                 }
             }
-        }
-        if (count($resultSet) > 0) {
-            foreach ($resultSet as $key => $val) {
-                $result[$key]['branch_id'] = $val['branch_id'];
-                $result[$key]['patient_mrn'] = $val['patient_mrn'];
-                $result[$key]['name_asin_nric'] = $val['name_asin_nric'];
-                $result[$key]['id'] = $val['id'];
-                if ($val['nric_no'] != null){
-                    $result[$key]['nric_id'] = $val['nric_no'];
-                }
-                if ($val['passport_no'] != null){
-                    $result[$key]['nric_id'] = $val['passport_no'];
-                }
+        } else {
+            $sql = PatientRegistration::select('id', 'patient_mrn', 'name_asin_nric', 'passport_no', 'nric_no', 'salutation_id', 'services_type', 'branch_id')
+                ->where('sharp', '=', '0')
+                ->where(function ($query) use ($keyword) {
+                    $query->where('patient_mrn', 'LIKE', "%$keyword%")
+                        ->orWhere('name_asin_nric', 'LIKE', "%$keyword%")
+                        ->orWhere('passport_no', 'LIKE', "%$keyword%")
+                        ->orWhere('nric_no', 'LIKE', "%$keyword%")
+                        ->orWhere('services_type', '=', $keyword)
+                        ->orWhereRaw("REPLACE(nric_no, '-', '') LIKE ?", ["%$keyword%"]);
+                });
 
-                if ($val['nric_no'] == null && $val['passport_no'] == null ){
-                    $result[$key]['nric_id'] = 'NA';
-                }
+            if (!empty($search)) {
+                $sql->where($search);
+            }
 
-                if (!empty($val['salutation'][0])) {
-                    $result[$key]['salutation'] = $val['salutation'][0]['section_value'];
-                } else {
-                    $result[$key]['salutation'] = 'NA';
-                }
-                if ($val['service'] != null) {
-                    $result[$key]['service'] = $val['service']['service_name'];
-                } else {
-                    $result[$key]['service'] = 'NA';
-                }
-                if ($val['appointments'] != null) {
-                    $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
-                    $team_id = $val['appointments'][0]['assign_team'];
-                    $teamName = ServiceRegister::where('id', $team_id)->get();
-                    $result[$key]['team_name'] = $teamName[0]['service_name'];
-                } else {
-                    $result[$key]['appointments'] = 'NA';
-                    $result[$key]['team_name'] = 'NA';
+            $resultSet = $sql->with('salutation:section_value,id')
+                ->with('service:service_name,id')
+                ->with('appointments', function ($query) {
+                    $query->where('appointment_status', '=', '1');
+                })
+                ->get()
+                ->toArray();
+
+            if (count($resultSet) > 0) {
+                foreach ($resultSet as $key => $val) {
+                    if ($val['appointments'] != null) {
+                        $result[$key]['appointments'] = $val['appointments'][0]['booking_date'];
+                        $teamName = ServiceRegister::where('id', $val['appointments'][0]['assign_team'])->get();
+                        $result[$key]['team_name'] = $teamName[0]['service_name'];
+                    } else {
+                        $result[$key]['appointments'] = 'NA';
+                        $result[$key]['team_name'] = 'NA';
+                    }
+                    $result[$key] = [
+                        'branch_id' => $val['branch_id'],
+                        'patient_mrn' => $val['patient_mrn'],
+                        'name_asin_nric' => $val['name_asin_nric'],
+                        'id' => $val['id'],
+                        'nric_id' => $val['nric_no'] ?? $val['passport_no'] ?? 'NA',
+                        'salutation' => $val['salutation'][0]['section_value'] ?? 'NA',
+                        'service' => $val['service']['service_name'] ?? 'NA',
+                    ];
                 }
             }
         }
+
         return response()->json(["message" => "Patients List", 'list' => $result, "code" => 200]);
     }
 
@@ -236,7 +348,7 @@ class PatientDetailsController extends Controller
                     ->get();
         $result = [];
         $result['id'] = $details[0]->id;
-        $result['patient_name'] = $details[0]->name_asin_nric;  
+        $result['patient_name'] = $details[0]->name_asin_nric;
         $result['patient_mrn'] = $details[0]->patient_mrn;
         $result['nric'] = $details[0]->nric_no;
         $result['birth_date'] = date('d/m/Y', strtotime($details[0]->birth_date));
@@ -254,7 +366,7 @@ class PatientDetailsController extends Controller
         }
         $result['contact_no'] = $details[0]->mobile_no;
         $result['nationality'] = ($details[0]->citizenship == 0) ? 'Malaysian' : (($details[0]->citizenship == 1) ? 'Permanent Resident' : 'Foreigner');
-            
+
         $result['address1'] = $details[0]->address1;
         $result['address2'] = $details[0]->address2;
         $result['address3'] = $details[0]->address3;
@@ -262,7 +374,7 @@ class PatientDetailsController extends Controller
             $result['city_name'] = $details[0]->city[0]->city_name;
             $result['postcode'] = $details[0]->city[0]->postcode;
         };
-        
+
         $result['education_level'] = $this->getGeneralSettingValue($details[0]->education_level);
 
         return response()->json(["message" => "Patient Details", 'details' => $result, "code" => 200]);
